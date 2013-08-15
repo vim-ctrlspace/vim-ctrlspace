@@ -402,7 +402,9 @@ function! <SID>kill(buflistnr, final)
 endfunction
 
 function! <SID>show_help()
+  call <SID>kill(0, 0)
   silent! exe "help tabb-keys"
+  call <SID>tabb_toggle(1)
 endfunction
 
 function! <SID>keypressed(key)
