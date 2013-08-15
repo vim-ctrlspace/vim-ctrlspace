@@ -1,0 +1,54 @@
+*tabb.txt*           For Vim version 7.4         Last change: 2013-04-21
+*tabb*
+
+
+
+
+
+
+                                Vim-Tabb 3.0.7~
+
+                              A tab buffers tool
+
+
+
+
+
+
+Copyright (c) 2013 Szymon Wrozynski
+
+==============================================================================
+Table of Contents
+
+    1. About......................................................|tabb-about|
+    2. Usage......................................................|tabb-usage|
+    3. Keys........................................................|tabb-keys|
+    4. Configuration......................................|tabb-configuration|
+    5. Author and License................................|tabb-author-license|
+
+------------------------------------------------------------------------------
+1. About                                                          *tabb-about*
+
+------------------------------------------------------------------------------
+2. Usage                                                          *tabb-usage*
+
+------------------------------------------------------------------------------
+2. Keys                                                            *tabb-keys*
+
+------------------------------------------------------------------------------
+3. Configuration                                          *tabb-configuration*
+
+------------------------------------------------------------------------------
+4. Author and License                                    *tabb-author-license*
+
+Tabb has been written by Szymon Wrozynski and Contributors
+(https://github.com/szw/vim-tabb/commits/master). It is licensed
+under the same terms as Vim itself. For more info see |license|.
+
+It is based on the BufferList plugin by Robert Lillack
+(https://github.com/roblillack/vim-bufferlist). Moreover some concepts of and
+inspiration has been taken from Vim-Tabber (https://github.com/fweep/vim-tabber)
+by Jim Steward and Tabline (https://github.com/mkitt/tabline.vim) by Matthew
+Kitt.
+
+vim:tw=78:ts=8:ft=help:norl:
