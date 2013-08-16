@@ -557,10 +557,10 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match BufferNormal /  .*/
-    syn match BufferSelected /> .*/hs=s+1
-    hi def BufferNormal ctermfg=black ctermbg=white
-    hi def BufferSelected ctermfg=white ctermbg=black
+    syn match TabbBufferNormal /  .*/
+    syn match TabbBufferSelected /> .*/hs=s+1
+    hi def TabbBufferNormal ctermfg=black ctermbg=white
+    hi def TabbBufferSelected ctermfg=white ctermbg=black
   endif
 
   " set up the keymap
