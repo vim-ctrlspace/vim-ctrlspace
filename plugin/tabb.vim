@@ -217,7 +217,7 @@ function! <SID>tabb_toggle(internal)
       continue
     endif
 
-    let bufname = bufname(i)
+    let bufname = fnamemodify(bufname(i), ":.")
 
     if g:tabb_show_unnamed && !strlen(bufname)
       if !((g:tabb_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
