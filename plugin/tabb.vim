@@ -514,7 +514,7 @@ function! <SID>set_up_buffer()
 
   if has('statusline')
     if s:tab_toggle
-      let &l:statusline = "[∙]"
+      let &l:statusline = "[⊙]"
     else
       let &l:statusline = "[∷]"
     endif
