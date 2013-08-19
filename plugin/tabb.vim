@@ -513,32 +513,35 @@ function! <SID>set_up_buffer()
   setlocal nonumber
 
   if has('statusline')
+    hi default link User1 LineNr
+
+    let &l:statusline = "%1* т∧вв  %*"
     if s:tab_toggle
-      let &l:statusline = "[⊙]"
+      let &l:statusline .= "  ⊙"
     else
-      let &l:statusline = "[∷]"
+      let &l:statusline .= "  ∷"
     endif
 
     if exists("t:sort_order")
       if t:sort_order == 1
-        let &l:statusline .= "  [₁²₃]"
+        let &l:statusline .= "  ₁²₃"
       elseif t:sort_order == 2
-        let &l:statusline .= "  [∧вс]"
+        let &l:statusline .= "  ∧вс"
       endif
     endif
 
     if s:preview_mode
-      let &l:statusline .= "  [⌕]"
+      let &l:statusline .= "  ⌕"
     endif
 
     if s:searchmode || !empty(s:search_letters)
-      let &l:statusline .=  "  →[" . join(s:search_letters, "")
+      let &l:statusline .=  "  ›" . join(s:search_letters, "")
 
       if s:searchmode
         let &l:statusline .= "_"
       endif
 
-      let &l:statusline .= "]←"
+      let &l:statusline .= "‹"
     endif
   endif
 
