@@ -244,11 +244,6 @@ function! <SID>load_session(bang)
     let tab_label = tab_data[1]
     let is_current = str2nr(tab_data[2])
     let files = split(tab_data[3], "|")
-    if !empty(files)
-      let visibles = split(tab_data[4], "|")
-    else
-      let visibles = []
-    endif
 
     if create_new_tab
       call add(commands, "tabe")
@@ -260,12 +255,16 @@ function! <SID>load_session(bang)
       call add(commands, "e " . fname)
     endfor
 
-    if !empty(visibles)
-      call add(commands, "e " . files[str2nr(visibles[0])])
+    if len(tab_data) > 4
+      let visibles = split(tab_data[4], "|")
 
-      for visible_index in visibles[1:-1]
-        call add(commands, "vs " . files[str2nr(visible_index)])
-      endfor
+      if !empty(visibles)
+        call add(commands, "e " . files[str2nr(visibles[0])])
+
+        for visible_index in visibles[1:-1]
+          call add(commands, "vs " . files[str2nr(visible_index)])
+        endfor
+      endif
     endif
 
     if is_current
