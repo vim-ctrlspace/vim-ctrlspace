@@ -1,6 +1,6 @@
 " Vim-Tabb - Tab buffers tool
 " Maintainer:   Szymon Wrozynski
-" Version:      3.0.7
+" Version:      3.0.8
 "
 " Installation:
 " Place in ~/.vim/plugin/tabb.vim or in case of Pathogen:
@@ -40,9 +40,12 @@ call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
+call <SID>define_config_variable("session_file", [".git/tabb_session", ".svn/tabb_session", "CVS/tabb_session", "tabb_session"])
 
 command! -nargs=0 -range Tabb :call <SID>tabb_toggle(0)
 command! -nargs=0 -range TabbLabel :call <SID>new_tab_label()
+command! -nargs=0 -range TabbSessionSave :call <SID>save_session()
+command! -nargs=0 -range -bang TabbSessionLoad :call <SID>load_session(<bang>0)
 
 if g:tabb_enable_tabline
   set tabline=%!TabbTabLine()
@@ -165,6 +168,123 @@ function! <SID>tab_contains_modified_buffers(tabnr)
     endif
   endfor
   return 0
+endfunction
+
+function! <SID>session_file()
+  for candidate in g:tabb_session_file
+    if isdirectory(fnamemodify(candidate, ":h:t"))
+      return candidate
+    endif
+  endfor
+
+  return g:tabb_session_file[-1]
+endfunction
+
+function! <SID>save_session()
+  let filename = <SID>session_file()
+  let last_tab = tabpagenr("$")
+
+  let lines = []
+
+  for t in range(1, last_tab)
+    let line = [t, gettabvar(t, "tabb_label"), tabpagenr() == t]
+
+    let tabb_list = TabbList(t)
+
+    let bufs = []
+    let visibles = []
+
+    let visible_buffers = tabpagebuflist(t)
+
+    let tabb_list_index = -1
+
+    for [nr, bname] in items(tabb_list)
+      let tabb_list_index += 1
+      let bufname = fnamemodify(bname, ":.")
+      let nr = str2nr(nr)
+
+      if !filereadable(bufname)
+        continue
+      endif
+
+      if index(visible_buffers, nr) != -1
+        call add(visibles, tabb_list_index)
+      endif
+
+      call add(bufs, bufname)
+    endfor
+
+    call add(line, join(bufs, "|"))
+    call add(line, join(visibles, "|"))
+    call add(lines, join(line, ","))
+  endfor
+
+  call writefile(lines, filename)
+
+  echo "Tabb: Session saved to " . filename
+endfunction
+
+function! <SID>load_session(bang)
+  let filename = <SID>session_file()
+
+  if !filereadable(filename)
+    echo "Tabb: Unable to find session file: " . filename
+    return
+  endif
+
+  let lines = readfile(filename)
+
+  let commands = []
+
+  let create_new_tab = !a:bang
+
+  for line in lines
+    let tab_data = split(line, ",")
+    let tabnr = tab_data[0]
+    let tab_label = tab_data[1]
+    let is_current = str2nr(tab_data[2])
+    let files = split(tab_data[3], "|")
+    if !empty(files)
+      let visibles = split(tab_data[4], "|")
+    else
+      let visibles = []
+    endif
+
+    if create_new_tab
+      call add(commands, "tabe")
+    else
+      let create_new_tab = 1 " we want omit only first tab creation if a:bang == 1
+    endif
+
+    for fname in files
+      call add(commands, "e " . fname)
+    endfor
+
+    if !empty(visibles)
+      call add(commands, "e " . files[str2nr(visibles[0])])
+
+      for visible_index in visibles[1:-1]
+        call add(commands, "vs " . files[str2nr(visible_index)])
+      endfor
+    endif
+
+    if is_current
+      call add(commands, "let tabb_session_current_tab = tabpagenr()")
+    endif
+
+    if !empty(tab_label)
+      call add(commands, "let t:tabb_label = '" . tab_label . "'")
+    endif
+  endfor
+
+  call add(commands, "exe 'normal! ' . tabb_session_current_tab . 'gt'")
+  call add(commands, "redraw!")
+
+  for c in commands
+    silent! exe c
+  endfor
+
+  echo "Tabb: Session loaded from " . filename
 endfunction
 
 " toggled the buffer list on/off
@@ -498,6 +618,15 @@ function! <SID>keypressed(key)
       call <SID>detach_tabb_buffer()
     elseif a:key ==# "F"
       call <SID>delete_foreign_buffers()
+    elseif a:key ==# "S"
+      call <SID>kill(0, 1)
+      call <SID>save_session()
+    elseif a:key ==# "L"
+      call <SID>kill(0, 1)
+      call <SID>load_session(1)
+    elseif a:key ==# "l"
+      call <SID>kill(0, 1)
+      call <SID>load_session(0)
     endif
   endif
 endfunction

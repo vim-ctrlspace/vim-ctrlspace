@@ -1,4 +1,4 @@
-*tabb.txt*                For Vim version 7.4           Last change: 2013-08-15
+*tabb.txt*                For Vim version 7.4           Last change: 2013-08-23
 *tabb*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                                 Vim-Tabb 3.0.7~
+                                 Vim-Tabb 3.0.8~
 
                                A tab buffers tool
 
