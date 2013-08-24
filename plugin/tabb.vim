@@ -232,6 +232,8 @@ function! <SID>load_session(bang)
     return
   endif
 
+  echo "Tabb: Loading session from file: " . filename . ". Please wait…"
+
   let lines = readfile(filename)
 
   let commands = []
