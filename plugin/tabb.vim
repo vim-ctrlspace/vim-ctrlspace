@@ -228,7 +228,7 @@ function! <SID>load_session(bang)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo "Tabb: Unable to load. No session found."
+    echo "Tabb: No session to load."
     return
   endif
 
