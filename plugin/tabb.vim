@@ -221,18 +221,18 @@ function! <SID>save_session()
 
   call writefile(lines, filename)
 
-  echo "Tabb: Session saved to " . filename
+  echo "Tabb: The session been saved (" . filename . ")."
 endfunction
 
 function! <SID>load_session(bang)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo "Tabb: Unable to find session file: " . filename
+    echo "Tabb: Unable to load. No session found."
     return
   endif
 
-  echo "Tabb: Loading session from file: " . filename . ". Please wait..."
+  echo "Tabb: Loading a session..."
 
   let lines = readfile(filename)
 
@@ -285,7 +285,7 @@ function! <SID>load_session(bang)
     silent! exe c
   endfor
 
-  echo "Tabb: Session loaded from " . filename
+  echo "Tabb: The session has been loaded (" . filename . ")."
 endfunction
 
 " toggled the buffer list on/off
