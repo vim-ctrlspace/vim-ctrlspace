@@ -324,8 +324,8 @@ function! <SID>tabb_toggle(internal)
   let buflist = []
 
   " create the buffer first & set it up
-  exec 'silent! new __TABB__'
-  silent! exe "wincmd J"
+  silent! exe "noautocmd botright pedit __TABB__"
+  silent! exe "noautocmd wincmd P"
   silent! exe "resize" g:tabb_height
   call <SID>set_up_buffer()
 
