@@ -260,6 +260,8 @@ function! <SID>load_session(bang)
 
     for fname in files
       call add(commands, "e " . fname)
+      " jump to the last edited line
+      call add(commands, "if line(\"'\\\"\") > 0 | if line(\"'\\\"\") <= line('$') | exe(\"norm '\\\"\") | else | exe 'norm $' | endif | endif")
     endfor
 
     if len(tab_data) > 4
