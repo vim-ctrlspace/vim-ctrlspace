@@ -6,7 +6,7 @@
 
 
 
-                                 Vim-Tabb 3.0.8~
+                                 Vim-Tabb 3.0.9~
 
                                A tab buffers tool
 

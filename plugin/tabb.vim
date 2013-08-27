@@ -1,6 +1,6 @@
 " Vim-Tabb - Tab buffers tool
 " Maintainer:   Szymon Wrozynski
-" Version:      3.0.8
+" Version:      3.0.9
 "
 " Installation:
 " Place in ~/.vim/plugin/tabb.vim or in case of Pathogen:
@@ -40,7 +40,8 @@ call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/tabb_session", ".svn/tabb_session", "CVS/tabb_session", "tabb_session"])
+call <SID>define_config_variable("session_file", [".git/.tabb_session", ".svn/.tabb_session", "CVS/.tabb_session", ".tabb_session"])
+call <SID>define_config_variable("unicode_font", 1)
 
 command! -nargs=0 -range Tabb :call <SID>tabb_toggle(0)
 command! -nargs=0 -range TabbLabel :call <SID>new_tab_label()
@@ -113,12 +114,16 @@ function! TabbTabLine()
     let bufs_number_to_show = ""
 
     if bufs_number > 1
-      let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
-      let number_str = string(bufs_number)
+      if g:tabb_unicode_font
+        let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+        let number_str = string(bufs_number)
 
-      for i in range(0, len(number_str) - 1)
-        let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
-      endfor
+        for i in range(0, len(number_str) - 1)
+          let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
+        endfor
+      else
+        let bufs_number_to_show = ":" . bufs_number
+      endif
     endif
 
     let label = gettabvar(t, "tabb_label")
@@ -455,9 +460,9 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ' '
 
   if s:preview_mode && (s:preview_mode_orginal_buffer == a:bufnum)
-    let indicators .= "☆"
+    let indicators .= g:tabb_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
-    let indicators .= "★"
+    let indicators .= g:tabb_unicode_font ? "★" : "*"
   endif
 
   if getbufvar(a:bufnum, "&modified")
@@ -645,33 +650,41 @@ function! <SID>set_up_buffer()
   if has('statusline')
     hi default link User1 LineNr
 
-    let &l:statusline = "%1* т∧вв  %*"
-    if s:tab_toggle
-      let &l:statusline .= "  ⊙"
+    if g:tabb_unicode_font
+      let symbols = { "tabb": "т∧вв", "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
     else
-      let &l:statusline .= "  ∷"
+      let symbols = { "tabb": "TABB", "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": ">", "s_right": "<" }
+    endif
+
+    let &l:statusline = "%1* " . symbols.tabb . "  %*  "
+    if s:tab_toggle
+      let &l:statusline .= symbols.tab
+    else
+      let &l:statusline .= symbols.all
     endif
 
     if exists("t:sort_order")
+      let &l:statusline .= "  "
+
       if t:sort_order == 1
-        let &l:statusline .= "  ₁²₃"
+        let &l:statusline .= symbols.ord
       elseif t:sort_order == 2
-        let &l:statusline .= "  ∧вс"
+        let &l:statusline .= symbols.abc
       endif
     endif
 
     if s:preview_mode
-      let &l:statusline .= "  ⌕"
+      let &l:statusline .= "  " . symbols.prv
     endif
 
     if s:searchmode || !empty(s:search_letters)
-      let &l:statusline .=  "  ›" . join(s:search_letters, "")
+      let &l:statusline .=  "  " . symbols.s_left . join(s:search_letters, "")
 
       if s:searchmode
         let &l:statusline .= "_"
       endif
 
-      let &l:statusline .= "‹"
+      let &l:statusline .= symbols.s_right
     endif
   endif
 
