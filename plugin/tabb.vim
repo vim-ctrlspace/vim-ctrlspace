@@ -653,7 +653,7 @@ function! <SID>set_up_buffer()
     if g:tabb_unicode_font
       let symbols = { "tabb": "т∧вв", "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
     else
-      let symbols = { "tabb": "TABB", "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": ">", "s_right": "<" }
+      let symbols = { "tabb": "TABB", "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
     endif
 
     let &l:statusline = "%1* " . symbols.tabb . "  %*  "
