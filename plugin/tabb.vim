@@ -40,7 +40,7 @@ call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/.tabb_session", ".svn/.tabb_session", "CVS/.tabb_session", ".tabb_session"])
+call <SID>define_config_variable("session_file", [".git/tabb_session", ".svn/tabb_session", "CVS/tabb_session", ".tabb_session"])
 call <SID>define_config_variable("unicode_font", 1)
 
 command! -nargs=0 -range Tabb :call <SID>tabb_toggle(0)
