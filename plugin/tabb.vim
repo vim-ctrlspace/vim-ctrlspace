@@ -600,7 +600,7 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "CR")
       call <SID>switch_searchmode(0)
-    elseif strlen(a:key) == 1
+    elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     endif
   else
