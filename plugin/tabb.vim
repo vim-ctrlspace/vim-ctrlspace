@@ -359,8 +359,18 @@ function! <SID>tabb_toggle(internal)
         let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
       endif
 
-      if !empty(s:search_letters) && !(bufname =~? "\\m" . join(s:search_letters, ".\\{-}"))
-        continue
+      let search_noise = 0
+
+      if !empty(s:search_letters)
+        let matched = matchlist(bufname, "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
+
+        if empty(matched)
+          continue
+        elseif len(s:search_letters) > 1
+          for noise_group in matched[1:- 1]
+            let search_noise += len(noise_group)
+          endfor
+        endif
       endif
 
       let bufname = <SID>decorate_with_indicators(bufname, i)
@@ -373,7 +383,7 @@ function! <SID>tabb_toggle(internal)
         let bufname .= ' '
       endwhile
       " add the name to the list
-      call add(buflist, { "text": '  ' . bufname . "\n", "number": i })
+      call add(buflist, { "text": '  ' . bufname . "\n", "number": i, "search_noise": search_noise })
     endif
   endfor
 
@@ -757,6 +767,16 @@ function! <SID>compare_bufentries(a, b)
   endif
 endfunction
 
+function! <SID>compare_bufentries_with_search_noise(a, b)
+  if a:a.search_noise < a:b.search_noise
+    return 1
+  elseif a:a.search_noise > a:b.search_noise
+    return -1
+  else
+    return 0
+  endif
+endfunction
+
 function! <SID>SID()
   let fullname = expand("<sfile>")
   return matchstr(fullname, '<SNR>\d\+_')
@@ -765,7 +785,9 @@ endfunction
 function! <SID>display_list(displayedbufs, buflist, width)
   setlocal modifiable
   if a:displayedbufs > 0
-    if exists("t:sort_order")
+    if !empty(s:search_letters)
+      call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
+    elseif exists("t:sort_order")
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
     endif
     " input the buffer list, delete the trailing newline, & fill with blank lines
