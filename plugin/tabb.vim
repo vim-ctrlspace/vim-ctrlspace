@@ -251,6 +251,28 @@ function! <SID>load_session(bang)
     let tab_label = tab_data[1]
     let is_current = str2nr(tab_data[2])
     let files = split(tab_data[3], "|")
+    let visibles = (len(tab_data) > 4) ? split(tab_data[4], "|") : []
+
+    let readable_files = []
+    let visible_files = []
+
+    let index = 0
+
+    for fname in files
+      if filereadable(fname)
+        call add(readable_files, fname)
+
+        if index(visibles, string(index)) > -1
+          call add(visible_files, fname)
+        endif
+      endif
+
+      let index += 1
+    endfor
+
+    if empty(readable_files)
+      continue
+    endif
 
     if create_new_tab
       call add(commands, "tabe")
@@ -258,22 +280,18 @@ function! <SID>load_session(bang)
       let create_new_tab = 1 " we want omit only first tab creation if a:bang == 1
     endif
 
-    for fname in files
+    for fname in readable_files
       call add(commands, "e " . fname)
       " jump to the last edited line
       call add(commands, "if line(\"'\\\"\") > 0 | if line(\"'\\\"\") <= line('$') | exe(\"norm '\\\"\") | else | exe 'norm $' | endif | endif")
     endfor
 
-    if len(tab_data) > 4
-      let visibles = split(tab_data[4], "|")
+    if !empty(visible_files)
+      call add(commands, "e " . visible_files[0])
 
-      if !empty(visibles)
-        call add(commands, "e " . files[str2nr(visibles[0])])
-
-        for visible_index in visibles[1:-1]
-          call add(commands, "vs " . files[str2nr(visible_index)])
-        endfor
-      endif
+      for visible_fname in visible_files[1:-1]
+        call add(commands, "vs " . visible_fname)
+      endfor
     endif
 
     if is_current
