@@ -432,7 +432,7 @@ function! <SID>tabb_toggle(internal)
   let b:jumplines = <SID>create_jumplines(buflist, activebufline)
 
   " go to the correct line
-  call <SID>move(activebufline)
+  call <SID>move(!empty(s:search_letters) ? line("$") : activebufline)
   normal! zb
 endfunction
 
@@ -782,9 +782,9 @@ function! <SID>compare_bufentries(a, b)
     endif
     return a:a.number - a:b.number
   elseif t:sort_order == 2
-    if (a:a.text < a:b.text)
+    if a:a.text < a:b.text
       return -1
-    elseif (a:a.text > a:b.text)
+    elseif a:a.text > a:b.text
       return 1
     else
       return 0
@@ -797,6 +797,14 @@ function! <SID>compare_bufentries_with_search_noise(a, b)
     return 1
   elseif a:a.search_noise > a:b.search_noise
     return -1
+  elseif len(a:a.text) < len(a:b.text)
+    return 1
+  elseif len(a:a.text) > len(a:b.text)
+    return -1
+  elseif a:a.text < a:b.text
+    return -1
+  elseif a:a.text > a:b.text
+    return 1
   else
     return 0
   endif
