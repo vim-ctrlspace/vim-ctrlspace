@@ -372,14 +372,9 @@ function! <SID>tabb_toggle(internal)
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      " adapt width and/or buffer name
-      if strlen(bufname) + 6 > width
-        let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
-      endif
-
       let search_noise = 0
-
       let search_letters_count = len(s:search_letters)
+
       if search_letters_count == 1
         let search_noise = match(bufname, "\\m\\c" . s:search_letters[0])
 
@@ -394,8 +389,14 @@ function! <SID>tabb_toggle(internal)
         endif
 
         for noise_group in matched[1:-1]
-          let search_noise += len(noise_group)
+          let search_noise += strlen(noise_group)
         endfor
+      endif
+
+      let raw_name = bufname
+
+      if strlen(bufname) + 6 > width
+        let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
       endif
 
       let bufname = <SID>decorate_with_indicators(bufname, i)
@@ -408,7 +409,7 @@ function! <SID>tabb_toggle(internal)
         let bufname .= ' '
       endwhile
       " add the name to the list
-      call add(buflist, { "text": '  ' . bufname . "\n", "number": i, "search_noise": search_noise })
+      call add(buflist, { "text": '  ' . bufname . "\n", "number": i, "raw": raw_name, "search_noise": search_noise })
     endif
   endfor
 
@@ -782,9 +783,9 @@ function! <SID>compare_bufentries(a, b)
     endif
     return a:a.number - a:b.number
   elseif t:sort_order == 2
-    if a:a.text < a:b.text
+    if a:a.raw < a:b.raw
       return -1
-    elseif a:a.text > a:b.text
+    elseif a:a.raw > a:b.raw
       return 1
     else
       return 0
@@ -797,13 +798,13 @@ function! <SID>compare_bufentries_with_search_noise(a, b)
     return 1
   elseif a:a.search_noise > a:b.search_noise
     return -1
-  elseif len(a:a.text) < len(a:b.text)
+  elseif strlen(a:a.raw) < strlen(a:b.raw)
     return 1
-  elseif len(a:a.text) > len(a:b.text)
+  elseif strlen(a:a.raw) > strlen(a:b.raw)
     return -1
-  elseif a:a.text < a:b.text
+  elseif a:a.raw < a:b.raw
     return -1
-  elseif a:a.text > a:b.text
+  elseif a:a.raw > a:b.raw
     return 1
   else
     return 0
