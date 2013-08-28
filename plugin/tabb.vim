@@ -594,7 +594,7 @@ function! <SID>keypressed(key)
       call <SID>load_buffer("sp")
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
-    elseif a:key ==# "o"
+    elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_order()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
@@ -675,7 +675,7 @@ function! <SID>set_up_buffer()
       let &l:statusline .= symbols.all
     endif
 
-    if exists("t:sort_order")
+    if exists("t:sort_order") && empty(s:search_letters) && !s:searchmode
       let &l:statusline .= "  "
 
       if t:sort_order == 1
