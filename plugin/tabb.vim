@@ -361,16 +361,23 @@ function! <SID>tabb_toggle(internal)
 
       let search_noise = 0
 
-      if !empty(s:search_letters)
+      let search_letters_count = len(s:search_letters)
+      if search_letters_count == 1
+        let search_noise = match(bufname, "\\m\\c" . s:search_letters[0])
+
+        if search_noise == -1
+          continue
+        endif
+      elseif search_letters_count > 1
         let matched = matchlist(bufname, "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
 
         if empty(matched)
           continue
-        elseif len(s:search_letters) > 1
-          for noise_group in matched[1:- 1]
-            let search_noise += len(noise_group)
-          endfor
         endif
+
+        for noise_group in matched[1:-1]
+          let search_noise += len(noise_group)
+        endfor
       endif
 
       let bufname = <SID>decorate_with_indicators(bufname, i)
