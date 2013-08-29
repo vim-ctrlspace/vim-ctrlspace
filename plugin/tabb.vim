@@ -34,7 +34,7 @@ call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 25)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
-call <SID>define_config_variable("default_mapping_key", "<F2>")
+call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
@@ -54,15 +54,19 @@ endif
 
 if g:tabb_set_default_mapping
   if !empty(g:tabb_default_mapping_key)
-    silent! exe 'nnoremap <silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
-    silent! exe 'vnoremap <silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
-    silent! exe 'inoremap <silent>' . g:tabb_default_mapping_key . ' <C-[>:Tabb<CR>'
+    if g:tabb_default_mapping_key ==? "<C-Space>" && !has("gui_running")
+      let g:tabb_default_mapping_key = "<Nul>"
+    endif
+
+    silent! exe 'nnoremap <unique><silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
+    silent! exe 'vnoremap <unique><silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
+    silent! exe 'inoremap <unique><silent>' . g:tabb_default_mapping_key . ' <C-[>:Tabb<CR>'
   endif
 
   if !empty(g:tabb_default_label_mapping_key)
-    silent! exe 'nnoremap <silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>'
-    silent! exe 'vnoremap <silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>gv'
-    silent! exe 'inoremap <silent>' . g:tabb_default_label_mapping_key . ' <C-o>:TabbLabel<CR>'
+    silent! exe 'nnoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>'
+    silent! exe 'vnoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>gv'
+    silent! exe 'inoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' <C-o>:TabbLabel<CR>'
   endif
 endif
 
