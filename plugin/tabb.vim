@@ -52,22 +52,20 @@ if g:tabb_enable_tabline
   set tabline=%!TabbTabLine()
 endif
 
-if g:tabb_set_default_mapping
-  if !empty(g:tabb_default_mapping_key)
-    if g:tabb_default_mapping_key ==? "<C-Space>" && !has("gui_running")
-      let g:tabb_default_mapping_key = "<Nul>"
+function! <SID>set_default_mapping(key, action)
+  let key = a:key
+  if !empty(key)
+    if key ==? "<C-Space>" && !has("gui_running")
+      let key = "<Nul>"
     endif
 
-    silent! exe 'nnoremap <unique><silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
-    silent! exe 'vnoremap <unique><silent>' . g:tabb_default_mapping_key . ' :Tabb<CR>'
-    silent! exe 'inoremap <unique><silent>' . g:tabb_default_mapping_key . ' <C-[>:Tabb<CR>'
+    silent! exe 'nnoremap <unique><silent>' . key . ' ' . a:action
   endif
+endfunction
 
-  if !empty(g:tabb_default_label_mapping_key)
-    silent! exe 'nnoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>'
-    silent! exe 'vnoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' :TabbLabel<CR>gv'
-    silent! exe 'inoremap <unique><silent>' . g:tabb_default_label_mapping_key . ' <C-o>:TabbLabel<CR>'
-  endif
+if g:tabb_set_default_mapping
+  call <SID>set_default_mapping(g:tabb_default_mapping_key, ":Tabb<CR>")
+  call <SID>set_default_mapping(g:tabb_default_label_mapping_key, ":TabbLabel<CR>")
 endif
 
 let s:preview_mode = 0
