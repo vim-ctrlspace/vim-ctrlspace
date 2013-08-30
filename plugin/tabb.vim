@@ -317,20 +317,21 @@ endfunction
 
 function! <SID>find_shortest_non_greedy_match(text, query)
   let pos = 0
-  let max_pos = -1
   let new_pos = 0
+  let matches = {}
 
   while new_pos != -1
     let new_pos = match(a:text, a:query, pos)
 
-    if new_pos > max_pos
-      let max_pos = new_pos
+    if new_pos > -1
+      let matches[strlen(matchstr(a:text, a:query, pos))] = new_pos
     endif
 
     let pos = (new_pos > pos) ? new_pos : pos + 1
   endwhile
 
-  return max_pos
+  let shortest_pos = empty(matches) ? -1 : matches[string(min(keys(matches)))]
+  return shortest_pos
 endfunction
 
 " toggled the buffer list on/off
