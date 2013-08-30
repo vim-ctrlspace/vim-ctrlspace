@@ -327,7 +327,7 @@ function! <SID>find_lowest_search_noise(bufname)
   let pos = 0
   let new_pos = 0
   let shortest_matched = []
-  let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
+  let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)")
 
   while new_pos != -1
     let new_pos = match(a:bufname, query, pos)
