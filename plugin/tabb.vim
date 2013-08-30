@@ -315,16 +315,25 @@ function! <SID>load_session(bang)
   echo "Tabb: The session has been loaded (" . filename . ")."
 endfunction
 
-function! <SID>find_lowest_search_noise(text, query)
+function! <SID>find_lowest_search_noise(bufname)
+  let search_letters_count = len(s:search_letters)
+
+  if search_letters_count == 0
+    return 0
+  elseif search_letters_count == 1
+    return match(a:bufname, "\\m\\c" . s:search_letters[0])
+  endif
+
   let pos = 0
   let new_pos = 0
   let shortest_matched = []
+  let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
 
   while new_pos != -1
-    let new_pos = match(a:text, a:query, pos)
+    let new_pos = match(a:bufname, query, pos)
 
     if new_pos > -1
-      let matched = matchlist(a:text, a:query, pos)
+      let matched = matchlist(a:bufname, query, pos)
 
       if empty(shortest_matched) || (strlen(shortest_matched[0]) > strlen(matched[0]))
         let shortest_matched = matched
@@ -406,15 +415,7 @@ function! <SID>tabb_toggle(internal)
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      let search_letters_count = len(s:search_letters)
-
-      if search_letters_count == 0
-        let search_noise = 0
-      elseif search_letters_count == 1
-        let search_noise = match(bufname, "\\m\\c" . s:search_letters[0])
-      elseif search_letters_count > 1
-        let search_noise = <SID>find_lowest_search_noise(bufname, "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
-      endif
+      let search_noise = <SID>find_lowest_search_noise(bufname)
 
       if search_noise == -1
         continue
