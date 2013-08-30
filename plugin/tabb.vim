@@ -315,23 +315,36 @@ function! <SID>load_session(bang)
   echo "Tabb: The session has been loaded (" . filename . ")."
 endfunction
 
-function! <SID>find_shortest_non_greedy_match(text, query)
+function! <SID>find_lowest_search_noise(text, query)
   let pos = 0
   let new_pos = 0
-  let matches = {}
+  let shortest_matched = []
 
   while new_pos != -1
     let new_pos = match(a:text, a:query, pos)
 
     if new_pos > -1
-      let matches[strlen(matchstr(a:text, a:query, pos))] = new_pos
-    endif
+      let matched = matchlist(a:text, a:query, pos)
 
-    let pos = (new_pos > pos) ? new_pos : pos + 1
+      if empty(shortest_matched) || (strlen(shortest_matched[0]) > strlen(matched[0]))
+        let shortest_matched = matched
+      endif
+
+      let pos = (new_pos > pos) ? new_pos : pos + 1
+    endif
   endwhile
 
-  let shortest_pos = empty(matches) ? -1 : matches[string(min(keys(matches)))]
-  return shortest_pos
+  if empty(shortest_matched)
+    return -1
+  endif
+
+  let noise = 0
+
+  for noise_group in shortest_matched[1:-1]
+    let noise += strlen(noise_group)
+  endfor
+
+  return noise
 endfunction
 
 " toggled the buffer list on/off
@@ -393,28 +406,18 @@ function! <SID>tabb_toggle(internal)
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      let search_noise = 0
       let search_letters_count = len(s:search_letters)
 
-      if search_letters_count == 1
+      if search_letters_count == 0
+        let search_noise = 0
+      elseif search_letters_count == 1
         let search_noise = match(bufname, "\\m\\c" . s:search_letters[0])
-
-        if search_noise == -1
-          continue
-        endif
       elseif search_letters_count > 1
-        let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)")
-        let shortest_substr_start = <SID>find_shortest_non_greedy_match(bufname, query)
+        let search_noise = <SID>find_lowest_search_noise(bufname, "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
+      endif
 
-        if shortest_substr_start == -1
-          continue
-        endif
-
-        let matched = matchlist(bufname[str2nr(shortest_substr_start):-1], query)
-
-        for noise_group in matched[1:-1]
-          let search_noise += strlen(noise_group)
-        endfor
+      if search_noise == -1
+        continue
       endif
 
       let raw_name = bufname
