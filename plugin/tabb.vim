@@ -315,6 +315,24 @@ function! <SID>load_session(bang)
   echo "Tabb: The session has been loaded (" . filename . ")."
 endfunction
 
+function! <SID>find_shortest_non_greedy_match(text, query)
+  let pos = 0
+  let max_pos = -1
+  let new_pos = 0
+
+  while new_pos != -1
+    let new_pos = match(a:text, a:query, pos)
+
+    if new_pos > max_pos
+      let max_pos = new_pos
+    endif
+
+    let pos = (new_pos > pos) ? new_pos : pos + 1
+  endwhile
+
+  return max_pos
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>tabb_toggle(internal)
   if !a:internal
@@ -384,11 +402,14 @@ function! <SID>tabb_toggle(internal)
           continue
         endif
       elseif search_letters_count > 1
-        let matched = matchlist(bufname, "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)"))
+        let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)")
+        let shortest_substr_start = <SID>find_shortest_non_greedy_match(bufname, query)
 
-        if empty(matched)
+        if shortest_substr_start == -1
           continue
         endif
+
+        let matched = matchlist(bufname[str2nr(shortest_substr_start):-1], query)
 
         for noise_group in matched[1:-1]
           let search_noise += strlen(noise_group)
