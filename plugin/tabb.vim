@@ -103,7 +103,7 @@ function! TabbList(tabnr)
   return buffer_list
 endfunction
 
-function! TabbStatusLine()
+function! TabbStatusLineSegment()
   if g:tabb_unicode_font
     let symbols = { "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
   else
@@ -754,7 +754,7 @@ function! <SID>set_up_buffer()
   if has('statusline')
     hi default link User1 LineNr
     let tabb_name = g:tabb_unicode_font ? "т∧вв" : "TABB"
-    let &l:statusline = "%1* " . tabb_name . "  %*  " . TabbStatusLine()
+    let &l:statusline = "%1* " . tabb_name . "  %*  " . TabbStatusLineSegment()
   endif
 
   if &timeout
