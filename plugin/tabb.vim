@@ -286,6 +286,7 @@ function! <SID>load_session(bang)
       call add(commands, "e " . fname)
       " jump to the last edited line
       call add(commands, "if line(\"'\\\"\") > 0 | if line(\"'\\\"\") <= line('$') | exe(\"norm '\\\"\") | else | exe 'norm $' | endif | endif")
+      call add(commands, "normal! zbze")
     endfor
 
     if !empty(visible_files)
