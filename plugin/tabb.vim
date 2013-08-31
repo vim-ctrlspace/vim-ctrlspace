@@ -400,6 +400,7 @@ function! <SID>tabb_toggle(internal)
     let s:tab_toggle = 1
     let s:nop_mode = 0
     let s:search_letters = []
+    let s:new_search_performed = 0
     let s:search_mode = 0
     if !exists("t:sort_order")
       let t:sort_order = g:tabb_default_sort_order
@@ -499,7 +500,14 @@ function! <SID>tabb_toggle(internal)
   let b:jumplines = <SID>create_jumplines(buflist, activebufline)
 
   " go to the correct line
-  call <SID>move(!empty(s:search_letters) ? line("$") : activebufline)
+  if !empty(s:search_letters) && s:new_search_performed
+    call<SID>move(line("$"))
+    if !s:search_mode
+      let s:new_search_performed = 0
+    endif
+  else
+    call <SID>move(activebufline)
+  endif
   normal! zb
 endfunction
 
@@ -540,12 +548,14 @@ endfunction
 
 function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
+  let s:new_search_performed = 1
   call <SID>kill(0, 0)
   call <SID>tabb_toggle(1)
 endfunction
 
 function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
+  let s:new_search_performed = 1
   call <SID>kill(0, 0)
   call <SID>tabb_toggle(1)
 endfunction
@@ -1188,6 +1198,11 @@ endfunction
 
 function! <SID>toggle_tab()
   let s:tab_toggle = !s:tab_toggle
+
+  if !empty(s:search_letters)
+    let s:new_search_performed = 1
+  endif
+
   call <SID>kill(0, 0)
   call <SID>tabb_toggle(1)
 endfunction
