@@ -122,10 +122,6 @@ function! TabbStatusLineSegment()
     endif
   endif
 
-  if s:preview_mode
-    let statusline .= "  " . symbols.prv
-  endif
-
   if s:search_mode || !empty(s:search_letters)
     let statusline .=  "  " . symbols.s_left . join(s:search_letters, "")
 
@@ -134,6 +130,10 @@ function! TabbStatusLineSegment()
     endif
 
     let statusline .= symbols.s_right
+  endif
+
+  if s:preview_mode
+    let statusline .= "  " . symbols.prv
   endif
 
   return statusline
