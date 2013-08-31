@@ -103,6 +103,43 @@ function! TabbList(tabnr)
   return buffer_list
 endfunction
 
+function! TabbStatusLineInfo()
+  if g:tabb_unicode_font
+    let symbols = { "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
+  else
+    let symbols = { "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
+  endif
+
+  let statusline = s:tab_toggle ? symbols.tab : symbols.all
+
+  if exists("t:sort_order") && empty(s:search_letters) && !s:search_mode
+    let statusline .= "  "
+
+    if t:sort_order == 1
+      let statusline .= symbols.ord
+    elseif t:sort_order == 2
+      let statusline .= symbols.abc
+    endif
+  endif
+
+  if s:preview_mode
+    let statusline .= "  " . symbols.prv
+  endif
+
+  if s:search_mode || !empty(s:search_letters)
+    let statusline .=  "  " . symbols.s_left . join(s:search_letters, "")
+
+    if s:search_mode
+      let statusline .= "_"
+    endif
+
+    let statusline .= symbols.s_right
+  endif
+
+  return statusline
+endfunction
+
+
 function! TabbTabLine()
   let last_tab = tabpagenr("$")
   let tabline = ''
@@ -361,9 +398,9 @@ endfunction
 function! <SID>tabb_toggle(internal)
   if !a:internal
     let s:tab_toggle = 1
-    let s:nopmode = 0
+    let s:nop_mode = 0
     let s:search_letters = []
-    let s:searchmode = 0
+    let s:search_mode = 0
     if !exists("t:sort_order")
       let t:sort_order = g:tabb_default_sort_order
     endif
@@ -494,9 +531,9 @@ function! <SID>create_jumplines(buflist, activebufline)
   return reverse(<SID>unique_list(jumplines))
 endfunction
 
-function! <SID>clear_searchmode()
+function! <SID>clear_search_mode()
   let s:search_letters = []
-  let s:searchmode = 0
+  let s:search_mode = 0
   call <SID>kill(0, 0)
   call <SID>tabb_toggle(1)
 endfunction
@@ -513,8 +550,8 @@ function! <SID>remove_search_letter()
   call <SID>tabb_toggle(1)
 endfunction
 
-function! <SID>switch_searchmode(switch)
-  let s:searchmode = a:switch
+function! <SID>switch_search_mode(switch)
+  let s:search_mode = a:switch
   call <SID>kill(0, 0)
   call <SID>tabb_toggle(1)
 endfunction
@@ -601,34 +638,34 @@ function! <SID>show_help()
 endfunction
 
 function! <SID>keypressed(key)
-  if s:nopmode
-    if (a:key ==# "a") && !s:searchmode
+  if s:nop_mode
+    if (a:key ==# "a") && !s:search_mode
       call <SID>toggle_tab()
     end
 
     if a:key ==# "BS"
-      if s:searchmode
+      if s:search_mode
         if empty(s:search_letters)
-          call <SID>clear_searchmode()
+          call <SID>clear_search_mode()
         else
           call <SID>remove_search_letter()
         endif
       elseif !empty(s:search_letters)
-        call <SID>clear_searchmode()
+        call <SID>clear_search_mode()
       endif
     endif
     return
   endif
 
-  if s:searchmode
+  if s:search_mode
     if a:key ==# "BS"
       if empty(s:search_letters)
-        call <SID>clear_searchmode()
+        call <SID>clear_search_mode()
       else
         call <SID>remove_search_letter()
       endif
     elseif (a:key ==# "/") || (a:key ==# "CR")
-      call <SID>switch_searchmode(0)
+      call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     endif
@@ -638,9 +675,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Space"
       call <SID>preview_buffer()
     elseif a:key ==# "BS"
-      call <SID>clear_searchmode()
+      call <SID>clear_search_mode()
     elseif a:key ==# "/"
-      call <SID>switch_searchmode(1)
+      call <SID>switch_search_mode(1)
     elseif a:key ==# "?"
       call <SID>show_help()
     elseif a:key ==# "v"
@@ -716,43 +753,8 @@ function! <SID>set_up_buffer()
 
   if has('statusline')
     hi default link User1 LineNr
-
-    if g:tabb_unicode_font
-      let symbols = { "tabb": "т∧вв", "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
-    else
-      let symbols = { "tabb": "TABB", "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
-    endif
-
-    let &l:statusline = "%1* " . symbols.tabb . "  %*  "
-    if s:tab_toggle
-      let &l:statusline .= symbols.tab
-    else
-      let &l:statusline .= symbols.all
-    endif
-
-    if exists("t:sort_order") && empty(s:search_letters) && !s:searchmode
-      let &l:statusline .= "  "
-
-      if t:sort_order == 1
-        let &l:statusline .= symbols.ord
-      elseif t:sort_order == 2
-        let &l:statusline .= symbols.abc
-      endif
-    endif
-
-    if s:preview_mode
-      let &l:statusline .= "  " . symbols.prv
-    endif
-
-    if s:searchmode || !empty(s:search_letters)
-      let &l:statusline .=  "  " . symbols.s_left . join(s:search_letters, "")
-
-      if s:searchmode
-        let &l:statusline .= "_"
-      endif
-
-      let &l:statusline .= symbols.s_right
-    endif
+    let tabb_name = g:tabb_unicode_font ? "т∧вв" : "TABB"
+    let &l:statusline = "%1* " . tabb_name . "  %*  " . TabbStatusLineInfo()
   endif
 
   if &timeout
@@ -869,7 +871,7 @@ function! <SID>display_list(displayedbufs, buflist, width)
       silent! put =fill
     endwhile
 
-    let s:nopmode = 0
+    let s:nop_mode = 0
   else
     let empty_list_message = "  List empty"
     let width = a:width
@@ -917,7 +919,7 @@ function! <SID>display_list(displayedbufs, buflist, width)
       endif
     endif
 
-    let s:nopmode = 1
+    let s:nop_mode = 1
   endif
   setlocal nomodifiable
 endfunction
