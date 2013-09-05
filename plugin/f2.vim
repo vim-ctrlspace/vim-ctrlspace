@@ -791,7 +791,7 @@ function! <SID>set_up_buffer()
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
   let uppercase_letters = toupper(lowercase_letters)
   let numbers = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS / ? . MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right"
+  let special_chars = "Space CR BS / ? ; : , . < > ' \" \ | + - _ = MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right"
   let key_chars = split(lowercase_letters . " " . uppercase_letters . " " . numbers . " " . special_chars, " ")
   for key_char in key_chars
     if strlen(key_char) > 1
