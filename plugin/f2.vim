@@ -1,12 +1,12 @@
-" Vim-Tabb - Tab buffers tool
+" Vim-F2 - Tab buffers tool
 " Maintainer:   Szymon Wrozynski
-" Version:      3.0.9
+" Version:      3.0.10
 "
 " Installation:
-" Place in ~/.vim/plugin/tabb.vim or in case of Pathogen:
+" Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
 "
 "     cd ~/.vim/bundle
-"     git clone https://github.com/szw/vim-tabb.git
+"     git clone https://github.com/szw/vim-f2.git
 "
 " License:
 " Copyright (c) 2013 Szymon Wrozynski <szymon@wrozynski.com>
@@ -16,17 +16,17 @@
 " Licensed under MIT License conditions.
 "
 " Usage:
-" https://github.com/szw/vim-tabb/blob/master/README.md
+" https://github.com/szw/vim-f2/blob/master/README.md
 
-if exists('g:tabb_loaded')
+if exists('g:f2_loaded')
   finish
 endif
 
-let g:tabb_loaded = 1
+let g:f2_loaded = 1
 
 function! <SID>define_config_variable(name, default_value)
-  if !exists("g:tabb_" . a:name)
-    let g:{"tabb_" . a:name} = a:default_value
+  if !exists("g:f2_" . a:name)
+    let g:{"f2_" . a:name} = a:default_value
   endif
 endfunction
 
@@ -34,22 +34,22 @@ call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 25)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
-call <SID>define_config_variable("default_mapping_key", "<TAB>")
+call <SID>define_config_variable("default_mapping_key", "<F2>")
 call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/tabb_session", ".svn/tabb_session", "CVS/tabb_session", ".tabb_session"])
+call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
 
-command! -nargs=0 -range Tabb :call <SID>tabb_toggle(0)
-command! -nargs=0 -range TabbLabel :call <SID>new_tab_label()
-command! -nargs=0 -range TabbSessionSave :call <SID>save_session()
-command! -nargs=0 -range -bang TabbSessionLoad :call <SID>load_session(<bang>0)
+command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
+command! -nargs=0 -range F2Label :call <SID>new_tab_label()
+command! -nargs=0 -range F2SessionSave :call <SID>save_session()
+command! -nargs=0 -range -bang F2SessionLoad :call <SID>load_session(<bang>0)
 
-if g:tabb_enable_tabline
-  set tabline=%!TabbTabLine()
+if g:f2_enable_tabline
+  set tabline=%!F2TabLine()
 endif
 
 function! <SID>set_default_mapping(key, action)
@@ -63,34 +63,34 @@ function! <SID>set_default_mapping(key, action)
   endif
 endfunction
 
-if g:tabb_set_default_mapping
-  call <SID>set_default_mapping(g:tabb_default_mapping_key, ":Tabb<CR>")
-  call <SID>set_default_mapping(g:tabb_default_label_mapping_key, ":TabbLabel<CR>")
+if g:f2_set_default_mapping
+  call <SID>set_default_mapping(g:f2_default_mapping_key, ":F2<CR>")
+  call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
 let s:preview_mode = 0
 
 au BufEnter * call <SID>add_tab_buffer()
 
-let s:tabb_jumps = []
+let s:f2_jumps = []
 au BufEnter * call <SID>add_jump()
 
-function! TabbList(tabnr)
+function! F2List(tabnr)
   let buffer_list = {}
-  let tabb = gettabvar(a:tabnr, "tabb_list")
+  let f2 = gettabvar(a:tabnr, "f2_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
 
-  if type(tabb) != 4
+  if type(f2) != 4
     return buffer_list
   endif
 
-  for i in keys(tabb)
+  for i in keys(f2)
     let i = str2nr(i)
 
     let bufname = bufname(i)
 
-    if g:tabb_show_unnamed && !strlen(bufname)
-      if !((g:tabb_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
+    if g:f2_show_unnamed && !strlen(bufname)
+      if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
         let bufname = '[' . i . '*No Name]'
       endif
     endif
@@ -103,8 +103,8 @@ function! TabbList(tabnr)
   return buffer_list
 endfunction
 
-function! TabbStatusLineSegment()
-  if g:tabb_unicode_font
+function! F2StatusLineSegment()
+  if g:f2_unicode_font
     let symbols = { "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
   else
     let symbols = { "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
@@ -140,7 +140,7 @@ function! TabbStatusLineSegment()
 endfunction
 
 
-function! TabbTabLine()
+function! F2TabLine()
   let last_tab = tabpagenr("$")
   let tabline = ''
 
@@ -149,11 +149,11 @@ function! TabbTabLine()
     let buflist = tabpagebuflist(t)
     let bufnr = buflist[winnr - 1]
     let bufname = bufname(bufnr)
-    let bufs_number = len(TabbList(t))
+    let bufs_number = len(F2List(t))
     let bufs_number_to_show = ""
 
     if bufs_number > 1
-      if g:tabb_unicode_font
+      if g:f2_unicode_font
         let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
         let number_str = string(bufs_number)
 
@@ -165,12 +165,12 @@ function! TabbTabLine()
       endif
     endif
 
-    let label = gettabvar(t, "tabb_label")
+    let label = gettabvar(t, "f2_label")
 
     if empty(label)
       if empty(bufname)
         let label = '[' . bufnr . '*No Name]'
-      elseif bufname ==# "__TABB__"
+      elseif bufname ==# "__F2__"
         let label = "Select a buffer..."
       else
         let label = fnamemodify(bufname, ':t')
@@ -200,13 +200,13 @@ endfunction
 
 function! <SID>new_tab_label()
   call inputsave()
-  let t:tabb_label = input('Label for tab ' . tabpagenr() . ': ')
+  let t:f2_label = input('Label for tab ' . tabpagenr() . ': ')
   call inputrestore()
   redraw!
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
-  for b in map(keys(TabbList(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(F2List(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -215,13 +215,13 @@ function! <SID>tab_contains_modified_buffers(tabnr)
 endfunction
 
 function! <SID>session_file()
-  for candidate in g:tabb_session_file
+  for candidate in g:f2_session_file
     if isdirectory(fnamemodify(candidate, ":h:t"))
       return candidate
     endif
   endfor
 
-  return g:tabb_session_file[-1]
+  return g:f2_session_file[-1]
 endfunction
 
 function! <SID>save_session()
@@ -231,19 +231,19 @@ function! <SID>save_session()
   let lines = []
 
   for t in range(1, last_tab)
-    let line = [t, gettabvar(t, "tabb_label"), tabpagenr() == t]
+    let line = [t, gettabvar(t, "f2_label"), tabpagenr() == t]
 
-    let tabb_list = TabbList(t)
+    let f2_list = F2List(t)
 
     let bufs = []
     let visibles = []
 
     let visible_buffers = tabpagebuflist(t)
 
-    let tabb_list_index = -1
+    let f2_list_index = -1
 
-    for [nr, bname] in items(tabb_list)
-      let tabb_list_index += 1
+    for [nr, bname] in items(f2_list)
+      let f2_list_index += 1
       let bufname = fnamemodify(bname, ":.")
       let nr = str2nr(nr)
 
@@ -252,7 +252,7 @@ function! <SID>save_session()
       endif
 
       if index(visible_buffers, nr) != -1
-        call add(visibles, tabb_list_index)
+        call add(visibles, f2_list_index)
       endif
 
       call add(bufs, bufname)
@@ -265,18 +265,18 @@ function! <SID>save_session()
 
   call writefile(lines, filename)
 
-  echo "Tabb: The session been saved (" . filename . ")."
+  echo "F2: The session been saved (" . filename . ")."
 endfunction
 
 function! <SID>load_session(bang)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo "Tabb: No session to load."
+    echo "F2: No session to load."
     return
   endif
 
-  echo "Tabb: Loading a session..."
+  echo "F2: Loading a session..."
 
   let lines = readfile(filename)
 
@@ -335,22 +335,22 @@ function! <SID>load_session(bang)
     endif
 
     if is_current
-      call add(commands, "let tabb_session_current_tab = tabpagenr()")
+      call add(commands, "let f2_session_current_tab = tabpagenr()")
     endif
 
     if !empty(tab_label)
-      call add(commands, "let t:tabb_label = '" . tab_label . "'")
+      call add(commands, "let t:f2_label = '" . tab_label . "'")
     endif
   endfor
 
-  call add(commands, "exe 'normal! ' . tabb_session_current_tab . 'gt'")
+  call add(commands, "exe 'normal! ' . f2_session_current_tab . 'gt'")
   call add(commands, "redraw!")
 
   for c in commands
     silent! exe c
   endfor
 
-  echo "Tabb: The session has been loaded (" . filename . ")."
+  echo "F2: The session has been loaded (" . filename . ")."
 endfunction
 
 function! <SID>find_lowest_search_noise(bufname)
@@ -395,7 +395,7 @@ function! <SID>find_lowest_search_noise(bufname)
 endfunction
 
 " toggled the buffer list on/off
-function! <SID>tabb_toggle(internal)
+function! <SID>f2_toggle(internal)
   if !a:internal
     let s:tab_toggle = 1
     let s:nop_mode = 0
@@ -403,12 +403,12 @@ function! <SID>tabb_toggle(internal)
     let s:new_search_performed = 0
     let s:search_mode = 0
     if !exists("t:sort_order")
-      let t:sort_order = g:tabb_default_sort_order
+      let t:sort_order = g:f2_default_sort_order
     endif
   endif
 
   " if we get called and the list is open --> close it
-  let buflistnr = bufnr("__TABB__")
+  let buflistnr = bufnr("__F2__")
   if bufexists(buflistnr)
     if bufwinnr(buflistnr) != -1
       call <SID>kill(buflistnr, 1)
@@ -416,13 +416,13 @@ function! <SID>tabb_toggle(internal)
     else
       call <SID>kill(buflistnr, 0)
       if !a:internal
-        let t:tabb_start_window = winnr()
-        let t:tabb_winrestcmd = winrestcmd()
+        let t:f2_start_window = winnr()
+        let t:f2_winrestcmd = winrestcmd()
       endif
     endif
   elseif !a:internal
-    let t:tabb_start_window = winnr()
-    let t:tabb_winrestcmd = winrestcmd()
+    let t:f2_start_window = winnr()
+    let t:f2_winrestcmd = winrestcmd()
   endif
 
   let bufcount = bufnr('$')
@@ -431,9 +431,9 @@ function! <SID>tabb_toggle(internal)
   let buflist = []
 
   " create the buffer first & set it up
-  silent! exe "noautocmd botright pedit __TABB__"
+  silent! exe "noautocmd botright pedit __F2__"
   silent! exe "noautocmd wincmd P"
-  silent! exe "resize" g:tabb_height
+  silent! exe "resize" g:f2_height
   call <SID>set_up_buffer()
 
   let width = winwidth(0)
@@ -441,14 +441,14 @@ function! <SID>tabb_toggle(internal)
   " iterate through the buffers
 
   for i in range(1, bufcount)
-    if s:tab_toggle && !exists('t:tabb_list[' . i . ']')
+    if s:tab_toggle && !exists('t:f2_list[' . i . ']')
       continue
     endif
 
     let bufname = fnamemodify(bufname(i), ":.")
 
-    if g:tabb_show_unnamed && !strlen(bufname)
-      if !((g:tabb_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
+    if g:f2_show_unnamed && !strlen(bufname)
+      if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
         let bufname = '[' . i . '*No Name]'
       endif
     endif
@@ -481,11 +481,11 @@ function! <SID>tabb_toggle(internal)
   endfor
 
   " set up window height
-  if displayedbufs > g:tabb_height
-    if displayedbufs < g:tabb_max_height
+  if displayedbufs > g:f2_height
+    if displayedbufs < g:f2_max_height
       silent! exe "resize " . displayedbufs
     else
-      silent! exe "resize " . g:tabb_max_height
+      silent! exe "resize " . g:f2_max_height
     endif
   endif
 
@@ -517,10 +517,10 @@ function! <SID>create_jumplines(buflist, activebufline)
     call add(buffers, bufentry.number)
   endfor
 
-  if s:tab_toggle && exists("t:tabb_jumps")
-    let bufferjumps = t:tabb_jumps
+  if s:tab_toggle && exists("t:f2_jumps")
+    let bufferjumps = t:f2_jumps
   else
-    let bufferjumps = s:tabb_jumps
+    let bufferjumps = s:f2_jumps
   endif
 
   let jumplines = []
@@ -543,27 +543,27 @@ function! <SID>clear_search_mode()
   let s:search_letters = []
   let s:search_mode = 0
   call <SID>kill(0, 0)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>switch_search_mode(switch)
   let s:search_mode = a:switch
   call <SID>kill(0, 0)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>unique_list(list)
@@ -574,9 +574,9 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ' '
 
   if s:preview_mode && (s:preview_mode_orginal_buffer == a:bufnum)
-    let indicators .= g:tabb_unicode_font ? "☆" : "*"
+    let indicators .= g:f2_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
-    let indicators .= g:tabb_unicode_font ? "★" : "*"
+    let indicators .= g:f2_unicode_font ? "★" : "*"
   endif
 
   if getbufvar(a:bufnum, "&modified")
@@ -602,14 +602,14 @@ function! <SID>find_activebufline(activebuf, buflist)
 endfunction
 
 function! <SID>go_to_start_window()
-  if exists("t:tabb_start_window")
-    silent! exe t:tabb_start_window . "wincmd w"
+  if exists("t:f2_start_window")
+    silent! exe t:f2_start_window . "wincmd w"
   endif
 
-  if exists("t:tabb_winrestcmd") && (winrestcmd() != t:tabb_winrestcmd)
-    silent! exe t:tabb_winrestcmd
+  if exists("t:f2_winrestcmd") && (winrestcmd() != t:f2_winrestcmd)
+    silent! exe t:f2_winrestcmd
 
-    if winrestcmd() != t:tabb_winrestcmd
+    if winrestcmd() != t:f2_winrestcmd
       wincmd =
     endif
   endif
@@ -643,7 +643,7 @@ endfunction
 
 function! <SID>show_help()
   call <SID>kill(0, 1)
-  silent! exe "help tabb-keys"
+  silent! exe "help f2-keys"
 endfunction
 
 function! <SID>keypressed(key)
@@ -734,7 +734,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "a"
       call <SID>toggle_tab()
     elseif a:key ==# "f"
-      call <SID>detach_tabb_buffer()
+      call <SID>detach_f2_buffer()
     elseif a:key ==# "F"
       call <SID>delete_foreign_buffers()
     elseif a:key ==# "S"
@@ -762,8 +762,8 @@ function! <SID>set_up_buffer()
 
   if has('statusline')
     hi default link User1 LineNr
-    let tabb_name = g:tabb_unicode_font ? "т∧вв" : "TABB"
-    let &l:statusline = "%1* " . tabb_name . "  %*  " . TabbStatusLineSegment()
+    let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
+    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineSegment()
   endif
 
   if &timeout
@@ -773,7 +773,7 @@ function! <SID>set_up_buffer()
     au BufLeave <buffer> silent! exe "set timeoutlen=" . b:old_timeoutlen
   endif
 
-  augroup TabbLeave
+  augroup F2Leave
     au!
     au BufLeave <buffer> call <SID>kill(0, 1)
   augroup END
@@ -781,10 +781,10 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match TabbBufferNormal /  .*/
-    syn match TabbBufferSelected /> .*/hs=s+1
-    hi def TabbBufferNormal ctermfg=black ctermbg=white
-    hi def TabbBufferSelected ctermfg=white ctermbg=black
+    syn match F2BufferNormal /  .*/
+    syn match F2BufferSelected /> .*/hs=s+1
+    hi def F2BufferNormal ctermfg=black ctermbg=white
+    hi def F2BufferSelected ctermfg=white ctermbg=black
   endif
 
   " set up the keymap
@@ -817,8 +817,8 @@ endfunction
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
     if s:tab_toggle
-      if exists("t:tabb_list[" . a:a.number . "]") && exists("t:tabb_list[" . a:b.number . "]")
-        return t:tabb_list[a:a.number] - t:tabb_list[a:b.number]
+      if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
+        return t:f2_list[a:a.number] - t:f2_list[a:b.number]
       endif
     endif
     return a:a.number - a:b.number
@@ -886,10 +886,10 @@ function! <SID>display_list(displayedbufs, buflist, width)
     let width = a:width
 
     if width < (strlen(empty_list_message) + 2)
-      if strlen(empty_list_message) + 2 < g:tabb_max_width
+      if strlen(empty_list_message) + 2 < g:f2_max_width
         let width = strlen(empty_list_message) + 2
       else
-        let width = g:tabb_max_width
+        let width = g:f2_max_width
         let empty_list_message = strpart(empty_list_message, 0, width - 3) . "…"
       endif
       silent! exe "vert resize " . width
@@ -920,11 +920,11 @@ function! <SID>display_list(displayedbufs, buflist, width)
     endfor
 
     if !any_buffer_listed
-      au! TabbLeave BufLeave
+      au! F2Leave BufLeave
       noremap <silent> <buffer> q :q<CR>
       noremap <silent> <buffer> a <Nop>
-      if g:tabb_set_default_mapping
-        silent! exe 'noremap <silent><buffer>' . g:tabb_default_mapping_key . ' :q<CR>'
+      if g:f2_set_default_mapping
+        silent! exe 'noremap <silent><buffer>' . g:f2_default_mapping_key . ' :q<CR>'
       endif
     endif
 
@@ -981,13 +981,13 @@ endfunction
 function! <SID>goto(line)
   if b:bufcount < 1 | return | endif
   if a:line < 1
-    if g:tabb_cyclic_list
+    if g:f2_cyclic_list
       call <SID>goto(b:bufcount - a:line)
     else
       call cursor(1, 1)
     endif
   elseif a:line > b:bufcount
-    if g:tabb_cyclic_list
+    if g:f2_cyclic_list
       call <SID>goto(a:line - b:bufcount)
     else
       call cursor(b:bufcount, 1)
@@ -1037,7 +1037,7 @@ endfunction
 function! <SID>preview_buffer()
   if !s:preview_mode
     let s:preview_mode = 1
-    let s:preview_mode_orginal_buffer = winbufnr(t:tabb_start_window)
+    let s:preview_mode_orginal_buffer = winbufnr(t:f2_start_window)
   endif
 
   let nr = <SID>get_selected_buffer()
@@ -1048,17 +1048,17 @@ function! <SID>preview_buffer()
   exec ":b " . nr
   exec "normal! zb"
 
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>load_buffer_into_window(winnr)
-  if exists("t:tabb_start_window")
-    let old_start_window = t:tabb_start_window
-    let t:tabb_start_window = a:winnr
+  if exists("t:f2_start_window")
+    let old_start_window = t:f2_start_window
+    let t:f2_start_window = a:winnr
   endif
   call <SID>load_buffer()
   if exists("old_start_window")
-    let t:tabb_start_window = old_start_window
+    let t:f2_start_window = old_start_window
   endif
 endfunction
 
@@ -1084,21 +1084,21 @@ function! <SID>delete_buffer()
     endif
     exec ":bdelete " . nr
     call <SID>forget_buffers_in_all_tabs([nr])
-    call <SID>tabb_toggle(1)
+    call <SID>f2_toggle(1)
   endif
 endfunction
 
 function! <SID>forget_buffers_in_all_tabs(numbers)
   for t in range(1, tabpagenr("$"))
-    let tabb_list = gettabvar(t, "tabb_list")
+    let f2_list = gettabvar(t, "f2_list")
 
     for nr in a:numbers
-      if exists("tabb_list[" . nr . "]")
-        call remove(tabb_list, nr)
+      if exists("f2_list[" . nr . "]")
+        call remove(f2_list, nr)
       endif
     endfor
 
-    call settabvar(t, "tabb_list", tabb_list)
+    call settabvar(t, "f2_list", f2_list)
   endfor
 endfunction
 
@@ -1133,18 +1133,18 @@ function! <SID>delete_hidden_buffers()
     call <SID>forget_buffers_in_all_tabs(removed)
   endif
 
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 " deletes all foreign buffers
 function! <SID>delete_foreign_buffers()
   let buffers = {}
   for t in range(1, tabpagenr('$'))
-    silent! call extend(buffers, gettabvar(t, 'tabb_list'))
+    silent! call extend(buffers, gettabvar(t, 'f2_list'))
   endfor
   call <SID>kill(0, 0)
   call <SID>keep_buffers_for_keys(buffers)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>get_selected_buffer()
@@ -1157,14 +1157,14 @@ function! <SID>add_tab_buffer()
     return
   endif
 
-  if !exists('t:tabb_list')
-    let t:tabb_list = {}
+  if !exists('t:f2_list')
+    let t:f2_list = {}
   endif
 
   let current = bufnr('%')
 
-  if !exists("t:tabb_list[" . current . "]") && getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__TABB__")
-    let t:tabb_list[current] = len(t:tabb_list) + 1
+  if !exists("t:f2_list[" . current . "]") && getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__F2__")
+    let t:f2_list[current] = len(t:f2_list) + 1
   endif
 endfunction
 
@@ -1173,25 +1173,25 @@ function! <SID>add_jump()
     return
   endif
 
-  if !exists("t:tabb_jumps")
-    let t:tabb_jumps = []
+  if !exists("t:f2_jumps")
+    let t:f2_jumps = []
   endif
 
   let current = bufnr('%')
 
-  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__TABB__")
-    call add(s:tabb_jumps, current)
-    let s:tabb_jumps = <SID>unique_list(s:tabb_jumps)
+  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__F2__")
+    call add(s:f2_jumps, current)
+    let s:f2_jumps = <SID>unique_list(s:f2_jumps)
 
-    if len(s:tabb_jumps) > g:tabb_max_jumps + 1
-      unlet s:tabb_jumps[0]
+    if len(s:f2_jumps) > g:f2_max_jumps + 1
+      unlet s:f2_jumps[0]
     endif
 
-    call add(t:tabb_jumps, current)
-    let t:tabb_jumps = <SID>unique_list(t:tabb_jumps)
+    call add(t:f2_jumps, current)
+    let t:f2_jumps = <SID>unique_list(t:f2_jumps)
 
-    if len(t:tabb_jumps) > g:tabb_max_jumps + 1
-      unlet t:tabb_jumps[0]
+    if len(t:f2_jumps) > g:f2_max_jumps + 1
+      unlet t:f2_jumps[0]
     endif
   endif
 endfunction
@@ -1204,7 +1204,7 @@ function! <SID>toggle_tab()
   endif
 
   call <SID>kill(0, 0)
-  call <SID>tabb_toggle(1)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>toggle_order()
@@ -1216,13 +1216,13 @@ function! <SID>toggle_order()
     endif
 
     call <SID>kill(0, 0)
-    call <SID>tabb_toggle(1)
+    call <SID>f2_toggle(1)
   endif
 endfunction
 
-function! <SID>detach_tabb_buffer()
+function! <SID>detach_f2_buffer()
   let nr = <SID>get_selected_buffer()
-  if exists('t:tabb_list[' . nr . ']')
+  if exists('t:f2_list[' . nr . ']')
     let selected_buffer_window = bufwinnr(nr)
     if selected_buffer_window != -1
       call <SID>move("down")
@@ -1236,7 +1236,7 @@ function! <SID>detach_tabb_buffer()
     else
       call <SID>kill(0, 0)
     endif
-    call remove(t:tabb_list, nr)
-    call <SID>tabb_toggle(1)
+    call remove(t:f2_list, nr)
+    call <SID>f2_toggle(1)
   endif
 endfunction

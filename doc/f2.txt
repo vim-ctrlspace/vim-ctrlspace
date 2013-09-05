@@ -1,0 +1,54 @@
+*f2.txt*                For Vim version 7.4           Last change: 2013-08-23
+*f2*
+
+
+
+
+
+
+                                 Vim-F2 3.0.9~
+
+                               A tab buffers tool
+
+
+
+
+
+
+Copyright (c) 2013 Szymon Wrozynski
+
+==============================================================================
+Table of Contents
+
+    1. About........................................................|f2-about|
+    2. Usage........................................................|f2-usage|
+    3. Keys..........................................................|f2-keys|
+    4. Configuration........................................|f2-configuration|
+    5. Author and License..................................|f2-author-license|
+
+------------------------------------------------------------------------------
+1. About                                                            *f2-about*
+
+------------------------------------------------------------------------------
+2. Usage                                                            *f2-usage*
+
+------------------------------------------------------------------------------
+2. Keys                                                              *f2-keys*
+
+------------------------------------------------------------------------------
+3. Configuration                                            *f2-configuration*
+
+------------------------------------------------------------------------------
+4. Author and License                                      *f2-author-license*
+
+F2 has been written by Szymon Wrozynski and Contributors
+(https://github.com/szw/vim-f2/commits/master). It is licensed
+under the same terms as Vim itself. For more info see |license|.
+
+It was based on the BufferList plugin by Robert Lillack
+(https://github.com/roblillack/vim-bufferlist). Moreover some concepts of and
+inspiration has been taken from Vim-Tabber (https://github.com/fweep/vim-tabber)
+by Jim Steward and Tabline (https://github.com/mkitt/tabline.vim) by Matthew
+Kitt.
+
+vim:tw=78:ts=8:ft=help:norl:
