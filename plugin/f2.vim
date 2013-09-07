@@ -911,7 +911,7 @@ endfunction
 
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
-    if s:tab_toggle
+    if s:tab_toggle && !s:file_mode
       if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
         return t:f2_list[a:a.number] - t:f2_list[a:b.number]
       endif
