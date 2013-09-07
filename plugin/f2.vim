@@ -1,6 +1,6 @@
 " Vim-F2 - Tab buffers tool
 " Maintainer:   Szymon Wrozynski
-" Version:      3.0.10
+" Version:      3.1.0
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -42,6 +42,7 @@ call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chr
 call <SID>define_config_variable("enable_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
+call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
 command! -nargs=0 -range F2Label :call <SID>new_tab_label()
@@ -105,12 +106,18 @@ endfunction
 
 function! F2StatusLineSegment()
   if g:f2_unicode_font
-    let symbols = { "tab": "⊙", "all": "∷", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
+    let symbols = { "tab": "⊙", "all": "∷", "add": "○", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
   else
-    let symbols = { "tab": "TAB", "all": "ALL", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
+    let symbols = { "tab": "TAB", "all": "ALL", "add": "ADD", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
   endif
 
-  let statusline = s:tab_toggle ? symbols.tab : symbols.all
+  if s:file_mode
+    let statusline = symbols.add
+  elseif s:tab_toggle
+    let statusline = symbols.tab
+  else
+    let statusline = symbols.all
+  endif
 
   if exists("t:sort_order") && empty(s:search_letters) && !s:search_mode
     let statusline .= "  "
@@ -402,6 +409,8 @@ function! <SID>f2_toggle(internal)
     let s:search_letters = []
     let s:new_search_performed = 0
     let s:search_mode = 0
+    let s:file_mode = 0
+    let s:files = []
     if !exists("t:sort_order")
       let t:sort_order = g:f2_default_sort_order
     endif
@@ -438,22 +447,36 @@ function! <SID>f2_toggle(internal)
 
   let width = winwidth(0)
 
-  " iterate through the buffers
-
-  for i in range(1, bufcount)
-    if s:tab_toggle && !exists('t:f2_list[' . i . ']')
-      continue
+  if s:file_mode
+    if empty(s:files)
+      let s:files = split(globpath('.', '**'), '\n')
     endif
 
-    let bufname = fnamemodify(bufname(i), ":.")
+    let bufcount = len(s:files)
+  endif
 
-    if g:f2_show_unnamed && !strlen(bufname)
-      if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
-        let bufname = '[' . i . '*No Name]'
+  for i in range(1, bufcount)
+    if s:file_mode
+      let bufname = fnamemodify(s:files[i - 1], ":.")
+
+      if isdirectory(bufname) || (bufname =~# g:f2_ignored_files)
+        continue
+      endif
+    else
+      if s:tab_toggle && !exists('t:f2_list[' . i . ']')
+        continue
+      endif
+
+      let bufname = fnamemodify(bufname(i), ":.")
+
+      if g:f2_show_unnamed && !strlen(bufname)
+        if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
+          let bufname = '[' . i . '*No Name]'
+        endif
       endif
     endif
 
-    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+    if strlen(bufname) && ((getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')) || s:file_mode)
       let search_noise = <SID>find_lowest_search_noise(bufname)
 
       if search_noise == -1
@@ -466,7 +489,9 @@ function! <SID>f2_toggle(internal)
         let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
       endif
 
-      let bufname = <SID>decorate_with_indicators(bufname, i)
+      if !s:file_mode
+        let bufname = <SID>decorate_with_indicators(bufname, i)
+      endif
 
       " count displayed buffers
       let displayedbufs += 1
@@ -491,13 +516,16 @@ function! <SID>f2_toggle(internal)
 
   call <SID>display_list(displayedbufs, buflist, width)
 
-  let activebufline = <SID>find_activebufline(activebuf, buflist)
+  let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
 
   " make the buffer count & the buffer numbers available
   " for our other functions
   let b:buflist = buflist
   let b:bufcount = displayedbufs
-  let b:jumplines = <SID>create_jumplines(buflist, activebufline)
+
+  if !s:file_mode
+    let b:jumplines = <SID>create_jumplines(buflist, activebufline)
+  endif
 
   " go to the correct line
   if !empty(s:search_letters) && s:new_search_performed
@@ -678,6 +706,51 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     endif
+  elseif s:file_mode
+    if a:key ==# "CR"
+      call <SID>load_file()
+    elseif a:key ==# "BS"
+      call <SID>clear_search_mode()
+    elseif a:key ==# "/"
+      call <SID>switch_search_mode(1)
+    elseif a:key ==# "?"
+      call <SID>show_help()
+    elseif a:key ==# "v"
+      call <SID>load_file("vs")
+    elseif a:key ==# "s"
+      call <SID>load_file("sp")
+    elseif a:key ==# "t"
+      call <SID>load_file("tabnew")
+    elseif a:key ==# "o" && empty(s:search_letters)
+      call <SID>toggle_order()
+    elseif a:key ==# "q"
+      call <SID>kill(0, 1)
+    elseif a:key ==# "j"
+      call <SID>move("down")
+    elseif a:key ==# "k"
+      call <SID>move("up")
+    elseif a:key ==# "MouseDown"
+      call <SID>move("up")
+    elseif a:key ==# "MouseUp"
+      call <SID>move("down")
+    elseif a:key ==# "LeftRelease"
+      call <SID>move("mouse")
+    elseif a:key ==# "2-LeftMouse"
+      call <SID>move("mouse")
+      call <SID>load_file()
+    elseif a:key ==# "Down"
+      call feedkeys("j")
+    elseif a:key ==# "Up"
+      call feedkeys("k")
+    elseif a:key ==# "Home"
+      call <SID>move(1)
+    elseif a:key ==# "End"
+      call <SID>move(line("$"))
+    elseif a:key ==# "BSlash"
+      call <SID>toggle_file_mode()
+    elseif a:key ==# "A"
+      call <SID>toggle_file_mode()
+    endif
   else
     if a:key ==# "CR"
       call <SID>load_buffer()
@@ -746,8 +819,19 @@ function! <SID>keypressed(key)
     elseif a:key ==# "l"
       call <SID>kill(0, 1)
       call <SID>load_session(0)
+    elseif a:key ==# "A"
+      call <SID>toggle_file_mode()
+    elseif a:key ==# "BSlash"
+      call <SID>toggle_file_mode()
+      call <SID>switch_search_mode(1)
     endif
   endif
+endfunction
+
+function! <SID>toggle_file_mode()
+  let s:file_mode = !s:file_mode
+  call <SID>kill(0, 0)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>set_up_buffer()
@@ -791,8 +875,8 @@ function! <SID>set_up_buffer()
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
   let uppercase_letters = toupper(lowercase_letters)
   let numbers = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ \ | + - _ = ! @ # $ % ^ & * " .
-        \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right"
+  let special_chars = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
+        \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
   let key_chars = split(lowercase_letters . " " . uppercase_letters . " " . numbers . " " . special_chars, " ")
   for key_char in key_chars
     if strlen(key_char) > 1
@@ -1020,19 +1104,28 @@ function! <SID>jump(direction)
   call <SID>move(string(b:jumplines[b:jumppos]))
 endfunction
 
-" loads the selected buffer
 function! <SID>load_buffer(...)
-  " get the selected buffer
   let nr = <SID>get_selected_buffer()
-  " kill the buffer list
   call <SID>kill(0, 1)
 
   if !empty(a:000)
     exec ":" . a:1
   endif
 
-  " ...and switch to the buffer number
   exec ":b " . nr
+endfunction
+
+function! <SID>load_file(...)
+  let file_number = <SID>get_selected_buffer()
+  let file = s:files[file_number - 1]
+
+  call <SID>kill(0, 1)
+
+  if !empty(a:000)
+    exec ":" . a:1
+  endif
+
+  exec ":e " . file
 endfunction
 
 function! <SID>preview_buffer()
