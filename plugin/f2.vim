@@ -676,9 +676,13 @@ endfunction
 
 function! <SID>keypressed(key)
   if s:nop_mode
-    if (a:key ==# "a") && !s:search_mode
-      call <SID>toggle_tab()
-    end
+    if !s:search_mode
+      if (a:key ==# "a")
+        call <SID>toggle_tab()
+      elseif (a:key ==# "A")
+        call <SID>toggle_file_mode()
+      end
+    endif
 
     if a:key ==# "BS"
       if s:search_mode
@@ -710,7 +714,11 @@ function! <SID>keypressed(key)
     if a:key ==# "CR"
       call <SID>load_file()
     elseif a:key ==# "BS"
-      call <SID>clear_search_mode()
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        call <SID>toggle_file_mode()
+      endif
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
     elseif a:key ==# "?"
@@ -746,9 +754,7 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif a:key ==# "End"
       call <SID>move(line("$"))
-    elseif a:key ==# "BSlash"
-      call <SID>toggle_file_mode()
-    elseif a:key ==# "A"
+    elseif (a:key ==# "BSlash") || (a:key ==# "A")
       call <SID>toggle_file_mode()
     endif
   else
@@ -757,7 +763,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Space"
       call <SID>preview_buffer()
     elseif a:key ==# "BS"
-      call <SID>clear_search_mode()
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        call <SID>kill(0, 1)
+      endif
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
     elseif a:key ==# "?"
