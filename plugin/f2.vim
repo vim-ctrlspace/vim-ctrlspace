@@ -69,6 +69,8 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
+let s:files = []
+let s:files_time = 0
 let s:preview_mode = 0
 
 au BufEnter * call <SID>add_tab_buffer()
@@ -145,7 +147,6 @@ function! F2StatusLineSegment()
 
   return statusline
 endfunction
-
 
 function! F2TabLine()
   let last_tab = tabpagenr("$")
@@ -410,7 +411,6 @@ function! <SID>f2_toggle(internal)
     let s:new_search_performed = 0
     let s:search_mode = 0
     let s:file_mode = 0
-    let s:files = []
     if !exists("t:sort_order")
       let t:sort_order = g:f2_default_sort_order
     endif
@@ -448,8 +448,11 @@ function! <SID>f2_toggle(internal)
   let width = winwidth(0)
 
   if s:file_mode
-    if empty(s:files)
+    let current_time = getftime(".")
+
+    if s:files_time < current_time
       let s:files = split(globpath('.', '**'), '\n')
+      let s:files_time = current_time
     endif
 
     let bufcount = len(s:files)
@@ -705,7 +708,7 @@ function! <SID>keypressed(key)
       else
         call <SID>remove_search_letter()
       endif
-    elseif (a:key ==# "/") || (a:key ==# "CR")
+    elseif (a:key ==# "/") || (a:key ==# "CR") || (s:file_mode && a:key ==# "BSlash")
       call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
@@ -719,7 +722,7 @@ function! <SID>keypressed(key)
       else
         call <SID>toggle_file_mode()
       endif
-    elseif a:key ==# "/"
+    elseif (a:key ==# "/") || (a:key ==# "BSlash")
       call <SID>switch_search_mode(1)
     elseif a:key ==# "?"
       call <SID>show_help()
@@ -754,7 +757,7 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif a:key ==# "End"
       call <SID>move(line("$"))
-    elseif (a:key ==# "BSlash") || (a:key ==# "A")
+    elseif a:key ==# "A"
       call <SID>toggle_file_mode()
     endif
   else
