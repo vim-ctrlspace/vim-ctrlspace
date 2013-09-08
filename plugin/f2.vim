@@ -72,7 +72,7 @@ endif
 
 let s:files = []
 let s:files_time = 0
-let s:files_sort_order = 2
+let s:files_sort_order = g:f2_default_files_sort_order
 let s:preview_mode = 0
 
 au BufEnter * call <SID>add_tab_buffer()
