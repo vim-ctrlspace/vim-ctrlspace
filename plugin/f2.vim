@@ -39,6 +39,7 @@ call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
+call <SID>define_config_variable("default_files_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
@@ -71,6 +72,7 @@ endif
 
 let s:files = []
 let s:files_time = 0
+let s:files_sort_order = 2
 let s:preview_mode = 0
 
 au BufEnter * call <SID>add_tab_buffer()
@@ -106,46 +108,55 @@ function! F2List(tabnr)
   return buffer_list
 endfunction
 
-function! F2StatusLineSegment()
+function! F2StatusLineSegment(...)
   if g:f2_unicode_font
     let symbols = { "tab": "⊙", "all": "∷", "add": "○", "ord": "₁²₃", "abc": "∧вс", "len": "●∙⋅", "prv": "⌕", "s_left": "›", "s_right": "‹" }
   else
     let symbols = { "tab": "TAB", "all": "ALL", "add": "ADD", "ord": "123", "abc": "ABC", "len": "LEN", "prv": "*", "s_left": "[", "s_right": "]" }
   endif
 
+  let statusline_elements = []
+
   if s:file_mode
-    let statusline = symbols.add
+    call add(statusline_elements, symbols.add)
   elseif s:tab_toggle
-    let statusline = symbols.tab
+    call add(statusline_elements, symbols.tab)
   else
-    let statusline = symbols.all
+    call add(statusline_elements, symbols.all)
   endif
 
-  if exists("t:sort_order") && empty(s:search_letters) && !s:search_mode
-    let statusline .= "  "
-
-    if t:sort_order == 1
-      let statusline .= s:file_mode ? symbols.len : symbols.ord
-    elseif t:sort_order == 2
-      let statusline .= symbols.abc
+  if empty(s:search_letters) && !s:search_mode
+    if s:file_mode
+      if s:files_sort_order == 1
+        call add(statusline_elements, symbols.len)
+      elseif s:files_sort_order == 2
+        call add(statusline_elements, symbols.abc)
+      endif
+    elseif exists("t:sort_order")
+      if t:sort_order == 1
+        call add(statusline_elements, symbols.ord)
+      elseif t:sort_order == 2
+        call add(statusline_elements, symbols.abc)
+      endif
     endif
-  endif
-
-  if s:search_mode || !empty(s:search_letters)
-    let statusline .=  "  " . symbols.s_left . join(s:search_letters, "")
+  else
+    let search_element = symbols.s_left . join(s:search_letters, "")
 
     if s:search_mode
-      let statusline .= "_"
+      let search_element .= "_"
     endif
 
-    let statusline .= symbols.s_right
+    let search_element .= symbols.s_right
+
+    call add(statusline_elements, search_element)
   endif
 
   if s:preview_mode
-    let statusline .= "  " . symbols.prv
+    call add(statusline_elements, symbols.prv)
   endif
 
-  return statusline
+  let separator = (a:0 > 0) ? a:1 : "  "
+  return join(statusline_elements, separator)
 endfunction
 
 function! F2TabLine()
@@ -733,7 +744,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
     elseif a:key ==# "o" && empty(s:search_letters)
-      call <SID>toggle_order()
+      call <SID>toggle_files_order()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "j"
@@ -757,7 +768,7 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif a:key ==# "End"
       call <SID>move(line("$"))
-    elseif a:key ==# "A"
+    elseif a:key ==? "A"
       call <SID>toggle_file_mode()
     endif
   else
@@ -914,27 +925,37 @@ endfunction
 
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
-    if s:file_mode
-      if strlen(a:a.raw) < strlen(a:b.raw)
-        return 1
-      elseif strlen(a:a.raw) > strlen(a:b.raw)
-        return -1
-      elseif a:a.raw < a:b.raw
-        return -1
-      elseif a:a.raw > a:b.raw
-        return 1
-      else
-        return 0
+    if s:tab_toggle
+      if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
+        return t:f2_list[a:a.number] - t:f2_list[a:b.number]
       endif
-    else
-      if s:tab_toggle
-        if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
-          return t:f2_list[a:a.number] - t:f2_list[a:b.number]
-        endif
-      endif
-      return a:a.number - a:b.number
     endif
+    return a:a.number - a:b.number
   elseif t:sort_order == 2
+    if a:a.raw < a:b.raw
+      return -1
+    elseif a:a.raw > a:b.raw
+      return 1
+    else
+      return 0
+    endif
+  endif
+endfunction
+
+function! <SID>compare_file_entries(a, b)
+  if s:files_sort_order == 1
+    if strlen(a:a.raw) < strlen(a:b.raw)
+      return 1
+    elseif strlen(a:a.raw) > strlen(a:b.raw)
+      return -1
+    elseif a:a.raw < a:b.raw
+      return -1
+    elseif a:a.raw > a:b.raw
+      return 1
+    else
+      return 0
+    endif
+  elseif s:files_sort_order == 2
     if a:a.raw < a:b.raw
       return -1
     elseif a:a.raw > a:b.raw
@@ -973,9 +994,12 @@ function! <SID>display_list(displayedbufs, buflist, width)
   if a:displayedbufs > 0
     if !empty(s:search_letters)
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
+    elseif s:file_mode
+      call sort(a:buflist, function(<SID>SID() . "compare_file_entries"))
     elseif exists("t:sort_order")
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
     endif
+
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
 
@@ -1339,6 +1363,17 @@ function! <SID>toggle_order()
     call <SID>kill(0, 0)
     call <SID>f2_toggle(1)
   endif
+endfunction
+
+function! <SID>toggle_files_order()
+  if s:files_sort_order == 1
+    let s:files_sort_order = 2
+  else
+    let s:files_sort_order = 1
+  endif
+
+  call <SID>kill(0, 0)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>detach_f2_buffer()
