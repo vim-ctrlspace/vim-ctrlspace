@@ -108,9 +108,9 @@ endfunction
 
 function! F2StatusLineSegment()
   if g:f2_unicode_font
-    let symbols = { "tab": "⊙", "all": "∷", "add": "○", "ord": "₁²₃", "abc": "∧вс", "prv": "⌕", "s_left": "›", "s_right": "‹" }
+    let symbols = { "tab": "⊙", "all": "∷", "add": "○", "ord": "₁²₃", "abc": "∧вс", "len": "●∙⋅", "prv": "⌕", "s_left": "›", "s_right": "‹" }
   else
-    let symbols = { "tab": "TAB", "all": "ALL", "add": "ADD", "ord": "123", "abc": "ABC", "prv": "*", "s_left": "[", "s_right": "]" }
+    let symbols = { "tab": "TAB", "all": "ALL", "add": "ADD", "ord": "123", "abc": "ABC", "len": "LEN", "prv": "*", "s_left": "[", "s_right": "]" }
   endif
 
   if s:file_mode
@@ -125,7 +125,7 @@ function! F2StatusLineSegment()
     let statusline .= "  "
 
     if t:sort_order == 1
-      let statusline .= symbols.ord
+      let statusline .= s:file_mode ? symbols.len : symbols.ord
     elseif t:sort_order == 2
       let statusline .= symbols.abc
     endif
@@ -914,12 +914,26 @@ endfunction
 
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
-    if s:tab_toggle && !s:file_mode
-      if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
-        return t:f2_list[a:a.number] - t:f2_list[a:b.number]
+    if s:file_mode
+      if strlen(a:a.raw) < strlen(a:b.raw)
+        return 1
+      elseif strlen(a:a.raw) > strlen(a:b.raw)
+        return -1
+      elseif a:a.raw < a:b.raw
+        return -1
+      elseif a:a.raw > a:b.raw
+        return 1
+      else
+        return 0
       endif
+    else
+      if s:tab_toggle
+        if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
+          return t:f2_list[a:a.number] - t:f2_list[a:b.number]
+        endif
+      endif
+      return a:a.number - a:b.number
     endif
-    return a:a.number - a:b.number
   elseif t:sort_order == 2
     if a:a.raw < a:b.raw
       return -1
