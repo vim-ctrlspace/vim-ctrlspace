@@ -39,7 +39,7 @@ call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
-call <SID>define_config_variable("default_files_sort_order", 2) " 1 - by length, 2 - alphanumeric
+call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
@@ -72,7 +72,7 @@ endif
 
 let s:files = []
 let s:files_time = 0
-let s:files_sort_order = g:f2_default_files_sort_order
+let s:file_sort_order = g:f2_default_file_sort_order
 let s:preview_mode = 0
 
 au BufEnter * call <SID>add_tab_buffer()
@@ -127,9 +127,9 @@ function! F2StatusLineSegment(...)
 
   if empty(s:search_letters) && !s:search_mode
     if s:file_mode
-      if s:files_sort_order == 1
+      if s:file_sort_order == 1
         call add(statusline_elements, symbols.len)
-      elseif s:files_sort_order == 2
+      elseif s:file_sort_order == 2
         call add(statusline_elements, symbols.abc)
       endif
     elseif exists("t:sort_order")
@@ -943,7 +943,7 @@ function! <SID>compare_bufentries(a, b)
 endfunction
 
 function! <SID>compare_file_entries(a, b)
-  if s:files_sort_order == 1
+  if s:file_sort_order == 1
     if strlen(a:a.raw) < strlen(a:b.raw)
       return 1
     elseif strlen(a:a.raw) > strlen(a:b.raw)
@@ -955,7 +955,7 @@ function! <SID>compare_file_entries(a, b)
     else
       return 0
     endif
-  elseif s:files_sort_order == 2
+  elseif s:file_sort_order == 2
     if a:a.raw < a:b.raw
       return -1
     elseif a:a.raw > a:b.raw
@@ -1366,10 +1366,10 @@ function! <SID>toggle_order()
 endfunction
 
 function! <SID>toggle_files_order()
-  if s:files_sort_order == 1
-    let s:files_sort_order = 2
+  if s:file_sort_order == 1
+    let s:file_sort_order = 2
   else
-    let s:files_sort_order = 1
+    let s:file_sort_order = 1
   endif
 
   call <SID>kill(0, 0)
