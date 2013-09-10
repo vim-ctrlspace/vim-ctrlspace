@@ -1,6 +1,6 @@
 " Vim-F2 - Tab buffers tool
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.0
+" Version:      3.1.1
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -190,7 +190,7 @@ function! F2TabLine()
       if empty(bufname)
         let label = '[' . bufnr . '*No Name]'
       elseif bufname ==# "__F2__"
-        let label = "Select a buffer..."
+        let label = "F2 selector..."
       else
         let label = fnamemodify(bufname, ':t')
       endif
@@ -726,9 +726,9 @@ function! <SID>keypressed(key)
     endif
   elseif s:file_mode
     if a:key ==# "CR"
-      call <SID>load_file(0)
+      call <SID>load_file()
     elseif a:key ==# "Space"
-      call <SID>load_file(1)
+      call <SID>load_many_files()
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
@@ -740,11 +740,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "?"
       call <SID>show_help()
     elseif a:key ==# "v"
-      call <SID>load_file(0, "vs")
+      call <SID>load_file("vs")
     elseif a:key ==# "s"
-      call <SID>load_file(0, "sp")
+      call <SID>load_file("sp")
     elseif a:key ==# "t"
-      call <SID>load_file(0, "tabnew")
+      call <SID>load_file("tabnew")
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "q"
@@ -761,7 +761,7 @@ function! <SID>keypressed(key)
       call <SID>move("mouse")
     elseif a:key ==# "2-LeftMouse"
       call <SID>move("mouse")
-      call <SID>load_file(0)
+      call <SID>load_file()
     elseif a:key ==# "Down"
       call feedkeys("j")
     elseif a:key ==# "Up"
@@ -777,6 +777,8 @@ function! <SID>keypressed(key)
     if a:key ==# "CR"
       call <SID>load_buffer()
     elseif a:key ==# "Space"
+      call <SID>load_many_buffers()
+    elseif (a:key ==# "C-Space") || (a:key ==# "Nul")
       call <SID>preview_buffer()
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
@@ -903,7 +905,10 @@ function! <SID>set_up_buffer()
   let numbers = "1 2 3 4 5 6 7 8 9 0"
   let special_chars = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
         \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
+  let special_chars .= has("gui_running") ? " C-Space" : " Nul"
+
   let key_chars = split(lowercase_letters . " " . uppercase_letters . " " . numbers . " " . special_chars, " ")
+
   for key_char in key_chars
     if strlen(key_char) > 1
       let key = "<" . key_char . ">"
@@ -1157,6 +1162,19 @@ function! <SID>jump(direction)
   call <SID>move(string(b:jumplines[b:jumppos]))
 endfunction
 
+function! <SID>load_many_buffers()
+  let nr = <SID>get_selected_buffer()
+  let current_line = line(".")
+
+  call <SID>kill(0, 0)
+  call <SID>go_to_start_window()
+
+  exec ":b " . nr
+
+  call <SID>f2_toggle(1)
+  call <SID>move(current_line)
+endfunction
+
 function! <SID>load_buffer(...)
   let nr = <SID>get_selected_buffer()
   call <SID>kill(0, 1)
@@ -1168,29 +1186,31 @@ function! <SID>load_buffer(...)
   exec ":b " . nr
 endfunction
 
-function! <SID>load_file(many, ...)
+function! <SID>load_many_files()
+  let file_number = <SID>get_selected_buffer()
+  let file = s:files[file_number - 1]
+  let current_line = line(".")
+
+  call <SID>kill(0, 0)
+  call <SID>go_to_start_window()
+
+  exec ":e " . file
+
+  call <SID>f2_toggle(1)
+  call <SID>move(current_line)
+endfunction
+
+function! <SID>load_file(...)
   let file_number = <SID>get_selected_buffer()
   let file = s:files[file_number - 1]
 
-  if a:many
-    let current_line = line(".")
+  call <SID>kill(0, 1)
 
-    call <SID>kill(0, 0)
-    call <SID>go_to_start_window()
-
-    exec ":e " . file
-
-    call <SID>f2_toggle(1)
-    call <SID>move(current_line)
-  else
-    call <SID>kill(0, 1)
-
-    if !empty(a:000)
-      exec ":" . a:1
-    endif
-
-    exec ":e " . file
+  if !empty(a:000)
+    exec ":" . a:1
   endif
+
+  exec ":e " . file
 endfunction
 
 function! <SID>preview_buffer()
