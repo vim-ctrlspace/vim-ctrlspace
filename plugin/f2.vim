@@ -1171,19 +1171,25 @@ endfunction
 function! <SID>load_file(many, ...)
   let file_number = <SID>get_selected_buffer()
   let file = s:files[file_number - 1]
-  let current_line = line(".")
-
-  call <SID>kill(0, !a:many)
-
-  if !empty(a:000)
-    exec ":" . a:1
-  endif
-
-  exec ":e " . file
 
   if a:many
+    let current_line = line(".")
+
+    call <SID>kill(0, 0)
+    call <SID>go_to_start_window()
+
+    exec ":e " . file
+
     call <SID>f2_toggle(1)
     call <SID>move(current_line)
+  else
+    call <SID>kill(0, 1)
+
+    if !empty(a:000)
+      exec ":" . a:1
+    endif
+
+    exec ":e " . file
   endif
 endfunction
 
