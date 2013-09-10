@@ -726,7 +726,9 @@ function! <SID>keypressed(key)
     endif
   elseif s:file_mode
     if a:key ==# "CR"
-      call <SID>load_file()
+      call <SID>load_file(0)
+    elseif a:key ==# "Space"
+      call <SID>load_file(1)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
@@ -738,11 +740,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "?"
       call <SID>show_help()
     elseif a:key ==# "v"
-      call <SID>load_file("vs")
+      call <SID>load_file(0, "vs")
     elseif a:key ==# "s"
-      call <SID>load_file("sp")
+      call <SID>load_file(0, "sp")
     elseif a:key ==# "t"
-      call <SID>load_file("tabnew")
+      call <SID>load_file(0, "tabnew")
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "q"
@@ -759,7 +761,7 @@ function! <SID>keypressed(key)
       call <SID>move("mouse")
     elseif a:key ==# "2-LeftMouse"
       call <SID>move("mouse")
-      call <SID>load_file()
+      call <SID>load_file(0)
     elseif a:key ==# "Down"
       call feedkeys("j")
     elseif a:key ==# "Up"
@@ -1166,17 +1168,23 @@ function! <SID>load_buffer(...)
   exec ":b " . nr
 endfunction
 
-function! <SID>load_file(...)
+function! <SID>load_file(many, ...)
   let file_number = <SID>get_selected_buffer()
   let file = s:files[file_number - 1]
+  let current_line = line(".")
 
-  call <SID>kill(0, 1)
+  call <SID>kill(0, !a:many)
 
   if !empty(a:000)
     exec ":" . a:1
   endif
 
   exec ":e " . file
+
+  if a:many
+    call <SID>f2_toggle(1)
+    call <SID>move(current_line)
+  endif
 endfunction
 
 function! <SID>preview_buffer()
