@@ -70,10 +70,10 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
-let s:files = []
-let s:files_time = 0
+let s:files           = []
+let s:files_time      = 0
 let s:file_sort_order = g:f2_default_file_sort_order
-let s:preview_mode = 0
+let s:preview_mode    = 0
 
 au BufEnter * call <SID>add_tab_buffer()
 
@@ -81,8 +81,8 @@ let s:f2_jumps = []
 au BufEnter * call <SID>add_jump()
 
 function! F2List(tabnr)
-  let buffer_list = {}
-  let f2 = gettabvar(a:tabnr, "f2_list")
+  let buffer_list     = {}
+  let f2              = gettabvar(a:tabnr, "f2_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
 
   if type(f2) != 4
@@ -110,9 +110,29 @@ endfunction
 
 function! F2StatusLineSegment(...)
   if g:f2_unicode_font
-    let symbols = { "tab": "⊙", "all": "∷", "add": "○", "ord": "₁²₃", "abc": "∧вс", "len": "●∙⋅", "prv": "⌕", "s_left": "›", "s_right": "‹" }
+    let symbols = {
+          \ "tab"     : "⊙",
+          \ "all"     : "∷",
+          \ "add"     : "○",
+          \ "ord"     : "₁²₃",
+          \ "abc"     : "∧вс",
+          \ "len"     : "●∙⋅",
+          \ "prv"     : "⌕",
+          \ "s_left"  : "›",
+          \ "s_right" : "‹"
+          \ }
   else
-    let symbols = { "tab": "TAB", "all": "ALL", "add": "ADD", "ord": "123", "abc": "ABC", "len": "LEN", "prv": "*", "s_left": "[", "s_right": "]" }
+    let symbols = {
+          \ "tab"     : "TAB",
+          \ "all"     : "ALL",
+          \ "add"     : "ADD",
+          \ "ord"     : "123",
+          \ "abc"     : "ABC",
+          \ "len"     : "LEN",
+          \ "prv"     : "*",
+          \ "s_left"  : "[",
+          \ "s_right" : "]"
+          \ }
   endif
 
   let statusline_elements = []
@@ -164,17 +184,17 @@ function! F2TabLine()
   let tabline = ''
 
   for t in range(1, last_tab)
-    let winnr = tabpagewinnr(t)
-    let buflist = tabpagebuflist(t)
-    let bufnr = buflist[winnr - 1]
-    let bufname = bufname(bufnr)
-    let bufs_number = len(F2List(t))
+    let winnr               = tabpagewinnr(t)
+    let buflist             = tabpagebuflist(t)
+    let bufnr               = buflist[winnr - 1]
+    let bufname             = bufname(bufnr)
+    let bufs_number         = len(F2List(t))
     let bufs_number_to_show = ""
 
     if bufs_number > 1
       if g:f2_unicode_font
         let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
-        let number_str = string(bufs_number)
+        let number_str    = string(bufs_number)
 
         for i in range(0, len(number_str) - 1)
           let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
@@ -254,7 +274,7 @@ function! <SID>save_session()
 
     let f2_list = F2List(t)
 
-    let bufs = []
+    let bufs     = []
     let visibles = []
 
     let visible_buffers = tabpagebuflist(t)
@@ -304,15 +324,15 @@ function! <SID>load_session(bang)
   let create_new_tab = !a:bang
 
   for line in lines
-    let tab_data = split(line, ",")
-    let tabnr = tab_data[0]
-    let tab_label = tab_data[1]
+    let tab_data   = split(line, ",")
+    let tabnr      = tab_data[0]
+    let tab_label  = tab_data[1]
     let is_current = str2nr(tab_data[2])
-    let files = split(tab_data[3], "|")
-    let visibles = (len(tab_data) > 4) ? split(tab_data[4], "|") : []
+    let files      = split(tab_data[3], "|")
+    let visibles   = (len(tab_data) > 4) ? split(tab_data[4], "|") : []
 
     let readable_files = []
-    let visible_files = []
+    let visible_files  = []
 
     let index = 0
 
@@ -341,7 +361,10 @@ function! <SID>load_session(bang)
     for fname in readable_files
       call add(commands, "e " . fname)
       " jump to the last edited line
-      call add(commands, "if line(\"'\\\"\") > 0 | if line(\"'\\\"\") <= line('$') | exe(\"norm '\\\"\") | else | exe 'norm $' | endif | endif")
+      call add(commands, "if line(\"'\\\"\") > 0 | " .
+            \ "if line(\"'\\\"\") <= line('$') | " .
+            \ "exe(\"norm '\\\"\") | else | exe 'norm $' | " .
+            \ "endif | endif")
       call add(commands, "normal! zbze")
     endfor
 
@@ -373,8 +396,8 @@ function! <SID>load_session(bang)
 endfunction
 
 function! <SID>find_subsequence(bufname, offset)
-  let positions = []
-  let noise = 0
+  let positions      = []
+  let noise          = 0
   let current_offset = a:offset
 
   for letter in s:search_letters
@@ -427,12 +450,13 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>f2_toggle(internal)
   if !a:internal
-    let s:tab_toggle = 1
-    let s:nop_mode = 0
-    let s:search_letters = []
+    let s:tab_toggle           = 1
+    let s:nop_mode             = 0
+    let s:search_letters       = []
     let s:new_search_performed = 0
-    let s:search_mode = 0
-    let s:file_mode = 0
+    let s:search_mode          = 0
+    let s:file_mode            = 0
+
     if !exists("t:sort_order")
       let t:sort_order = g:f2_default_sort_order
     endif
@@ -645,12 +669,14 @@ endfunction
 
 function! <SID>find_activebufline(activebuf, buflist)
   let activebufline = 0
+
   for bufentry in a:buflist
     let activebufline += 1
     if a:activebuf == bufentry.number
       return activebufline
     endif
   endfor
+
   return activebufline
 endfunction
 
@@ -913,9 +939,10 @@ function! <SID>set_up_buffer()
   " set up the keymap
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
   let uppercase_letters = toupper(lowercase_letters)
-  let numbers = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
+  let numbers           = "1 2 3 4 5 6 7 8 9 0"
+  let special_chars     = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _  = ! @ # $ % ^ & * " .
         \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
+
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
 
   let key_chars = split(lowercase_letters . " " . uppercase_letters . " " . numbers . " " . special_chars, " ")
@@ -1362,7 +1389,10 @@ function! <SID>add_tab_buffer()
 
   let current = bufnr('%')
 
-  if !exists("t:f2_list[" . current . "]") && getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__F2__")
+  if !exists("t:f2_list[" . current . "]") &&
+        \ getbufvar(current, '&modifiable') &&
+        \ getbufvar(current, '&buflisted') &&
+        \ current != bufnr("__F2__")
     let t:f2_list[current] = len(t:f2_list) + 1
   endif
 endfunction
