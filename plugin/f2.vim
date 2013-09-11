@@ -372,6 +372,28 @@ function! <SID>load_session(bang)
   echo "F2: The session has been loaded (" . filename . ")."
 endfunction
 
+function! <SID>find_subsequence(bufname, offset)
+  let positions = []
+  let noise = 0
+  let current_offset = a:offset
+
+  for letter in s:search_letters
+    let matched_position = match(a:bufname, "\\m\\c" . letter, current_offset)
+
+    if matched_position == -1
+      return [-1, []]
+    else
+      if !empty(positions)
+        let noise += abs(matched_position - positions[-1]) - 1
+      endif
+      call add(positions, matched_position)
+      let current_offset = matched_position + 1
+    endif
+  endfor
+
+  return [noise, positions]
+endfunction
+
 function! <SID>find_lowest_search_noise(bufname)
   let search_letters_count = len(s:search_letters)
 
@@ -381,34 +403,23 @@ function! <SID>find_lowest_search_noise(bufname)
     return match(a:bufname, "\\m\\c" . s:search_letters[0])
   endif
 
-  let pos = 0
-  let new_pos = 0
-  let shortest_matched = []
-  let query = "\\m\\c" . join(s:search_letters, "\\(.\\{-}\\)")
+  let offset = 0
+  let bufname_len = strlen(a:bufname)
 
-  while new_pos != -1
-    let new_pos = match(a:bufname, query, pos)
+  let noise = -1
 
-    if new_pos > -1
-      let matched = matchlist(a:bufname, query, pos)
+  while offset < bufname_len
+    let subseq = <SID>find_subsequence(a:bufname, offset)
 
-      if empty(shortest_matched) || (strlen(shortest_matched[0]) > strlen(matched[0]))
-        let shortest_matched = matched
-      endif
-
-      let pos = (new_pos > pos) ? new_pos : pos + 1
+    if subseq[0] == -1
+      break
+    elseif (noise == -1) || (subseq[0] < noise)
+      let noise = subseq[0]
+      let offset = subseq[1][0] + 1
+    else
+      let offset += 1
     endif
   endwhile
-
-  if empty(shortest_matched)
-    return -1
-  endif
-
-  let noise = 0
-
-  for noise_group in shortest_matched[1:-1]
-    let noise += strlen(noise_group)
-  endfor
 
   return noise
 endfunction
