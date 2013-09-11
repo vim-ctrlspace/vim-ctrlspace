@@ -930,10 +930,16 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match F2BufferNormal /  .*/
-    syn match F2BufferSelected /> .*/hs=s+1
-    hi def F2BufferNormal ctermfg=black ctermbg=white
-    hi def F2BufferSelected ctermfg=white ctermbg=black
+    syn match F2EntryNormal /  .*/
+    syn match F2EntrySelected /> .*/hs=s+1
+
+    if !empty(s:search_letters)
+      silent! exe "match F2EntryFound /\\m\\c" . join(s:search_letters, ".\\{-}") . "/"
+    endif
+
+    hi def F2EntryFound ctermfg=NONE ctermbg=NONE cterm=underline
+    hi def F2EntryNormal ctermfg=black ctermbg=white
+    hi def F2EntrySelected ctermfg=white ctermbg=black
   endif
 
   " set up the keymap
