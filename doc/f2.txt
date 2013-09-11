@@ -1,4 +1,4 @@
-*f2.txt*                For Vim version 7.4           Last change: 2013-09-07
+*f2.txt*                   For Vim version 7.4           Last change: 2013-09-07
 *f2*
 
 
@@ -6,9 +6,9 @@
 
 
 
-                                 Vim-F2 3.1.1~
+                                  Vim-F2 3.1.2~
 
-                               A tab buffers tool
+                               A buffers manager
 
 
 
@@ -20,26 +20,26 @@ Copyright (c) 2013 Szymon Wrozynski
 ==============================================================================
 Table of Contents
 
-    1. About........................................................|f2-about|
-    2. Usage........................................................|f2-usage|
-    3. Keys..........................................................|f2-keys|
-    4. Configuration........................................|f2-configuration|
-    5. Author and License..................................|f2-author-license|
+    1. About..........................................................|f2-about|
+    2. Usage..........................................................|f2-usage|
+    3. Keys............................................................|f2-keys|
+    4. Configuration..........................................|f2-configuration|
+    5. Author and License....................................|f2-author-license|
 
 ------------------------------------------------------------------------------
-1. About                                                            *f2-about*
+1. About                                                              *f2-about*
 
 ------------------------------------------------------------------------------
-2. Usage                                                            *f2-usage*
+2. Usage                                                              *f2-usage*
 
 ------------------------------------------------------------------------------
-2. Keys                                                              *f2-keys*
+2. Keys                                                                *f2-keys*
 
 ------------------------------------------------------------------------------
-3. Configuration                                            *f2-configuration*
+3. Configuration                                              *f2-configuration*
 
 ------------------------------------------------------------------------------
-4. Author and License                                      *f2-author-license*
+4. Author and License                                        *f2-author-license*
 
 F2 has been written by Szymon Wrozynski and Contributors
 (https://github.com/szw/vim-f2/commits/master). It is licensed

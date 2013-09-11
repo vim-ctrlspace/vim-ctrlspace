@@ -1,6 +1,6 @@
-" Vim-F2 - Tab buffers tool
+" Vim-F2 - A buffers manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.1
+" Version:      3.1.2
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -814,7 +814,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "d"
       call <SID>delete_buffer()
     elseif a:key ==# "D"
-      call <SID>delete_hidden_buffers()
+      call <SID>delete_hidden_noname_buffers()
     elseif a:key ==# "MouseDown"
       call <SID>move("up")
     elseif a:key ==# "MouseUp"
@@ -1286,7 +1286,9 @@ function! <SID>keep_buffers_for_keys(dict)
 
   for b in range(1, bufnr('$'))
     if buflisted(b) && !has_key(a:dict, b) && !getbufvar(b, '&modified')
-      exe ':bdelete ' . b
+      " use wipeout for nonames
+      let cmd = empty(getbufvar(b, "&buftype")) && !filereadable(bufname(b)) ? "bwipeout" : "bdelete"
+      exe cmd b
       call add(removed, b)
     endif
   endfor
@@ -1294,19 +1296,26 @@ function! <SID>keep_buffers_for_keys(dict)
   return removed
 endfunction
 
-" deletes all hidden buffers
-" taken from: http://stackoverflow.com/a/3180886
-function! <SID>delete_hidden_buffers()
-  let visible = {}
+function! <SID>delete_hidden_noname_buffers()
+  let keep = {}
+
+  " keep visible ones
   for t in range(1, tabpagenr('$'))
     for b in tabpagebuflist(t)
-      let visible[b] = 1
+      let keep[b] = 1
     endfor
+  endfor
+
+  " keep all but nonames
+  for b in range(1, bufnr("$"))
+    if bufexists(b) && (!empty(getbufvar(b, "&buftype")) || filereadable(bufname(b)))
+      let keep[b] = 1
+    endif
   endfor
 
   call <SID>kill(0, 0)
 
-  let removed = <SID>keep_buffers_for_keys(visible)
+  let removed = <SID>keep_buffers_for_keys(keep)
 
   if !empty(removed)
     call <SID>forget_buffers_in_all_tabs(removed)
