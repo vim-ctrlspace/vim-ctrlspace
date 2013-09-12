@@ -447,10 +447,16 @@ function! <SID>find_lowest_search_noise(bufname)
   endif
 
   if (noise > -1) && !empty(matched_string)
-    call matchadd("F2EntryFound", "\\c" . matched_string)
+    let b:search_patterns[matched_string] = 1
   endif
 
   return noise
+endfunction
+
+function! <SID>display_search_patterns()
+  for pattern in keys(b:search_patterns)
+    call matchadd("F2EntryFound", "\\c" . pattern)
+  endfor
 endfunction
 
 " toggled the buffer list on/off
@@ -486,10 +492,10 @@ function! <SID>f2_toggle(internal)
     let t:f2_winrestcmd = winrestcmd()
   endif
 
-  let bufcount = bufnr('$')
+  let bufcount      = bufnr('$')
   let displayedbufs = 0
-  let activebuf = bufnr('')
-  let buflist = []
+  let activebuf     = bufnr('')
+  let buflist       = []
 
   " create the buffer first & set it up
   silent! exe "noautocmd botright pedit __F2__"
@@ -570,6 +576,10 @@ function! <SID>f2_toggle(internal)
   endif
 
   call <SID>display_list(displayedbufs, buflist, width)
+
+  if !empty(s:search_letters)
+    call <SID>display_search_patterns()
+  endif
 
   let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
 
@@ -914,6 +924,8 @@ function! <SID>set_up_buffer()
   setlocal nomodifiable
   setlocal nowrap
   setlocal nonumber
+
+  let b:search_patterns = {}
 
   if has('statusline')
     hi default link User1 LineNr
