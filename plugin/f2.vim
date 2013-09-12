@@ -115,11 +115,16 @@ function! F2StatusLineKeyInfoSegment(...)
 
   if s:nop_mode
     if !s:search_mode
+      if !empty(s:search_letters)
+        call add(keys, "BS")
+      endif
+
       call add(keys, "a")
       call add(keys, "A")
     else
       call add(keys, "BS")
     endif
+
     return join(keys, separator)
   endif
 
@@ -574,9 +579,9 @@ function! <SID>f2_toggle(internal)
   silent! exe "noautocmd wincmd P"
   silent! exe "resize" g:f2_height
 
-  let width = winwidth(0)
+  call <SID>set_up_buffer()
 
-  call <SID>set_up_buffer(width)
+  let width = winwidth(0)
 
   if s:file_mode
     let current_time = getftime(".")
@@ -649,6 +654,7 @@ function! <SID>f2_toggle(internal)
   endif
 
   call <SID>display_list(displayedbufs, buflist, width)
+  call <SID>set_status_line(width)
 
   if !empty(s:search_letters)
     call <SID>display_search_patterns()
@@ -988,7 +994,19 @@ function! <SID>toggle_file_mode()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>set_up_buffer(width)
+function! <SID>set_status_line(width)
+  if has('statusline')
+    hi default link User1 LineNr
+    let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
+    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineInfoSegment()
+
+    if g:f2_show_key_info && a:width >= g:f2_show_key_info
+      let &l:statusline .= "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
+    endif
+  endif
+endfunction
+
+function! <SID>set_up_buffer()
   setlocal noshowcmd
   setlocal noswapfile
   setlocal buftype=nofile
@@ -999,16 +1017,6 @@ function! <SID>set_up_buffer(width)
   setlocal nonumber
 
   let b:search_patterns = {}
-
-  if has('statusline')
-    hi default link User1 LineNr
-    let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
-    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineInfoSegment()
-
-    if g:f2_show_key_info && a:width >= g:f2_show_key_info
-      let &l:statusline .= "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
-    endif
-  endif
 
   if &timeout
     let b:old_timeoutlen = &timeoutlen
