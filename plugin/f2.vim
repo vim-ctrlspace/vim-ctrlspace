@@ -419,30 +419,36 @@ endfunction
 
 function! <SID>find_lowest_search_noise(bufname)
   let search_letters_count = len(s:search_letters)
+  let noise                = -1
+  let matched_string       = ""
 
   if search_letters_count == 0
     return 0
   elseif search_letters_count == 1
-    return match(a:bufname, "\\m\\c" . s:search_letters[0])
+    let noise = match(a:bufname, "\\m\\c" . s:search_letters[0])
+    let matched_string = s:search_letters[0]
+  else
+    let offset      = 0
+    let bufname_len = strlen(a:bufname)
+
+    while offset < bufname_len
+      let subseq = <SID>find_subsequence(a:bufname, offset)
+
+      if subseq[0] == -1
+        break
+      elseif (noise == -1) || (subseq[0] < noise)
+        let noise = subseq[0]
+        let offset = subseq[1][0] + 1
+        let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
+      else
+        let offset += 1
+      endif
+    endwhile
   endif
 
-  let offset = 0
-  let bufname_len = strlen(a:bufname)
-
-  let noise = -1
-
-  while offset < bufname_len
-    let subseq = <SID>find_subsequence(a:bufname, offset)
-
-    if subseq[0] == -1
-      break
-    elseif (noise == -1) || (subseq[0] < noise)
-      let noise = subseq[0]
-      let offset = subseq[1][0] + 1
-    else
-      let offset += 1
-    endif
-  endwhile
+  if (noise > -1) && !empty(matched_string)
+    call matchadd("F2EntryFound", matched_string)
+  endif
 
   return noise
 endfunction
@@ -932,10 +938,6 @@ function! <SID>set_up_buffer()
     syn clear
     syn match F2EntryNormal /  .*/
     syn match F2EntrySelected /> .*/hs=s+1
-
-    if !empty(s:search_letters)
-      silent! exe "match F2EntryFound /\\m\\c" . join(s:search_letters, ".\\{-}") . "/"
-    endif
 
     hi def F2EntryFound ctermfg=NONE ctermbg=NONE cterm=underline
     hi def F2EntryNormal ctermfg=black ctermbg=white
