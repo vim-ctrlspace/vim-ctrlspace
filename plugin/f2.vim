@@ -447,7 +447,7 @@ function! <SID>find_lowest_search_noise(bufname)
   endif
 
   if (noise > -1) && !empty(matched_string)
-    call matchadd("F2EntryFound", matched_string)
+    let b:highlight_found_sequences[matched_string] = 1
   endif
 
   return noise
@@ -580,6 +580,12 @@ function! <SID>f2_toggle(internal)
 
   if !s:file_mode
     let b:jumplines = <SID>create_jumplines(buflist, activebufline)
+  endif
+
+  if has("syntax")
+    for seq in keys(b:highlight_found_sequences)
+      call matchadd("F2EntryFound", "\\c" . seq)
+    endfor
   endif
 
   " go to the correct line
@@ -943,6 +949,8 @@ function! <SID>set_up_buffer()
     hi def F2EntryNormal ctermfg=black ctermbg=white
     hi def F2EntrySelected ctermfg=white ctermbg=black
   endif
+
+  let b:highlight_found_sequences = {}
 
   " set up the keymap
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
