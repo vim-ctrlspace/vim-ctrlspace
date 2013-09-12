@@ -44,6 +44,7 @@ call <SID>define_config_variable("enable_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
+call <SID>define_config_variable("show_key_info", 100)
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
 command! -nargs=0 -range F2Label :call <SID>new_tab_label()
@@ -108,7 +109,78 @@ function! F2List(tabnr)
   return buffer_list
 endfunction
 
-function! F2StatusLineSegment(...)
+function! F2StatusLineKeyInfoSegment(...)
+  let separator = (a:0 > 0) ? a:1 : " "
+  let keys      = []
+
+  if s:nop_mode
+    if !s:search_mode
+      call add(keys, "a")
+      call add(keys, "A")
+    else
+      call add(keys, "BS")
+    endif
+    return join(keys, separator)
+  endif
+
+  if s:search_mode
+    call add(keys, "BS")
+    call add(keys, "CR")
+    call add(keys, "/")
+    if s:file_mode
+      call add(keys, '\')
+    endif
+    call add(keys, "a..z")
+    call add(keys, "0..9")
+  elseif s:file_mode
+    call add(keys, "CR")
+    call add(keys, "Sp")
+    call add(keys, "BS")
+    call add(keys, "/")
+    call add(keys, '\')
+    call add(keys, "?")
+    call add(keys, "v")
+    call add(keys, "s")
+    call add(keys, "t")
+    call add(keys, "o")
+    call add(keys, "q")
+    call add(keys, "j")
+    call add(keys, "k")
+    call add(keys, "a")
+    call add(keys, "A")
+  else
+    call add(keys, "CR")
+    call add(keys, "Sp")
+    call add(keys, "^Sp")
+    call add(keys, "BS")
+    call add(keys, "/")
+    call add(keys, '\')
+    call add(keys, "?")
+    call add(keys, "v")
+    call add(keys, "s")
+    call add(keys, "t")
+    call add(keys, "o")
+    call add(keys, "q")
+    call add(keys, "j")
+    call add(keys, "k")
+    call add(keys, "p")
+    call add(keys, "P")
+    call add(keys, "n")
+    call add(keys, "d")
+    call add(keys, "D")
+    call add(keys, "f")
+    call add(keys, "F")
+    call add(keys, "a")
+    call add(keys, "A")
+    call add(keys, "S")
+    call add(keys, "L")
+    call add(keys, "l")
+  endif
+
+  return join(keys, separator)
+endfunction
+
+function! F2StatusLineInfoSegment(...)
   if g:f2_unicode_font
     let symbols = {
           \ "tab"     : "⊙",
@@ -501,9 +573,10 @@ function! <SID>f2_toggle(internal)
   silent! exe "noautocmd botright pedit __F2__"
   silent! exe "noautocmd wincmd P"
   silent! exe "resize" g:f2_height
-  call <SID>set_up_buffer()
 
   let width = winwidth(0)
+
+  call <SID>set_up_buffer(width)
 
   if s:file_mode
     let current_time = getftime(".")
@@ -915,7 +988,7 @@ function! <SID>toggle_file_mode()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>set_up_buffer()
+function! <SID>set_up_buffer(width)
   setlocal noshowcmd
   setlocal noswapfile
   setlocal buftype=nofile
@@ -930,7 +1003,11 @@ function! <SID>set_up_buffer()
   if has('statusline')
     hi default link User1 LineNr
     let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
-    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineSegment()
+    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineInfoSegment()
+
+    if g:f2_show_key_info && a:width >= g:f2_show_key_info
+      let &l:statusline .= "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
+    endif
   endif
 
   if &timeout
