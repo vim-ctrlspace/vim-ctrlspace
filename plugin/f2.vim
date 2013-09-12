@@ -119,6 +119,7 @@ function! F2StatusLineKeyInfoSegment(...)
         call add(keys, "BS")
       endif
 
+      call add(keys, "q")
       call add(keys, "a")
       call add(keys, "A")
     else
@@ -823,10 +824,16 @@ endfunction
 function! <SID>keypressed(key)
   if s:nop_mode
     if !s:search_mode
-      if (a:key ==# "a")
-        call <SID>toggle_tab()
-      elseif (a:key ==# "A")
+      if a:key ==# "a"
+        if s:file_mode
+          call <SID>toggle_file_mode()
+        else
+          call <SID>toggle_tab()
+        endif
+      elseif a:key ==# "A"
         call <SID>toggle_file_mode()
+      elseif a:key ==# "q"
+        call <SID>kill(0, 1)
       end
     endif
 
@@ -1210,7 +1217,6 @@ function! <SID>display_list(displayedbufs, buflist, width)
     if !any_buffer_listed
       au! F2Leave BufLeave
       noremap <silent> <buffer> q :q<CR>
-      noremap <silent> <buffer> a <Nop>
       if g:f2_set_default_mapping
         silent! exe 'noremap <silent><buffer>' . g:f2_default_mapping_key . ' :q<CR>'
       endif
