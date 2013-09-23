@@ -72,7 +72,6 @@ if g:f2_set_default_mapping
 endif
 
 let s:files           = []
-let s:files_time      = 0
 let s:file_sort_order = g:f2_default_file_sort_order
 let s:preview_mode    = 0
 
@@ -150,6 +149,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "t")
     call add(keys, "o")
     call add(keys, "q")
+    call add(keys, "r")
     call add(keys, "j")
     call add(keys, "k")
     call add(keys, "a")
@@ -585,11 +585,8 @@ function! <SID>f2_toggle(internal)
   let width = winwidth(0)
 
   if s:file_mode
-    let current_time = getftime(".")
-
-    if s:files_time < current_time
+    if empty(s:files)
       let s:files = split(globpath('.', '**'), '\n')
-      let s:files_time = current_time
     endif
 
     let bufcount = len(s:files)
@@ -886,6 +883,8 @@ function! <SID>keypressed(key)
       call <SID>load_file("tabnew")
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
+    elseif a:key ==# "r"
+      call <SID>refresh_files()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "j"
@@ -1569,6 +1568,12 @@ function! <SID>toggle_files_order()
     let s:file_sort_order = 1
   endif
 
+  call <SID>kill(0, 0)
+  call <SID>f2_toggle(1)
+endfunction
+
+function! <SID>refresh_files()
+  let s:files = []
   call <SID>kill(0, 0)
   call <SID>f2_toggle(1)
 endfunction
