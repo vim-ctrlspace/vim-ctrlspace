@@ -31,7 +31,7 @@ function! <SID>define_config_variable(name, default_value)
 endfunction
 
 call <SID>define_config_variable("height", 1)
-call <SID>define_config_variable("max_height", 25)
+call <SID>define_config_variable("max_height", 10)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<F2>")
