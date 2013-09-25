@@ -1,6 +1,6 @@
 " Vim-F2 - A buffers manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.2
+" Version:      3.1.3
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -133,7 +133,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "CR")
     call add(keys, "/")
     if s:file_mode
-      call add(keys, '\')
+      call add(keys, '?')
     endif
     call add(keys, "a..z")
     call add(keys, "0..9")
@@ -142,8 +142,8 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "Sp")
     call add(keys, "BS")
     call add(keys, "/")
-    call add(keys, '\')
-    call add(keys, "?")
+    call add(keys, '?')
+    call add(keys, "h")
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
@@ -160,8 +160,8 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "^Sp")
     call add(keys, "BS")
     call add(keys, "/")
-    call add(keys, '\')
-    call add(keys, "?")
+    call add(keys, '?')
+    call add(keys, "h")
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
@@ -855,7 +855,7 @@ function! <SID>keypressed(key)
       else
         call <SID>remove_search_letter()
       endif
-    elseif (a:key ==# "/") || (a:key ==# "CR") || (s:file_mode && a:key ==# "BSlash")
+    elseif (a:key ==# "/") || (a:key ==# "CR") || (s:file_mode && a:key ==# "?")
       call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
@@ -871,9 +871,9 @@ function! <SID>keypressed(key)
       else
         call <SID>toggle_file_mode()
       endif
-    elseif (a:key ==# "/") || (a:key ==# "BSlash")
+    elseif (a:key ==# "/") || (a:key ==# "?")
       call <SID>switch_search_mode(1)
-    elseif a:key ==# "?"
+    elseif a:key ==# "h"
       call <SID>show_help()
     elseif a:key ==# "v"
       call <SID>load_file("vs")
@@ -926,7 +926,7 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
-    elseif a:key ==# "?"
+    elseif a:key ==# "h"
       call <SID>show_help()
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
@@ -987,7 +987,7 @@ function! <SID>keypressed(key)
       call <SID>load_session(0)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
-    elseif a:key ==# "BSlash"
+    elseif a:key ==# "?"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
     endif

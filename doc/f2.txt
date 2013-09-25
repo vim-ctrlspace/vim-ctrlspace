@@ -1,4 +1,4 @@
-*f2.txt*                   For Vim version 7.4           Last change: 2013-09-07
+*f2.txt*                   For Vim version 7.4           Last change: 2013-09-25
 *f2*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                                  Vim-F2 3.1.2~
+                                  Vim-F2 3.1.4~
 
                                A buffers manager
 
