@@ -71,9 +71,11 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
-let s:files           = []
-let s:file_sort_order = g:f2_default_file_sort_order
-let s:preview_mode    = 0
+let s:search_letters      = []
+let s:last_search_letters = []
+let s:files               = []
+let s:file_sort_order     = g:f2_default_file_sort_order
+let s:preview_mode        = 0
 
 au BufEnter * call <SID>add_tab_buffer()
 
@@ -154,6 +156,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "k")
     call add(keys, "a")
     call add(keys, "A")
+    call add(keys, "b")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -178,6 +181,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "F")
     call add(keys, "a")
     call add(keys, "A")
+    call add(keys, "b")
     call add(keys, "S")
     call add(keys, "L")
     call add(keys, "l")
@@ -503,7 +507,7 @@ function! <SID>find_lowest_search_noise(bufname)
   if search_letters_count == 0
     return 0
   elseif search_letters_count == 1
-    let noise = match(a:bufname, "\\m\\c" . s:search_letters[0])
+    let noise          = match(a:bufname, "\\m\\c" . s:search_letters[0])
     let matched_string = s:search_letters[0]
   else
     let offset      = 0
@@ -515,8 +519,8 @@ function! <SID>find_lowest_search_noise(bufname)
       if subseq[0] == -1
         break
       elseif (noise == -1) || (subseq[0] < noise)
-        let noise = subseq[0]
-        let offset = subseq[1][0] + 1
+        let noise          = subseq[0]
+        let offset         = subseq[1][0] + 1
         let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
       else
         let offset += 1
@@ -537,15 +541,31 @@ function! <SID>display_search_patterns()
   endfor
 endfunction
 
+function! <SID>reset_search_letters()
+  if !empty(s:search_letters)
+    let s:last_search_letters = copy(s:search_letters)
+    let s:search_letters = []
+  endif
+endfunction
+
+function! <SID>restore_last_search()
+  if !empty(s:last_search_letters)
+    let s:search_letters = copy(s:last_search_letters)
+    call <SID>kill(0, 0)
+    call <SID>f2_toggle(1)
+  endif
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>f2_toggle(internal)
   if !a:internal
-    let s:single_tab_mode           = 1
+    let s:single_tab_mode      = 1
     let s:nop_mode             = 0
-    let s:search_letters       = []
     let s:new_search_performed = 0
     let s:search_mode          = 0
     let s:file_mode            = 0
+
+    call <SID>reset_search_letters()
 
     if !exists("t:sort_order")
       let t:sort_order = g:f2_default_sort_order
@@ -710,7 +730,7 @@ function! <SID>create_jumplines(buflist, activebufline)
 endfunction
 
 function! <SID>clear_search_mode()
-  let s:search_letters = []
+  call <SID>reset_search_letters()
   let s:search_mode = 0
   call <SID>kill(0, 0)
   call <SID>f2_toggle(1)
@@ -910,6 +930,8 @@ function! <SID>keypressed(key)
       call <SID>move(line("$"))
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
+    elseif a:key ==# "b"
+      call <SID>restore_last_search()
     endif
   else
     if a:key ==# "CR"
@@ -989,6 +1011,8 @@ function! <SID>keypressed(key)
       call <SID>load_session(0)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
+    elseif a:key ==# "b"
+      call <SID>restore_last_search()
     elseif a:key ==# "?"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
