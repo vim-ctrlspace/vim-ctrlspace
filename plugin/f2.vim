@@ -217,7 +217,7 @@ function! F2StatusLineInfoSegment(...)
 
   if s:file_mode
     call add(statusline_elements, symbols.add)
-  elseif s:tab_toggle
+  elseif s:single_tab_mode
     call add(statusline_elements, symbols.tab)
   else
     call add(statusline_elements, symbols.all)
@@ -540,7 +540,7 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>f2_toggle(internal)
   if !a:internal
-    let s:tab_toggle           = 1
+    let s:single_tab_mode           = 1
     let s:nop_mode             = 0
     let s:search_letters       = []
     let s:new_search_performed = 0
@@ -600,7 +600,7 @@ function! <SID>f2_toggle(internal)
         continue
       endif
     else
-      if s:tab_toggle && !exists('t:f2_list[' . i . ']')
+      if s:single_tab_mode && !exists('t:f2_list[' . i . ']')
         continue
       endif
 
@@ -687,7 +687,7 @@ function! <SID>create_jumplines(buflist, activebufline)
     call add(buffers, bufentry.number)
   endfor
 
-  if s:tab_toggle && exists("t:f2_jumps")
+  if s:single_tab_mode && exists("t:f2_jumps")
     let bufferjumps = t:f2_jumps
   else
     let bufferjumps = s:f2_jumps
@@ -825,7 +825,7 @@ function! <SID>keypressed(key)
         if s:file_mode
           call <SID>toggle_file_mode()
         else
-          call <SID>toggle_tab()
+          call <SID>toggle_single_tab_mode()
         endif
       elseif a:key ==# "A"
         call <SID>toggle_file_mode()
@@ -921,6 +921,8 @@ function! <SID>keypressed(key)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
+      elseif !s:single_tab_mode
+        call <SID>toggle_single_tab_mode()
       else
         call <SID>kill(0, 1)
       endif
@@ -971,7 +973,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "End"
       call <SID>move(line("$"))
     elseif a:key ==# "a"
-      call <SID>toggle_tab()
+      call <SID>toggle_single_tab_mode()
     elseif a:key ==# "f"
       call <SID>detach_f2_buffer()
     elseif a:key ==# "F"
@@ -1083,7 +1085,7 @@ endfunction
 
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
-    if s:tab_toggle
+    if s:single_tab_mode
       if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
         return t:f2_list[a:a.number] - t:f2_list[a:b.number]
       endif
@@ -1537,8 +1539,8 @@ function! <SID>add_jump()
   endif
 endfunction
 
-function! <SID>toggle_tab()
-  let s:tab_toggle = !s:tab_toggle
+function! <SID>toggle_single_tab_mode()
+  let s:single_tab_mode = !s:single_tab_mode
 
   if !empty(s:search_letters)
     let s:new_search_performed = 1
