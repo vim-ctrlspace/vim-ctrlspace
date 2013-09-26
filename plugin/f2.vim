@@ -400,7 +400,7 @@ function! <SID>load_session(bang)
     return
   endif
 
-  echo "F2: Loading a session..."
+  echo "F2: Session loading..."
 
   let lines = readfile(filename)
 
