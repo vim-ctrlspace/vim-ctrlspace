@@ -122,8 +122,8 @@ function! F2StatusLineKeyInfoSegment(...)
       call add(keys, "q")
       call add(keys, "a")
       call add(keys, "A")
-      call add(keys, "b")
-      call add(keys, "B")
+      call add(keys, "^p")
+      call add(keys, "^n")
     else
       call add(keys, "BS")
     endif
@@ -157,8 +157,8 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "k")
     call add(keys, "a")
     call add(keys, "A")
-    call add(keys, "b")
-    call add(keys, "B")
+    call add(keys, "^p")
+    call add(keys, "^n")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -183,8 +183,8 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "F")
     call add(keys, "a")
     call add(keys, "A")
-    call add(keys, "b")
-    call add(keys, "B")
+    call add(keys, "^p")
+    call add(keys, "^n")
     call add(keys, "S")
     call add(keys, "L")
     call add(keys, "l")
@@ -890,9 +890,9 @@ function! <SID>keypressed(key)
         call <SID>toggle_file_mode()
       elseif a:key ==# "q"
         call <SID>kill(0, 1)
-      elseif a:key ==# "b"
+      elseif a:key ==# "C-p"
         call <SID>restore_search_letters("previous")
-      elseif a:key ==# "B"
+      elseif a:key ==# "C-n"
         call <SID>restore_search_letters("next")
       end
     endif
@@ -973,9 +973,9 @@ function! <SID>keypressed(key)
       call <SID>move(line("$"))
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
-    elseif a:key ==# "b"
+    elseif a:key ==# "C-p"
       call <SID>restore_search_letters("previous")
-    elseif a:key ==# "B"
+    elseif a:key ==# "C-n"
       call <SID>restore_search_letters("next")
     endif
   else
@@ -1056,9 +1056,9 @@ function! <SID>keypressed(key)
       call <SID>load_session(0)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
-    elseif a:key ==# "b"
+    elseif a:key ==# "C-p"
       call <SID>restore_search_letters("previous")
-    elseif a:key ==# "B"
+    elseif a:key ==# "C-n"
       call <SID>restore_search_letters("next")
     elseif a:key ==# "?"
       call <SID>toggle_file_mode()
@@ -1127,7 +1127,7 @@ function! <SID>set_up_buffer()
   let uppercase_letters = toupper(lowercase_letters)
   let numbers           = "1 2 3 4 5 6 7 8 9 0"
   let special_chars     = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _  = ! @ # $ % ^ & * " .
-        \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
+        \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar C-n C-p"
 
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
 
