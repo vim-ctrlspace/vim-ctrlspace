@@ -38,6 +38,7 @@ call <SID>define_config_variable("default_mapping_key", "<F2>")
 call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
+call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
@@ -71,8 +72,6 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
-let s:search_letters      = []
-let s:last_search_letters = []
 let s:files               = []
 let s:file_sort_order     = g:f2_default_file_sort_order
 let s:preview_mode        = 0
@@ -123,6 +122,8 @@ function! F2StatusLineKeyInfoSegment(...)
       call add(keys, "q")
       call add(keys, "a")
       call add(keys, "A")
+      call add(keys, "b")
+      call add(keys, "B")
     else
       call add(keys, "BS")
     endif
@@ -157,6 +158,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "b")
+    call add(keys, "B")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -182,6 +184,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "b")
+    call add(keys, "B")
     call add(keys, "S")
     call add(keys, "L")
     call add(keys, "l")
@@ -541,31 +544,60 @@ function! <SID>display_search_patterns()
   endfor
 endfunction
 
-function! <SID>reset_search_letters()
+function! <SID>append_to_search_history()
   if !empty(s:search_letters)
-    let s:last_search_letters = copy(s:search_letters)
-    let s:search_letters = []
+    if !exists("t:f2_search_history")
+      let t:f2_search_history = []
+    endif
+
+    call add(t:f2_search_history, copy(s:search_letters))
+    let t:f2_search_history = <SID>unique_list(t:f2_search_history)
+
+    if len(t:f2_search_history) > g:f2_max_searches + 1
+      unlet t:f2_jumps[0]
+    endif
   endif
 endfunction
 
-function! <SID>restore_last_search()
-  if !empty(s:last_search_letters)
-    let s:search_letters = copy(s:last_search_letters)
-    call <SID>kill(0, 0)
-    call <SID>f2_toggle(1)
+function! <SID>restore_search_letters(direction)
+  if !exists("t:f2_search_history")
+    return
   endif
+
+  if a:direction == "previous"
+    let t:f2_search_history_index += 1
+
+    if t:f2_search_history_index == len(t:f2_search_history)
+      let t:f2_search_history_index = len(t:f2_search_history) - 1
+    endif
+  elseif a:direction == "next"
+    let t:f2_search_history_index -= 1
+
+    if t:f2_search_history_index < -1
+      let t:f2_search_history_index = -1
+    endif
+  endif
+
+  if t:f2_search_history_index < 0
+    let s:search_letters = []
+  else
+    let s:search_letters = copy(reverse(copy(t:f2_search_history))[t:f2_search_history_index])
+  endif
+
+  call <SID>kill(0, 0)
+  call <SID>f2_toggle(1)
 endfunction
 
 " toggled the buffer list on/off
 function! <SID>f2_toggle(internal)
   if !a:internal
-    let s:single_tab_mode      = 1
-    let s:nop_mode             = 0
-    let s:new_search_performed = 0
-    let s:search_mode          = 0
-    let s:file_mode            = 0
-
-    call <SID>reset_search_letters()
+    let s:single_tab_mode         = 1
+    let s:nop_mode                = 0
+    let s:new_search_performed    = 0
+    let s:search_mode             = 0
+    let s:file_mode               = 0
+    let s:search_letters          = []
+    let t:f2_search_history_index = -1
 
     if !exists("t:sort_order")
       let t:sort_order = g:f2_default_sort_order
@@ -730,8 +762,10 @@ function! <SID>create_jumplines(buflist, activebufline)
 endfunction
 
 function! <SID>clear_search_mode()
-  call <SID>reset_search_letters()
-  let s:search_mode = 0
+  let s:search_letters          = []
+  let s:search_mode             = 0
+  let t:f2_search_history_index = -1
+
   call <SID>kill(0, 0)
   call <SID>f2_toggle(1)
 endfunction
@@ -751,7 +785,12 @@ function! <SID>remove_search_letter()
 endfunction
 
 function! <SID>switch_search_mode(switch)
+  if (a:switch == 0) && !empty(s:search_letters)
+    call <SID>append_to_search_history()
+  endif
+
   let s:search_mode = a:switch
+
   call <SID>kill(0, 0)
   call <SID>f2_toggle(1)
 endfunction
@@ -851,6 +890,10 @@ function! <SID>keypressed(key)
         call <SID>toggle_file_mode()
       elseif a:key ==# "q"
         call <SID>kill(0, 1)
+      elseif a:key ==# "b"
+        call <SID>restore_search_letters("previous")
+      elseif a:key ==# "B"
+        call <SID>restore_search_letters("next")
       end
     endif
 
@@ -931,7 +974,9 @@ function! <SID>keypressed(key)
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "b"
-      call <SID>restore_last_search()
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "B"
+      call <SID>restore_search_letters("next")
     endif
   else
     if a:key ==# "CR"
@@ -1012,7 +1057,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "b"
-      call <SID>restore_last_search()
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "B"
+      call <SID>restore_search_letters("next")
     elseif a:key ==# "?"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
