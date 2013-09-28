@@ -72,9 +72,9 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
-let s:files               = []
-let s:file_sort_order     = g:f2_default_file_sort_order
-let s:preview_mode        = 0
+let s:files           = []
+let s:file_sort_order = g:f2_default_file_sort_order
+let s:preview_mode    = 0
 
 au BufEnter * call <SID>add_tab_buffer()
 
@@ -582,6 +582,7 @@ function! <SID>restore_search_letters(direction)
     let s:search_letters = []
   else
     let s:search_letters = copy(reverse(copy(t:f2_search_history))[t:f2_search_history_index])
+    let s:restored_search_mode = 1
   endif
 
   call <SID>kill(0, 0)
@@ -596,6 +597,7 @@ function! <SID>f2_toggle(internal)
     let s:new_search_performed    = 0
     let s:search_mode             = 0
     let s:file_mode               = 0
+    let s:restored_search_mode    = 0
     let s:search_letters          = []
     let t:f2_search_history_index = -1
 
@@ -860,6 +862,10 @@ function! <SID>kill(buflistnr, final)
   end
 
   if a:final
+    if s:restored_search_mode
+      call <SID>append_to_search_history()
+    endif
+
     call <SID>go_to_start_window()
 
     if s:preview_mode
