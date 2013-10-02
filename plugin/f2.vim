@@ -295,9 +295,9 @@ function! F2TabLine()
       if empty(bufname)
         let label = '[' . bufnr . '*No Name]'
       elseif bufname ==# "__F2__"
-        let label = "F2 selector..."
+        let label = "F2 selector" . (g:f2_unicode_font ? "…" : "...")
       else
-        let label = fnamemodify(bufname, ':t')
+        let label = "[" . fnamemodify(bufname, ':t') . "]"
       endif
     endif
 
