@@ -265,8 +265,9 @@ function! F2StatusLineInfoSegment(...)
 endfunction
 
 function! F2TabLine()
-  let last_tab = tabpagenr("$")
-  let tabline = ''
+  let last_tab    = tabpagenr("$")
+  let current_tab = tabpagenr()
+  let tabline     = ''
 
   for t in range(1, last_tab)
     let winnr               = tabpagewinnr(t)
@@ -289,20 +290,22 @@ function! F2TabLine()
       endif
     endif
 
-    let label = gettabvar(t, "f2_label")
+    if empty(bufname)
+      let label = "[" . bufnr . "*No Name]"
+    elseif bufname ==# "__F2__"
+      let label = "[" . (g:f2_unicode_font ? "ϝ₂" : "F2") . "]"
+    else
+      let label = "[" . fnamemodify(bufname, ':t') . "]"
+    endif
 
-    if empty(label)
-      if empty(bufname)
-        let label = '[' . bufnr . '*No Name]'
-      elseif bufname ==# "__F2__"
-        let label = "F2 selector" . (g:f2_unicode_font ? "…" : "...")
-      else
-        let label = "[" . fnamemodify(bufname, ':t') . "]"
-      endif
+    let f2_label = gettabvar(t, "f2_label")
+
+    if !empty(f2_label)
+      let label = (t == current_tab ? f2_label . " " . label : f2_label)
     endif
 
     let tabline .= '%' . t . 'T'
-    let tabline .= (t == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#')
+    let tabline .= (t == current_tab ? '%#TabLineSel#' : '%#TabLine#')
     let tabline .= ' ' . t . bufs_number_to_show . ' '
 
     if <SID>tab_contains_modified_buffers(t)
