@@ -292,17 +292,17 @@ function! F2TabLine()
     endif
 
     if empty(bufname)
-      let label = "[" . bufnr . "*No Name]"
+      let title = "[" . bufnr . "*No Name]"
     elseif bufname ==# "__F2__"
-      let label = "[" . (g:f2_unicode_font ? "ϝ₂" : "F2") . "]"
+      let title = "[" . (g:f2_unicode_font ? "ϝ₂" : "F2") . "]"
     else
-      let label = "[" . fnamemodify(bufname, ':t') . "]"
+      let title = "[" . fnamemodify(bufname, ':t') . "]"
     endif
 
-    let f2_label = gettabvar(t, "f2_label")
+    let label = gettabvar(t, "f2_label")
 
-    if !empty(f2_label)
-      let label = ((t == current_tab) && g:f2_enable_filenames_in_labeled_tabs ? f2_label . " " . label : f2_label)
+    if !empty(label)
+      let title = ((t == current_tab) && g:f2_enable_filenames_in_labeled_tabs ? label . " " . title : label)
     endif
 
     let tabline .= '%' . t . 'T'
@@ -313,7 +313,7 @@ function! F2TabLine()
       let tabline .= '+ '
     endif
 
-    let tabline .= label . ' '
+    let tabline .= title . ' '
   endfor
 
   let tabline .= '%#TabLineFill#%T'
