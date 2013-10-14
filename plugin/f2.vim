@@ -42,7 +42,7 @@ call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("enable_tabline", 1)
-call <SID>define_config_variable("enable_filenames_in_labeled_tabs", 1)
+call <SID>define_config_variable("enable_filenames_in_labeled_tabs", 0)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
