@@ -182,9 +182,13 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "n")
     call add(keys, "d")
     call add(keys, "D")
-    call add(keys, "f")
+    if s:single_tab_mode
+      call add(keys, "f")
+    endif
     call add(keys, "F")
-    call add(keys, "c")
+    if s:single_tab_mode
+      call add(keys, "c")
+    endif
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1055,11 +1059,11 @@ function! <SID>keypressed(key)
       call <SID>move(line("$"))
     elseif a:key ==# "a"
       call <SID>toggle_single_tab_mode()
-    elseif a:key ==# "f"
+    elseif a:key ==# "f" && s:single_tab_mode
       call <SID>detach_buffer()
     elseif a:key ==# "F"
       call <SID>delete_foreign_buffers()
-    elseif a:key ==# "c"
+    elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
