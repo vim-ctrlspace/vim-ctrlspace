@@ -1067,7 +1067,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
     elseif a:key ==# "e"
-      call <SID>edit_new_file_in_place()
+      call <SID>add_new_sibling()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1672,7 +1672,7 @@ function! <SID>refresh_files()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>edit_new_file_in_place()
+function! <SID>add_new_sibling()
   let nr      = <SID>get_selected_buffer()
   let current = bufname(nr)
   let path    = fnamemodify(resolve(current), ":h")
