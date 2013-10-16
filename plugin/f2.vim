@@ -184,6 +184,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "D")
     call add(keys, "f")
     call add(keys, "F")
+    call add(keys, "c")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1054,9 +1055,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "a"
       call <SID>toggle_single_tab_mode()
     elseif a:key ==# "f"
-      call <SID>detach_f2_buffer()
+      call <SID>detach_buffer()
     elseif a:key ==# "F"
       call <SID>delete_foreign_buffers()
+    elseif a:key ==# "c"
+      call <SID>close_buffer()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1663,8 +1666,29 @@ function! <SID>refresh_files()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>detach_f2_buffer()
+" Detach a buffer if it belongs to other tabs or delete it otherwise.
+" It means, this function doesn't leave buffers without tabs.
+function! <SID>close_buffer()
+  let nr         = <SID>get_selected_buffer()
+  let found_tabs = 0
+
+  for t in range(1, tabpagenr('$'))
+    let f2_list = gettabvar(t, 'f2_list')
+    if !empty(f2_list) && exists("f2_list[" . nr . "]")
+      let found_tabs += 1
+    endif
+  endfor
+
+  if found_tabs > 1
+    call <SID>detach_buffer()
+  else
+    call <SID>delete_buffer()
+  endif
+endfunction
+
+function! <SID>detach_buffer()
   let nr = <SID>get_selected_buffer()
+
   if exists('t:f2_list[' . nr . ']')
     let selected_buffer_window = bufwinnr(nr)
     if selected_buffer_window != -1
@@ -1682,4 +1706,6 @@ function! <SID>detach_f2_buffer()
     call remove(t:f2_list, nr)
     call <SID>f2_toggle(1)
   endif
+
+  return nr
 endfunction
