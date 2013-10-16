@@ -683,6 +683,7 @@ function! <SID>f2_toggle(internal)
 
       let raw_name = bufname
 
+      " TODO add unicode modifier condition here
       if strlen(bufname) + 6 > width
         let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
       endif
@@ -1246,10 +1247,13 @@ function! <SID>display_list(displayedbufs, buflist, width)
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
     endif
 
+    " trim the list in search mode
+    let buflist = s:search_mode && (len(a:buflist) > g:f2_max_height) ? a:buflist[-g:f2_max_height : -1] : a:buflist
+
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
 
-    for bufentry in a:buflist
+    for bufentry in buflist
       let buftext .= bufentry.text
     endfor
 
@@ -1268,13 +1272,8 @@ function! <SID>display_list(displayedbufs, buflist, width)
     let width = a:width
 
     if width < (strlen(empty_list_message) + 2)
-      if strlen(empty_list_message) + 2 < g:f2_max_width
-        let width = strlen(empty_list_message) + 2
-      else
-        let width = g:f2_max_width
-        let empty_list_message = strpart(empty_list_message, 0, width - 3) . "…"
-      endif
-      silent! exe "vert resize " . width
+      " TODO Add a conditional for unicode modifier here
+      let empty_list_message = strpart(empty_list_message, 0, width - 3) . "…"
     endif
 
     while strlen(empty_list_message) < width
