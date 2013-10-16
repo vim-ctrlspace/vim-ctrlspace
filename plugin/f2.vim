@@ -189,6 +189,7 @@ function! F2StatusLineKeyInfoSegment(...)
     if s:single_tab_mode
       call add(keys, "c")
     endif
+    call add(keys, "e")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1065,6 +1066,8 @@ function! <SID>keypressed(key)
       call <SID>delete_foreign_buffers()
     elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
+    elseif a:key ==# "e"
+      call <SID>edit_new_file_in_place()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1668,6 +1671,32 @@ function! <SID>refresh_files()
   call <SID>kill(0, 0)
   call <SID>f2_toggle(1)
 endfunction
+
+function! <SID>edit_new_file_in_place()
+  let nr      = <SID>get_selected_buffer()
+  let current = bufname(nr)
+  let path    = fnamemodify(resolve(current), ":h")
+
+  if !filereadable(current)
+    return
+  endif
+
+  call inputsave()
+  let new_file = input('Add a new sibling: ' . path . '/')
+  call inputrestore()
+  redraw!
+
+  if empty(new_file)
+    return
+  endif
+
+  call <SID>kill(0, 0)
+  call <SID>go_to_start_window()
+
+  silent! exe "e " . path . "/" . new_file
+
+  call <SID>f2_toggle(1)
+endfunction!
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
 " It means, this function doesn't leave buffers without tabs.
