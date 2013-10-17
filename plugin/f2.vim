@@ -1682,7 +1682,7 @@ function! <SID>edit_new_sibling()
   endif
 
   call inputsave()
-  let new_file = input('Edit a sibling: ' . path . '/')
+  let new_file = input("F2: edit a sibling: " . path . '/')
   call inputrestore()
   redraw!
 
