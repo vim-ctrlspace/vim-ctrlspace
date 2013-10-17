@@ -1685,7 +1685,7 @@ function! <SID>rename_file()
   endif
 
   call inputsave()
-  let new_file = input("F2: Rename file: ", path, "file")
+  let new_file = input("F2: Rename " . path . " to: ", path, "file")
   call inputrestore()
   redraw!
 
@@ -1714,11 +1714,11 @@ function! <SID>edit_file()
   endif
 
   call inputsave()
-  let new_file = input("F2: Edit file: ", path . '/', "file")
+  let new_file = input("F2: Edit a new file: ", path . '/', "file")
   call inputrestore()
   redraw!
 
-  if empty(new_file)
+  if empty(new_file) || isdirectory(new_file)
     return
   endif
 
