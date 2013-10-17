@@ -190,6 +190,7 @@ function! F2StatusLineKeyInfoSegment(...)
       call add(keys, "c")
     endif
     call add(keys, "e")
+    call add(keys, "r")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1067,7 +1068,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
     elseif a:key ==# "e"
-      call <SID>edit_new_sibling()
+      call <SID>edit_file()
+    elseif a:key ==# "r"
+      call <SID>rename_file()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1672,17 +1675,17 @@ function! <SID>refresh_files()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>edit_new_sibling()
+function! <SID>rename_file()
   let nr      = <SID>get_selected_buffer()
   let current = bufname(nr)
-  let path    = fnamemodify(resolve(current), ":h")
+  let path    = fnamemodify(resolve(current), ":.")
 
   if !filereadable(current)
     return
   endif
 
   call inputsave()
-  let new_file = input("F2: edit a sibling: " . path . '/')
+  let new_file = input("F2: Rename file: ", path, "file")
   call inputrestore()
   redraw!
 
@@ -1693,7 +1696,36 @@ function! <SID>edit_new_sibling()
   call <SID>kill(0, 0)
   call <SID>go_to_start_window()
 
-  silent! exe "e " . path . "/" . new_file
+  call rename(path, new_file)
+  silent! exe "f " . new_file
+
+  let s:files = []
+
+  call <SID>f2_toggle(1)
+endfunction
+
+function! <SID>edit_file()
+  let nr      = <SID>get_selected_buffer()
+  let current = bufname(nr)
+  let path    = fnamemodify(resolve(current), ":.:h")
+
+  if !filereadable(current)
+    return
+  endif
+
+  call inputsave()
+  let new_file = input("F2: Edit file: ", path . '/', "file")
+  call inputrestore()
+  redraw!
+
+  if empty(new_file)
+    return
+  endif
+
+  call <SID>kill(0, 0)
+  call <SID>go_to_start_window()
+
+  silent! exe "e " . new_file
 
   call <SID>f2_toggle(1)
 endfunction!
