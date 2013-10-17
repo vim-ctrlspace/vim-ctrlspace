@@ -1685,7 +1685,7 @@ function! <SID>rename_file()
   endif
 
   call inputsave()
-  let new_file = input("F2: Rename " . path . " to: ", path, "file")
+  let new_file = input("F2: Rename file to: ", path, "file")
   call inputrestore()
   redraw!
 
