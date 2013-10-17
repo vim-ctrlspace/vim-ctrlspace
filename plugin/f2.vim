@@ -189,7 +189,7 @@ function! F2StatusLineKeyInfoSegment(...)
     if s:single_tab_mode
       call add(keys, "c")
     endif
-    call add(keys, "+")
+    call add(keys, "e")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1066,8 +1066,8 @@ function! <SID>keypressed(key)
       call <SID>delete_foreign_buffers()
     elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
-    elseif a:key ==# "+"
-      call <SID>add_new_sibling()
+    elseif a:key ==# "e"
+      call <SID>edit_new_sibling()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1672,7 +1672,7 @@ function! <SID>refresh_files()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>add_new_sibling()
+function! <SID>edit_new_sibling()
   let nr      = <SID>get_selected_buffer()
   let current = bufname(nr)
   let path    = fnamemodify(resolve(current), ":h")
@@ -1682,7 +1682,7 @@ function! <SID>add_new_sibling()
   endif
 
   call inputsave()
-  let new_file = input('Add a new sibling: ' . path . '/')
+  let new_file = input('Edit a sibling: ' . path . '/')
   call inputrestore()
   redraw!
 
