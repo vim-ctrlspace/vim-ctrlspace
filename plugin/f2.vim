@@ -1501,7 +1501,13 @@ function! <SID>delete_buffer()
       if <SID>get_selected_buffer() == nr
         call <SID>move("up")
         if <SID>get_selected_buffer() == nr
-          call <SID>kill(0, 0)
+          if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
+            call <SID>kill(0, 0)
+            silent! exe selected_buffer_window . "wincmd w"
+            enew
+          else
+            return
+          endif
         else
           call <SID>load_buffer_into_window(selected_buffer_window)
         endif
@@ -1511,7 +1517,37 @@ function! <SID>delete_buffer()
     else
       call <SID>kill(0, 0)
     endif
-    exec ":bdelete " . nr
+
+    let current_tab = tabpagenr()
+
+    for t in range(1, tabpagenr('$'))
+      if t == current_tab
+        continue
+      endif
+
+      for b in tabpagebuflist(t)
+        if b == nr
+          silent! exe "tabn " . t
+
+          let tab_window = bufwinnr(b)
+          let f2_list    = gettabvar(t, "f2_list")
+
+          call remove(f2_list, nr)
+
+          silent! exe tab_window . "wincmd w"
+
+          if !empty(f2_list)
+            silent! exe "b" . keys(f2_list)[0]
+          else
+            enew
+          endif
+        endif
+      endfor
+    endfor
+
+    silent! exe "tabn " . current_tab
+    silent! exe "bdelete " . nr
+
     call <SID>forget_buffers_in_all_tabs([nr])
     call <SID>f2_toggle(1)
   endif
@@ -1696,23 +1732,9 @@ function! <SID>remove_file()
     return
   endif
 
-  call <SID>kill(0, 0)
-  call <SID>go_to_start_window()
-
-  let bufcount        = bufnr('$')
-  let deleted_buffers = []
-  let s:files         = []
-
-  for i in range(1, bufcount)
-    if fnamemodify(bufname(i), ":.") == path
-      exec ":bwipeout! " . i
-      call add(deleted_buffers, i)
-    endif
-  endfor
-
+  call <SID>delete_buffer()
+  let s:files = []
   call delete(path)
-  call <SID>forget_buffers_in_all_tabs(deleted_buffers)
-  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>move_file()
@@ -1800,10 +1822,19 @@ function! <SID>detach_buffer()
       if <SID>get_selected_buffer() == nr
         call <SID>move("up")
         if <SID>get_selected_buffer() == nr
-          return
+          if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
+            call <SID>kill(0, 0)
+            silent! exe selected_buffer_window . "wincmd w"
+            enew
+          else
+            return
+          endif
+        else
+          call <SID>load_buffer_into_window(selected_buffer_window)
         endif
+      else
+        call <SID>load_buffer_into_window(selected_buffer_window)
       endif
-      call <SID>load_buffer_into_window(selected_buffer_window)
     else
       call <SID>kill(0, 0)
     endif
