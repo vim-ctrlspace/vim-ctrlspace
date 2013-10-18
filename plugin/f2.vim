@@ -191,6 +191,7 @@ function! F2StatusLineKeyInfoSegment(...)
     endif
     call add(keys, "e")
     call add(keys, "r")
+    call add(keys, "m")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -1070,7 +1071,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "e"
       call <SID>edit_file()
     elseif a:key ==# "r"
-      call <SID>rename_file()
+      call <SID>remove_file()
+    elseif a:key ==# "m"
+      call <SID>move_file()
     elseif a:key ==# "S"
       call <SID>kill(0, 1)
       call <SID>save_session()
@@ -1675,7 +1678,44 @@ function! <SID>refresh_files()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>rename_file()
+function! <SID>remove_file()
+  let nr      = <SID>get_selected_buffer()
+  let current = bufname(nr)
+  let path    = fnamemodify(resolve(current), ":.")
+
+  if empty(path) || !filereadable(current) || isdirectory(path)
+    return
+  endif
+
+  call inputsave()
+  let confirmation = input("F2: Remove file '" . path . "'? (type 'yes' to confirm): ")
+  call inputrestore()
+  redraw!
+
+  if confirmation !=? "yes"
+    return
+  endif
+
+  call <SID>kill(0, 0)
+  call <SID>go_to_start_window()
+
+  let bufcount        = bufnr('$')
+  let deleted_buffers = []
+  let s:files         = []
+
+  for i in range(1, bufcount)
+    if fnamemodify(bufname(i), ":.") == path
+      exec ":bwipeout! " . i
+      call add(deleted_buffers, i)
+    endif
+  endfor
+
+  call delete(path)
+  call <SID>forget_buffers_in_all_tabs(deleted_buffers)
+  call <SID>f2_toggle(1)
+endfunction
+
+function! <SID>move_file()
   let nr      = <SID>get_selected_buffer()
   let current = bufname(nr)
   let path    = fnamemodify(resolve(current), ":.")
@@ -1685,7 +1725,7 @@ function! <SID>rename_file()
   endif
 
   call inputsave()
-  let new_file = input("F2: Rename file to: ", path, "file")
+  let new_file = input("F2: Move file to: ", path, "file")
   call inputrestore()
   redraw!
 
