@@ -1463,7 +1463,7 @@ function! <SID>load_file(...)
   exec ":e " . file
 endfunction
 
-function! <SID>preview_buffer()
+function! <SID>preview_buffer(...)
   if !s:preview_mode
     let s:preview_mode = 1
     let s:preview_mode_orginal_buffer = winbufnr(t:f2_start_window)
@@ -1474,8 +1474,13 @@ function! <SID>preview_buffer()
   call <SID>kill(0, 0)
 
   call <SID>go_to_start_window()
-  exec ":b " . nr
-  exec "normal! zb"
+  silent! exe ":b " . nr
+
+  let custom_commands = !empty(a:000) ? a:1 : ["normal! zb"]
+
+  for c in custom_commands
+    silent! exe c
+  endfor
 
   call <SID>f2_toggle(1)
 endfunction
@@ -1755,14 +1760,14 @@ function! <SID>move_file()
     return
   endif
 
-  call <SID>kill(0, 0)
-  call <SID>go_to_start_window()
-
   call rename(path, new_file)
-  silent! exe "f " . new_file
+
+  let commands = ["f " . new_file, "w!"]
+  call <SID>preview_buffer(commands)
 
   let s:files = []
 
+  call <SID>kill(0, 1)
   call <SID>f2_toggle(1)
 endfunction
 
@@ -1771,7 +1776,7 @@ function! <SID>edit_file()
   let current = bufname(nr)
   let path    = fnamemodify(resolve(current), ":.:h")
 
-  if !filereadable(current)
+  if !isdirectory(path)
     return
   endif
 
