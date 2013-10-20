@@ -1,6 +1,6 @@
 " Vim-F2 - A buffers manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.3
+" Version:      3.1.4
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -41,6 +41,7 @@ call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
+call <SID>define_config_variable("use_ruby_bindings", 1)
 
 " 0 - no custom tabline, 1 - current label without filename, 2 - current label with filename
 call <SID>define_config_variable("custom_tabline", 1)
@@ -517,39 +518,43 @@ function! <SID>find_subsequence(bufname, offset)
 endfunction
 
 function! <SID>find_lowest_search_noise(bufname)
-  let search_letters_count = len(s:search_letters)
-  let noise                = -1
-  let matched_string       = ""
-
-  if search_letters_count == 0
-    return 0
-  elseif search_letters_count == 1
-    let noise          = match(a:bufname, "\\m\\c" . s:search_letters[0])
-    let matched_string = s:search_letters[0]
+  if has("ruby") && g:f2_use_ruby_bindings
+    ruby VIM.command("return #{F2.find_lowest_search_noise(VIM.evaluate('a:bufname'))}")
   else
-    let offset      = 0
-    let bufname_len = strlen(a:bufname)
+    let search_letters_count = len(s:search_letters)
+    let noise                = -1
+    let matched_string       = ""
 
-    while offset < bufname_len
-      let subseq = <SID>find_subsequence(a:bufname, offset)
+    if search_letters_count == 0
+      return 0
+    elseif search_letters_count == 1
+      let noise          = match(a:bufname, "\\m\\c" . s:search_letters[0])
+      let matched_string = s:search_letters[0]
+    else
+      let offset      = 0
+      let bufname_len = strlen(a:bufname)
 
-      if subseq[0] == -1
-        break
-      elseif (noise == -1) || (subseq[0] < noise)
-        let noise          = subseq[0]
-        let offset         = subseq[1][0] + 1
-        let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
-      else
-        let offset += 1
-      endif
-    endwhile
+      while offset < bufname_len
+        let subseq = <SID>find_subsequence(a:bufname, offset)
+
+        if subseq[0] == -1
+          break
+        elseif (noise == -1) || (subseq[0] < noise)
+          let noise          = subseq[0]
+          let offset         = subseq[1][0] + 1
+          let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
+        else
+          let offset += 1
+        endif
+      endwhile
+    endif
+
+    if (noise > -1) && !empty(matched_string)
+      let b:search_patterns[matched_string] = 1
+    endif
+
+    return noise
   endif
-
-  if (noise > -1) && !empty(matched_string)
-    let b:search_patterns[matched_string] = 1
-  endif
-
-  return noise
 endfunction
 
 function! <SID>display_search_patterns()
@@ -1849,3 +1854,14 @@ function! <SID>detach_buffer()
 
   return nr
 endfunction
+
+if !(has("ruby") && g:f2_use_ruby_bindings)
+  finish
+endif
+
+let s:f2_folder = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
+ruby << EOF
+require "pathname"
+require Pathname.new(VIM.evaluate("s:f2_folder")).parent.join("ruby", "f2").to_s
+EOF
