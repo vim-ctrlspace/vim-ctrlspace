@@ -1,6 +1,6 @@
 " Vim-F2 - A buffers manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.4
+" Version:      3.1.5
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -191,6 +191,7 @@ function! F2StatusLineKeyInfoSegment(...)
       call add(keys, "c")
     endif
     call add(keys, "e")
+    call add(keys, "E")
     call add(keys, "r")
     call add(keys, "m")
     call add(keys, "a")
@@ -1075,6 +1076,8 @@ function! <SID>keypressed(key)
       call <SID>close_buffer()
     elseif a:key ==# "e"
       call <SID>edit_file()
+    elseif a:key ==# "E"
+      call <SID>explore_directory()
     elseif a:key ==# "r"
       call <SID>remove_file()
     elseif a:key ==# "m"
@@ -1748,8 +1751,7 @@ function! <SID>remove_file()
 endfunction
 
 function! <SID>move_file()
-  let nr      = <SID>get_selected_buffer()
-  let current = bufname(nr)
+  let current = bufname(<SID>get_selected_buffer())
   let path    = fnamemodify(resolve(current), ":.")
 
   if !filereadable(current)
@@ -1776,10 +1778,19 @@ function! <SID>move_file()
   call <SID>f2_toggle(1)
 endfunction
 
+function! <SID>explore_directory()
+  let path = fnamemodify(resolve(bufname(<SID>get_selected_buffer())), ":.:h")
+
+  if !isdirectory(path)
+    return
+  endif
+
+  call <SID>kill(0, 1)
+  silent! exe "e " . path
+endfunction!
+
 function! <SID>edit_file()
-  let nr      = <SID>get_selected_buffer()
-  let current = bufname(nr)
-  let path    = fnamemodify(resolve(current), ":.:h")
+  let path = fnamemodify(resolve(bufname(<SID>get_selected_buffer())), ":.:h")
 
   if !isdirectory(path)
     return
