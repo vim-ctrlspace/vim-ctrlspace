@@ -1,4 +1,4 @@
-" Vim-F2 - A buffers manager
+" Vim-F2 - A smart buffer manager
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.5
 "
@@ -159,6 +159,10 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "r")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "e")
+    call add(keys, "E")
+    call add(keys, "R")
+    call add(keys, "m")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -192,7 +196,7 @@ function! F2StatusLineKeyInfoSegment(...)
     endif
     call add(keys, "e")
     call add(keys, "E")
-    call add(keys, "r")
+    call add(keys, "R")
     call add(keys, "m")
     call add(keys, "a")
     call add(keys, "A")
@@ -1004,6 +1008,14 @@ function! <SID>keypressed(key)
       call <SID>restore_search_letters("previous")
     elseif a:key ==# "C-n"
       call <SID>restore_search_letters("next")
+    elseif a:key ==# "e"
+      call <SID>edit_file()
+    elseif a:key ==# "E"
+      call <SID>explore_directory()
+    elseif a:key ==# "R"
+      call <SID>remove_file()
+    elseif a:key ==# "m"
+      call <SID>move_file()
     endif
   else
     if a:key ==# "CR"
@@ -1011,7 +1023,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Space"
       call <SID>load_many_buffers()
     elseif (a:key ==# "C-Space") || (a:key ==# "Nul")
-      call <SID>preview_buffer()
+      call <SID>preview_buffer(0)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
@@ -1078,7 +1090,7 @@ function! <SID>keypressed(key)
       call <SID>edit_file()
     elseif a:key ==# "E"
       call <SID>explore_directory()
-    elseif a:key ==# "r"
+    elseif a:key ==# "R"
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
@@ -1471,13 +1483,13 @@ function! <SID>load_file(...)
   exec ":e " . file
 endfunction
 
-function! <SID>preview_buffer(...)
+function! <SID>preview_buffer(nr, ...)
   if !s:preview_mode
     let s:preview_mode = 1
     let s:preview_mode_orginal_buffer = winbufnr(t:f2_start_window)
   endif
 
-  let nr = <SID>get_selected_buffer()
+  let nr = a:nr ? a:nr : <SID>get_selected_buffer()
 
   call <SID>kill(0, 0)
 
@@ -1728,11 +1740,10 @@ function! <SID>refresh_files()
 endfunction
 
 function! <SID>remove_file()
-  let nr      = <SID>get_selected_buffer()
-  let current = bufname(nr)
-  let path    = fnamemodify(resolve(current), ":.")
+  let nr   = <SID>get_selected_buffer()
+  let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
 
-  if empty(path) || !filereadable(current) || isdirectory(path)
+  if empty(path) || !filereadable(path) || isdirectory(path)
     return
   endif
 
@@ -1748,13 +1759,16 @@ function! <SID>remove_file()
   call <SID>delete_buffer()
   let s:files = []
   call delete(path)
+
+  call <SID>kill(0, 0)
+  call <SID>f2_toggle(1)
 endfunction
 
 function! <SID>move_file()
-  let current = bufname(<SID>get_selected_buffer())
-  let path    = fnamemodify(resolve(current), ":.")
+  let nr   = <SID>get_selected_buffer()
+  let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
 
-  if !filereadable(current)
+  if !filereadable(path) || isdirectory(path)
     return
   endif
 
@@ -1767,10 +1781,21 @@ function! <SID>move_file()
     return
   endif
 
+  let buffer_names = {}
+
+  " must be collected BEFORE actual file renaming
+  for b in range(1, bufnr('$'))
+    let buffer_names[b] = fnamemodify(resolve(bufname(b)), ":.")
+  endfor
+
   call rename(path, new_file)
 
-  let commands = ["f " . new_file, "w!"]
-  call <SID>preview_buffer(commands)
+  for [b, name] in items(buffer_names)
+    if name == path
+      let commands = ["f " . new_file, "w!"]
+      call <SID>preview_buffer(str2nr(b), commands)
+    endif
+  endfor
 
   let s:files = []
 
@@ -1779,7 +1804,8 @@ function! <SID>move_file()
 endfunction
 
 function! <SID>explore_directory()
-  let path = fnamemodify(resolve(bufname(<SID>get_selected_buffer())), ":.:h")
+  let nr   = <SID>get_selected_buffer()
+  let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.:h")
 
   if !isdirectory(path)
     return
@@ -1790,7 +1816,8 @@ function! <SID>explore_directory()
 endfunction!
 
 function! <SID>edit_file()
-  let path = fnamemodify(resolve(bufname(<SID>get_selected_buffer())), ":.:h")
+  let nr   = <SID>get_selected_buffer()
+  let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.:h")
 
   if !isdirectory(path)
     return
@@ -1805,12 +1832,10 @@ function! <SID>edit_file()
     return
   endif
 
-  call <SID>kill(0, 0)
-  call <SID>go_to_start_window()
+  let s:files = []
 
+  call <SID>kill(0, 1)
   silent! exe "e " . new_file
-
-  call <SID>f2_toggle(1)
 endfunction!
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
