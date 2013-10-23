@@ -152,6 +152,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
+    call add(keys, "T")
     call add(keys, "0..9")
     call add(keys, "+")
     call add(keys, "-")
@@ -159,6 +160,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "_")
     call add(keys, "o")
     call add(keys, "q")
+    call add(keys, "Q")
     call add(keys, "r")
     call add(keys, "j")
     call add(keys, "k")
@@ -181,6 +183,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
+    call add(keys, "T")
     call add(keys, "0..9")
     call add(keys, "+")
     call add(keys, "-")
@@ -188,6 +191,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "_")
     call add(keys, "o")
     call add(keys, "q")
+    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "k")
     call add(keys, "p")
@@ -916,6 +920,12 @@ function! <SID>show_help()
   silent! exe "help f2-keys"
 endfunction
 
+function! <SID>load_tab(key)
+  call <SID>kill(0, 1)
+  silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+  call <SID>f2_toggle(0)
+endfunction
+
 function! <SID>keypressed(key)
   if s:nop_mode
     if !s:search_mode
@@ -983,24 +993,29 @@ function! <SID>keypressed(key)
       call <SID>load_file("sp")
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
+    elseif a:key ==# "T"
+      call <SID>kill(0, 1)
+      silent! exe "tabnew"
     elseif a:key ==# "="
       call <SID>new_tab_label()
     elseif a:key =~? "^[0-9]$"
-      call <SID>kill(0, 1)
-      silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
-      call <SID>f2_toggle(0)
+      call <SID>load_tab(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm+1"
     elseif a:key ==# "-"
       silent! exe "tabm-1"
     elseif a:key ==# "_"
       let t:f2_label = ""
+      redraw!
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "r"
       call <SID>refresh_files()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>kill(0, 1)
+      silent! exe "tabclose"
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1062,19 +1077,27 @@ function! <SID>keypressed(key)
       call <SID>load_buffer("sp")
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
+    elseif a:key ==# "T"
+      call <SID>kill(0, 1)
+      silent! exe "tabnew"
     elseif a:key ==# "="
       call <SID>new_tab_label()
     elseif a:key =~? "^[0-9]$"
-      call <SID>kill(0, 1)
-      silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+      call <SID>load_tab(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm+1"
     elseif a:key ==# "-"
       silent! exe "tabm-1"
+    elseif a:key ==# "_"
+      let t:f2_label = ""
+      redraw!
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_order()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>kill(0, 1)
+      silent! exe "tabclose"
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1204,7 +1227,7 @@ function! <SID>set_up_buffer()
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
   let uppercase_letters = toupper(lowercase_letters)
   let numbers           = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars     = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _  = ! @ # $ % ^ & * " .
+  let special_chars     = "Space CR BS / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
         \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar C-n C-p"
 
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
