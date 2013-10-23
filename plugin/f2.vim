@@ -936,7 +936,14 @@ function! <SID>tab_command(key)
   elseif a:key ==# "]"
     silent! exe "normal! gt"
   else
-    silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+    let tab_nr   = str2nr((a:key == "0") ? "10" : a:key)
+    let last_tab = tabpagenr("$")
+
+    if tab_nr > last_tab
+      let tab_nr = last_tab
+    endif
+
+    silent! exe "normal! " . tab_nr . "gt"
   endif
 
   call <SID>f2_toggle(0)
