@@ -920,9 +920,17 @@ function! <SID>show_help()
   silent! exe "help f2-keys"
 endfunction
 
-function! <SID>load_tab(key)
+function! <SID>tab_command(key)
   call <SID>kill(0, 1)
-  silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+
+  if a:key ==# "T"
+    silent! exe "tabnew"
+  elseif a:key ==# "Q"
+    silent! exe "tabclose"
+  else
+    silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+  endif
+
   call <SID>f2_toggle(0)
 endfunction
 
@@ -994,12 +1002,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
     elseif a:key ==# "T"
-      call <SID>kill(0, 1)
-      silent! exe "tabnew"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
     elseif a:key =~? "^[0-9]$"
-      call <SID>load_tab(a:key)
+      call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm+1"
     elseif a:key ==# "-"
@@ -1014,8 +1021,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
-      call <SID>kill(0, 1)
-      silent! exe "tabclose"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1078,12 +1084,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
     elseif a:key ==# "T"
-      call <SID>kill(0, 1)
-      silent! exe "tabnew"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
     elseif a:key =~? "^[0-9]$"
-      call <SID>load_tab(a:key)
+      call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm+1"
     elseif a:key ==# "-"
@@ -1096,8 +1101,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
-      call <SID>kill(0, 1)
-      silent! exe "tabclose"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
