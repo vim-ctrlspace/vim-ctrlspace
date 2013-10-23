@@ -1,6 +1,6 @@
 " Vim-F2 - A smart buffer manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.5
+" Version:      3.1.6
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -35,7 +35,6 @@ call <SID>define_config_variable("max_height", 15)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<F2>")
-call <SID>define_config_variable("default_label_mapping_key", "<F12>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("max_searches", 100)
@@ -52,7 +51,7 @@ call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
 call <SID>define_config_variable("show_key_info", 100)
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
-command! -nargs=0 -range F2Label :call <SID>new_tab_label()
+command! -nargs=0 -range F2TabLabel :call <SID>new_tab_label()
 command! -nargs=0 -range F2SessionSave :call <SID>save_session()
 command! -nargs=0 -range -bang F2SessionLoad :call <SID>load_session(<bang>0)
 
@@ -73,7 +72,6 @@ endfunction
 
 if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_mapping_key, ":F2<CR>")
-  call <SID>set_default_mapping(g:f2_default_label_mapping_key, ":F2Label<CR>")
 endif
 
 let s:files           = []
@@ -154,6 +152,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
+    call add(keys, "T")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "r")
@@ -178,6 +177,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
+    call add(keys, "T")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "j")
@@ -344,7 +344,7 @@ endfunction
 
 function! <SID>new_tab_label()
   call inputsave()
-  let t:f2_label = input('Label for tab ' . tabpagenr() . ': ')
+  let t:f2_label = input('Label for tab ' . tabpagenr() . ': ', exists("t:f2_label") ? t:f2_label : "")
   call inputrestore()
   redraw!
 endfunction
@@ -975,6 +975,8 @@ function! <SID>keypressed(key)
       call <SID>load_file("sp")
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
+    elseif a:key ==# "T"
+      call <SID>new_tab_label()
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "r"
@@ -1042,6 +1044,8 @@ function! <SID>keypressed(key)
       call <SID>load_buffer("sp")
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
+    elseif a:key ==# "T"
+      call <SID>new_tab_label()
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_order()
     elseif a:key ==# "q"
