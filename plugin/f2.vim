@@ -152,7 +152,10 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
-    call add(keys, "T")
+    call add(keys, "0..9")
+    call add(keys, "+")
+    call add(keys, "-")
+    call add(keys, "=")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "r")
@@ -177,7 +180,10 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
-    call add(keys, "T")
+    call add(keys, "0..9")
+    call add(keys, "+")
+    call add(keys, "-")
+    call add(keys, "=")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "j")
@@ -975,8 +981,15 @@ function! <SID>keypressed(key)
       call <SID>load_file("sp")
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
-    elseif a:key ==# "T"
+    elseif a:key ==# "="
       call <SID>new_tab_label()
+    elseif a:key =~? "^[0-9]$"
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+    elseif a:key ==# "+"
+      silent! exe "tabm+1"
+    elseif a:key ==# "-"
+      silent! exe "tabm-1"
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "r"
@@ -1044,8 +1057,15 @@ function! <SID>keypressed(key)
       call <SID>load_buffer("sp")
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
-    elseif a:key ==# "T"
+    elseif a:key ==# "="
       call <SID>new_tab_label()
+    elseif a:key =~? "^[0-9]$"
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+    elseif a:key ==# "+"
+      silent! exe "tabm+1"
+    elseif a:key ==# "-"
+      silent! exe "tabm-1"
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_order()
     elseif a:key ==# "q"
