@@ -156,6 +156,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "+")
     call add(keys, "-")
     call add(keys, "=")
+    call add(keys, "_")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "r")
@@ -184,6 +185,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "+")
     call add(keys, "-")
     call add(keys, "=")
+    call add(keys, "_")
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "j")
@@ -986,10 +988,13 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[0-9]$"
       call <SID>kill(0, 1)
       silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
+      call <SID>f2_toggle(0)
     elseif a:key ==# "+"
       silent! exe "tabm+1"
     elseif a:key ==# "-"
       silent! exe "tabm-1"
+    elseif a:key ==# "_"
+      let t:f2_label = ""
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_files_order()
     elseif a:key ==# "r"
