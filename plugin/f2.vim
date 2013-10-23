@@ -161,11 +161,13 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "Q")
-    call add(keys, "r")
+    call add(keys, "h")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "l")
     call add(keys, "e")
     call add(keys, "E")
+    call add(keys, "r")
     call add(keys, "R")
     call add(keys, "m")
     call add(keys, "a")
@@ -192,8 +194,10 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "Q")
+    call add(keys, "h")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "l")
     call add(keys, "p")
     call add(keys, "P")
     call add(keys, "n")
@@ -216,7 +220,6 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "^n")
     call add(keys, "S")
     call add(keys, "L")
-    call add(keys, "l")
   endif
 
   return join(keys, separator)
@@ -927,6 +930,10 @@ function! <SID>tab_command(key)
     silent! exe "tabnew"
   elseif a:key ==# "Q"
     silent! exe "tabclose"
+  elseif a:key ==# "h"
+    silent! exe "normal! gT"
+  elseif a:key ==# "l"
+    silent! exe "normal! gt"
   else
     silent! exe "normal! " . ((a:key == "0") ? "10" : a:key) . "gt"
   endif
@@ -1022,10 +1029,14 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>tab_command(a:key)
+    elseif a:key ==# "h"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
+    elseif a:key ==# "l"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "MouseDown"
       call <SID>move("up")
     elseif a:key ==# "MouseUp"
@@ -1102,10 +1113,14 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>tab_command(a:key)
+    elseif a:key ==# "h"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
+    elseif a:key ==# "l"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "p"
       call <SID>jump("previous")
     elseif a:key ==# "P"
@@ -1156,9 +1171,6 @@ function! <SID>keypressed(key)
     elseif a:key ==# "L"
       call <SID>kill(0, 1)
       call <SID>load_session(1)
-    elseif a:key ==# "l"
-      call <SID>kill(0, 1)
-      call <SID>load_session(0)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
