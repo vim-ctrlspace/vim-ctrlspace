@@ -31,7 +31,7 @@ function! <SID>define_config_variable(name, default_value)
 endfunction
 
 call <SID>define_config_variable("height", 1)
-call <SID>define_config_variable("max_height", 15)
+call <SID>define_config_variable("max_height", 0)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<F2>")
@@ -372,6 +372,14 @@ function! <SID>tab_contains_modified_buffers(tabnr)
     endif
   endfor
   return 0
+endfunction
+
+function! <SID>max_height()
+  if g:f2_max_height
+    return g:f2_max_height
+  else
+    return &lines / 3
+  endif
 endfunction
 
 function! <SID>session_file()
@@ -739,10 +747,10 @@ function! <SID>f2_toggle(internal)
 
   " set up window height
   if displayedbufs > g:f2_height
-    if displayedbufs < g:f2_max_height
+    if displayedbufs < <SID>max_height()
       silent! exe "resize " . displayedbufs
     else
-      silent! exe "resize " . g:f2_max_height
+      silent! exe "resize " . <SID>max_height()
     endif
   endif
 
@@ -1360,7 +1368,7 @@ function! <SID>display_list(displayedbufs, buflist, width)
     endif
 
     " trim the list in search mode
-    let buflist = s:search_mode && (len(a:buflist) > g:f2_max_height) ? a:buflist[-g:f2_max_height : -1] : a:buflist
+    let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
 
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
