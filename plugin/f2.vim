@@ -162,9 +162,9 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "]")
     call add(keys, "o")
     call add(keys, "q")
-    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "C")
     call add(keys, "e")
     call add(keys, "E")
     call add(keys, "r")
@@ -195,7 +195,6 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "]")
     call add(keys, "o")
     call add(keys, "q")
-    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "k")
     call add(keys, "p")
@@ -210,6 +209,7 @@ function! F2StatusLineKeyInfoSegment(...)
     if s:single_tab_mode
       call add(keys, "c")
     endif
+    call add(keys, "C")
     call add(keys, "e")
     call add(keys, "E")
     call add(keys, "R")
@@ -937,8 +937,6 @@ function! <SID>tab_command(key)
 
   if a:key ==# "T"
     silent! exe "tabnew"
-  elseif a:key ==# "Q"
-    silent! exe "tabclose"
   elseif a:key ==# "["
     silent! exe "normal! gT"
   elseif a:key ==# "]"
@@ -1047,8 +1045,6 @@ function! <SID>keypressed(key)
       call <SID>refresh_files()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
-    elseif a:key ==# "Q"
-      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1076,6 +1072,8 @@ function! <SID>keypressed(key)
       call <SID>restore_search_letters("previous")
     elseif a:key ==# "C-n"
       call <SID>restore_search_letters("next")
+    elseif a:key ==# "C"
+      call <SID>close_tab()
     elseif a:key ==# "e"
       call <SID>edit_file()
     elseif a:key ==# "E"
@@ -1131,8 +1129,6 @@ function! <SID>keypressed(key)
       call <SID>toggle_order()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
-    elseif a:key ==# "Q"
-      call <SID>tab_command(a:key)
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1147,7 +1143,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "d"
       call <SID>delete_buffer()
     elseif a:key ==# "D"
-      call <SID>delete_hidden_noname_buffers()
+      call <SID>delete_hidden_noname_buffers(0)
     elseif a:key ==# "MouseDown"
       call <SID>move("up")
     elseif a:key ==# "MouseUp"
@@ -1170,9 +1166,11 @@ function! <SID>keypressed(key)
     elseif a:key ==# "f" && s:single_tab_mode
       call <SID>detach_buffer()
     elseif a:key ==# "F"
-      call <SID>delete_foreign_buffers()
+      call <SID>delete_foreign_buffers(0)
     elseif a:key ==# "c" && s:single_tab_mode
       call <SID>close_buffer()
+    elseif a:key ==# "C"
+      call <SID>close_tab()
     elseif a:key ==# "e"
       call <SID>edit_file()
     elseif a:key ==# "E"
@@ -1694,7 +1692,7 @@ function! <SID>keep_buffers_for_keys(dict)
   return removed
 endfunction
 
-function! <SID>delete_hidden_noname_buffers()
+function! <SID>delete_hidden_noname_buffers(internal)
   let keep = {}
 
   " keep visible ones
@@ -1711,7 +1709,9 @@ function! <SID>delete_hidden_noname_buffers()
     endif
   endfor
 
-  call <SID>kill(0, 0)
+  if !a:internal
+    call <SID>kill(0, 0)
+  endif
 
   let removed = <SID>keep_buffers_for_keys(keep)
 
@@ -1719,18 +1719,27 @@ function! <SID>delete_hidden_noname_buffers()
     call <SID>forget_buffers_in_all_tabs(removed)
   endif
 
-  call <SID>f2_toggle(1)
+  if !a:internal
+    call <SID>f2_toggle(1)
+  endif
 endfunction
 
 " deletes all foreign buffers
-function! <SID>delete_foreign_buffers()
+function! <SID>delete_foreign_buffers(internal)
   let buffers = {}
   for t in range(1, tabpagenr('$'))
     silent! call extend(buffers, gettabvar(t, 'f2_list'))
   endfor
-  call <SID>kill(0, 0)
+
+  if !a:internal
+    call <SID>kill(0, 0)
+  endif
+
   call <SID>keep_buffers_for_keys(buffers)
-  call <SID>f2_toggle(1)
+
+  if !a:internal
+    call <SID>f2_toggle(1)
+  endif
 endfunction
 
 function! <SID>get_selected_buffer()
@@ -1924,6 +1933,21 @@ function! <SID>edit_file()
   call <SID>kill(0, 1)
   silent! exe "e " . new_file
 endfunction!
+
+function! <SID>close_tab()
+  if tabpagenr("$") == 1
+    return
+  endif
+
+  call <SID>kill(0, 1)
+
+  tabclose
+
+  call <SID>delete_hidden_noname_buffers(1)
+  call <SID>delete_foreign_buffers(1)
+
+  call <SID>f2_toggle(0)
+endfunction
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
 " It means, this function doesn't leave buffers without tabs.
