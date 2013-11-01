@@ -724,9 +724,16 @@ function! <SID>f2_toggle(internal)
 
       let raw_name = bufname
 
-      " TODO add unicode modifier condition here
       if strlen(bufname) + 6 > width
-        let bufname = '…' . strpart(bufname, strlen(bufname) - width + 7)
+        if g:f2_unicode_font
+          let dots_symbol = "…"
+          let dots_symbol_size = 1
+        else
+          let dots_symbol = "..."
+          let dots_symbol_size = 3
+        endif
+
+        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - width + 6 + dots_symbol_size)
       endif
 
       if !s:file_mode
@@ -735,11 +742,15 @@ function! <SID>f2_toggle(internal)
 
       " count displayed buffers
       let displayedbufs += 1
-      " fill the name with spaces --> gives a nice selection bar
-      " use MAX width here, because the width may change inside of this 'for' loop
       while strlen(bufname) < width
-        let bufname .= ' '
+        let bufname .= " "
       endwhile
+
+      " handle wrong strlen for unicode dots symbol
+      if g:f2_unicode_font && bufname =~ "…"
+        let bufname .= "  "
+      endif
+
       " add the name to the list
       call add(buflist, { "text": '  ' . bufname . "\n", "number": i, "raw": raw_name, "search_noise": search_noise })
     endif
@@ -1390,13 +1401,25 @@ function! <SID>display_list(displayedbufs, buflist, width)
     let width = a:width
 
     if width < (strlen(empty_list_message) + 2)
-      " TODO Add a conditional for unicode modifier here
-      let empty_list_message = strpart(empty_list_message, 0, width - 3) . "…"
+      if g:f2_unicode_font
+        let dots_symbol = "…"
+        let dots_symbol_size = 1
+      else
+        let dots_symbol = "..."
+        let dots_symbol_size = 3
+      endif
+
+      let empty_list_message = strpart(empty_list_message, 0, width - 2 - dots_symbol_size) . dots_symbol
     endif
 
     while strlen(empty_list_message) < width
       let empty_list_message .= ' '
     endwhile
+
+    " handle wrong strlen for unicode dots symbol
+    if g:f2_unicode_font && empty_list_message =~ "…"
+      let empty_list_message .= "  "
+    endif
 
     silent! put! =empty_list_message
     normal! GkJ
