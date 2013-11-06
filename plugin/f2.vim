@@ -450,7 +450,15 @@ function! <SID>load_session(bang)
 
   let commands = []
 
-  let create_new_tab = !a:bang
+  if a:bang
+    call add(commands, "tabe")
+    call add(commands, "tabo!")
+    call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
+    call add(commands, "call <SID>delete_foreign_buffers(1)")
+    let create_first_tab = 0
+  else
+    let create_first_tab = 1
+  endif
 
   for line in lines
     let tab_data   = split(line, ",")
@@ -481,10 +489,10 @@ function! <SID>load_session(bang)
       continue
     endif
 
-    if create_new_tab
+    if create_first_tab
       call add(commands, "tabe")
     else
-      let create_new_tab = 1 " we want omit only first tab creation if a:bang == 1
+      let create_first_tab = 1 " we want omit only first tab creation if a:bang == 1
     endif
 
     for fname in readable_files
