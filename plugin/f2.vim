@@ -323,10 +323,18 @@ function! F2TabLine()
       endif
     endif
 
+    if bufname ==# "__F2__"
+      if s:preview_mode && exists("s:preview_mode_orginal_buffer")
+        let bufnr = s:preview_mode_orginal_buffer
+      else
+        let bufnr = winbufnr(t:f2_start_window)
+      endif
+
+      let bufname = bufname(bufnr)
+    endif
+
     if empty(bufname)
       let title = "[" . bufnr . "*No Name]"
-    elseif bufname ==# "__F2__"
-      let title = "[" . (g:f2_unicode_font ? "ϝ₂" : "F2") . "]"
     else
       let title = "[" . fnamemodify(bufname, ':t') . "]"
     endif
