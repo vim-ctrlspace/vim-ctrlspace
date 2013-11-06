@@ -935,7 +935,7 @@ function! <SID>kill(buflistnr, final)
     silent! exe ':' . a:buflistnr . 'bwipeout'
   else
     bwipeout
-  end
+  endif
 
   if a:final
     if s:restored_search_mode
@@ -999,7 +999,7 @@ function! <SID>keypressed(key)
         call <SID>restore_search_letters("previous")
       elseif a:key ==# "C-n"
         call <SID>restore_search_letters("next")
-      end
+      endif
     endif
 
     if a:key ==# "BS"
@@ -1976,6 +1976,21 @@ endfunction!
 function! <SID>close_tab()
   if tabpagenr("$") == 1
     return
+  endif
+
+  if exists("t:f2_label") && !empty(t:f2_label)
+    let buf_count = len(F2List(tabpagenr()))
+
+    if buf_count > 1
+      call inputsave()
+      let conf = input("F2: Close tab named '" . t:f2_label . "' with " . buf_count . " buffers? (type 'yes' to confirm): ")
+      call inputrestore()
+      redraw!
+
+      if conf !=? "yes"
+        return
+      endif
+    endif
   endif
 
   call <SID>kill(0, 1)
