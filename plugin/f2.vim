@@ -41,10 +41,7 @@ call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
-
-" 0 - no custom tabline, 1 - current label without filename, 2 - current label with filename
-call <SID>define_config_variable("custom_tabline", 1)
-
+call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
@@ -55,7 +52,7 @@ command! -nargs=0 -range F2TabLabel :call <SID>new_tab_label()
 command! -nargs=0 -range F2SessionSave :call <SID>save_session()
 command! -nargs=0 -range -bang F2SessionLoad :call <SID>load_session(<bang>0)
 
-if g:f2_custom_tabline
+if g:f2_use_tabline
   set tabline=%!F2TabLine()
 endif
 
@@ -323,26 +320,24 @@ function! F2TabLine()
       endif
     endif
 
-    if bufname ==# "__F2__"
-      if s:preview_mode && exists("s:preview_mode_orginal_buffer")
-        let bufnr = s:preview_mode_orginal_buffer
-      else
-        let bufnr = winbufnr(t:f2_start_window)
+    let title = gettabvar(t, "f2_label")
+
+    if empty(title)
+      if bufname ==# "__F2__"
+        if s:preview_mode && exists("s:preview_mode_orginal_buffer")
+          let bufnr = s:preview_mode_orginal_buffer
+        else
+          let bufnr = winbufnr(t:f2_start_window)
+        endif
+
+        let bufname = bufname(bufnr)
       endif
 
-      let bufname = bufname(bufnr)
-    endif
-
-    if empty(bufname)
-      let title = "[" . bufnr . "*No Name]"
-    else
-      let title = "[" . fnamemodify(bufname, ':t') . "]"
-    endif
-
-    let label = gettabvar(t, "f2_label")
-
-    if !empty(label)
-      let title = ((t == current_tab) && (g:f2_custom_tabline == 2) ? label . " " . title : label)
+      if empty(bufname)
+        let title = "[" . bufnr . "*No Name]"
+      else
+        let title = "[" . fnamemodify(bufname, ':t') . "]"
+      endif
     endif
 
     let tabline .= '%' . t . 'T'
