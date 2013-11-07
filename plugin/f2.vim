@@ -172,30 +172,19 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "^p")
     call add(keys, "^n")
   elseif s:session_mode
+    call add(keys, "CR")
+    call add(keys, "BS")
+    call add(keys, "q")
+
     if s:session_mode == 1
-      call add(keys, "CR")
-      call add(keys, "BS")
-      call add(keys, "q")
       call add(keys, "a")
-      call add(keys, "S")
       call add(keys, "s")
-      call add(keys, "L")
-      call add(keys, "l")
-      call add(keys, "d")
-      call add(keys, "j")
-      call add(keys, "k")
-    else
-      call add(keys, "CR")
-      call add(keys, "BS")
-      call add(keys, "q")
-      call add(keys, "S")
-      call add(keys, "s")
-      call add(keys, "L")
-      call add(keys, "l")
-      call add(keys, "d")
-      call add(keys, "j")
-      call add(keys, "k")
     endif
+
+    call add(keys, "d")
+    call add(keys, "j")
+    call add(keys, "k")
+    call add(keys, "l")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -240,8 +229,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "A")
     call add(keys, "^p")
     call add(keys, "^n")
-    call add(keys, "S")
-    call add(keys, "L")
+    call add(keys, "l")
   endif
 
   return join(keys, separator)
@@ -1232,11 +1220,11 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     elseif a:key ==# "a"
       call <SID>load_session(0, <SID>get_selected_session_name())
-    elseif a:key ==? "S"
+    elseif a:key ==# "s"
       call <SID>kill(0, 0)
       let s:session_mode = 2
       call <SID>f2_toggle(1)
-    elseif (a:key ==? "L") || (a:key ==# "BS")
+    elseif (a:key ==# "l") || (a:key ==# "BS")
       call <SID>kill(0, 0)
       let s:session_mode = 0
       call <SID>f2_toggle(1)
@@ -1269,11 +1257,11 @@ function! <SID>keypressed(key)
       call <SID>save_session(<SID>get_selected_session_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
-    elseif a:key ==? "L"
+    elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:session_mode = 1
       call <SID>f2_toggle(1)
-    elseif (a:key ==? "S") || (a:key ==# "BS")
+    elseif a:key ==# "BS"
       call <SID>kill(0, 0)
       let s:session_mode = 0
       call <SID>f2_toggle(1)
@@ -1479,18 +1467,23 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
-    elseif a:key ==# "S"
+    elseif a:key ==# "l"
       if empty(<SID>get_session_names())
-        call <SID>save_session(s:active_session_name)
+        let labels = []
+
+        for t in range(1, tabpagenr("$"))
+          let label = gettabvar(t, "f2_label")
+          if !empty(label)
+            call add(labels, gettabvar(t, "f2_label"))
+          endif
+        endfor
+
+        call <SID>save_session(join(labels, " "))
       else
         call <SID>kill(0, 0)
-        let s:session_mode = 2
+        let s:session_mode = 1
         call <SID>f2_toggle(1)
       endif
-    elseif a:key ==# "L" && !empty(<SID>get_session_names())
-      call <SID>kill(0, 0)
-      let s:session_mode = 1
-      call <SID>f2_toggle(1)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
