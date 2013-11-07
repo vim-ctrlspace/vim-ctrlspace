@@ -1,6 +1,6 @@
 " Vim-F2 - A smart buffer manager
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.6
+" Version:      3.1.7
 "
 " Installation:
 " Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
@@ -49,8 +49,6 @@ call <SID>define_config_variable("show_key_info", 100)
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
 command! -nargs=0 -range F2TabLabel :call <SID>new_tab_label()
-command! -nargs=0 -range F2SessionSave :call <SID>save_session()
-command! -nargs=0 -range -bang F2SessionLoad :call <SID>load_session(<bang>0)
 
 if g:f2_use_tabline
   set tabline=%!F2TabLine()
@@ -71,9 +69,11 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_mapping_key, ":F2<CR>")
 endif
 
-let s:files           = []
-let s:file_sort_order = g:f2_default_file_sort_order
-let s:preview_mode    = 0
+let s:files               = []
+let s:file_sort_order     = g:f2_default_file_sort_order
+let s:preview_mode        = 0
+let s:active_session_name = ""
+let s:session_names       = []
 
 au BufEnter * call <SID>add_tab_buffer()
 
@@ -171,6 +171,29 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "A")
     call add(keys, "^p")
     call add(keys, "^n")
+  elseif s:session_mode
+    if s:session_mode == 1
+      call add(keys, "CR")
+      call add(keys, "BS")
+      call add(keys, "a")
+      call add(keys, "S")
+      call add(keys, "s")
+      call add(keys, "L")
+      call add(keys, "l")
+      call add(keys, "d")
+      call add(keys, "j")
+      call add(keys, "k")
+    else
+      call add(keys, "CR")
+      call add(keys, "BS")
+      call add(keys, "S")
+      call add(keys, "s")
+      call add(keys, "L")
+      call add(keys, "l")
+      call add(keys, "d")
+      call add(keys, "j")
+      call add(keys, "k")
+    endif
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -217,7 +240,6 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "^n")
     call add(keys, "S")
     call add(keys, "L")
-    call add(keys, "l")
   endif
 
   return join(keys, separator)
@@ -229,6 +251,8 @@ function! F2StatusLineInfoSegment(...)
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
+          \ "load"    : "▲",
+          \ "save"    : "▼",
           \ "ord"     : "₁²₃",
           \ "abc"     : "∧вс",
           \ "len"     : "●∙⋅",
@@ -241,6 +265,8 @@ function! F2StatusLineInfoSegment(...)
           \ "tab"     : "TAB",
           \ "all"     : "ALL",
           \ "add"     : "ADD",
+          \ "load"    : "LOAD",
+          \ "save"    : "SAVE",
           \ "ord"     : "123",
           \ "abc"     : "ABC",
           \ "len"     : "LEN",
@@ -254,40 +280,46 @@ function! F2StatusLineInfoSegment(...)
 
   if s:file_mode
     call add(statusline_elements, symbols.add)
+  elseif s:session_mode == 1
+    call add(statusline_elements, symbols.load)
+  elseif s:session_mode == 2
+    call add(statusline_elements, symbols.save)
   elseif s:single_tab_mode
     call add(statusline_elements, symbols.tab)
   else
     call add(statusline_elements, symbols.all)
   endif
 
-  if empty(s:search_letters) && !s:search_mode
-    if s:file_mode
-      if s:file_sort_order == 1
-        call add(statusline_elements, symbols.len)
-      elseif s:file_sort_order == 2
-        call add(statusline_elements, symbols.abc)
+  if !s:session_mode
+    if empty(s:search_letters) && !s:search_mode
+      if s:file_mode
+        if s:file_sort_order == 1
+          call add(statusline_elements, symbols.len)
+        elseif s:file_sort_order == 2
+          call add(statusline_elements, symbols.abc)
+        endif
+      elseif exists("t:sort_order")
+        if t:sort_order == 1
+          call add(statusline_elements, symbols.ord)
+        elseif t:sort_order == 2
+          call add(statusline_elements, symbols.abc)
+        endif
       endif
-    elseif exists("t:sort_order")
-      if t:sort_order == 1
-        call add(statusline_elements, symbols.ord)
-      elseif t:sort_order == 2
-        call add(statusline_elements, symbols.abc)
+    else
+      let search_element = symbols.s_left . join(s:search_letters, "")
+
+      if s:search_mode
+        let search_element .= "_"
       endif
-    endif
-  else
-    let search_element = symbols.s_left . join(s:search_letters, "")
 
-    if s:search_mode
-      let search_element .= "_"
+      let search_element .= symbols.s_right
+
+      call add(statusline_elements, search_element)
     endif
 
-    let search_element .= symbols.s_right
-
-    call add(statusline_elements, search_element)
-  endif
-
-  if s:preview_mode
-    call add(statusline_elements, symbols.prv)
+    if s:preview_mode
+      call add(statusline_elements, symbols.prv)
+    endif
   endif
 
   let separator = (a:0 > 0) ? a:1 : "  "
@@ -395,11 +427,44 @@ function! <SID>session_file()
   return g:f2_session_file[-1]
 endfunction
 
-function! <SID>save_session()
+function! <SID>save_session(name)
+  call inputsave()
+  let name = input("F2: Save current session as: ", a:name)
+  call inputrestore()
+  redraw!
+
+  if empty(name)
+    return
+  endif
+
+  call <SID>kill(0, 1)
+
   let filename = <SID>session_file()
   let last_tab = tabpagenr("$")
 
-  let lines = []
+  let lines      = []
+  let in_session = 0
+
+  let session_start_marker = "F2_SESSION_BEGIN: " . name
+  let session_end_marker   = "F2_SESSION_END: " . name
+
+  if filereadable(filename)
+    for old_line in readfile(filename)
+      if old_line ==? session_start_marker
+        let in_session = 1
+      endif
+
+      if !in_session
+        call add(lines, old_line)
+      endif
+
+      if old_line ==? session_end_marker
+        let in_session = 0
+      endif
+    endfor
+  endif
+
+  call add(lines, session_start_marker)
 
   for t in range(1, last_tab)
     let line = [t, gettabvar(t, "f2_label"), tabpagenr() == t]
@@ -434,22 +499,124 @@ function! <SID>save_session()
     call add(lines, join(line, ","))
   endfor
 
+  call add(lines, session_end_marker)
+
   call writefile(lines, filename)
 
-  echo "F2: The session been saved (" . filename . ")."
+  let s:active_session_name = name
+  let s:session_names       = []
+
+  echo "F2: The session '" . name . "' has been saved."
 endfunction
 
-function! <SID>load_session(bang)
-  let filename = <SID>session_file()
+function! <SID>delete_session(name)
+  call inputsave()
+  let confirmation = input("F2: Delete session '" . a:name . "'? (type 'yes' to confirm): ")
+  call inputrestore()
+  redraw!
 
-  if !filereadable(filename)
-    echo "F2: No session to load."
+  if confirmation !=? "yes"
     return
   endif
 
-  echo "F2: Session loading..."
+  let filename = <SID>session_file()
+  let last_tab = tabpagenr("$")
 
-  let lines = readfile(filename)
+  let lines      = []
+  let in_session = 0
+
+  let session_start_marker = "F2_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "F2_SESSION_END: " . a:name
+
+  if filereadable(filename)
+    for old_line in readfile(filename)
+      if old_line ==? session_start_marker
+        let in_session = 1
+      endif
+
+      if !in_session
+        call add(lines, old_line)
+      endif
+
+      if old_line ==? session_end_marker
+        let in_session = 0
+      endif
+    endfor
+  endif
+
+  call writefile(lines, filename)
+
+  if s:active_session_name ==? a:name
+    let s:active_session_name = ""
+  endif
+
+  echo "F2: The session '" . a:name . "' has been deleted."
+
+  let s:session_names = []
+
+  if empty(<SID>get_session_names())
+    call <SID>kill(0, 1)
+  else
+    call <SID>kill(0, 0)
+    call <SID>f2_toggle(1)
+  endif
+endfunction
+
+function! <SID>get_session_names()
+  let filename = <SID>session_file()
+
+  let names = []
+
+  if filereadable(filename)
+    for line in readfile(filename)
+      if line =~? "F2_SESSION_BEGIN: "
+        call add(names, line[18:])
+      endif
+    endfor
+  endif
+
+  return names
+endfunction
+
+function! <SID>get_selected_session_name()
+  return s:session_names[<SID>get_selected_buffer() - 1]
+endfunction
+
+function! <SID>load_session(bang, name)
+  let filename = <SID>session_file()
+
+  if !filereadable(filename)
+    echo "F2: Sessions file '" . filename . "' not found."
+    call <SID>kill(0, 1)
+    return
+  endif
+
+  let session_start_marker = "F2_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "F2_SESSION_END: " . a:name
+
+  let lines      = []
+  let in_session = 0
+
+  for old_line in readfile(filename)
+    if old_line ==? session_start_marker
+      let in_session = 1
+    elseif old_line ==? session_end_marker
+      let in_session = 0
+    elseif in_session
+      call add(lines, old_line)
+    endif
+  endfor
+
+  if empty(lines)
+    echo "F2: Session '" . a:name . "' not found in file '" . filename . "'."
+    let s:session_names = []
+    call <SID>kill(0, 1)
+    return
+  endif
+
+  call <SID>kill(0, 1)
+
+  echo "F2: Loading session '" . a:name . "'..."
 
   let commands = []
 
@@ -458,7 +625,9 @@ function! <SID>load_session(bang)
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
+
     let create_first_tab = 0
+    let s:active_session_name = a:name
   else
     let create_first_tab = 1
   endif
@@ -532,7 +701,14 @@ function! <SID>load_session(bang)
     silent! exe c
   endfor
 
-  echo "F2: The session has been loaded (" . filename . ")."
+  echo "F2: The session '" . a:name . "' has been loaded."
+
+  if !a:bang
+    call <SID>f2_toggle(0)
+    let s:session_mode = 1
+    call <SID>kill(0, 0)
+    call <SID>f2_toggle(1)
+  endif
 endfunction
 
 function! <SID>find_subsequence(bufname, offset)
@@ -656,6 +832,7 @@ function! <SID>f2_toggle(internal)
     let s:new_search_performed    = 0
     let s:search_mode             = 0
     let s:file_mode               = 0
+    let s:session_mode            = 0
     let s:restored_search_mode    = 0
     let s:search_letters          = []
     let t:f2_search_history_index = -1
@@ -703,6 +880,12 @@ function! <SID>f2_toggle(internal)
     endif
 
     let bufcount = len(s:files)
+  elseif s:session_mode
+    if empty(s:session_names)
+      let s:session_names = <SID>get_session_names()
+    endif
+
+    let bufcount = len(s:session_names)
   endif
 
   for i in range(1, bufcount)
@@ -712,6 +895,8 @@ function! <SID>f2_toggle(internal)
       if isdirectory(bufname) || (bufname =~# g:f2_ignored_files)
         continue
       endif
+    elseif s:session_mode
+      let bufname = s:session_names[i - 1]
     else
       if s:single_tab_mode && !exists('t:f2_list[' . i . ']')
         continue
@@ -726,7 +911,7 @@ function! <SID>f2_toggle(internal)
       endif
     endif
 
-    if strlen(bufname) && ((getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')) || s:file_mode)
+    if strlen(bufname) && ((getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')) || s:file_mode || s:session_mode)
       let search_noise = <SID>find_lowest_search_noise(bufname)
 
       if search_noise == -1
@@ -747,7 +932,7 @@ function! <SID>f2_toggle(internal)
         let bufname = dots_symbol . strpart(bufname, strlen(bufname) - width + 6 + dots_symbol_size)
       endif
 
-      if !s:file_mode
+      if !s:file_mode && !s:session_mode
         let bufname = <SID>decorate_with_indicators(bufname, i)
       endif
 
@@ -783,14 +968,29 @@ function! <SID>f2_toggle(internal)
     call <SID>display_search_patterns()
   endif
 
-  let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
+  if s:session_mode
+    let activebufline = 0
+
+    for session_name in buflist
+      let activebufline += 1
+      if s:active_session_name ==# session_name.raw
+        break
+      endif
+    endfor
+
+    if activebufline == 0
+      let activebufline = line("$")
+    endif
+  else
+    let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
+  endif
 
   " make the buffer count & the buffer numbers available
   " for our other functions
   let b:buflist = buflist
   let b:bufcount = displayedbufs
 
-  if !s:file_mode
+  if !s:file_mode && !s:session_mode
     let b:jumplines = <SID>create_jumplines(buflist, activebufline)
   endif
 
@@ -1023,6 +1223,78 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     endif
+  elseif s:session_mode == 1
+    if a:key ==# "CR"
+      call <SID>load_session(1, <SID>get_selected_session_name())
+    elseif a:key ==# "a"
+      call <SID>load_session(0, <SID>get_selected_session_name())
+    elseif a:key ==? "S"
+      call <SID>kill(0, 0)
+      let s:session_mode = 2
+      call <SID>f2_toggle(1)
+    elseif (a:key ==? "L") || (a:key ==# "BS")
+      call <SID>kill(0, 0)
+      let s:session_mode = 0
+      call <SID>f2_toggle(1)
+    elseif a:key ==# "d"
+      call <SID>delete_session(<SID>get_selected_session_name())
+    elseif a:key ==# "j"
+      call <SID>move("down")
+    elseif a:key ==# "k"
+      call <SID>move("up")
+    elseif a:key ==# "MouseDown"
+      call <SID>move("up")
+    elseif a:key ==# "MouseUp"
+      call <SID>move("down")
+    elseif a:key ==# "LeftRelease"
+      call <SID>move("mouse")
+    elseif a:key ==# "2-LeftMouse"
+      call <SID>move("mouse")
+      call <SID>load_session(1, <SID>get_selected_session_name())
+    elseif a:key ==# "Down"
+      call feedkeys("j")
+    elseif a:key ==# "Up"
+      call feedkeys("k")
+    elseif a:key ==# "Home"
+      call <SID>move(1)
+    elseif a:key ==# "End"
+      call <SID>move(line("$"))
+    endif
+  elseif s:session_mode == 2
+    if a:key ==# "CR"
+      call <SID>save_session(<SID>get_selected_session_name())
+    elseif a:key ==? "L"
+      call <SID>kill(0, 0)
+      let s:session_mode = 1
+      call <SID>f2_toggle(1)
+    elseif (a:key ==? "S") || (a:key ==# "BS")
+      call <SID>kill(0, 0)
+      let s:session_mode = 0
+      call <SID>f2_toggle(1)
+    elseif a:key ==# "d"
+      call <SID>delete_session(<SID>get_selected_session_name())
+    elseif a:key ==# "j"
+      call <SID>move("down")
+    elseif a:key ==# "k"
+      call <SID>move("up")
+    elseif a:key ==# "MouseDown"
+      call <SID>move("up")
+    elseif a:key ==# "MouseUp"
+      call <SID>move("down")
+    elseif a:key ==# "LeftRelease"
+      call <SID>move("mouse")
+    elseif a:key ==# "2-LeftMouse"
+      call <SID>move("mouse")
+      call <SID>save_session(<SID>get_selected_session_name())
+    elseif a:key ==# "Down"
+      call feedkeys("j")
+    elseif a:key ==# "Up"
+      call feedkeys("k")
+    elseif a:key ==# "Home"
+      call <SID>move(1)
+    elseif a:key ==# "End"
+      call <SID>move(line("$"))
+    endif
   elseif s:file_mode
     if a:key ==# "CR"
       call <SID>load_file()
@@ -1202,14 +1474,17 @@ function! <SID>keypressed(key)
     elseif a:key ==# "m"
       call <SID>move_file()
     elseif a:key ==# "S"
-      call <SID>kill(0, 1)
-      call <SID>save_session()
-    elseif a:key ==# "L"
-      call <SID>kill(0, 1)
-      call <SID>load_session(1)
-    elseif a:key ==# "l"
-      call <SID>kill(0, 1)
-      call <SID>load_session(0)
+      if empty(<SID>get_session_names())
+        call <SID>save_session(s:active_session_name)
+      else
+        call <SID>kill(0, 0)
+        let s:session_mode = 2
+        call <SID>f2_toggle(1)
+      endif
+    elseif a:key ==# "L" && !empty(<SID>get_session_names())
+      call <SID>kill(0, 0)
+      let s:session_mode = 1
+      call <SID>f2_toggle(1)
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
@@ -1353,6 +1628,16 @@ function! <SID>compare_file_entries(a, b)
   endif
 endfunction
 
+function! <SID>compare_session_names(a, b)
+  if a:a.raw < a:b.raw
+    return -1
+  elseif a:a.raw > a:b.raw
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
 function! <SID>compare_bufentries_with_search_noise(a, b)
   if a:a.search_noise < a:b.search_noise
     return 1
@@ -1383,6 +1668,8 @@ function! <SID>display_list(displayedbufs, buflist, width)
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
     elseif s:file_mode
       call sort(a:buflist, function(<SID>SID() . "compare_file_entries"))
+    elseif s:session_mode
+      call sort(a:buflist, function(<SID>SID() . "compare_session_names"))
     elseif exists("t:sort_order")
       call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
     endif
