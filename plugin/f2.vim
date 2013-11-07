@@ -573,6 +573,17 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>load_session(bang, name)
+  if a:name == s:active_session_name
+    call inputsave()
+    let confirmation = input("F2: Reload current session ('" . a:name . "')? (type 'yes' to confirm): ")
+    call inputrestore()
+    redraw!
+
+    if confirmation !=? "yes"
+      return
+    endif
+  endif
+
   let filename = <SID>session_file()
 
   if !filereadable(filename)
