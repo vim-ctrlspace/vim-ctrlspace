@@ -229,6 +229,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "A")
     call add(keys, "^p")
     call add(keys, "^n")
+    call add(keys, "S")
     call add(keys, "l")
   endif
 
@@ -415,6 +416,19 @@ function! <SID>session_file()
   endfor
 
   return g:f2_session_file[-1]
+endfunction
+
+function! <SID>save_first_session()
+  let labels = []
+
+  for t in range(1, tabpagenr("$"))
+    let label = gettabvar(t, "f2_label")
+    if !empty(label)
+      call add(labels, gettabvar(t, "f2_label"))
+    endif
+  endfor
+
+  call <SID>save_session(join(labels, " "))
 endfunction
 
 function! <SID>save_session(name)
@@ -1478,18 +1492,15 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
+    elseif a:key ==# "S"
+      if empty(<SID>get_session_names())
+        call <SID>save_first_session()
+      else
+        call <SID>save_session(s:active_session_name)
+      endif
     elseif a:key ==# "l"
       if empty(<SID>get_session_names())
-        let labels = []
-
-        for t in range(1, tabpagenr("$"))
-          let label = gettabvar(t, "f2_label")
-          if !empty(label)
-            call add(labels, gettabvar(t, "f2_label"))
-          endif
-        endfor
-
-        call <SID>save_session(join(labels, " "))
+        call <SID>save_first_session()
       else
         call <SID>kill(0, 0)
         let s:session_mode = 1
