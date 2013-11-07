@@ -991,17 +991,19 @@ function! <SID>f2_toggle(internal)
   endif
 
   if s:session_mode
-    let activebufline = 0
+    let activebufline = 1
 
-    for session_name in buflist
-      let activebufline += 1
-      if s:active_session_name ==# session_name.raw
-        break
-      endif
-    endfor
+    if !empty(s:active_session_name)
+      let active_session_line = 0
 
-    if activebufline == 0
-      let activebufline = line("$")
+      for session_name in buflist
+        let active_session_line += 1
+
+        if s:active_session_name ==# session_name.raw
+          let activebufline = active_session_line
+          break
+        endif
+      endfor
     endif
   else
     let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
