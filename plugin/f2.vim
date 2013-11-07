@@ -636,11 +636,10 @@ function! <SID>load_session(bang, name)
 
   call <SID>kill(0, 1)
 
-  echo "F2: Loading session '" . a:name . "'..."
-
   let commands = []
 
   if a:bang
+    echo "F2: Loading session '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -649,6 +648,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab = 0
     let s:active_session_name = a:name
   else
+    echo "F2: Adding session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -721,9 +721,11 @@ function! <SID>load_session(bang, name)
     silent! exe c
   endfor
 
-  echo "F2: The session '" . a:name . "' has been loaded."
 
-  if !a:bang
+  if a:bang
+    echo "F2: The session '" . a:name . "' has been loaded."
+  else
+    echo "F2: The session '" . a:name . "' has been added."
     call <SID>f2_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
