@@ -44,7 +44,7 @@ call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
-call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]')
+call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 100)
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
