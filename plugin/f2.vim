@@ -575,7 +575,7 @@ endfunction
 function! <SID>load_session(bang, name)
   if a:name == s:active_session_name
     call inputsave()
-    let confirmation = input("F2: Reload current session ('" . a:name . "')? (type 'yes' to confirm): ")
+    let confirmation = input("F2: Reload current session: '" . a:name . "'? (type 'yes' to confirm): ")
     call inputrestore()
     redraw!
 
