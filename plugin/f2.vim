@@ -175,6 +175,7 @@ function! F2StatusLineKeyInfoSegment(...)
     if s:session_mode == 1
       call add(keys, "CR")
       call add(keys, "BS")
+      call add(keys, "q")
       call add(keys, "a")
       call add(keys, "S")
       call add(keys, "s")
@@ -186,6 +187,7 @@ function! F2StatusLineKeyInfoSegment(...)
     else
       call add(keys, "CR")
       call add(keys, "BS")
+      call add(keys, "q")
       call add(keys, "S")
       call add(keys, "s")
       call add(keys, "L")
@@ -1226,6 +1228,8 @@ function! <SID>keypressed(key)
   elseif s:session_mode == 1
     if a:key ==# "CR"
       call <SID>load_session(1, <SID>get_selected_session_name())
+    elseif a:key ==# "q"
+      call <SID>kill(0, 1)
     elseif a:key ==# "a"
       call <SID>load_session(0, <SID>get_selected_session_name())
     elseif a:key ==? "S"
@@ -1263,6 +1267,8 @@ function! <SID>keypressed(key)
   elseif s:session_mode == 2
     if a:key ==# "CR"
       call <SID>save_session(<SID>get_selected_session_name())
+    elseif a:key ==# "q"
+      call <SID>kill(0, 1)
     elseif a:key ==? "L"
       call <SID>kill(0, 0)
       let s:session_mode = 1
