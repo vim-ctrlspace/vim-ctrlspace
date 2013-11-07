@@ -1,4 +1,4 @@
-" Vim-F2 - A smart buffer manager
+" Vim-F2 - The Vim way enhancement
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.7
 "
@@ -30,6 +30,40 @@ function! <SID>define_config_variable(name, default_value)
   endif
 endfunction
 
+function! <SID>define_symbols()
+  if g:f2_unicode_font
+    let symbols = {
+          \ "tab"     : "⊙",
+          \ "all"     : "∷",
+          \ "add"     : "○",
+          \ "load"    : "▽▲▽",
+          \ "save"    : "▽▼▽",
+          \ "ord"     : "₁²₃",
+          \ "abc"     : "∧вс",
+          \ "len"     : "●∙⋅",
+          \ "prv"     : "⌕",
+          \ "s_left"  : "›",
+          \ "s_right" : "‹"
+          \ }
+  else
+    let symbols = {
+          \ "tab"     : "TAB",
+          \ "all"     : "ALL",
+          \ "add"     : "ADD",
+          \ "load"    : "LOAD",
+          \ "save"    : "SAVE",
+          \ "ord"     : "123",
+          \ "abc"     : "ABC",
+          \ "len"     : "LEN",
+          \ "prv"     : "*",
+          \ "s_left"  : "[",
+          \ "s_right" : "]"
+          \ }
+  endif
+
+  return symbols
+endfunction
+
 call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 0)
 call <SID>define_config_variable("show_unnamed", 2)
@@ -44,6 +78,7 @@ call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_session", "CVS/f2_session", ".f2_session"])
 call <SID>define_config_variable("unicode_font", 1)
+call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 100)
 
@@ -237,79 +272,49 @@ function! F2StatusLineKeyInfoSegment(...)
 endfunction
 
 function! F2StatusLineInfoSegment(...)
-  if g:f2_unicode_font
-    let symbols = {
-          \ "tab"     : "⊙",
-          \ "all"     : "∷",
-          \ "add"     : "○",
-          \ "load"    : "▽▲▽",
-          \ "save"    : "▽▼▽",
-          \ "ord"     : "₁²₃",
-          \ "abc"     : "∧вс",
-          \ "len"     : "●∙⋅",
-          \ "prv"     : "⌕",
-          \ "s_left"  : "›",
-          \ "s_right" : "‹"
-          \ }
-  else
-    let symbols = {
-          \ "tab"     : "TAB",
-          \ "all"     : "ALL",
-          \ "add"     : "ADD",
-          \ "load"    : "LOAD",
-          \ "save"    : "SAVE",
-          \ "ord"     : "123",
-          \ "abc"     : "ABC",
-          \ "len"     : "LEN",
-          \ "prv"     : "*",
-          \ "s_left"  : "[",
-          \ "s_right" : "]"
-          \ }
-  endif
-
   let statusline_elements = []
 
   if s:file_mode
-    call add(statusline_elements, symbols.add)
+    call add(statusline_elements, g:f2_symbols.add)
   elseif s:session_mode == 1
-    call add(statusline_elements, symbols.load)
+    call add(statusline_elements, g:f2_symbols.load)
   elseif s:session_mode == 2
-    call add(statusline_elements, symbols.save)
+    call add(statusline_elements, g:f2_symbols.save)
   elseif s:single_tab_mode
-    call add(statusline_elements, symbols.tab)
+    call add(statusline_elements, g:f2_symbols.tab)
   else
-    call add(statusline_elements, symbols.all)
+    call add(statusline_elements, g:f2_symbols.all)
   endif
 
   if !s:session_mode
     if empty(s:search_letters) && !s:search_mode
       if s:file_mode
         if s:file_sort_order == 1
-          call add(statusline_elements, symbols.len)
+          call add(statusline_elements, g:f2_symbols.len)
         elseif s:file_sort_order == 2
-          call add(statusline_elements, symbols.abc)
+          call add(statusline_elements, g:f2_symbols.abc)
         endif
       elseif exists("t:sort_order")
         if t:sort_order == 1
-          call add(statusline_elements, symbols.ord)
+          call add(statusline_elements, g:f2_symbols.ord)
         elseif t:sort_order == 2
-          call add(statusline_elements, symbols.abc)
+          call add(statusline_elements, g:f2_symbols.abc)
         endif
       endif
     else
-      let search_element = symbols.s_left . join(s:search_letters, "")
+      let search_element = g:f2_symbols.s_left . join(s:search_letters, "")
 
       if s:search_mode
         let search_element .= "_"
       endif
 
-      let search_element .= symbols.s_right
+      let search_element .= g:f2_symbols.s_right
 
       call add(statusline_elements, search_element)
     endif
 
     if s:preview_mode
-      call add(statusline_elements, symbols.prv)
+      call add(statusline_elements, g:f2_symbols.prv)
     endif
   endif
 
