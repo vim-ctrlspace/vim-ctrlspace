@@ -80,7 +80,7 @@ call <SID>define_config_variable("session_file", [".git/f2_session", ".svn/f2_se
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
-call <SID>define_config_variable("show_key_info", 100)
+call <SID>define_config_variable("show_key_info", 0)
 
 command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
 command! -nargs=0 -range F2TabLabel :call <SID>new_tab_label()
@@ -146,7 +146,7 @@ endfunction
 
 function! F2StatusLineKeyInfoSegment(...)
   let separator = (a:0 > 0) ? a:1 : " "
-  let keys      = []
+  let keys      = ["?"]
 
   if s:nop_mode
     if !s:search_mode
@@ -181,7 +181,6 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "BS")
     call add(keys, "/")
     call add(keys, '\')
-    call add(keys, "?")
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
@@ -229,7 +228,6 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "BS")
     call add(keys, "/")
     call add(keys, '\')
-    call add(keys, "?")
     call add(keys, "v")
     call add(keys, "s")
     call add(keys, "t")
@@ -936,8 +934,6 @@ function! <SID>f2_toggle(internal)
 
   call <SID>set_up_buffer()
 
-  let width = winwidth(0)
-
   if s:file_mode
     if empty(s:files)
       let s:files = split(globpath('.', '**'), '\n')
@@ -984,7 +980,7 @@ function! <SID>f2_toggle(internal)
 
       let raw_name = bufname
 
-      if strlen(bufname) + 6 > width
+      if strlen(bufname) + 6 > &columns
         if g:f2_unicode_font
           let dots_symbol = "…"
           let dots_symbol_size = 1
@@ -993,7 +989,7 @@ function! <SID>f2_toggle(internal)
           let dots_symbol_size = 3
         endif
 
-        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - width + 6 + dots_symbol_size)
+        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
       endif
 
       if !s:file_mode && !s:session_mode
@@ -1010,7 +1006,7 @@ function! <SID>f2_toggle(internal)
 
       " count displayed buffers
       let displayedbufs += 1
-      while strlen(bufname) < width
+      while strlen(bufname) < &columns
         let bufname .= " "
       endwhile
 
@@ -1033,8 +1029,8 @@ function! <SID>f2_toggle(internal)
     endif
   endif
 
-  call <SID>display_list(displayedbufs, buflist, width)
-  call <SID>set_status_line(width)
+  call <SID>display_list(displayedbufs, buflist)
+  call <SID>set_status_line()
 
   if !empty(s:search_letters)
     call <SID>display_search_patterns()
@@ -1227,11 +1223,6 @@ function! <SID>kill(buflistnr, final)
   unlet s:killing_now
 endfunction
 
-function! <SID>show_help()
-  call <SID>kill(0, 1)
-  silent! exe "help f2-keys"
-endfunction
-
 function! <SID>tab_command(key)
   call <SID>kill(0, 1)
 
@@ -1256,6 +1247,13 @@ function! <SID>tab_command(key)
 endfunction
 
 function! <SID>keypressed(key)
+  if a:key ==# "?"
+    let g:f2_show_key_info = !g:f2_show_key_info
+    call <SID>set_status_line()
+    redraw!
+    return
+  endif
+
   if s:nop_mode
     if !s:search_mode
       if a:key ==# "a"
@@ -1398,8 +1396,6 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "BSlash")
       call <SID>switch_search_mode(1)
-    elseif a:key ==# "?"
-      call <SID>show_help()
     elseif a:key ==# "v"
       call <SID>load_file("vs")
     elseif a:key ==# "s"
@@ -1484,8 +1480,6 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
-    elseif a:key ==# "?"
-      call <SID>show_help()
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
     elseif a:key ==# "s"
@@ -1596,14 +1590,20 @@ function! <SID>toggle_file_mode()
   call <SID>f2_toggle(1)
 endfunction
 
-function! <SID>set_status_line(width)
+function! <SID>set_status_line()
   if has('statusline')
     hi default link User1 LineNr
     let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
     let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineInfoSegment()
 
-    if g:f2_show_key_info && a:width >= g:f2_show_key_info
-      let &l:statusline .= "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
+    if g:f2_show_key_info
+      let key_info = "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
+
+      if strlen(&l:statusline) + strlen(key_info) > &columns
+        let key_info = "  %=%1* ? ... "
+      endif
+
+      let &l:statusline .= key_info
     endif
   endif
 endfunction
@@ -1666,11 +1666,11 @@ function! <SID>set_up_buffer()
   endfor
 endfunction
 
-function! <SID>make_filler(width)
+function! <SID>make_filler()
   " generate a variable to fill the buffer afterwards
   " (we need this for "full window" color :)
   let fill = "\n"
-  let i = 0 | while i < a:width | let i += 1
+  let i = 0 | while i < &columns | let i += 1
     let fill = ' ' . fill
   endwhile
 
@@ -1753,7 +1753,7 @@ function! <SID>SID()
   return matchstr(fullname, '<SNR>\d\+_')
 endfunction
 
-function! <SID>display_list(displayedbufs, buflist, width)
+function! <SID>display_list(displayedbufs, buflist)
   setlocal modifiable
   if a:displayedbufs > 0
     if !empty(s:search_letters)
@@ -1780,7 +1780,7 @@ function! <SID>display_list(displayedbufs, buflist, width)
     " is there any way to NOT delete into a register? bummer...
     "normal! Gdd$
     normal! GkJ
-    let fill = <SID>make_filler(a:width)
+    let fill = <SID>make_filler()
     while winheight(0) > line(".")
       silent! put =fill
     endwhile
@@ -1788,9 +1788,8 @@ function! <SID>display_list(displayedbufs, buflist, width)
     let s:nop_mode = 0
   else
     let empty_list_message = "  List empty"
-    let width = a:width
 
-    if width < (strlen(empty_list_message) + 2)
+    if &columns < (strlen(empty_list_message) + 2)
       if g:f2_unicode_font
         let dots_symbol = "…"
         let dots_symbol_size = 1
@@ -1799,10 +1798,10 @@ function! <SID>display_list(displayedbufs, buflist, width)
         let dots_symbol_size = 3
       endif
 
-      let empty_list_message = strpart(empty_list_message, 0, width - 2 - dots_symbol_size) . dots_symbol
+      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - dots_symbol_size) . dots_symbol
     endif
 
-    while strlen(empty_list_message) < width
+    while strlen(empty_list_message) < &columns
       let empty_list_message .= ' '
     endwhile
 
@@ -1814,7 +1813,7 @@ function! <SID>display_list(displayedbufs, buflist, width)
     silent! put! =empty_list_message
     normal! GkJ
 
-    let fill = <SID>make_filler(width)
+    let fill = <SID>make_filler()
 
     while winheight(0) > line(".")
       silent! put =fill
