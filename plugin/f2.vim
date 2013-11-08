@@ -104,11 +104,12 @@ if g:f2_set_default_mapping
   call <SID>set_default_mapping(g:f2_default_mapping_key, ":F2<CR>")
 endif
 
-let s:files               = []
-let s:file_sort_order     = g:f2_default_file_sort_order
-let s:preview_mode        = 0
-let s:active_session_name = ""
-let s:session_names       = []
+let s:files                 = []
+let s:file_sort_order       = g:f2_default_file_sort_order
+let s:preview_mode          = 0
+let s:active_session_name   = ""
+let s:active_session_digest = ""
+let s:session_names         = []
 
 au BufEnter * call <SID>add_tab_buffer()
 
@@ -436,6 +437,29 @@ function! <SID>save_first_session()
   call <SID>save_session(join(labels, " "))
 endfunction
 
+function! <SID>create_session_digest()
+  let lines = []
+
+  for t in range(1, tabpagenr("$"))
+    let line = [t, gettabvar(t, "f2_label"), tabpagenr() == t]
+    let bufs = []
+
+    for bname in values(F2List(t))
+      let bufname = fnamemodify(bname, ":.")
+
+      if !filereadable(bufname)
+        continue
+      endif
+
+      call add(bufs, bufname)
+    endfor
+    call add(line, join(bufs, "|"))
+    call add(lines, join(line, ","))
+  endfor
+
+  return join(lines, "&&&")
+endfunction
+
 function! <SID>save_session(name)
   call inputsave()
   let name = input("F2: Save current session as: ", a:name)
@@ -512,8 +536,9 @@ function! <SID>save_session(name)
 
   call writefile(lines, filename)
 
-  let s:active_session_name = name
-  let s:session_names       = []
+  let s:active_session_name   = name
+  let s:active_session_digest = <SID>create_session_digest()
+  let s:session_names         = []
 
   echo "F2: The session '" . name . "' has been saved."
 endfunction
@@ -556,7 +581,8 @@ function! <SID>delete_session(name)
   call writefile(lines, filename)
 
   if s:active_session_name ==? a:name
-    let s:active_session_name = ""
+    let s:active_session_name   = ""
+    let s:active_session_digest = ""
   endif
 
   echo "F2: The session '" . a:name . "' has been deleted."
@@ -592,14 +618,26 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>load_session(bang, name)
-  if a:name == s:active_session_name
-    call inputsave()
-    let confirmation = input("F2: Reload current session: '" . a:name . "'? (type 'yes' to confirm): ")
-    call inputrestore()
-    redraw!
+  if !empty(s:active_session_name)
+    let msg = ""
 
-    if confirmation !=? "yes"
-      return
+    if a:name == s:active_session_name
+      let msg = "F2: Reload current session: '" . a:name . "'? (type 'yes' to confirm): "
+    elseif !empty(s:active_session_name)
+      if s:active_session_digest !=# <SID>create_session_digest()
+        let msg = "F2: Current session not saved. Proceed anyway? (type 'yes' to confirm): "
+      endif
+    endif
+
+    if !empty(msg)
+      call inputsave()
+      let confirmation = input(msg)
+      call inputrestore()
+      redraw!
+
+      if confirmation !=? "yes"
+        return
+      endif
     endif
   endif
 
@@ -645,7 +683,7 @@ function! <SID>load_session(bang, name)
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
-    let create_first_tab = 0
+    let create_first_tab      = 0
     let s:active_session_name = a:name
   else
     echo "F2: Adding session '" . a:name . "'..."
@@ -724,7 +762,9 @@ function! <SID>load_session(bang, name)
 
   if a:bang
     echo "F2: The session '" . a:name . "' has been loaded."
+    let s:active_session_digest = <SID>create_session_digest()
   else
+    let s:active_session_digest = ""
     echo "F2: The session '" . a:name . "' has been added."
     call <SID>f2_toggle(0)
     let s:session_mode = 1
@@ -956,6 +996,10 @@ function! <SID>f2_toggle(internal)
 
       if !s:file_mode && !s:session_mode
         let bufname = <SID>decorate_with_indicators(bufname, i)
+      elseif s:session_mode
+        if (raw_name ==# s:active_session_name) && (s:active_session_digest !=# <SID>create_session_digest())
+          let bufname .= " +"
+        endif
       endif
 
       " count displayed buffers
