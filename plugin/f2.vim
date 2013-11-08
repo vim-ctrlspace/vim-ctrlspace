@@ -442,7 +442,7 @@ function! <SID>create_session_digest()
   let lines = []
 
   for t in range(1, tabpagenr("$"))
-    let line = [t, gettabvar(t, "f2_label"), tabpagenr() == t]
+    let line = [t, gettabvar(t, "f2_label")]
     let bufs = []
 
     for bname in values(F2List(t))
