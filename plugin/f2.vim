@@ -217,6 +217,7 @@ function! F2StatusLineKeyInfoSegment(...)
     endif
 
     call add(keys, "s")
+    call add(keys, "S")
     call add(keys, "d")
     call add(keys, "j")
     call add(keys, "k")
@@ -1306,6 +1307,8 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:session_mode = 2
       call <SID>f2_toggle(1)
+    elseif a:key ==# "S"
+      call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       call <SID>kill(0, 0)
       let s:session_mode = 0
@@ -1343,6 +1346,8 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:session_mode = 1
       call <SID>f2_toggle(1)
+    elseif a:key ==# "S"
+      call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       call <SID>kill(0, 0)
       let s:session_mode = 0
