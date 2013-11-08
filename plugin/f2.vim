@@ -390,10 +390,7 @@ function! F2TabLine()
 endfunction
 
 function! <SID>new_tab_label()
-  call inputsave()
-  let t:f2_label = input('Label for tab ' . tabpagenr() . ': ', exists("t:f2_label") ? t:f2_label : "")
-  call inputrestore()
-  redraw!
+  let t:f2_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:f2_label") ? t:f2_label : "")
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
@@ -460,10 +457,7 @@ function! <SID>create_session_digest()
 endfunction
 
 function! <SID>save_session(name)
-  call inputsave()
-  let name = input("F2: Save current session as: ", a:name)
-  call inputrestore()
-  redraw!
+  let name = <SID>get_input("Save current session as: ", a:name)
 
   if empty(name)
     return
@@ -543,12 +537,7 @@ function! <SID>save_session(name)
 endfunction
 
 function! <SID>delete_session(name)
-  call inputsave()
-  let confirmation = input("F2: Delete session '" . a:name . "'? (type 'yes' to confirm): ")
-  call inputrestore()
-  redraw!
-
-  if confirmation !=? "yes"
+  if !<SID>confirmed("Delete session '" . a:name . "'?")
     return
   endif
 
@@ -616,27 +605,43 @@ function! <SID>get_selected_session_name()
   return s:session_names[<SID>get_selected_buffer() - 1]
 endfunction
 
+function! <SID>get_input(msg, ...)
+  let msg = "F2: " . a:msg
+
+  call inputsave()
+
+  if a:0 >= 2
+    let answer = input(msg, a:1, a:2)
+  elseif a:0 == 1
+    let answer = input(msg, a:1)
+  else
+    let answer = input(msg)
+  endif
+
+  call inputrestore()
+  redraw!
+
+  return answer
+endfunction
+
+function! <SID>confirmed(msg)
+  return <SID>get_input(a:msg . " (type 'yes' to confirm): ") ==? "yes"
+endfunction
+
 function! <SID>load_session(bang, name)
   if !empty(s:active_session_name) && a:bang
     let msg = ""
 
     if a:name == s:active_session_name
-      let msg = "F2: Reload current session: '" . a:name . "'? (type 'yes' to confirm): "
+      let msg = "Reload current session: '" . a:name . "'?"
     elseif !empty(s:active_session_name)
       if s:active_session_digest !=# <SID>create_session_digest()
-        let msg = "F2: Current session not saved. Proceed anyway? (type 'yes' to confirm): "
+        let msg = "Current session not saved. Proceed anyway?"
       endif
     endif
 
-    if !empty(msg)
-      call inputsave()
-      let confirmation = input(msg)
-      call inputrestore()
-      redraw!
-
-      if confirmation !=? "yes"
-        return
-      endif
+    if !empty(msg) && !<SID>confirmed(msg)
+      return
     endif
   endif
 
@@ -2255,12 +2260,7 @@ function! <SID>remove_file()
     return
   endif
 
-  call inputsave()
-  let confirmation = input("F2: Remove file '" . path . "'? (type 'yes' to confirm): ")
-  call inputrestore()
-  redraw!
-
-  if confirmation !=? "yes"
+  if !<SID>confirmed("Remove file '" . path . "'?")
     return
   endif
 
@@ -2280,10 +2280,7 @@ function! <SID>move_file()
     return
   endif
 
-  call inputsave()
-  let new_file = input("F2: Move file to: ", path, "file")
-  call inputrestore()
-  redraw!
+  let new_file = <SID>get_input("Move file to: ", path, "file")
 
   if empty(new_file)
     return
@@ -2331,10 +2328,7 @@ function! <SID>edit_file()
     return
   endif
 
-  call inputsave()
-  let new_file = input("F2: Edit a new file: ", path . '/', "file")
-  call inputrestore()
-  redraw!
+  let new_file = <SID>get_input("Edit a new file: ", path . '/', "file")
 
   if empty(new_file) || isdirectory(new_file)
     return
@@ -2354,15 +2348,8 @@ function! <SID>close_tab()
   if exists("t:f2_label") && !empty(t:f2_label)
     let buf_count = len(F2List(tabpagenr()))
 
-    if buf_count > 1
-      call inputsave()
-      let conf = input("F2: Close tab named '" . t:f2_label . "' with " . buf_count . " buffers? (type 'yes' to confirm): ")
-      call inputrestore()
-      redraw!
-
-      if conf !=? "yes"
-        return
-      endif
+    if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:f2_label . "' with " . buf_count . " buffers?")
+      return
     endif
   endif
 
