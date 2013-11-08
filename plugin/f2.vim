@@ -896,6 +896,7 @@ function! <SID>f2_toggle(internal)
     let s:search_mode             = 0
     let s:file_mode               = 0
     let s:session_mode            = 0
+    let s:last_browsed_session    = 0
     let s:restored_search_mode    = 0
     let s:search_letters          = []
     let t:f2_search_history_index = -1
@@ -1040,19 +1041,23 @@ function! <SID>f2_toggle(internal)
   endif
 
   if s:session_mode
-    let activebufline = 1
+    if s:last_browsed_session
+      let activebufline = s:last_browsed_session
+    else
+      let activebufline = 1
 
-    if !empty(s:active_session_name)
-      let active_session_line = 0
+      if !empty(s:active_session_name)
+        let active_session_line = 0
 
-      for session_name in buflist
-        let active_session_line += 1
+        for session_name in buflist
+          let active_session_line += 1
 
-        if s:active_session_name ==# session_name.raw
-          let activebufline = active_session_line
-          break
-        endif
-      endfor
+          if s:active_session_name ==# session_name.raw
+            let activebufline = active_session_line
+            break
+          endif
+        endfor
+      endif
     endif
   else
     let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
@@ -1304,12 +1309,14 @@ function! <SID>keypressed(key)
     elseif a:key ==# "a"
       call <SID>load_session(0, <SID>get_selected_session_name())
     elseif a:key ==# "s"
+      let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 2
       call <SID>f2_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
+      let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
       call <SID>f2_toggle(1)
@@ -1343,12 +1350,14 @@ function! <SID>keypressed(key)
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "s"
+      let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 1
       call <SID>f2_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
+      let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
       call <SID>f2_toggle(1)
