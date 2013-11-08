@@ -6,9 +6,9 @@
 
 
 
-                                  Vim-F2 3.1.4~
+                                  Vim-F2 3.1.7~
 
-                               A buffers manager
+                            The Vim way enhancement
 
 
 

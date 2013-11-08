@@ -997,8 +997,12 @@ function! <SID>f2_toggle(internal)
       if !s:file_mode && !s:session_mode
         let bufname = <SID>decorate_with_indicators(bufname, i)
       elseif s:session_mode
-        if (raw_name ==# s:active_session_name) && (s:active_session_digest !=# <SID>create_session_digest())
-          let bufname .= " +"
+        if raw_name ==# s:active_session_name
+          let bufname .= g:f2_unicode_font ? " ★" : " *"
+
+          if s:active_session_digest !=# <SID>create_session_digest()
+            let bufname .= "+"
+          endif
         endif
       endif
 
