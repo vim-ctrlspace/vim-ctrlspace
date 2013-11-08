@@ -618,7 +618,7 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>load_session(bang, name)
-  if !empty(s:active_session_name)
+  if !empty(s:active_session_name) && a:bang
     let msg = ""
 
     if a:name == s:active_session_name
@@ -686,7 +686,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab      = 0
     let s:active_session_name = a:name
   else
-    echo "F2: Adding session '" . a:name . "'..."
+    echo "F2: Appending session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -765,7 +765,7 @@ function! <SID>load_session(bang, name)
     let s:active_session_digest = <SID>create_session_digest()
   else
     let s:active_session_digest = ""
-    echo "F2: The session '" . a:name . "' has been added."
+    echo "F2: The session '" . a:name . "' has been appended."
     call <SID>f2_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
