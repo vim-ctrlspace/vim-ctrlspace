@@ -1339,11 +1339,11 @@ function! <SID>keypressed(key)
       call <SID>save_session(<SID>get_selected_session_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
-    elseif (a:key ==# "l") || (a:key ==# "s")
+    elseif a:key ==# "s"
       call <SID>kill(0, 0)
       let s:session_mode = 1
       call <SID>f2_toggle(1)
-    elseif a:key ==# "BS"
+    elseif (a:key ==# "l") || (a:key ==# "BS")
       call <SID>kill(0, 0)
       let s:session_mode = 0
       call <SID>f2_toggle(1)
