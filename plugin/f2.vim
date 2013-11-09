@@ -111,6 +111,29 @@ let s:active_session_name   = ""
 let s:active_session_digest = ""
 let s:session_names         = []
 
+function! <SID>init_key_names()
+  let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
+  let uppercase_letters = toupper(lowercase_letters)
+
+  let control_letters_list = []
+
+  for l in split(lowercase_letters, " ")
+    call add(control_letters_list, "C-" . l)
+  endfor
+
+  let control_letters = join(control_letters_list, " ")
+
+  let numbers       = "1 2 3 4 5 6 7 8 9 0"
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
+                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
+
+  let special_chars .= has("gui_running") ? " C-Space" : " Nul"
+
+  let s:key_names = split(join([lowercase_letters, uppercase_letters, control_letters, numbers, special_chars], " "), " ")
+endfunction
+
+call <SID>init_key_names()
+
 au BufEnter * call <SID>add_tab_buffer()
 
 let s:f2_jumps = []
@@ -1652,24 +1675,9 @@ function! <SID>set_up_buffer()
   call clearmatches()
   hi def F2Found ctermfg=NONE ctermbg=NONE cterm=underline
 
-  " set up the keymap
-  let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
-  let uppercase_letters = toupper(lowercase_letters)
-  let numbers           = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars     = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
-        \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar C-n C-p"
-
-  let special_chars .= has("gui_running") ? " C-Space" : " Nul"
-
-  let key_chars = split(lowercase_letters . " " . uppercase_letters . " " . numbers . " " . special_chars, " ")
-
-  for key_char in key_chars
-    if strlen(key_char) > 1
-      let key = "<" . key_char . ">"
-    else
-      let key = key_char
-    endif
-    silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_char . "\")<CR>"
+  for key_name in s:key_names
+    let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
+    silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_name . "\")<CR>"
   endfor
 endfunction
 
