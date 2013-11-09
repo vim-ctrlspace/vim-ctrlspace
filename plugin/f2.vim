@@ -841,7 +841,7 @@ endfunction
 
 function! <SID>display_search_patterns()
   for pattern in keys(b:search_patterns)
-    call matchadd("F2ItemFound", "\\c" . pattern)
+    call matchadd("F2Found", "\\c" . pattern)
   endfor
 endfunction
 
@@ -1622,6 +1622,8 @@ function! <SID>set_up_buffer()
   setlocal nomodifiable
   setlocal nowrap
   setlocal nonumber
+  setlocal nocursorcolumn
+  setlocal nocursorline
 
   let b:search_patterns = {}
 
@@ -1640,15 +1642,15 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match F2ItemNormal /  .*/
-    syn match F2ItemSelected /> .*/hs=s+1
+    syn match F2Normal /  .*/
+    syn match F2Selected /> .*/hs=s+1
 
-    hi def F2ItemNormal ctermfg=black ctermbg=white
-    hi def F2ItemSelected ctermfg=white ctermbg=black
+    hi def F2Normal ctermfg=black ctermbg=white
+    hi def F2Selected ctermfg=white ctermbg=black
   endif
 
   call clearmatches()
-  hi def F2ItemFound ctermfg=NONE ctermbg=NONE cterm=underline
+  hi def F2Found ctermfg=NONE ctermbg=NONE cterm=underline
 
   " set up the keymap
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
