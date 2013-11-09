@@ -229,6 +229,7 @@ function! F2StatusLineKeyInfoSegment(...)
     call add(keys, "A")
     call add(keys, "^p")
     call add(keys, "^n")
+    call add(keys, "l")
   elseif s:session_mode
     call add(keys, "CR")
     call add(keys, "BS")
@@ -1490,6 +1491,15 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
+    elseif a:key ==# "l"
+      if empty(<SID>get_session_names())
+        call <SID>save_first_session()
+      else
+        call <SID>kill(0, 0)
+        let s:file_mode = !s:file_mode
+        let s:session_mode = 1
+        call <SID>f2_toggle(1)
+      endif
     endif
   else
     if a:key ==# "CR"
