@@ -1,4 +1,4 @@
-module F2
+module FF
   def self.find_subsequence(bufname, offset, search_letters)
     positions      = []
     noise          = 0

@@ -1,12 +1,12 @@
-" Vim-F2 - The Vim way enhancement
+" Vim-FF - The Vim way enhancement
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.7
 "
 " Installation:
-" Place in ~/.vim/plugin/f2.vim or in case of Pathogen:
+" Place in ~/.vim/plugin/ff.vim or in case of Pathogen:
 "
 "     cd ~/.vim/bundle
-"     git clone https://github.com/szw/vim-f2.git
+"     git clone https://github.com/szw/vim-ff.git
 "
 " License:
 " Copyright (c) 2013 Szymon Wrozynski <szymon@wrozynski.com>
@@ -16,28 +16,28 @@
 " Licensed under MIT License conditions.
 "
 " Usage:
-" https://github.com/szw/vim-f2/blob/master/README.md
+" https://github.com/szw/vim-ff/blob/master/README.md
 
-if exists('g:f2_loaded')
+if exists('g:ff_loaded')
   finish
 endif
 
-let g:f2_loaded = 1
+let g:ff_loaded = 1
 
 function! <SID>define_config_variable(name, default_value)
-  if !exists("g:f2_" . a:name)
-    let g:{"f2_" . a:name} = a:default_value
+  if !exists("g:ff_" . a:name)
+    let g:{"ff_" . a:name} = a:default_value
   endif
 endfunction
 
 function! <SID>define_symbols()
-  if g:f2_unicode_font
+  if g:ff_unicode_font
     let symbols = {
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
-          \ "load"    : "▽▲▽",
-          \ "save"    : "▽▼▽",
+          \ "load"    : "▭▬▭",
+          \ "save"    : "▬▭▬",
           \ "ord"     : "₁²₃",
           \ "abc"     : "∧вс",
           \ "len"     : "●∙⋅",
@@ -76,17 +76,17 @@ call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chr
 call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/f2_sessions", ".svn/f2_sessions", "CVS/f2_sessions", ".f2_sessions"])
+call <SID>define_config_variable("session_file", [".git/ff_sessions", ".svn/ff_sessions", "CVS/ff_sessions", ".ff_sessions"])
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 0)
 
-command! -nargs=0 -range F2 :call <SID>f2_toggle(0)
-command! -nargs=0 -range F2TabLabel :call <SID>new_tab_label()
+command! -nargs=0 -range FF :call <SID>ff_toggle(0)
+command! -nargs=0 -range FFTabLabel :call <SID>new_tab_label()
 
-if g:f2_use_tabline
-  set tabline=%!F2TabLine()
+if g:ff_use_tabline
+  set tabline=%!FFTabLine()
 endif
 
 function! <SID>set_default_mapping(key, action)
@@ -100,12 +100,12 @@ function! <SID>set_default_mapping(key, action)
   endif
 endfunction
 
-if g:f2_set_default_mapping
-  call <SID>set_default_mapping(g:f2_default_mapping_key, ":F2<CR>")
+if g:ff_set_default_mapping
+  call <SID>set_default_mapping(g:ff_default_mapping_key, ":FF<CR>")
 endif
 
 let s:files                 = []
-let s:file_sort_order       = g:f2_default_file_sort_order
+let s:file_sort_order       = g:ff_default_file_sort_order
 let s:preview_mode          = 0
 let s:active_session_name   = ""
 let s:active_session_digest = ""
@@ -136,25 +136,25 @@ call <SID>init_key_names()
 
 au BufEnter * call <SID>add_tab_buffer()
 
-let s:f2_jumps = []
+let s:ff_jumps = []
 au BufEnter * call <SID>add_jump()
 
-function! F2List(tabnr)
+function! FFList(tabnr)
   let buffer_list     = {}
-  let f2              = gettabvar(a:tabnr, "f2_list")
+  let ff              = gettabvar(a:tabnr, "ff_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
 
-  if type(f2) != 4
+  if type(ff) != 4
     return buffer_list
   endif
 
-  for i in keys(f2)
+  for i in keys(ff)
     let i = str2nr(i)
 
     let bufname = bufname(i)
 
-    if g:f2_show_unnamed && !strlen(bufname)
-      if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
+    if g:ff_show_unnamed && !strlen(bufname)
+      if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
         let bufname = '[' . i . '*No Name]'
       endif
     endif
@@ -167,7 +167,7 @@ function! F2List(tabnr)
   return buffer_list
 endfunction
 
-function! F2StatusLineKeyInfoSegment(...)
+function! FFStatusLineKeyInfoSegment(...)
   let separator = (a:0 > 0) ? a:1 : " "
   let keys      = ["?"]
 
@@ -295,50 +295,50 @@ function! F2StatusLineKeyInfoSegment(...)
   return join(keys, separator)
 endfunction
 
-function! F2StatusLineInfoSegment(...)
+function! FFStatusLineInfoSegment(...)
   let statusline_elements = []
 
   if s:file_mode
-    call add(statusline_elements, g:f2_symbols.add)
+    call add(statusline_elements, g:ff_symbols.add)
   elseif s:session_mode == 1
-    call add(statusline_elements, g:f2_symbols.load)
+    call add(statusline_elements, g:ff_symbols.load)
   elseif s:session_mode == 2
-    call add(statusline_elements, g:f2_symbols.save)
+    call add(statusline_elements, g:ff_symbols.save)
   elseif s:single_tab_mode
-    call add(statusline_elements, g:f2_symbols.tab)
+    call add(statusline_elements, g:ff_symbols.tab)
   else
-    call add(statusline_elements, g:f2_symbols.all)
+    call add(statusline_elements, g:ff_symbols.all)
   endif
 
   if !s:session_mode
     if empty(s:search_letters) && !s:search_mode
       if s:file_mode
         if s:file_sort_order == 1
-          call add(statusline_elements, g:f2_symbols.len)
+          call add(statusline_elements, g:ff_symbols.len)
         elseif s:file_sort_order == 2
-          call add(statusline_elements, g:f2_symbols.abc)
+          call add(statusline_elements, g:ff_symbols.abc)
         endif
       elseif exists("t:sort_order")
         if t:sort_order == 1
-          call add(statusline_elements, g:f2_symbols.ord)
+          call add(statusline_elements, g:ff_symbols.ord)
         elseif t:sort_order == 2
-          call add(statusline_elements, g:f2_symbols.abc)
+          call add(statusline_elements, g:ff_symbols.abc)
         endif
       endif
     else
-      let search_element = g:f2_symbols.s_left . join(s:search_letters, "")
+      let search_element = g:ff_symbols.s_left . join(s:search_letters, "")
 
       if s:search_mode
         let search_element .= "_"
       endif
 
-      let search_element .= g:f2_symbols.s_right
+      let search_element .= g:ff_symbols.s_right
 
       call add(statusline_elements, search_element)
     endif
 
     if s:preview_mode
-      call add(statusline_elements, g:f2_symbols.prv)
+      call add(statusline_elements, g:ff_symbols.prv)
     endif
   endif
 
@@ -346,7 +346,7 @@ function! F2StatusLineInfoSegment(...)
   return join(statusline_elements, separator)
 endfunction
 
-function! F2TabLine()
+function! FFTabLine()
   let last_tab    = tabpagenr("$")
   let current_tab = tabpagenr()
   let tabline     = ''
@@ -356,11 +356,11 @@ function! F2TabLine()
     let buflist             = tabpagebuflist(t)
     let bufnr               = buflist[winnr - 1]
     let bufname             = bufname(bufnr)
-    let bufs_number         = len(F2List(t))
+    let bufs_number         = len(FFList(t))
     let bufs_number_to_show = ""
 
     if bufs_number > 1
-      if g:f2_unicode_font
+      if g:ff_unicode_font
         let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
         let number_str    = string(bufs_number)
 
@@ -372,14 +372,14 @@ function! F2TabLine()
       endif
     endif
 
-    let title = gettabvar(t, "f2_label")
+    let title = gettabvar(t, "ff_label")
 
     if empty(title)
-      if bufname ==# "__F2__"
+      if bufname ==# "__FF__"
         if s:preview_mode && exists("s:preview_mode_orginal_buffer")
           let bufnr = s:preview_mode_orginal_buffer
         else
-          let bufnr = winbufnr(t:f2_start_window)
+          let bufnr = winbufnr(t:ff_start_window)
         endif
 
         let bufname = bufname(bufnr)
@@ -414,11 +414,11 @@ function! F2TabLine()
 endfunction
 
 function! <SID>new_tab_label()
-  let t:f2_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:f2_label") ? t:f2_label : "")
+  let t:ff_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:ff_label") ? t:ff_label : "")
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
-  for b in map(keys(F2List(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(FFList(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -427,30 +427,30 @@ function! <SID>tab_contains_modified_buffers(tabnr)
 endfunction
 
 function! <SID>max_height()
-  if g:f2_max_height
-    return g:f2_max_height
+  if g:ff_max_height
+    return g:ff_max_height
   else
     return &lines / 3
   endif
 endfunction
 
 function! <SID>session_file()
-  for candidate in g:f2_session_file
+  for candidate in g:ff_session_file
     if isdirectory(fnamemodify(candidate, ":h:t"))
       return candidate
     endif
   endfor
 
-  return g:f2_session_file[-1]
+  return g:ff_session_file[-1]
 endfunction
 
 function! <SID>save_first_session()
   let labels = []
 
   for t in range(1, tabpagenr("$"))
-    let label = gettabvar(t, "f2_label")
+    let label = gettabvar(t, "ff_label")
     if !empty(label)
-      call add(labels, gettabvar(t, "f2_label"))
+      call add(labels, gettabvar(t, "ff_label"))
     endif
   endfor
 
@@ -461,10 +461,10 @@ function! <SID>create_session_digest()
   let lines = []
 
   for t in range(1, tabpagenr("$"))
-    let line = [t, gettabvar(t, "f2_label")]
+    let line = [t, gettabvar(t, "ff_label")]
     let bufs = []
 
-    for bname in values(F2List(t))
+    for bname in values(FFList(t))
       let bufname = fnamemodify(bname, ":.")
 
       if !filereadable(bufname)
@@ -495,8 +495,8 @@ function! <SID>save_session(name)
   let lines      = []
   let in_session = 0
 
-  let session_start_marker = "F2_SESSION_BEGIN: " . name
-  let session_end_marker   = "F2_SESSION_END: " . name
+  let session_start_marker = "FF_SESSION_BEGIN: " . name
+  let session_end_marker   = "FF_SESSION_END: " . name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -517,19 +517,19 @@ function! <SID>save_session(name)
   call add(lines, session_start_marker)
 
   for t in range(1, last_tab)
-    let line = [t, gettabvar(t, "f2_label"), tabpagenr() == t]
+    let line = [t, gettabvar(t, "ff_label"), tabpagenr() == t]
 
-    let f2_list = F2List(t)
+    let ff_list = FFList(t)
 
     let bufs     = []
     let visibles = []
 
     let visible_buffers = tabpagebuflist(t)
 
-    let f2_list_index = -1
+    let ff_list_index = -1
 
-    for [nr, bname] in items(f2_list)
-      let f2_list_index += 1
+    for [nr, bname] in items(ff_list)
+      let ff_list_index += 1
       let bufname = fnamemodify(bname, ":.")
       let nr = str2nr(nr)
 
@@ -538,7 +538,7 @@ function! <SID>save_session(name)
       endif
 
       if index(visible_buffers, nr) != -1
-        call add(visibles, f2_list_index)
+        call add(visibles, ff_list_index)
       endif
 
       call add(bufs, bufname)
@@ -557,7 +557,7 @@ function! <SID>save_session(name)
   let s:active_session_digest = <SID>create_session_digest()
   let s:session_names         = []
 
-  echo "F2: The session '" . name . "' has been saved."
+  echo "FF: The session '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_session(name)
@@ -571,8 +571,8 @@ function! <SID>delete_session(name)
   let lines      = []
   let in_session = 0
 
-  let session_start_marker = "F2_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "F2_SESSION_END: " . a:name
+  let session_start_marker = "FF_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "FF_SESSION_END: " . a:name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -597,7 +597,7 @@ function! <SID>delete_session(name)
     let s:active_session_digest = ""
   endif
 
-  echo "F2: The session '" . a:name . "' has been deleted."
+  echo "FF: The session '" . a:name . "' has been deleted."
 
   let s:session_names = []
 
@@ -605,7 +605,7 @@ function! <SID>delete_session(name)
     call <SID>kill(0, 1)
   else
     call <SID>kill(0, 0)
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
@@ -616,7 +616,7 @@ function! <SID>get_session_names()
 
   if filereadable(filename)
     for line in readfile(filename)
-      if line =~? "F2_SESSION_BEGIN: "
+      if line =~? "FF_SESSION_BEGIN: "
         call add(names, line[18:])
       endif
     endfor
@@ -630,7 +630,7 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>get_input(msg, ...)
-  let msg = "F2: " . a:msg
+  let msg = "FF: " . a:msg
 
   call inputsave()
 
@@ -672,13 +672,13 @@ function! <SID>load_session(bang, name)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo "F2: Sessions file '" . filename . "' not found."
+    echo "FF: Sessions file '" . filename . "' not found."
     call <SID>kill(0, 1)
     return
   endif
 
-  let session_start_marker = "F2_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "F2_SESSION_END: " . a:name
+  let session_start_marker = "FF_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "FF_SESSION_END: " . a:name
 
   let lines      = []
   let in_session = 0
@@ -694,7 +694,7 @@ function! <SID>load_session(bang, name)
   endfor
 
   if empty(lines)
-    echo "F2: Session '" . a:name . "' not found in file '" . filename . "'."
+    echo "FF: Session '" . a:name . "' not found in file '" . filename . "'."
     let s:session_names = []
     call <SID>kill(0, 1)
     return
@@ -705,7 +705,7 @@ function! <SID>load_session(bang, name)
   let commands = []
 
   if a:bang
-    echo "F2: Loading session '" . a:name . "'..."
+    echo "FF: Loading session '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -714,7 +714,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab      = 0
     let s:active_session_name = a:name
   else
-    echo "F2: Appending session '" . a:name . "'..."
+    echo "FF: Appending session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -772,15 +772,15 @@ function! <SID>load_session(bang, name)
     endif
 
     if is_current
-      call add(commands, "let f2_session_current_tab = tabpagenr()")
+      call add(commands, "let ff_session_current_tab = tabpagenr()")
     endif
 
     if !empty(tab_label)
-      call add(commands, "let t:f2_label = '" . tab_label . "'")
+      call add(commands, "let t:ff_label = '" . tab_label . "'")
     endif
   endfor
 
-  call add(commands, "exe 'normal! ' . f2_session_current_tab . 'gt'")
+  call add(commands, "exe 'normal! ' . ff_session_current_tab . 'gt'")
   call add(commands, "redraw!")
 
   for c in commands
@@ -789,15 +789,15 @@ function! <SID>load_session(bang, name)
 
 
   if a:bang
-    echo "F2: The session '" . a:name . "' has been loaded."
+    echo "FF: The session '" . a:name . "' has been loaded."
     let s:active_session_digest = <SID>create_session_digest()
   else
     let s:active_session_digest = ""
-    echo "F2: The session '" . a:name . "' has been appended."
-    call <SID>f2_toggle(0)
+    echo "FF: The session '" . a:name . "' has been appended."
+    call <SID>ff_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
@@ -824,8 +824,8 @@ function! <SID>find_subsequence(bufname, offset)
 endfunction
 
 function! <SID>find_lowest_search_noise(bufname)
-  if has("ruby") && g:f2_use_ruby_bindings
-    ruby VIM.command("return #{F2.find_lowest_search_noise(VIM.evaluate('a:bufname'))}")
+  if has("ruby") && g:ff_use_ruby_bindings
+    ruby VIM.command("return #{FF.find_lowest_search_noise(VIM.evaluate('a:bufname'))}")
   else
     let search_letters_count = len(s:search_letters)
     let noise                = -1
@@ -865,57 +865,57 @@ endfunction
 
 function! <SID>display_search_patterns()
   for pattern in keys(b:search_patterns)
-    call matchadd("F2Found", "\\c" . pattern)
+    call matchadd("FFFound", "\\c" . pattern)
   endfor
 endfunction
 
 function! <SID>append_to_search_history()
   if !empty(s:search_letters)
-    if !exists("t:f2_search_history")
-      let t:f2_search_history = []
+    if !exists("t:ff_search_history")
+      let t:ff_search_history = []
     endif
 
-    call add(t:f2_search_history, copy(s:search_letters))
-    let t:f2_search_history = <SID>unique_list(t:f2_search_history)
+    call add(t:ff_search_history, copy(s:search_letters))
+    let t:ff_search_history = <SID>unique_list(t:ff_search_history)
 
-    if len(t:f2_search_history) > g:f2_max_searches + 1
-      unlet t:f2_jumps[0]
+    if len(t:ff_search_history) > g:ff_max_searches + 1
+      unlet t:ff_jumps[0]
     endif
   endif
 endfunction
 
 function! <SID>restore_search_letters(direction)
-  if !exists("t:f2_search_history")
+  if !exists("t:ff_search_history")
     return
   endif
 
   if a:direction == "previous"
-    let t:f2_search_history_index += 1
+    let t:ff_search_history_index += 1
 
-    if t:f2_search_history_index == len(t:f2_search_history)
-      let t:f2_search_history_index = len(t:f2_search_history) - 1
+    if t:ff_search_history_index == len(t:ff_search_history)
+      let t:ff_search_history_index = len(t:ff_search_history) - 1
     endif
   elseif a:direction == "next"
-    let t:f2_search_history_index -= 1
+    let t:ff_search_history_index -= 1
 
-    if t:f2_search_history_index < -1
-      let t:f2_search_history_index = -1
+    if t:ff_search_history_index < -1
+      let t:ff_search_history_index = -1
     endif
   endif
 
-  if t:f2_search_history_index < 0
+  if t:ff_search_history_index < 0
     let s:search_letters = []
   else
-    let s:search_letters = copy(reverse(copy(t:f2_search_history))[t:f2_search_history_index])
+    let s:search_letters = copy(reverse(copy(t:ff_search_history))[t:ff_search_history_index])
     let s:restored_search_mode = 1
   endif
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 " toggled the buffer list on/off
-function! <SID>f2_toggle(internal)
+function! <SID>ff_toggle(internal)
   if !a:internal
     let s:single_tab_mode         = 1
     let s:nop_mode                = 0
@@ -926,15 +926,15 @@ function! <SID>f2_toggle(internal)
     let s:last_browsed_session    = 0
     let s:restored_search_mode    = 0
     let s:search_letters          = []
-    let t:f2_search_history_index = -1
+    let t:ff_search_history_index = -1
 
     if !exists("t:sort_order")
-      let t:sort_order = g:f2_default_sort_order
+      let t:sort_order = g:ff_default_sort_order
     endif
   endif
 
   " if we get called and the list is open --> close it
-  let buflistnr = bufnr("__F2__")
+  let buflistnr = bufnr("__FF__")
   if bufexists(buflistnr)
     if bufwinnr(buflistnr) != -1
       call <SID>kill(buflistnr, 1)
@@ -942,13 +942,13 @@ function! <SID>f2_toggle(internal)
     else
       call <SID>kill(buflistnr, 0)
       if !a:internal
-        let t:f2_start_window = winnr()
-        let t:f2_winrestcmd = winrestcmd()
+        let t:ff_start_window = winnr()
+        let t:ff_winrestcmd = winrestcmd()
       endif
     endif
   elseif !a:internal
-    let t:f2_start_window = winnr()
-    let t:f2_winrestcmd = winrestcmd()
+    let t:ff_start_window = winnr()
+    let t:ff_winrestcmd = winrestcmd()
   endif
 
   let bufcount      = bufnr('$')
@@ -957,9 +957,9 @@ function! <SID>f2_toggle(internal)
   let buflist       = []
 
   " create the buffer first & set it up
-  silent! exe "noautocmd botright pedit __F2__"
+  silent! exe "noautocmd botright pedit __FF__"
   silent! exe "noautocmd wincmd P"
-  silent! exe "resize" g:f2_height
+  silent! exe "resize" g:ff_height
 
   call <SID>set_up_buffer()
 
@@ -981,20 +981,20 @@ function! <SID>f2_toggle(internal)
     if s:file_mode
       let bufname = fnamemodify(s:files[i - 1], ":.")
 
-      if isdirectory(bufname) || (bufname =~# g:f2_ignored_files)
+      if isdirectory(bufname) || (bufname =~# g:ff_ignored_files)
         continue
       endif
     elseif s:session_mode
       let bufname = s:session_names[i - 1]
     else
-      if s:single_tab_mode && !exists('t:f2_list[' . i . ']')
+      if s:single_tab_mode && !exists('t:ff_list[' . i . ']')
         continue
       endif
 
       let bufname = fnamemodify(bufname(i), ":.")
 
-      if g:f2_show_unnamed && !strlen(bufname)
-        if !((g:f2_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
+      if g:ff_show_unnamed && !strlen(bufname)
+        if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
           let bufname = '[' . i . '*No Name]'
         endif
       endif
@@ -1010,7 +1010,7 @@ function! <SID>f2_toggle(internal)
       let raw_name = bufname
 
       if strlen(bufname) + 6 > &columns
-        if g:f2_unicode_font
+        if g:ff_unicode_font
           let dots_symbol = "…"
           let dots_symbol_size = 1
         else
@@ -1025,7 +1025,7 @@ function! <SID>f2_toggle(internal)
         let bufname = <SID>decorate_with_indicators(bufname, i)
       elseif s:session_mode
         if raw_name ==# s:active_session_name
-          let bufname .= g:f2_unicode_font ? " ★" : " *"
+          let bufname .= g:ff_unicode_font ? " ★" : " *"
 
           if s:active_session_digest !=# <SID>create_session_digest()
             let bufname .= "+"
@@ -1040,7 +1040,7 @@ function! <SID>f2_toggle(internal)
       endwhile
 
       " handle wrong strlen for unicode dots symbol
-      if g:f2_unicode_font && bufname =~ "…"
+      if g:ff_unicode_font && bufname =~ "…"
         let bufname .= "  "
       endif
 
@@ -1050,7 +1050,7 @@ function! <SID>f2_toggle(internal)
   endfor
 
   " set up window height
-  if displayedbufs > g:f2_height
+  if displayedbufs > g:ff_height
     if displayedbufs < <SID>max_height()
       silent! exe "resize " . displayedbufs
     else
@@ -1115,10 +1115,10 @@ function! <SID>create_jumplines(buflist, activebufline)
     call add(buffers, bufentry.number)
   endfor
 
-  if s:single_tab_mode && exists("t:f2_jumps")
-    let bufferjumps = t:f2_jumps
+  if s:single_tab_mode && exists("t:ff_jumps")
+    let bufferjumps = t:ff_jumps
   else
-    let bufferjumps = s:f2_jumps
+    let bufferjumps = s:ff_jumps
   endif
 
   let jumplines = []
@@ -1140,24 +1140,24 @@ endfunction
 function! <SID>clear_search_mode()
   let s:search_letters          = []
   let s:search_mode             = 0
-  let t:f2_search_history_index = -1
+  let t:ff_search_history_index = -1
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>switch_search_mode(switch)
@@ -1168,7 +1168,7 @@ function! <SID>switch_search_mode(switch)
   let s:search_mode = a:switch
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>unique_list(list)
@@ -1179,9 +1179,9 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ' '
 
   if s:preview_mode && (s:preview_mode_orginal_buffer == a:bufnum)
-    let indicators .= g:f2_unicode_font ? "☆" : "*"
+    let indicators .= g:ff_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
-    let indicators .= g:f2_unicode_font ? "★" : "*"
+    let indicators .= g:ff_unicode_font ? "★" : "*"
   endif
 
   if getbufvar(a:bufnum, "&modified")
@@ -1209,14 +1209,14 @@ function! <SID>find_activebufline(activebuf, buflist)
 endfunction
 
 function! <SID>go_to_start_window()
-  if exists("t:f2_start_window")
-    silent! exe t:f2_start_window . "wincmd w"
+  if exists("t:ff_start_window")
+    silent! exe t:ff_start_window . "wincmd w"
   endif
 
-  if exists("t:f2_winrestcmd") && (winrestcmd() != t:f2_winrestcmd)
-    silent! exe t:f2_winrestcmd
+  if exists("t:ff_winrestcmd") && (winrestcmd() != t:ff_winrestcmd)
+    silent! exe t:ff_winrestcmd
 
-    if winrestcmd() != t:f2_winrestcmd
+    if winrestcmd() != t:ff_winrestcmd
       wincmd =
     endif
   endif
@@ -1272,12 +1272,12 @@ function! <SID>tab_command(key)
     silent! exe "normal! " . tab_nr . "gt"
   endif
 
-  call <SID>f2_toggle(0)
+  call <SID>ff_toggle(0)
 endfunction
 
 function! <SID>keypressed(key)
   if a:key ==# "?"
-    let g:f2_show_key_info = !g:f2_show_key_info
+    let g:ff_show_key_info = !g:ff_show_key_info
     call <SID>set_status_line()
     redraw!
     return
@@ -1339,14 +1339,14 @@ function! <SID>keypressed(key)
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 2
-      call <SID>f2_toggle(1)
+      call <SID>ff_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
-      call <SID>f2_toggle(1)
+      call <SID>ff_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_session(<SID>get_selected_session_name())
     elseif a:key ==# "j"
@@ -1380,14 +1380,14 @@ function! <SID>keypressed(key)
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 1
-      call <SID>f2_toggle(1)
+      call <SID>ff_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
-      call <SID>f2_toggle(1)
+      call <SID>ff_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_session(<SID>get_selected_session_name())
     elseif a:key ==# "j"
@@ -1442,7 +1442,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "-"
       silent! exe "tabm-1"
     elseif a:key ==# "_"
-      let t:f2_label = ""
+      let t:ff_label = ""
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -1498,7 +1498,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:session_mode = 1
-        call <SID>f2_toggle(1)
+        call <SID>ff_toggle(1)
       endif
     endif
   else
@@ -1535,7 +1535,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "-"
       silent! exe "tabm-1"
     elseif a:key ==# "_"
-      let t:f2_label = ""
+      let t:ff_label = ""
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -1607,7 +1607,7 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:session_mode = 1
-        call <SID>f2_toggle(1)
+        call <SID>ff_toggle(1)
       endif
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
@@ -1625,17 +1625,17 @@ endfunction
 function! <SID>toggle_file_mode()
   let s:file_mode = !s:file_mode
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>set_status_line()
   if has('statusline')
     hi default link User1 LineNr
-    let f2_name = g:f2_unicode_font ? "ϝ₂" : "F2"
-    let &l:statusline = "%1* " . f2_name . "  %*  " . F2StatusLineInfoSegment()
+    let ff_name = g:ff_unicode_font ? "ﬀ" : "FF"
+    let &l:statusline = "%1* " . ff_name . "  %*  " . FFStatusLineInfoSegment()
 
-    if g:f2_show_key_info
-      let key_info = "  %=%1* " . F2StatusLineKeyInfoSegment() . " "
+    if g:ff_show_key_info
+      let key_info = "  %=%1* " . FFStatusLineKeyInfoSegment() . " "
 
       if strlen(&l:statusline) + strlen(key_info) > &columns
         let key_info = "  %=%1* ? ... "
@@ -1667,7 +1667,7 @@ function! <SID>set_up_buffer()
     au BufLeave <buffer> silent! exe "set timeoutlen=" . b:old_timeoutlen
   endif
 
-  augroup F2Leave
+  augroup FFLeave
     au!
     au BufLeave <buffer> call <SID>kill(0, 1)
   augroup END
@@ -1675,15 +1675,15 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match F2Normal /  .*/
-    syn match F2Selected /> .*/hs=s+1
+    syn match FFNormal /  .*/
+    syn match FFSelected /> .*/hs=s+1
 
-    hi def F2Normal ctermfg=black ctermbg=white
-    hi def F2Selected ctermfg=white ctermbg=black
+    hi def FFNormal ctermfg=black ctermbg=white
+    hi def FFSelected ctermfg=white ctermbg=black
   endif
 
   call clearmatches()
-  hi def F2Found ctermfg=NONE ctermbg=NONE cterm=underline
+  hi def FFFound ctermfg=NONE ctermbg=NONE cterm=underline
 
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
@@ -1705,8 +1705,8 @@ endfunction
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
     if s:single_tab_mode
-      if exists("t:f2_list[" . a:a.number . "]") && exists("t:f2_list[" . a:b.number . "]")
-        return t:f2_list[a:a.number] - t:f2_list[a:b.number]
+      if exists("t:ff_list[" . a:a.number . "]") && exists("t:ff_list[" . a:b.number . "]")
+        return t:ff_list[a:a.number] - t:ff_list[a:b.number]
       endif
     endif
     return a:a.number - a:b.number
@@ -1815,7 +1815,7 @@ function! <SID>display_list(displayedbufs, buflist)
     let empty_list_message = "  List empty"
 
     if &columns < (strlen(empty_list_message) + 2)
-      if g:f2_unicode_font
+      if g:ff_unicode_font
         let dots_symbol = "…"
         let dots_symbol_size = 1
       else
@@ -1831,7 +1831,7 @@ function! <SID>display_list(displayedbufs, buflist)
     endwhile
 
     " handle wrong strlen for unicode dots symbol
-    if g:f2_unicode_font && empty_list_message =~ "…"
+    if g:ff_unicode_font && empty_list_message =~ "…"
       let empty_list_message .= "  "
     endif
 
@@ -1856,10 +1856,10 @@ function! <SID>display_list(displayedbufs, buflist)
     endfor
 
     if !any_buffer_listed
-      au! F2Leave BufLeave
+      au! FFLeave BufLeave
       noremap <silent> <buffer> q :q<CR>
-      if g:f2_set_default_mapping
-        silent! exe 'noremap <silent><buffer>' . g:f2_default_mapping_key . ' :q<CR>'
+      if g:ff_set_default_mapping
+        silent! exe 'noremap <silent><buffer>' . g:ff_default_mapping_key . ' :q<CR>'
       endif
     endif
 
@@ -1916,13 +1916,13 @@ endfunction
 function! <SID>goto(line)
   if b:bufcount < 1 | return | endif
   if a:line < 1
-    if g:f2_cyclic_list
+    if g:ff_cyclic_list
       call <SID>goto(b:bufcount - a:line)
     else
       call cursor(1, 1)
     endif
   elseif a:line > b:bufcount
-    if g:f2_cyclic_list
+    if g:ff_cyclic_list
       call <SID>goto(a:line - b:bufcount)
     else
       call cursor(b:bufcount, 1)
@@ -1963,7 +1963,7 @@ function! <SID>load_many_buffers()
 
   exec ":b " . nr
 
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
   call <SID>move(current_line)
 endfunction
 
@@ -1988,7 +1988,7 @@ function! <SID>load_many_files()
 
   exec ":e " . file
 
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
   call <SID>move(current_line)
 endfunction
 
@@ -2008,7 +2008,7 @@ endfunction
 function! <SID>preview_buffer(nr, ...)
   if !s:preview_mode
     let s:preview_mode = 1
-    let s:preview_mode_orginal_buffer = winbufnr(t:f2_start_window)
+    let s:preview_mode_orginal_buffer = winbufnr(t:ff_start_window)
   endif
 
   let nr = a:nr ? a:nr : <SID>get_selected_buffer()
@@ -2024,17 +2024,17 @@ function! <SID>preview_buffer(nr, ...)
     silent! exe c
   endfor
 
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>load_buffer_into_window(winnr)
-  if exists("t:f2_start_window")
-    let old_start_window = t:f2_start_window
-    let t:f2_start_window = a:winnr
+  if exists("t:ff_start_window")
+    let old_start_window = t:ff_start_window
+    let t:ff_start_window = a:winnr
   endif
   call <SID>load_buffer()
   if exists("old_start_window")
-    let t:f2_start_window = old_start_window
+    let t:ff_start_window = old_start_window
   endif
 endfunction
 
@@ -2077,14 +2077,14 @@ function! <SID>delete_buffer()
           silent! exe "tabn " . t
 
           let tab_window = bufwinnr(b)
-          let f2_list    = gettabvar(t, "f2_list")
+          let ff_list    = gettabvar(t, "ff_list")
 
-          call remove(f2_list, nr)
+          call remove(ff_list, nr)
 
           silent! exe tab_window . "wincmd w"
 
-          if !empty(f2_list)
-            silent! exe "b" . keys(f2_list)[0]
+          if !empty(ff_list)
+            silent! exe "b" . keys(ff_list)[0]
           else
             enew
           endif
@@ -2096,21 +2096,21 @@ function! <SID>delete_buffer()
     silent! exe "bdelete " . nr
 
     call <SID>forget_buffers_in_all_tabs([nr])
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
 function! <SID>forget_buffers_in_all_tabs(numbers)
   for t in range(1, tabpagenr("$"))
-    let f2_list = gettabvar(t, "f2_list")
+    let ff_list = gettabvar(t, "ff_list")
 
     for nr in a:numbers
-      if exists("f2_list[" . nr . "]")
-        call remove(f2_list, nr)
+      if exists("ff_list[" . nr . "]")
+        call remove(ff_list, nr)
       endif
     endfor
 
-    call settabvar(t, "f2_list", f2_list)
+    call settabvar(t, "ff_list", ff_list)
   endfor
 endfunction
 
@@ -2157,7 +2157,7 @@ function! <SID>delete_hidden_noname_buffers(internal)
   endif
 
   if !a:internal
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
@@ -2165,7 +2165,7 @@ endfunction
 function! <SID>delete_foreign_buffers(internal)
   let buffers = {}
   for t in range(1, tabpagenr('$'))
-    silent! call extend(buffers, gettabvar(t, 'f2_list'))
+    silent! call extend(buffers, gettabvar(t, 'ff_list'))
   endfor
 
   if !a:internal
@@ -2175,7 +2175,7 @@ function! <SID>delete_foreign_buffers(internal)
   call <SID>keep_buffers_for_keys(buffers)
 
   if !a:internal
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
@@ -2189,17 +2189,17 @@ function! <SID>add_tab_buffer()
     return
   endif
 
-  if !exists('t:f2_list')
-    let t:f2_list = {}
+  if !exists('t:ff_list')
+    let t:ff_list = {}
   endif
 
   let current = bufnr('%')
 
-  if !exists("t:f2_list[" . current . "]") &&
+  if !exists("t:ff_list[" . current . "]") &&
         \ getbufvar(current, '&modifiable') &&
         \ getbufvar(current, '&buflisted') &&
-        \ current != bufnr("__F2__")
-    let t:f2_list[current] = len(t:f2_list) + 1
+        \ current != bufnr("__FF__")
+    let t:ff_list[current] = len(t:ff_list) + 1
   endif
 endfunction
 
@@ -2208,25 +2208,25 @@ function! <SID>add_jump()
     return
   endif
 
-  if !exists("t:f2_jumps")
-    let t:f2_jumps = []
+  if !exists("t:ff_jumps")
+    let t:ff_jumps = []
   endif
 
   let current = bufnr('%')
 
-  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__F2__")
-    call add(s:f2_jumps, current)
-    let s:f2_jumps = <SID>unique_list(s:f2_jumps)
+  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__FF__")
+    call add(s:ff_jumps, current)
+    let s:ff_jumps = <SID>unique_list(s:ff_jumps)
 
-    if len(s:f2_jumps) > g:f2_max_jumps + 1
-      unlet s:f2_jumps[0]
+    if len(s:ff_jumps) > g:ff_max_jumps + 1
+      unlet s:ff_jumps[0]
     endif
 
-    call add(t:f2_jumps, current)
-    let t:f2_jumps = <SID>unique_list(t:f2_jumps)
+    call add(t:ff_jumps, current)
+    let t:ff_jumps = <SID>unique_list(t:ff_jumps)
 
-    if len(t:f2_jumps) > g:f2_max_jumps + 1
-      unlet t:f2_jumps[0]
+    if len(t:ff_jumps) > g:ff_max_jumps + 1
+      unlet t:ff_jumps[0]
     endif
   endif
 endfunction
@@ -2239,7 +2239,7 @@ function! <SID>toggle_single_tab_mode()
   endif
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>toggle_order()
@@ -2251,7 +2251,7 @@ function! <SID>toggle_order()
     endif
 
     call <SID>kill(0, 0)
-    call <SID>f2_toggle(1)
+    call <SID>ff_toggle(1)
   endif
 endfunction
 
@@ -2263,13 +2263,13 @@ function! <SID>toggle_files_order()
   endif
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>refresh_files()
   let s:files = []
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>remove_file()
@@ -2289,7 +2289,7 @@ function! <SID>remove_file()
   call delete(path)
 
   call <SID>kill(0, 0)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>move_file()
@@ -2325,7 +2325,7 @@ function! <SID>move_file()
   let s:files = []
 
   call <SID>kill(0, 1)
-  call <SID>f2_toggle(1)
+  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>explore_directory()
@@ -2365,10 +2365,10 @@ function! <SID>close_tab()
     return
   endif
 
-  if exists("t:f2_label") && !empty(t:f2_label)
-    let buf_count = len(F2List(tabpagenr()))
+  if exists("t:ff_label") && !empty(t:ff_label)
+    let buf_count = len(FFList(tabpagenr()))
 
-    if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:f2_label . "' with " . buf_count . " buffers?")
+    if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:ff_label . "' with " . buf_count . " buffers?")
       return
     endif
   endif
@@ -2380,7 +2380,7 @@ function! <SID>close_tab()
   call <SID>delete_hidden_noname_buffers(1)
   call <SID>delete_foreign_buffers(1)
 
-  call <SID>f2_toggle(0)
+  call <SID>ff_toggle(0)
 endfunction
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
@@ -2390,8 +2390,8 @@ function! <SID>close_buffer()
   let found_tabs = 0
 
   for t in range(1, tabpagenr('$'))
-    let f2_list = gettabvar(t, 'f2_list')
-    if !empty(f2_list) && exists("f2_list[" . nr . "]")
+    let ff_list = gettabvar(t, 'ff_list')
+    if !empty(ff_list) && exists("ff_list[" . nr . "]")
       let found_tabs += 1
     endif
   endfor
@@ -2406,7 +2406,7 @@ endfunction
 function! <SID>detach_buffer()
   let nr = <SID>get_selected_buffer()
 
-  if exists('t:f2_list[' . nr . ']')
+  if exists('t:ff_list[' . nr . ']')
     let selected_buffer_window = bufwinnr(nr)
     if selected_buffer_window != -1
       call <SID>move("down")
@@ -2429,20 +2429,20 @@ function! <SID>detach_buffer()
     else
       call <SID>kill(0, 0)
     endif
-    call remove(t:f2_list, nr)
-    call <SID>f2_toggle(1)
+    call remove(t:ff_list, nr)
+    call <SID>ff_toggle(1)
   endif
 
   return nr
 endfunction
 
-if !(has("ruby") && g:f2_use_ruby_bindings)
+if !(has("ruby") && g:ff_use_ruby_bindings)
   finish
 endif
 
-let s:f2_folder = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let s:ff_folder = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
 ruby << EOF
 require "pathname"
-require Pathname.new(VIM.evaluate("s:f2_folder")).parent.join("ruby", "f2").to_s
+require Pathname.new(VIM.evaluate("s:ff_folder")).parent.join("ruby", "ff").to_s
 EOF
