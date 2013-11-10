@@ -33,6 +33,7 @@ endfunction
 function! <SID>define_symbols()
   if g:ff_unicode_font
     let symbols = {
+          \ "ff"      : "ﬀ",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
@@ -47,6 +48,7 @@ function! <SID>define_symbols()
           \ }
   else
     let symbols = {
+          \ "ff"      : "FF",
           \ "tab"     : "TAB",
           \ "all"     : "ALL",
           \ "add"     : "ADD",
@@ -557,7 +559,7 @@ function! <SID>save_session(name)
   let s:active_session_digest = <SID>create_session_digest()
   let s:session_names         = []
 
-  echo "FF: The session '" . name . "' has been saved."
+  echo g:ff_symbols.ff . ": The session '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_session(name)
@@ -597,7 +599,7 @@ function! <SID>delete_session(name)
     let s:active_session_digest = ""
   endif
 
-  echo "FF: The session '" . a:name . "' has been deleted."
+  echo g:ff_symbols.ff . ": The session '" . a:name . "' has been deleted."
 
   let s:session_names = []
 
@@ -630,7 +632,7 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>get_input(msg, ...)
-  let msg = "FF: " . a:msg
+  let msg = g:ff_symbols.ff . ": " . a:msg
 
   call inputsave()
 
@@ -672,7 +674,7 @@ function! <SID>load_session(bang, name)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo "FF: Sessions file '" . filename . "' not found."
+    echo g:ff_symbols.ff . ": Sessions file '" . filename . "' not found."
     call <SID>kill(0, 1)
     return
   endif
@@ -694,7 +696,7 @@ function! <SID>load_session(bang, name)
   endfor
 
   if empty(lines)
-    echo "FF: Session '" . a:name . "' not found in file '" . filename . "'."
+    echo g:ff_symbols.ff . ": Session '" . a:name . "' not found in file '" . filename . "'."
     let s:session_names = []
     call <SID>kill(0, 1)
     return
@@ -705,7 +707,7 @@ function! <SID>load_session(bang, name)
   let commands = []
 
   if a:bang
-    echo "FF: Loading session '" . a:name . "'..."
+    echo g:ff_symbols.ff . ": Loading session '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -714,7 +716,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab      = 0
     let s:active_session_name = a:name
   else
-    echo "FF: Appending session '" . a:name . "'..."
+    echo g:ff_symbols.ff . ": Appending session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -789,11 +791,11 @@ function! <SID>load_session(bang, name)
 
 
   if a:bang
-    echo "FF: The session '" . a:name . "' has been loaded."
+    echo g:ff_symbols.ff . ": The session '" . a:name . "' has been loaded."
     let s:active_session_digest = <SID>create_session_digest()
   else
     let s:active_session_digest = ""
-    echo "FF: The session '" . a:name . "' has been appended."
+    echo g:ff_symbols.ff . ": The session '" . a:name . "' has been appended."
     call <SID>ff_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
@@ -1631,8 +1633,7 @@ endfunction
 function! <SID>set_status_line()
   if has('statusline')
     hi default link User1 LineNr
-    let ff_name = g:ff_unicode_font ? "ﬀ" : "FF"
-    let &l:statusline = "%1* " . ff_name . "  %*  " . FFStatusLineInfoSegment()
+    let &l:statusline = "%1* " . g:ff_symbols.ff . "  %*  " . FFStatusLineInfoSegment()
 
     if g:ff_show_key_info
       let key_info = "  %=%1* " . FFStatusLineKeyInfoSegment() . " "
