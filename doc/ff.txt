@@ -1,12 +1,12 @@
-*f2.txt*                   For Vim version 7.4           Last change: 2013-09-25
-*f2*
+*ff.txt*                   For Vim version 7.4           Last change: 2013-09-25
+*ff*
 
 
 
 
 
 
-                                  Vim-F2 3.1.7~
+                                  Vim-FF 3.1.7~
 
                             The Vim way enhancement
 
@@ -20,29 +20,29 @@ Copyright (c) 2013 Szymon Wrozynski
 ==============================================================================
 Table of Contents
 
-    1. About..........................................................|f2-about|
-    2. Usage..........................................................|f2-usage|
-    3. Keys............................................................|f2-keys|
-    4. Configuration..........................................|f2-configuration|
-    5. Author and License....................................|f2-author-license|
+    1. About..........................................................|ff-about|
+    2. Usage..........................................................|ff-usage|
+    3. Keys............................................................|ff-keys|
+    4. Configuration..........................................|ff-configuration|
+    5. Author and License....................................|ff-author-license|
 
 ------------------------------------------------------------------------------
-1. About                                                              *f2-about*
+1. About                                                              *ff-about*
 
 ------------------------------------------------------------------------------
-2. Usage                                                              *f2-usage*
+2. Usage                                                              *ff-usage*
 
 ------------------------------------------------------------------------------
-2. Keys                                                                *f2-keys*
+2. Keys                                                                *ff-keys*
 
 ------------------------------------------------------------------------------
-3. Configuration                                              *f2-configuration*
+3. Configuration                                              *ff-configuration*
 
 ------------------------------------------------------------------------------
-4. Author and License                                        *f2-author-license*
+4. Author and License                                        *ff-author-license*
 
-F2 has been written by Szymon Wrozynski and Contributors
-(https://github.com/szw/vim-f2/commits/master). It is licensed
+FF has been written by Szymon Wrozynski and Contributors
+(https://github.com/szw/vim-ff/commits/master). It is licensed
 under the same terms as Vim itself. For more info see |license|.
 
 It was based on the BufferList plugin by Robert Lillack
