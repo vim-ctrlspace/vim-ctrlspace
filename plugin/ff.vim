@@ -967,7 +967,17 @@ function! <SID>ff_toggle(internal)
 
   if s:file_mode
     if empty(s:files)
-      let s:files = split(globpath('.', '**'), '\n')
+      let s:files = []
+
+      for fname in split(globpath('.', '**'), '\n')
+        let fname_modified = fnamemodify(fname, ":.")
+
+        if isdirectory(fname_modified) || (fname_modified =~# g:ff_ignored_files)
+          continue
+        endif
+
+        call add(s:files, fname_modified)
+      endfor
     endif
 
     let bufcount = len(s:files)
@@ -981,11 +991,7 @@ function! <SID>ff_toggle(internal)
 
   for i in range(1, bufcount)
     if s:file_mode
-      let bufname = fnamemodify(s:files[i - 1], ":.")
-
-      if isdirectory(bufname) || (bufname =~# g:ff_ignored_files)
-        continue
-      endif
+      let bufname = s:files[i - 1]
     elseif s:session_mode
       let bufname = s:session_names[i - 1]
     else
@@ -1002,7 +1008,7 @@ function! <SID>ff_toggle(internal)
       endif
     endif
 
-    if strlen(bufname) && ((getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')) || s:file_mode || s:session_mode)
+    if strlen(bufname) && (s:file_mode || s:session_mode || (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
       let search_noise = <SID>find_lowest_search_noise(bufname)
 
       if search_noise == -1
