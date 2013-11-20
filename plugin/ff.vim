@@ -1,6 +1,6 @@
 " Vim-FF - The Vim way enhancement
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.7
+" Version:      3.1.8
 "
 " Installation:
 " Place in ~/.vim/plugin/ff.vim or in case of Pathogen:
@@ -79,6 +79,7 @@ call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/ff_sessions", ".svn/ff_sessions", "CVS/ff_sessions", ".ff_sessions"])
+call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
@@ -1637,7 +1638,23 @@ function! <SID>keypressed(key)
 endfunction
 
 function! <SID>toggle_file_mode()
+  if !s:file_mode && !empty(g:ff_project_root_markers)
+    let marker_found = 0
+
+    for marker in g:ff_project_root_markers
+      if filereadable(marker) || isdirectory(marker)
+        let marker_found = 1
+        break
+      endif
+    endfor
+
+    if !marker_found && !<SID>confirmed("Project root not found. Do you really want to display '" . fnamemodify(".", ":p") . "'?")
+      return
+    endif
+  endif
+
   let s:file_mode = !s:file_mode
+
   call <SID>kill(0, 0)
   call <SID>ff_toggle(1)
 endfunction
