@@ -1020,6 +1020,10 @@ function! <SID>ff_toggle(internal)
 
         call add(s:files, fname_modified)
       endfor
+
+      if len(s:files) > 1000
+        echo g:ff_symbols.ff . ": Collecting files..."
+      endif
     endif
 
     let bufcount = len(s:files)
