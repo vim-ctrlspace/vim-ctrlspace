@@ -916,6 +916,47 @@ function! <SID>restore_search_letters(direction)
   call <SID>ff_toggle(1)
 endfunction
 
+function! <SID>prepare_buflist_to_display(buflist)
+  for entry in a:buflist
+    let bufname = entry.raw
+
+    if strlen(bufname) + 6 > &columns
+      if g:ff_unicode_font
+        let dots_symbol = "…"
+        let dots_symbol_size = 1
+      else
+        let dots_symbol = "..."
+        let dots_symbol_size = 3
+      endif
+
+      let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
+    endif
+
+    if !s:file_mode && !s:session_mode
+      let bufname = <SID>decorate_with_indicators(bufname, entry.number)
+    elseif s:session_mode
+      if entry.raw ==# s:active_session_name
+        let bufname .= g:ff_unicode_font ? " ★" : " *"
+
+        if s:active_session_digest !=# <SID>create_session_digest()
+          let bufname .= "+"
+        endif
+      endif
+    endif
+
+    while strlen(bufname) < &columns
+      let bufname .= " "
+    endwhile
+
+    " handle wrong strlen for unicode dots symbol
+    if g:ff_unicode_font && bufname =~ "…"
+      let bufname .= "  "
+    endif
+
+    let entry.text = "  " . bufname . "\n"
+  endfor
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>ff_toggle(internal)
   if !a:internal
@@ -1015,45 +1056,10 @@ function! <SID>ff_toggle(internal)
         continue
       endif
 
-      let raw_name = bufname
-
-      if strlen(bufname) + 6 > &columns
-        if g:ff_unicode_font
-          let dots_symbol = "…"
-          let dots_symbol_size = 1
-        else
-          let dots_symbol = "..."
-          let dots_symbol_size = 3
-        endif
-
-        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
-      endif
-
-      if !s:file_mode && !s:session_mode
-        let bufname = <SID>decorate_with_indicators(bufname, i)
-      elseif s:session_mode
-        if raw_name ==# s:active_session_name
-          let bufname .= g:ff_unicode_font ? " ★" : " *"
-
-          if s:active_session_digest !=# <SID>create_session_digest()
-            let bufname .= "+"
-          endif
-        endif
-      endif
-
       " count displayed buffers
       let displayedbufs += 1
-      while strlen(bufname) < &columns
-        let bufname .= " "
-      endwhile
 
-      " handle wrong strlen for unicode dots symbol
-      if g:ff_unicode_font && bufname =~ "…"
-        let bufname .= "  "
-      endif
-
-      " add the name to the list
-      call add(buflist, { "text": '  ' . bufname . "\n", "number": i, "raw": raw_name, "search_noise": search_noise })
+      call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
     endif
   endfor
 
@@ -1800,6 +1806,8 @@ function! <SID>display_list(displayedbufs, buflist)
 
     " trim the list in search mode
     let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
+
+    call <SID>prepare_buflist_to_display(buflist)
 
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
