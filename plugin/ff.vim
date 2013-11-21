@@ -79,6 +79,7 @@ call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/ff_sessions", ".svn/ff_sessions", "CVS/ff_sessions", ".ff_sessions"])
+call <SID>define_config_variable("cache_dir", expand($HOME))
 call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
@@ -113,6 +114,35 @@ let s:preview_mode          = 0
 let s:active_session_name   = ""
 let s:active_session_digest = ""
 let s:session_names         = []
+
+function! <SID>init_project_roots()
+  let cache_file = g:ff_cache_dir . "/.ff_cache"
+  let s:project_roots = []
+
+  if filereadable(cache_file)
+    for line in readfile(cache_file)
+      if line =~? "FF_PROJECT_ROOT: "
+        call add(s:project_roots, line[17:])
+      endif
+    endfor
+  endif
+endfunction
+
+call <SID>init_project_roots()
+
+function! <SID>add_project_root(directory)
+  call add(s:project_roots, a:directory)
+
+  let lines = []
+
+  for root in s:project_roots
+    call add(lines, "FF_PROJECT_ROOT: " . root)
+  endfor
+
+  let cache_file = g:ff_cache_dir . "/.ff_cache"
+
+  call writefile(lines, cache_file)
+endfunction
 
 function! <SID>init_key_names()
   let lowercase_letters = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
@@ -1652,8 +1682,16 @@ function! <SID>toggle_file_mode()
       endif
     endfor
 
-    if !marker_found && !<SID>confirmed("Project root not found. Do you really want to display '" . fnamemodify(".", ":p") . "'?")
-      return
+    if !marker_found
+      let project_root = fnamemodify(".", ":p")
+
+      if index(s:project_roots, project_root) == -1
+        if !<SID>confirmed("Project root not found. Do you really want to display '" . project_root . "'?")
+          return
+        endif
+
+        call <SID>add_project_root(project_root)
+      endif
     endif
   endif
 
