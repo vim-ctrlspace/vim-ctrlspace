@@ -121,7 +121,7 @@ function! <SID>init_project_roots()
 
   if filereadable(cache_file)
     for line in readfile(cache_file)
-      if line =~? "FF_PROJECT_ROOT: "
+      if line =~# "FF_PROJECT_ROOT: "
         call add(s:project_roots, line[17:])
       endif
     endfor
@@ -133,13 +133,21 @@ call <SID>init_project_roots()
 function! <SID>add_project_root(directory)
   call add(s:project_roots, a:directory)
 
-  let lines = []
+  let lines      = []
+  let cache_file = g:ff_cache_dir . "/.ff_cache"
+
+  if filereadable(cache_file)
+    for old_line in readfile(cache_file)
+      if old_line !~# "FF_PROJECT_ROOT: "
+        call add(lines, old_line)
+      endif
+    endfor
+  endif
 
   for root in s:project_roots
     call add(lines, "FF_PROJECT_ROOT: " . root)
   endfor
 
-  let cache_file = g:ff_cache_dir . "/.ff_cache"
 
   call writefile(lines, cache_file)
 endfunction
