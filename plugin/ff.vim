@@ -40,8 +40,8 @@ function! <SID>define_symbols()
           \ "load"    : "▬ → ▭",
           \ "save"    : "▭ → ▬",
           \ "ord"     : "₁²₃",
-          \ "abc"     : "∧вс",
-          \ "len"     : "●∙⋅",
+          \ "abc"     : "авс",
+          \ "len"     : "▬━─",
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹"
