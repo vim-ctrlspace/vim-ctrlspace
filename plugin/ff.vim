@@ -41,7 +41,7 @@ function! <SID>define_symbols()
           \ "save"    : "▭ → ▬",
           \ "ord"     : "₁²₃",
           \ "abc"     : "авс",
-          \ "len"     : "▬━─",
+          \ "len"     : " ∅ ",
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹"
