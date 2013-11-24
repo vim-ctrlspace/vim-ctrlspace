@@ -1,6 +1,6 @@
-" Vim-FF - The Vim way enhancement
+" Vim-FF - Fortessimo. The Vim way enhancement
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.8
+" Version:      3.1.9
 "
 " Installation:
 " Place in ~/.vim/plugin/ff.vim or in case of Pathogen:
@@ -41,7 +41,6 @@ function! <SID>define_symbols()
           \ "save"    : "▭ → ▬",
           \ "ord"     : "₁²₃",
           \ "abc"     : "авс",
-          \ "len"     : " ∅ ",
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹"
@@ -56,7 +55,6 @@ function! <SID>define_symbols()
           \ "save"    : "SAVE",
           \ "ord"     : "123",
           \ "abc"     : "ABC",
-          \ "len"     : "LEN",
           \ "prv"     : "*",
           \ "s_left"  : "[",
           \ "s_right" : "]"
@@ -75,7 +73,6 @@ call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
-call <SID>define_config_variable("default_file_sort_order", 2) " 1 - by length, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("session_file", [".git/ff_sessions", ".svn/ff_sessions", "CVS/ff_sessions", ".ff_sessions"])
@@ -109,7 +106,6 @@ if g:ff_set_default_mapping
 endif
 
 let s:files                 = []
-let s:file_sort_order       = g:ff_default_file_sort_order
 let s:preview_mode          = 0
 let s:active_session_name   = ""
 let s:active_session_digest = ""
@@ -256,7 +252,6 @@ function! FFStatusLineKeyInfoSegment(...)
     call add(keys, "_")
     call add(keys, "[")
     call add(keys, "]")
-    call add(keys, "o")
     call add(keys, "q")
     call add(keys, "j")
     call add(keys, "k")
@@ -353,13 +348,7 @@ function! FFStatusLineInfoSegment(...)
 
   if !s:session_mode
     if empty(s:search_letters) && !s:search_mode
-      if s:file_mode
-        if s:file_sort_order == 1
-          call add(statusline_elements, g:ff_symbols.len)
-        elseif s:file_sort_order == 2
-          call add(statusline_elements, g:ff_symbols.abc)
-        endif
-      elseif exists("t:sort_order")
+      if exists("t:sort_order") && !s:file_mode
         if t:sort_order == 1
           call add(statusline_elements, g:ff_symbols.ord)
         elseif t:sort_order == 2
@@ -1047,7 +1036,11 @@ function! <SID>ff_toggle(internal)
 
   if s:file_mode
     if empty(s:files)
+      echo g:ff_symbols.ff . ": Collecting files..."
+
       let s:files = []
+      let s:all_files_cached = []
+      let i = 1
 
       for fname in split(globpath('.', '**'), '\n')
         let fname_modified = fnamemodify(fname, ":.")
@@ -1057,11 +1050,12 @@ function! <SID>ff_toggle(internal)
         endif
 
         call add(s:files, fname_modified)
+        call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
+        let i += 1
       endfor
 
-      if len(s:files) > 1000
-        echo g:ff_symbols.ff . ": Collecting files..."
-      endif
+      call <SID>prepare_buflist_to_display(s:all_files_cached)
+      call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
     endif
 
     let bufcount = len(s:files)
@@ -1073,38 +1067,43 @@ function! <SID>ff_toggle(internal)
     let bufcount = len(s:session_names)
   endif
 
-  for i in range(1, bufcount)
-    if s:file_mode
-      let bufname = s:files[i - 1]
-    elseif s:session_mode
-      let bufname = s:session_names[i - 1]
-    else
-      if s:single_tab_mode && !exists('t:ff_list[' . i . ']')
-        continue
-      endif
+  if s:file_mode && empty(s:search_letters)
+    let buflist = s:all_files_cached
+    let displayedbufs = len(buflist)
+  else
+    for i in range(1, bufcount)
+      if s:file_mode
+        let bufname = s:files[i - 1]
+      elseif s:session_mode
+        let bufname = s:session_names[i - 1]
+      else
+        if s:single_tab_mode && !exists('t:ff_list[' . i . ']')
+          continue
+        endif
 
-      let bufname = fnamemodify(bufname(i), ":.")
+        let bufname = fnamemodify(bufname(i), ":.")
 
-      if g:ff_show_unnamed && !strlen(bufname)
-        if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
-          let bufname = '[' . i . '*No Name]'
+        if g:ff_show_unnamed && !strlen(bufname)
+          if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
+            let bufname = '[' . i . '*No Name]'
+          endif
         endif
       endif
-    endif
 
-    if strlen(bufname) && (s:file_mode || s:session_mode || (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-      let search_noise = <SID>find_lowest_search_noise(bufname)
+      if strlen(bufname) && (s:file_mode || s:session_mode || (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
+        let search_noise = <SID>find_lowest_search_noise(bufname)
 
-      if search_noise == -1
-        continue
+        if search_noise == -1
+          continue
+        endif
+
+        " count displayed buffers
+        let displayedbufs += 1
+
+        call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
       endif
-
-      " count displayed buffers
-      let displayedbufs += 1
-
-      call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
-    endif
-  endfor
+    endfor
+  endif
 
   " set up window height
   if displayedbufs > g:ff_height
@@ -1505,8 +1504,6 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "]"
       call <SID>tab_command(a:key)
-    elseif a:key ==# "o" && empty(s:search_letters)
-      call <SID>toggle_files_order()
     elseif a:key ==# "r"
       call <SID>refresh_files()
     elseif a:key ==# "q"
@@ -1802,26 +1799,12 @@ function! <SID>compare_bufentries(a, b)
 endfunction
 
 function! <SID>compare_file_entries(a, b)
-  if s:file_sort_order == 1
-    if strlen(a:a.raw) < strlen(a:b.raw)
-      return 1
-    elseif strlen(a:a.raw) > strlen(a:b.raw)
-      return -1
-    elseif a:a.raw < a:b.raw
-      return -1
-    elseif a:a.raw > a:b.raw
-      return 1
-    else
-      return 0
-    endif
-  elseif s:file_sort_order == 2
-    if a:a.raw < a:b.raw
-      return -1
-    elseif a:a.raw > a:b.raw
-      return 1
-    else
-      return 0
-    endif
+  if a:a.raw < a:b.raw
+    return -1
+  elseif a:a.raw > a:b.raw
+    return 1
+  else
+    return 0
   endif
 endfunction
 
@@ -1861,20 +1844,22 @@ endfunction
 function! <SID>display_list(displayedbufs, buflist)
   setlocal modifiable
   if a:displayedbufs > 0
-    if !empty(s:search_letters)
-      call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
-    elseif s:file_mode
-      call sort(a:buflist, function(<SID>SID() . "compare_file_entries"))
-    elseif s:session_mode
-      call sort(a:buflist, function(<SID>SID() . "compare_session_names"))
-    elseif exists("t:sort_order")
-      call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
+    if s:file_mode && empty(s:search_letters)
+      let buflist = a:buflist
+    else
+      if !empty(s:search_letters)
+        call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
+      elseif s:session_mode
+        call sort(a:buflist, function(<SID>SID() . "compare_session_names"))
+      elseif exists("t:sort_order")
+        call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
+      endif
+
+      " trim the list in search mode
+      let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
+
+      call <SID>prepare_buflist_to_display(buflist)
     endif
-
-    " trim the list in search mode
-    let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
-
-    call <SID>prepare_buflist_to_display(buflist)
 
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
@@ -2335,17 +2320,6 @@ function! <SID>toggle_order()
     call <SID>kill(0, 0)
     call <SID>ff_toggle(1)
   endif
-endfunction
-
-function! <SID>toggle_files_order()
-  if s:file_sort_order == 1
-    let s:file_sort_order = 2
-  else
-    let s:file_sort_order = 1
-  endif
-
-  call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
 endfunction
 
 function! <SID>refresh_files()
