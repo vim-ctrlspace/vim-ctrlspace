@@ -1056,6 +1056,9 @@ function! <SID>ff_toggle(internal)
 
       call <SID>prepare_buflist_to_display(s:all_files_cached)
       call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+
+      redraw!
+      echo g:ff_symbols.ff . ": Collecting files... Done (" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
