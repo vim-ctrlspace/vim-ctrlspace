@@ -1,4 +1,4 @@
-" Vim-ControlSpace - The Vim Way Space Controller
+" Vim-ControlSpace - The Vim (Work)Space Controller
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.9
 "
@@ -75,7 +75,7 @@ call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/cs_sessions", ".svn/cs_sessions", "CVS/cs_sessions", ".cs_sessions"])
+call <SID>define_config_variable("workspace_file", [".git/cs_workspaces", ".svn/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
 call <SID>define_config_variable("cache_dir", expand($HOME))
 call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
@@ -107,9 +107,9 @@ endif
 
 let s:files                 = []
 let s:preview_mode          = 0
-let s:active_session_name   = ""
-let s:active_session_digest = ""
-let s:session_names         = []
+let s:active_workspace_name   = ""
+let s:active_workspace_digest = ""
+let s:workspace_names         = []
 
 function! <SID>init_project_roots()
   let cache_file = g:controlspace_cache_dir . "/.cs_cache"
@@ -276,13 +276,13 @@ function! controlspace#statusline_key_info_segment(...)
     call add(keys, "A")
     call add(keys, "^p")
     call add(keys, "^n")
-    call add(keys, "l")
-  elseif s:session_mode
+    call add(keys, "w")
+  elseif s:workspace_mode
     call add(keys, "CR")
     call add(keys, "BS")
     call add(keys, "q")
 
-    if s:session_mode == 1
+    if s:workspace_mode == 1
       call add(keys, "a")
     endif
 
@@ -293,7 +293,7 @@ function! controlspace#statusline_key_info_segment(...)
     call add(keys, "J")
     call add(keys, "k")
     call add(keys, "K")
-    call add(keys, "l")
+    call add(keys, "w")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -340,7 +340,7 @@ function! controlspace#statusline_key_info_segment(...)
     call add(keys, "^p")
     call add(keys, "^n")
     call add(keys, "S")
-    call add(keys, "l")
+    call add(keys, "w")
   endif
 
   return join(keys, separator)
@@ -351,9 +351,9 @@ function! controlspace#statusline_info_segment(...)
 
   if s:file_mode
     call add(statusline_elements, g:controlspace_symbols.add)
-  elseif s:session_mode == 1
+  elseif s:workspace_mode == 1
     call add(statusline_elements, g:controlspace_symbols.load)
-  elseif s:session_mode == 2
+  elseif s:workspace_mode == 2
     call add(statusline_elements, g:controlspace_symbols.save)
   elseif s:single_tab_mode
     call add(statusline_elements, g:controlspace_symbols.tab)
@@ -361,7 +361,7 @@ function! controlspace#statusline_info_segment(...)
     call add(statusline_elements, g:controlspace_symbols.all)
   endif
 
-  if !s:session_mode
+  if !s:workspace_mode
     if empty(s:search_letters) && !s:search_mode
       if exists("t:sort_order") && !s:file_mode
         if t:sort_order == 1
@@ -479,17 +479,17 @@ function! <SID>max_height()
   endif
 endfunction
 
-function! <SID>session_file()
-  for candidate in g:controlspace_session_file
+function! <SID>workspace_file()
+  for candidate in g:controlspace_workspace_file
     if isdirectory(fnamemodify(candidate, ":h:t"))
       return candidate
     endif
   endfor
 
-  return g:controlspace_session_file[-1]
+  return g:controlspace_workspace_file[-1]
 endfunction
 
-function! <SID>save_first_session()
+function! <SID>save_first_workspace()
   let labels = []
 
   for t in range(1, tabpagenr("$"))
@@ -499,10 +499,10 @@ function! <SID>save_first_session()
     endif
   endfor
 
-  call <SID>save_session(join(labels, " "))
+  call <SID>save_workspace(join(labels, " "))
 endfunction
 
-function! <SID>create_session_digest()
+function! <SID>create_workspace_digest()
   let lines = []
 
   for t in range(1, tabpagenr("$"))
@@ -525,8 +525,8 @@ function! <SID>create_session_digest()
   return join(lines, "&&&")
 endfunction
 
-function! <SID>save_session(name)
-  let name = <SID>get_input("Save current session as: ", a:name)
+function! <SID>save_workspace(name)
+  let name = <SID>get_input("Save current workspace as: ", a:name)
 
   if empty(name)
     return
@@ -534,32 +534,32 @@ function! <SID>save_session(name)
 
   call <SID>kill(0, 1)
 
-  let filename = <SID>session_file()
+  let filename = <SID>workspace_file()
   let last_tab = tabpagenr("$")
 
   let lines      = []
-  let in_session = 0
+  let in_workspace = 0
 
-  let session_start_marker = "CS_SESSION_BEGIN: " . name
-  let session_end_marker   = "CS_SESSION_END: " . name
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . name
 
   if filereadable(filename)
     for old_line in readfile(filename)
-      if old_line ==? session_start_marker
-        let in_session = 1
+      if old_line ==? workspace_start_marker
+        let in_workspace = 1
       endif
 
-      if !in_session
+      if !in_workspace
         call add(lines, old_line)
       endif
 
-      if old_line ==? session_end_marker
-        let in_session = 0
+      if old_line ==? workspace_end_marker
+        let in_workspace = 0
       endif
     endfor
   endif
 
-  call add(lines, session_start_marker)
+  call add(lines, workspace_start_marker)
 
   for t in range(1, last_tab)
     let line = [t, gettabvar(t, "controlspace_label"), tabpagenr() == t]
@@ -594,59 +594,59 @@ function! <SID>save_session(name)
     call add(lines, join(line, ","))
   endfor
 
-  call add(lines, session_end_marker)
+  call add(lines, workspace_end_marker)
 
   call writefile(lines, filename)
 
-  let s:active_session_name   = name
-  let s:active_session_digest = <SID>create_session_digest()
-  let s:session_names         = []
+  let s:active_workspace_name   = name
+  let s:active_workspace_digest = <SID>create_workspace_digest()
+  let s:workspace_names         = []
 
-  echo g:controlspace_symbols.cs . " - The session '" . name . "' has been saved."
+  echo g:controlspace_symbols.cs . " - The workspace '" . name . "' has been saved."
 endfunction
 
-function! <SID>delete_session(name)
-  if !<SID>confirmed("Delete session '" . a:name . "'?")
+function! <SID>delete_workspace(name)
+  if !<SID>confirmed("Delete workspace '" . a:name . "'?")
     return
   endif
 
-  let filename = <SID>session_file()
+  let filename = <SID>workspace_file()
   let last_tab = tabpagenr("$")
 
   let lines      = []
-  let in_session = 0
+  let in_workspace = 0
 
-  let session_start_marker = "CS_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "CS_SESSION_END: " . a:name
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
 
   if filereadable(filename)
     for old_line in readfile(filename)
-      if old_line ==? session_start_marker
-        let in_session = 1
+      if old_line ==? workspace_start_marker
+        let in_workspace = 1
       endif
 
-      if !in_session
+      if !in_workspace
         call add(lines, old_line)
       endif
 
-      if old_line ==? session_end_marker
-        let in_session = 0
+      if old_line ==? workspace_end_marker
+        let in_workspace = 0
       endif
     endfor
   endif
 
   call writefile(lines, filename)
 
-  if s:active_session_name ==? a:name
-    let s:active_session_name   = ""
-    let s:active_session_digest = ""
+  if s:active_workspace_name ==? a:name
+    let s:active_workspace_name   = ""
+    let s:active_workspace_digest = ""
   endif
 
-  echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been deleted."
+  echo g:controlspace_symbols.cs . " - The workspace '" . a:name . "' has been deleted."
 
-  let s:session_names = []
+  let s:workspace_names = []
 
-  if empty(<SID>get_session_names())
+  if empty(<SID>get_workspace_names())
     call <SID>kill(0, 1)
   else
     call <SID>kill(0, 0)
@@ -654,14 +654,14 @@ function! <SID>delete_session(name)
   endif
 endfunction
 
-function! <SID>get_session_names()
-  let filename = <SID>session_file()
+function! <SID>get_workspace_names()
+  let filename = <SID>workspace_file()
 
   let names = []
 
   if filereadable(filename)
     for line in readfile(filename)
-      if line =~? "CS_SESSION_BEGIN: "
+      if line =~? "CS_WORKSPACE_BEGIN: "
         call add(names, line[18:])
       endif
     endfor
@@ -670,8 +670,8 @@ function! <SID>get_session_names()
   return names
 endfunction
 
-function! <SID>get_selected_session_name()
-  return s:session_names[<SID>get_selected_buffer() - 1]
+function! <SID>get_selected_workspace_name()
+  return s:workspace_names[<SID>get_selected_buffer() - 1]
 endfunction
 
 function! <SID>get_input(msg, ...)
@@ -697,15 +697,15 @@ function! <SID>confirmed(msg)
   return <SID>get_input(a:msg . " (type 'yes' to confirm): ") ==? "yes"
 endfunction
 
-function! <SID>load_session(bang, name)
-  if !empty(s:active_session_name) && a:bang
+function! <SID>load_workspace(bang, name)
+  if !empty(s:active_workspace_name) && a:bang
     let msg = ""
 
-    if a:name == s:active_session_name
-      let msg = "Reload current session: '" . a:name . "'?"
-    elseif !empty(s:active_session_name)
-      if s:active_session_digest !=# <SID>create_session_digest()
-        let msg = "Current session not saved. Proceed anyway?"
+    if a:name == s:active_workspace_name
+      let msg = "Reload current workspace: '" . a:name . "'?"
+    elseif !empty(s:active_workspace_name)
+      if s:active_workspace_digest !=# <SID>create_workspace_digest()
+        let msg = "Current workspace not saved. Proceed anyway?"
       endif
     endif
 
@@ -714,33 +714,33 @@ function! <SID>load_session(bang, name)
     endif
   endif
 
-  let filename = <SID>session_file()
+  let filename = <SID>workspace_file()
 
   if !filereadable(filename)
-    echo g:controlspace_symbols.cs . " - Sessions file '" . filename . "' not found."
+    echo g:controlspace_symbols.cs . " - Workspaces file '" . filename . "' not found."
     call <SID>kill(0, 1)
     return
   endif
 
-  let session_start_marker = "CS_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "CS_SESSION_END: " . a:name
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
 
   let lines      = []
-  let in_session = 0
+  let in_workspace = 0
 
   for old_line in readfile(filename)
-    if old_line ==? session_start_marker
-      let in_session = 1
-    elseif old_line ==? session_end_marker
-      let in_session = 0
-    elseif in_session
+    if old_line ==? workspace_start_marker
+      let in_workspace = 1
+    elseif old_line ==? workspace_end_marker
+      let in_workspace = 0
+    elseif in_workspace
       call add(lines, old_line)
     endif
   endfor
 
   if empty(lines)
-    echo g:controlspace_symbols.cs . " - Session '" . a:name . "' not found in file '" . filename . "'."
-    let s:session_names = []
+    echo g:controlspace_symbols.cs . " - Workspace '" . a:name . "' not found in file '" . filename . "'."
+    let s:workspace_names = []
     call <SID>kill(0, 1)
     return
   endif
@@ -750,16 +750,16 @@ function! <SID>load_session(bang, name)
   let commands = []
 
   if a:bang
-    echo g:controlspace_symbols.cs . " - Loading session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . " - Loading workspace '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
     let create_first_tab      = 0
-    let s:active_session_name = a:name
+    let s:active_workspace_name = a:name
   else
-    echo g:controlspace_symbols.cs . " - Appending session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . " - Appending workspace '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -817,7 +817,7 @@ function! <SID>load_session(bang, name)
     endif
 
     if is_current
-      call add(commands, "let controlspace_session_current_tab = tabpagenr()")
+      call add(commands, "let controlspace_workspace_current_tab = tabpagenr()")
     endif
 
     if !empty(tab_label)
@@ -825,7 +825,7 @@ function! <SID>load_session(bang, name)
     endif
   endfor
 
-  call add(commands, "exe 'normal! ' . controlspace_session_current_tab . 'gt'")
+  call add(commands, "exe 'normal! ' . controlspace_workspace_current_tab . 'gt'")
   call add(commands, "redraw!")
 
   for c in commands
@@ -834,13 +834,13 @@ function! <SID>load_session(bang, name)
 
 
   if a:bang
-    echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been loaded."
-    let s:active_session_digest = <SID>create_session_digest()
+    echo g:controlspace_symbols.cs . " - The workspace '" . a:name . "' has been loaded."
+    let s:active_workspace_digest = <SID>create_workspace_digest()
   else
-    let s:active_session_digest = ""
-    echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been appended."
+    let s:active_workspace_digest = ""
+    echo g:controlspace_symbols.cs . " - The workspace '" . a:name . "' has been appended."
     call <SID>controlspace_toggle(0)
-    let s:session_mode = 1
+    let s:workspace_mode = 1
     call <SID>kill(0, 0)
     call <SID>controlspace_toggle(1)
   endif
@@ -975,13 +975,13 @@ function! <SID>prepare_buflist_to_display(buflist)
       let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
     endif
 
-    if !s:file_mode && !s:session_mode
+    if !s:file_mode && !s:workspace_mode
       let bufname = <SID>decorate_with_indicators(bufname, entry.number)
-    elseif s:session_mode
-      if entry.raw ==# s:active_session_name
+    elseif s:workspace_mode
+      if entry.raw ==# s:active_workspace_name
         let bufname .= g:controlspace_unicode_font ? " ★" : " *"
 
-        if s:active_session_digest !=# <SID>create_session_digest()
+        if s:active_workspace_digest !=# <SID>create_workspace_digest()
           let bufname .= "+"
         endif
       endif
@@ -1008,8 +1008,8 @@ function! <SID>controlspace_toggle(internal)
     let s:new_search_performed    = 0
     let s:search_mode             = 0
     let s:file_mode               = 0
-    let s:session_mode            = 0
-    let s:last_browsed_session    = 0
+    let s:workspace_mode            = 0
+    let s:last_browsed_workspace    = 0
     let s:restored_search_mode    = 0
     let s:search_letters          = []
     let t:controlspace_search_history_index = -1
@@ -1077,12 +1077,12 @@ function! <SID>controlspace_toggle(internal)
     endif
 
     let bufcount = len(s:files)
-  elseif s:session_mode
-    if empty(s:session_names)
-      let s:session_names = <SID>get_session_names()
+  elseif s:workspace_mode
+    if empty(s:workspace_names)
+      let s:workspace_names = <SID>get_workspace_names()
     endif
 
-    let bufcount = len(s:session_names)
+    let bufcount = len(s:workspace_names)
   endif
 
   if s:file_mode && empty(s:search_letters)
@@ -1092,8 +1092,8 @@ function! <SID>controlspace_toggle(internal)
     for i in range(1, bufcount)
       if s:file_mode
         let bufname = s:files[i - 1]
-      elseif s:session_mode
-        let bufname = s:session_names[i - 1]
+      elseif s:workspace_mode
+        let bufname = s:workspace_names[i - 1]
       else
         if s:single_tab_mode && !exists('t:controlspace_list[' . i . ']')
           continue
@@ -1108,7 +1108,7 @@ function! <SID>controlspace_toggle(internal)
         endif
       endif
 
-      if strlen(bufname) && (s:file_mode || s:session_mode || (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
+      if strlen(bufname) && (s:file_mode || s:workspace_mode || (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
         let search_noise = <SID>find_lowest_search_noise(bufname)
 
         if search_noise == -1
@@ -1139,20 +1139,20 @@ function! <SID>controlspace_toggle(internal)
     call <SID>display_search_patterns()
   endif
 
-  if s:session_mode
-    if s:last_browsed_session
-      let activebufline = s:last_browsed_session
+  if s:workspace_mode
+    if s:last_browsed_workspace
+      let activebufline = s:last_browsed_workspace
     else
       let activebufline = 1
 
-      if !empty(s:active_session_name)
-        let active_session_line = 0
+      if !empty(s:active_workspace_name)
+        let active_workspace_line = 0
 
-        for session_name in buflist
-          let active_session_line += 1
+        for workspace_name in buflist
+          let active_workspace_line += 1
 
-          if s:active_session_name ==# session_name.raw
-            let activebufline = active_session_line
+          if s:active_workspace_name ==# workspace_name.raw
+            let activebufline = active_workspace_line
             break
           endif
         endfor
@@ -1167,7 +1167,7 @@ function! <SID>controlspace_toggle(internal)
   let b:buflist = buflist
   let b:bufcount = displayedbufs
 
-  if !s:file_mode && !s:session_mode
+  if !s:file_mode && !s:workspace_mode
     let b:jumplines = <SID>create_jumplines(buflist, activebufline)
   endif
 
@@ -1402,27 +1402,27 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     endif
-  elseif s:session_mode == 1
+  elseif s:workspace_mode == 1
     if a:key ==# "CR"
-      call <SID>load_session(1, <SID>get_selected_session_name())
+      call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "a"
-      call <SID>load_session(0, <SID>get_selected_session_name())
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif a:key ==# "s"
-      let s:last_browsed_session = line(".")
+      let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
-      let s:session_mode = 2
+      let s:workspace_mode = 2
       call <SID>controlspace_toggle(1)
     elseif a:key ==# "S"
-      call <SID>save_session(s:active_session_name)
-    elseif (a:key ==# "l") || (a:key ==# "BS")
-      let s:last_browsed_session = line(".")
+      call <SID>save_workspace(s:active_workspace_name)
+    elseif (a:key ==# "w") || (a:key ==# "BS")
+      let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
-      let s:session_mode = 0
+      let s:workspace_mode = 0
       call <SID>controlspace_toggle(1)
     elseif a:key ==# "d"
-      call <SID>delete_session(<SID>get_selected_session_name())
+      call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1435,7 +1435,7 @@ function! <SID>keypressed(key)
       call <SID>move("mouse")
     elseif a:key ==# "2-LeftMouse"
       call <SID>move("mouse")
-      call <SID>load_session(1, <SID>get_selected_session_name())
+      call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "Down"
       call feedkeys("j")
     elseif a:key ==# "Up"
@@ -1445,25 +1445,25 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
     endif
-  elseif s:session_mode == 2
+  elseif s:workspace_mode == 2
     if a:key ==# "CR"
-      call <SID>save_session(<SID>get_selected_session_name())
+      call <SID>save_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "s"
-      let s:last_browsed_session = line(".")
+      let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
-      let s:session_mode = 1
+      let s:workspace_mode = 1
       call <SID>controlspace_toggle(1)
     elseif a:key ==# "S"
-      call <SID>save_session(s:active_session_name)
-    elseif (a:key ==# "l") || (a:key ==# "BS")
-      let s:last_browsed_session = line(".")
+      call <SID>save_workspace(s:active_workspace_name)
+    elseif (a:key ==# "w") || (a:key ==# "BS")
+      let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
-      let s:session_mode = 0
+      let s:workspace_mode = 0
       call <SID>controlspace_toggle(1)
     elseif a:key ==# "d"
-      call <SID>delete_session(<SID>get_selected_session_name())
+      call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1476,7 +1476,7 @@ function! <SID>keypressed(key)
       call <SID>move("mouse")
     elseif a:key ==# "2-LeftMouse"
       call <SID>move("mouse")
-      call <SID>save_session(<SID>get_selected_session_name())
+      call <SID>save_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "Down"
       call feedkeys("j")
     elseif a:key ==# "Up"
@@ -1563,13 +1563,13 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
-    elseif a:key ==# "l"
-      if empty(<SID>get_session_names())
-        call <SID>save_first_session()
+    elseif a:key ==# "w"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
-        let s:session_mode = 1
+        let s:workspace_mode = 1
         call <SID>controlspace_toggle(1)
       endif
     endif
@@ -1668,17 +1668,17 @@ function! <SID>keypressed(key)
     elseif a:key ==# "m"
       call <SID>move_file()
     elseif a:key ==# "S"
-      if empty(<SID>get_session_names())
-        call <SID>save_first_session()
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
       else
-        call <SID>save_session(s:active_session_name)
+        call <SID>save_workspace(s:active_workspace_name)
       endif
-    elseif a:key ==# "l"
-      if empty(<SID>get_session_names())
-        call <SID>save_first_session()
+    elseif a:key ==# "w"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
-        let s:session_mode = 1
+        let s:workspace_mode = 1
         call <SID>controlspace_toggle(1)
       endif
     elseif a:key ==# "A"
@@ -1826,7 +1826,7 @@ function! <SID>compare_file_entries(a, b)
   endif
 endfunction
 
-function! <SID>compare_session_names(a, b)
+function! <SID>compare_workspace_names(a, b)
   if a:a.raw < a:b.raw
     return -1
   elseif a:a.raw > a:b.raw
@@ -1867,8 +1867,8 @@ function! <SID>display_list(displayedbufs, buflist)
     else
       if !empty(s:search_letters)
         call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
-      elseif s:session_mode
-        call sort(a:buflist, function(<SID>SID() . "compare_session_names"))
+      elseif s:workspace_mode
+        call sort(a:buflist, function(<SID>SID() . "compare_workspace_names"))
       elseif exists("t:sort_order")
         call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
       endif
