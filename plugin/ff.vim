@@ -1,4 +1,4 @@
-" Vim-FF - Fortessimo. The Vim way enhancement
+" Vim-FF - Fortissimo. The Vim way enhancement
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.9
 "
