@@ -602,7 +602,7 @@ function! <SID>save_session(name)
   let s:active_session_digest = <SID>create_session_digest()
   let s:session_names         = []
 
-  echo g:controlspace_symbols.cs . ": The session '" . name . "' has been saved."
+  echo g:controlspace_symbols.cs . " - The session '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_session(name)
@@ -642,7 +642,7 @@ function! <SID>delete_session(name)
     let s:active_session_digest = ""
   endif
 
-  echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been deleted."
+  echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been deleted."
 
   let s:session_names = []
 
@@ -675,7 +675,7 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>get_input(msg, ...)
-  let msg = g:controlspace_symbols.cs . ": " . a:msg
+  let msg = g:controlspace_symbols.cs . " - " . a:msg
 
   call inputsave()
 
@@ -717,7 +717,7 @@ function! <SID>load_session(bang, name)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo g:controlspace_symbols.cs . ": Sessions file '" . filename . "' not found."
+    echo g:controlspace_symbols.cs . " - Sessions file '" . filename . "' not found."
     call <SID>kill(0, 1)
     return
   endif
@@ -739,7 +739,7 @@ function! <SID>load_session(bang, name)
   endfor
 
   if empty(lines)
-    echo g:controlspace_symbols.cs . ": Session '" . a:name . "' not found in file '" . filename . "'."
+    echo g:controlspace_symbols.cs . " - Session '" . a:name . "' not found in file '" . filename . "'."
     let s:session_names = []
     call <SID>kill(0, 1)
     return
@@ -750,7 +750,7 @@ function! <SID>load_session(bang, name)
   let commands = []
 
   if a:bang
-    echo g:controlspace_symbols.cs . ": Loading session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . " - Loading session '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -759,7 +759,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab      = 0
     let s:active_session_name = a:name
   else
-    echo g:controlspace_symbols.cs . ": Appending session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . " - Appending session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -834,11 +834,11 @@ function! <SID>load_session(bang, name)
 
 
   if a:bang
-    echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been loaded."
+    echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been loaded."
     let s:active_session_digest = <SID>create_session_digest()
   else
     let s:active_session_digest = ""
-    echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been appended."
+    echo g:controlspace_symbols.cs . " - The session '" . a:name . "' has been appended."
     call <SID>controlspace_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
@@ -1051,7 +1051,7 @@ function! <SID>controlspace_toggle(internal)
 
   if s:file_mode
     if empty(s:files)
-      echo g:controlspace_symbols.cs . ": Collecting files..."
+      echo g:controlspace_symbols.cs . " - Collecting files..."
 
       let s:files = []
       let s:all_files_cached = []
@@ -1073,7 +1073,7 @@ function! <SID>controlspace_toggle(internal)
       call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
 
       redraw!
-      echo g:controlspace_symbols.cs . ": Collecting files... Done (" . len(s:files) . ")."
+      echo g:controlspace_symbols.cs . " - Collecting files... Done (" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
