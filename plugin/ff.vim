@@ -255,6 +255,8 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "q")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "g")
+    call add(keys, "G")
     call add(keys, "C")
     call add(keys, "e")
     call add(keys, "E")
@@ -280,6 +282,8 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "d")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "g")
+    call add(keys, "G")
     call add(keys, "l")
   else
     call add(keys, "CR")
@@ -303,6 +307,8 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "q")
     call add(keys, "j")
     call add(keys, "k")
+    call add(keys, "g")
+    call add(keys, "G")
     call add(keys, "p")
     call add(keys, "P")
     call add(keys, "n")
@@ -1425,9 +1431,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif a:key ==# "Home"
+    elseif (a:key ==# "Home") || (a:key ==# "g")
       call <SID>move(1)
-    elseif a:key ==# "End"
+    elseif (a:key ==# "End") || (a:key ==# "G")
       call <SID>move(line("$"))
     endif
   elseif s:session_mode == 2
@@ -1466,9 +1472,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif a:key ==# "Home"
+    elseif (a:key ==# "Home") || (a:key ==# "g")
       call <SID>move(1)
-    elseif a:key ==# "End"
+    elseif (a:key ==# "End") || (a:key ==# "G")
       call <SID>move(line("$"))
     endif
   elseif s:file_mode
@@ -1528,9 +1534,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif a:key ==# "Home"
+    elseif (a:key ==# "Home") || (a:key ==# "g")
       call <SID>move(1)
-    elseif a:key ==# "End"
+    elseif (a:key ==# "End") || (a:key ==# "G")
       call <SID>move(line("$"))
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
@@ -1630,9 +1636,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif a:key ==# "Home"
+    elseif (a:key ==# "Home") || (a:key ==# "g")
       call <SID>move(1)
-    elseif a:key ==# "End"
+    elseif (a:key ==# "End") || (a:key ==# "G")
       call <SID>move(line("$"))
     elseif a:key ==# "a"
       call <SID>toggle_single_tab_mode()
