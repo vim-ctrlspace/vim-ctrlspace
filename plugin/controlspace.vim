@@ -1,12 +1,12 @@
-" Vim-FF - Fortissimo. The Vim way enhancement
+" Vim-ControlSpace - The Vim Way Space Controller
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.9
 "
 " Installation:
-" Place in ~/.vim/plugin/ff.vim or in case of Pathogen:
+" Place in ~/.vim/plugin/controlspace.vim or in case of Pathogen:
 "
 "     cd ~/.vim/bundle
-"     git clone https://github.com/szw/vim-ff.git
+"     git clone https://github.com/szw/vim-controlspace.git
 "
 " License:
 " Copyright (c) 2013 Szymon Wrozynski <szymon@wrozynski.com>
@@ -16,24 +16,24 @@
 " Licensed under MIT License conditions.
 "
 " Usage:
-" https://github.com/szw/vim-ff/blob/master/README.md
+" https://github.com/szw/vim-controlspace/blob/master/README.md
 
-if exists('g:ff_loaded')
+if exists('g:controlspace_loaded')
   finish
 endif
 
-let g:ff_loaded = 1
+let g:controlspace_loaded = 1
 
 function! <SID>define_config_variable(name, default_value)
-  if !exists("g:ff_" . a:name)
-    let g:{"ff_" . a:name} = a:default_value
+  if !exists("g:controlspace_" . a:name)
+    let g:{"controlspace_" . a:name} = a:default_value
   endif
 endfunction
 
 function! <SID>define_symbols()
-  if g:ff_unicode_font
+  if g:controlspace_unicode_font
     let symbols = {
-          \ "ff"      : "ﬀ",
+          \ "cs"      : "␣",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
@@ -47,7 +47,7 @@ function! <SID>define_symbols()
           \ }
   else
     let symbols = {
-          \ "ff"      : "FF",
+          \ "cs"      : "CS",
           \ "tab"     : "TAB",
           \ "all"     : "ALL",
           \ "add"     : "ADD",
@@ -68,14 +68,14 @@ call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 0)
 call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
-call <SID>define_config_variable("default_mapping_key", "<F2>")
+call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
-call <SID>define_config_variable("session_file", [".git/ff_sessions", ".svn/ff_sessions", "CVS/ff_sessions", ".ff_sessions"])
+call <SID>define_config_variable("session_file", [".git/cs_sessions", ".svn/cs_sessions", "CVS/cs_sessions", ".cs_sessions"])
 call <SID>define_config_variable("cache_dir", expand($HOME))
 call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
@@ -83,26 +83,26 @@ call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 0)
 
-command! -nargs=0 -range FF :call <SID>ff_toggle(0)
-command! -nargs=0 -range FFTabLabel :call <SID>new_tab_label()
+command! -nargs=0 -range ControlSpace :call <SID>controlspace_toggle(0)
+command! -nargs=0 -range ControlSpaceTabLabel :call <SID>new_tab_label()
 
-if g:ff_use_tabline
-  set tabline=%!ff#tabline()
+if g:controlspace_use_tabline
+  set tabline=%!controlspace#tabline()
 endif
 
 function! <SID>set_default_mapping(key, action)
-  let key = a:key
-  if !empty(key)
-    if key ==? "<C-Space>" && !has("gui_running")
-      let key = "<Nul>"
+  let s:default_key = a:key
+  if !empty(s:default_key)
+    if s:default_key ==? "<C-Space>" && !has("gui_running")
+      let s:default_key = "<Nul>"
     endif
 
-    silent! exe 'nnoremap <unique><silent>' . key . ' ' . a:action
+    silent! exe 'nnoremap <unique><silent>' . s:default_key . ' ' . a:action
   endif
 endfunction
 
-if g:ff_set_default_mapping
-  call <SID>set_default_mapping(g:ff_default_mapping_key, ":FF<CR>")
+if g:controlspace_set_default_mapping
+  call <SID>set_default_mapping(g:controlspace_default_mapping_key, ":ControlSpace<CR>")
 endif
 
 let s:files                 = []
@@ -112,12 +112,12 @@ let s:active_session_digest = ""
 let s:session_names         = []
 
 function! <SID>init_project_roots()
-  let cache_file = g:ff_cache_dir . "/.ff_cache"
+  let cache_file = g:controlspace_cache_dir . "/.cs_cache"
   let s:project_roots = []
 
   if filereadable(cache_file)
     for line in readfile(cache_file)
-      if line =~# "FF_PROJECT_ROOT: "
+      if line =~# "CS_PROJECT_ROOT: "
         call add(s:project_roots, line[17:])
       endif
     endfor
@@ -130,18 +130,18 @@ function! <SID>add_project_root(directory)
   call add(s:project_roots, a:directory)
 
   let lines      = []
-  let cache_file = g:ff_cache_dir . "/.ff_cache"
+  let cache_file = g:controlspace_cache_dir . "/.cs_cache"
 
   if filereadable(cache_file)
     for old_line in readfile(cache_file)
-      if old_line !~# "FF_PROJECT_ROOT: "
+      if old_line !~# "CS_PROJECT_ROOT: "
         call add(lines, old_line)
       endif
     endfor
   endif
 
   for root in s:project_roots
-    call add(lines, "FF_PROJECT_ROOT: " . root)
+    call add(lines, "CS_PROJECT_ROOT: " . root)
   endfor
 
 
@@ -167,31 +167,40 @@ function! <SID>init_key_names()
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
 
   let s:key_names = split(join([lowercase_letters, uppercase_letters, control_letters, numbers, special_chars], " "), " ")
+
+  if exists("s:default_key")
+    for i in range(0, len(s:key_names) - 1)
+      if ("<" . s:key_names[i] . ">") ==# s:default_key
+        call remove(s:key_names, i)
+        break
+      endif
+    endfor
+  endif
 endfunction
 
 call <SID>init_key_names()
 
 au BufEnter * call <SID>add_tab_buffer()
 
-let s:ff_jumps = []
+let s:controlspace_jumps = []
 au BufEnter * call <SID>add_jump()
 
-function! ff#bufferlist(tabnr)
+function! controlspace#bufferlist(tabnr)
   let buffer_list     = {}
-  let ff              = gettabvar(a:tabnr, "ff_list")
+  let controlspace    = gettabvar(a:tabnr, "controlspace_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
 
-  if type(ff) != 4
+  if type(controlspace) != 4
     return buffer_list
   endif
 
-  for i in keys(ff)
+  for i in keys(controlspace)
     let i = str2nr(i)
 
     let bufname = bufname(i)
 
-    if g:ff_show_unnamed && !strlen(bufname)
-      if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
+    if g:controlspace_show_unnamed && !strlen(bufname)
+      if !((g:controlspace_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
         let bufname = '[' . i . '*No Name]'
       endif
     endif
@@ -204,7 +213,7 @@ function! ff#bufferlist(tabnr)
   return buffer_list
 endfunction
 
-function! ff#statusline_key_info_segment(...)
+function! controlspace#statusline_key_info_segment(...)
   let separator = (a:0 > 0) ? a:1 : " "
   let keys      = ["?"]
 
@@ -254,9 +263,9 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "]")
     call add(keys, "q")
     call add(keys, "j")
+    call add(keys, "J")
     call add(keys, "k")
-    call add(keys, "g")
-    call add(keys, "G")
+    call add(keys, "K")
     call add(keys, "C")
     call add(keys, "e")
     call add(keys, "E")
@@ -281,14 +290,14 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "S")
     call add(keys, "d")
     call add(keys, "j")
+    call add(keys, "J")
     call add(keys, "k")
-    call add(keys, "g")
-    call add(keys, "G")
+    call add(keys, "K")
     call add(keys, "l")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
-    call add(keys, "^Sp")
+    call add(keys, "Tab")
     call add(keys, "BS")
     call add(keys, "/")
     call add(keys, '\')
@@ -306,9 +315,9 @@ function! ff#statusline_key_info_segment(...)
     call add(keys, "o")
     call add(keys, "q")
     call add(keys, "j")
+    call add(keys, "J")
     call add(keys, "k")
-    call add(keys, "g")
-    call add(keys, "G")
+    call add(keys, "K")
     call add(keys, "p")
     call add(keys, "P")
     call add(keys, "n")
@@ -337,44 +346,44 @@ function! ff#statusline_key_info_segment(...)
   return join(keys, separator)
 endfunction
 
-function! ff#statusline_info_segment(...)
+function! controlspace#statusline_info_segment(...)
   let statusline_elements = []
 
   if s:file_mode
-    call add(statusline_elements, g:ff_symbols.add)
+    call add(statusline_elements, g:controlspace_symbols.add)
   elseif s:session_mode == 1
-    call add(statusline_elements, g:ff_symbols.load)
+    call add(statusline_elements, g:controlspace_symbols.load)
   elseif s:session_mode == 2
-    call add(statusline_elements, g:ff_symbols.save)
+    call add(statusline_elements, g:controlspace_symbols.save)
   elseif s:single_tab_mode
-    call add(statusline_elements, g:ff_symbols.tab)
+    call add(statusline_elements, g:controlspace_symbols.tab)
   else
-    call add(statusline_elements, g:ff_symbols.all)
+    call add(statusline_elements, g:controlspace_symbols.all)
   endif
 
   if !s:session_mode
     if empty(s:search_letters) && !s:search_mode
       if exists("t:sort_order") && !s:file_mode
         if t:sort_order == 1
-          call add(statusline_elements, g:ff_symbols.ord)
+          call add(statusline_elements, g:controlspace_symbols.ord)
         elseif t:sort_order == 2
-          call add(statusline_elements, g:ff_symbols.abc)
+          call add(statusline_elements, g:controlspace_symbols.abc)
         endif
       endif
     else
-      let search_element = g:ff_symbols.s_left . join(s:search_letters, "")
+      let search_element = g:controlspace_symbols.s_left . join(s:search_letters, "")
 
       if s:search_mode
         let search_element .= "_"
       endif
 
-      let search_element .= g:ff_symbols.s_right
+      let search_element .= g:controlspace_symbols.s_right
 
       call add(statusline_elements, search_element)
     endif
 
     if s:preview_mode
-      call add(statusline_elements, g:ff_symbols.prv)
+      call add(statusline_elements, g:controlspace_symbols.prv)
     endif
   endif
 
@@ -382,7 +391,7 @@ function! ff#statusline_info_segment(...)
   return join(statusline_elements, separator)
 endfunction
 
-function! ff#tabline()
+function! controlspace#tabline()
   let last_tab    = tabpagenr("$")
   let current_tab = tabpagenr()
   let tabline     = ''
@@ -392,11 +401,11 @@ function! ff#tabline()
     let buflist             = tabpagebuflist(t)
     let bufnr               = buflist[winnr - 1]
     let bufname             = bufname(bufnr)
-    let bufs_number         = len(ff#bufferlist(t))
+    let bufs_number         = len(controlspace#bufferlist(t))
     let bufs_number_to_show = ""
 
     if bufs_number > 1
-      if g:ff_unicode_font
+      if g:controlspace_unicode_font
         let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
         let number_str    = string(bufs_number)
 
@@ -408,14 +417,14 @@ function! ff#tabline()
       endif
     endif
 
-    let title = gettabvar(t, "ff_label")
+    let title = gettabvar(t, "controlspace_label")
 
     if empty(title)
-      if bufname ==# "__FF__"
+      if bufname ==# "__CS__"
         if s:preview_mode && exists("s:preview_mode_orginal_buffer")
           let bufnr = s:preview_mode_orginal_buffer
         else
-          let bufnr = winbufnr(t:ff_start_window)
+          let bufnr = winbufnr(t:controlspace_start_window)
         endif
 
         let bufname = bufname(bufnr)
@@ -450,11 +459,11 @@ function! ff#tabline()
 endfunction
 
 function! <SID>new_tab_label()
-  let t:ff_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:ff_label") ? t:ff_label : "")
+  let t:controlspace_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:controlspace_label") ? t:controlspace_label : "")
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
-  for b in map(keys(ff#bufferlist(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(controlspace#bufferlist(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -463,30 +472,30 @@ function! <SID>tab_contains_modified_buffers(tabnr)
 endfunction
 
 function! <SID>max_height()
-  if g:ff_max_height
-    return g:ff_max_height
+  if g:controlspace_max_height
+    return g:controlspace_max_height
   else
     return &lines / 3
   endif
 endfunction
 
 function! <SID>session_file()
-  for candidate in g:ff_session_file
+  for candidate in g:controlspace_session_file
     if isdirectory(fnamemodify(candidate, ":h:t"))
       return candidate
     endif
   endfor
 
-  return g:ff_session_file[-1]
+  return g:controlspace_session_file[-1]
 endfunction
 
 function! <SID>save_first_session()
   let labels = []
 
   for t in range(1, tabpagenr("$"))
-    let label = gettabvar(t, "ff_label")
+    let label = gettabvar(t, "controlspace_label")
     if !empty(label)
-      call add(labels, gettabvar(t, "ff_label"))
+      call add(labels, gettabvar(t, "controlspace_label"))
     endif
   endfor
 
@@ -497,10 +506,10 @@ function! <SID>create_session_digest()
   let lines = []
 
   for t in range(1, tabpagenr("$"))
-    let line = [t, gettabvar(t, "ff_label")]
+    let line = [t, gettabvar(t, "controlspace_label")]
     let bufs = []
 
-    for bname in values(ff#bufferlist(t))
+    for bname in values(controlspace#bufferlist(t))
       let bufname = fnamemodify(bname, ":.")
 
       if !filereadable(bufname)
@@ -531,8 +540,8 @@ function! <SID>save_session(name)
   let lines      = []
   let in_session = 0
 
-  let session_start_marker = "FF_SESSION_BEGIN: " . name
-  let session_end_marker   = "FF_SESSION_END: " . name
+  let session_start_marker = "CS_SESSION_BEGIN: " . name
+  let session_end_marker   = "CS_SESSION_END: " . name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -553,19 +562,19 @@ function! <SID>save_session(name)
   call add(lines, session_start_marker)
 
   for t in range(1, last_tab)
-    let line = [t, gettabvar(t, "ff_label"), tabpagenr() == t]
+    let line = [t, gettabvar(t, "controlspace_label"), tabpagenr() == t]
 
-    let ff_list = ff#bufferlist(t)
+    let controlspace_list = controlspace#bufferlist(t)
 
     let bufs     = []
     let visibles = []
 
     let visible_buffers = tabpagebuflist(t)
 
-    let ff_list_index = -1
+    let controlspace_list_index = -1
 
-    for [nr, bname] in items(ff_list)
-      let ff_list_index += 1
+    for [nr, bname] in items(controlspace_list)
+      let controlspace_list_index += 1
       let bufname = fnamemodify(bname, ":.")
       let nr = str2nr(nr)
 
@@ -574,7 +583,7 @@ function! <SID>save_session(name)
       endif
 
       if index(visible_buffers, nr) != -1
-        call add(visibles, ff_list_index)
+        call add(visibles, controlspace_list_index)
       endif
 
       call add(bufs, bufname)
@@ -593,7 +602,7 @@ function! <SID>save_session(name)
   let s:active_session_digest = <SID>create_session_digest()
   let s:session_names         = []
 
-  echo g:ff_symbols.ff . ": The session '" . name . "' has been saved."
+  echo g:controlspace_symbols.cs . ": The session '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_session(name)
@@ -607,8 +616,8 @@ function! <SID>delete_session(name)
   let lines      = []
   let in_session = 0
 
-  let session_start_marker = "FF_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "FF_SESSION_END: " . a:name
+  let session_start_marker = "CS_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "CS_SESSION_END: " . a:name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -633,7 +642,7 @@ function! <SID>delete_session(name)
     let s:active_session_digest = ""
   endif
 
-  echo g:ff_symbols.ff . ": The session '" . a:name . "' has been deleted."
+  echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been deleted."
 
   let s:session_names = []
 
@@ -641,7 +650,7 @@ function! <SID>delete_session(name)
     call <SID>kill(0, 1)
   else
     call <SID>kill(0, 0)
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
@@ -652,7 +661,7 @@ function! <SID>get_session_names()
 
   if filereadable(filename)
     for line in readfile(filename)
-      if line =~? "FF_SESSION_BEGIN: "
+      if line =~? "CS_SESSION_BEGIN: "
         call add(names, line[18:])
       endif
     endfor
@@ -666,7 +675,7 @@ function! <SID>get_selected_session_name()
 endfunction
 
 function! <SID>get_input(msg, ...)
-  let msg = g:ff_symbols.ff . ": " . a:msg
+  let msg = g:controlspace_symbols.cs . ": " . a:msg
 
   call inputsave()
 
@@ -708,13 +717,13 @@ function! <SID>load_session(bang, name)
   let filename = <SID>session_file()
 
   if !filereadable(filename)
-    echo g:ff_symbols.ff . ": Sessions file '" . filename . "' not found."
+    echo g:controlspace_symbols.cs . ": Sessions file '" . filename . "' not found."
     call <SID>kill(0, 1)
     return
   endif
 
-  let session_start_marker = "FF_SESSION_BEGIN: " . a:name
-  let session_end_marker   = "FF_SESSION_END: " . a:name
+  let session_start_marker = "CS_SESSION_BEGIN: " . a:name
+  let session_end_marker   = "CS_SESSION_END: " . a:name
 
   let lines      = []
   let in_session = 0
@@ -730,7 +739,7 @@ function! <SID>load_session(bang, name)
   endfor
 
   if empty(lines)
-    echo g:ff_symbols.ff . ": Session '" . a:name . "' not found in file '" . filename . "'."
+    echo g:controlspace_symbols.cs . ": Session '" . a:name . "' not found in file '" . filename . "'."
     let s:session_names = []
     call <SID>kill(0, 1)
     return
@@ -741,7 +750,7 @@ function! <SID>load_session(bang, name)
   let commands = []
 
   if a:bang
-    echo g:ff_symbols.ff . ": Loading session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . ": Loading session '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -750,7 +759,7 @@ function! <SID>load_session(bang, name)
     let create_first_tab      = 0
     let s:active_session_name = a:name
   else
-    echo g:ff_symbols.ff . ": Appending session '" . a:name . "'..."
+    echo g:controlspace_symbols.cs . ": Appending session '" . a:name . "'..."
     let create_first_tab = 1
   endif
 
@@ -808,15 +817,15 @@ function! <SID>load_session(bang, name)
     endif
 
     if is_current
-      call add(commands, "let ff_session_current_tab = tabpagenr()")
+      call add(commands, "let controlspace_session_current_tab = tabpagenr()")
     endif
 
     if !empty(tab_label)
-      call add(commands, "let t:ff_label = '" . tab_label . "'")
+      call add(commands, "let t:controlspace_label = '" . tab_label . "'")
     endif
   endfor
 
-  call add(commands, "exe 'normal! ' . ff_session_current_tab . 'gt'")
+  call add(commands, "exe 'normal! ' . controlspace_session_current_tab . 'gt'")
   call add(commands, "redraw!")
 
   for c in commands
@@ -825,15 +834,15 @@ function! <SID>load_session(bang, name)
 
 
   if a:bang
-    echo g:ff_symbols.ff . ": The session '" . a:name . "' has been loaded."
+    echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been loaded."
     let s:active_session_digest = <SID>create_session_digest()
   else
     let s:active_session_digest = ""
-    echo g:ff_symbols.ff . ": The session '" . a:name . "' has been appended."
-    call <SID>ff_toggle(0)
+    echo g:controlspace_symbols.cs . ": The session '" . a:name . "' has been appended."
+    call <SID>controlspace_toggle(0)
     let s:session_mode = 1
     call <SID>kill(0, 0)
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
@@ -860,8 +869,8 @@ function! <SID>find_subsequence(bufname, offset)
 endfunction
 
 function! <SID>find_lowest_search_noise(bufname)
-  if has("ruby") && g:ff_use_ruby_bindings
-    ruby VIM.command("return #{FF.find_lowest_search_noise(VIM.evaluate('a:bufname'))}")
+  if has("ruby") && g:controlspace_use_ruby_bindings
+    ruby VIM.command("return #{ControlSpace.find_lowest_search_noise(VIM.evaluate('a:bufname'))}")
   else
     let search_letters_count = len(s:search_letters)
     let noise                = -1
@@ -901,53 +910,53 @@ endfunction
 
 function! <SID>display_search_patterns()
   for pattern in keys(b:search_patterns)
-    call matchadd("FFFound", "\\c" . pattern)
+    call matchadd("ControlSpaceFound", "\\c" . pattern)
   endfor
 endfunction
 
 function! <SID>append_to_search_history()
   if !empty(s:search_letters)
-    if !exists("t:ff_search_history")
-      let t:ff_search_history = []
+    if !exists("t:controlspace_search_history")
+      let t:controlspace_search_history = []
     endif
 
-    call add(t:ff_search_history, copy(s:search_letters))
-    let t:ff_search_history = <SID>unique_list(t:ff_search_history)
+    call add(t:controlspace_search_history, copy(s:search_letters))
+    let t:controlspace_search_history = <SID>unique_list(t:controlspace_search_history)
 
-    if len(t:ff_search_history) > g:ff_max_searches + 1
-      unlet t:ff_jumps[0]
+    if len(t:controlspace_search_history) > g:controlspace_max_searches + 1
+      unlet t:controlspace_jumps[0]
     endif
   endif
 endfunction
 
 function! <SID>restore_search_letters(direction)
-  if !exists("t:ff_search_history")
+  if !exists("t:controlspace_search_history")
     return
   endif
 
   if a:direction == "previous"
-    let t:ff_search_history_index += 1
+    let t:controlspace_search_history_index += 1
 
-    if t:ff_search_history_index == len(t:ff_search_history)
-      let t:ff_search_history_index = len(t:ff_search_history) - 1
+    if t:controlspace_search_history_index == len(t:controlspace_search_history)
+      let t:controlspace_search_history_index = len(t:controlspace_search_history) - 1
     endif
   elseif a:direction == "next"
-    let t:ff_search_history_index -= 1
+    let t:controlspace_search_history_index -= 1
 
-    if t:ff_search_history_index < -1
-      let t:ff_search_history_index = -1
+    if t:controlspace_search_history_index < -1
+      let t:controlspace_search_history_index = -1
     endif
   endif
 
-  if t:ff_search_history_index < 0
+  if t:controlspace_search_history_index < 0
     let s:search_letters = []
   else
-    let s:search_letters = copy(reverse(copy(t:ff_search_history))[t:ff_search_history_index])
+    let s:search_letters = copy(reverse(copy(t:controlspace_search_history))[t:controlspace_search_history_index])
     let s:restored_search_mode = 1
   endif
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>prepare_buflist_to_display(buflist)
@@ -955,7 +964,7 @@ function! <SID>prepare_buflist_to_display(buflist)
     let bufname = entry.raw
 
     if strlen(bufname) + 6 > &columns
-      if g:ff_unicode_font
+      if g:controlspace_unicode_font
         let dots_symbol = "…"
         let dots_symbol_size = 1
       else
@@ -970,7 +979,7 @@ function! <SID>prepare_buflist_to_display(buflist)
       let bufname = <SID>decorate_with_indicators(bufname, entry.number)
     elseif s:session_mode
       if entry.raw ==# s:active_session_name
-        let bufname .= g:ff_unicode_font ? " ★" : " *"
+        let bufname .= g:controlspace_unicode_font ? " ★" : " *"
 
         if s:active_session_digest !=# <SID>create_session_digest()
           let bufname .= "+"
@@ -983,7 +992,7 @@ function! <SID>prepare_buflist_to_display(buflist)
     endwhile
 
     " handle wrong strlen for unicode dots symbol
-    if g:ff_unicode_font && bufname =~ "…"
+    if g:controlspace_unicode_font && bufname =~ "…"
       let bufname .= "  "
     endif
 
@@ -992,7 +1001,7 @@ function! <SID>prepare_buflist_to_display(buflist)
 endfunction
 
 " toggled the buffer list on/off
-function! <SID>ff_toggle(internal)
+function! <SID>controlspace_toggle(internal)
   if !a:internal
     let s:single_tab_mode         = 1
     let s:nop_mode                = 0
@@ -1003,15 +1012,15 @@ function! <SID>ff_toggle(internal)
     let s:last_browsed_session    = 0
     let s:restored_search_mode    = 0
     let s:search_letters          = []
-    let t:ff_search_history_index = -1
+    let t:controlspace_search_history_index = -1
 
     if !exists("t:sort_order")
-      let t:sort_order = g:ff_default_sort_order
+      let t:sort_order = g:controlspace_default_sort_order
     endif
   endif
 
   " if we get called and the list is open --> close it
-  let buflistnr = bufnr("__FF__")
+  let buflistnr = bufnr("__CS__")
   if bufexists(buflistnr)
     if bufwinnr(buflistnr) != -1
       call <SID>kill(buflistnr, 1)
@@ -1019,13 +1028,13 @@ function! <SID>ff_toggle(internal)
     else
       call <SID>kill(buflistnr, 0)
       if !a:internal
-        let t:ff_start_window = winnr()
-        let t:ff_winrestcmd = winrestcmd()
+        let t:controlspace_start_window = winnr()
+        let t:controlspace_winrestcmd = winrestcmd()
       endif
     endif
   elseif !a:internal
-    let t:ff_start_window = winnr()
-    let t:ff_winrestcmd = winrestcmd()
+    let t:controlspace_start_window = winnr()
+    let t:controlspace_winrestcmd = winrestcmd()
   endif
 
   let bufcount      = bufnr('$')
@@ -1034,15 +1043,15 @@ function! <SID>ff_toggle(internal)
   let buflist       = []
 
   " create the buffer first & set it up
-  silent! exe "noautocmd botright pedit __FF__"
+  silent! exe "noautocmd botright pedit __CS__"
   silent! exe "noautocmd wincmd P"
-  silent! exe "resize" g:ff_height
+  silent! exe "resize" g:controlspace_height
 
   call <SID>set_up_buffer()
 
   if s:file_mode
     if empty(s:files)
-      echo g:ff_symbols.ff . ": Collecting files..."
+      echo g:controlspace_symbols.cs . ": Collecting files..."
 
       let s:files = []
       let s:all_files_cached = []
@@ -1051,7 +1060,7 @@ function! <SID>ff_toggle(internal)
       for fname in split(globpath('.', '**'), '\n')
         let fname_modified = fnamemodify(fname, ":.")
 
-        if isdirectory(fname_modified) || (fname_modified =~# g:ff_ignored_files)
+        if isdirectory(fname_modified) || (fname_modified =~# g:controlspace_ignored_files)
           continue
         endif
 
@@ -1064,7 +1073,7 @@ function! <SID>ff_toggle(internal)
       call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
 
       redraw!
-      echo g:ff_symbols.ff . ": Collecting files... Done (" . len(s:files) . ")."
+      echo g:controlspace_symbols.cs . ": Collecting files... Done (" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
@@ -1086,14 +1095,14 @@ function! <SID>ff_toggle(internal)
       elseif s:session_mode
         let bufname = s:session_names[i - 1]
       else
-        if s:single_tab_mode && !exists('t:ff_list[' . i . ']')
+        if s:single_tab_mode && !exists('t:controlspace_list[' . i . ']')
           continue
         endif
 
         let bufname = fnamemodify(bufname(i), ":.")
 
-        if g:ff_show_unnamed && !strlen(bufname)
-          if !((g:ff_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
+        if g:controlspace_show_unnamed && !strlen(bufname)
+          if !((g:controlspace_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
             let bufname = '[' . i . '*No Name]'
           endif
         endif
@@ -1115,7 +1124,7 @@ function! <SID>ff_toggle(internal)
   endif
 
   " set up window height
-  if displayedbufs > g:ff_height
+  if displayedbufs > g:controlspace_height
     if displayedbufs < <SID>max_height()
       silent! exe "resize " . displayedbufs
     else
@@ -1180,10 +1189,10 @@ function! <SID>create_jumplines(buflist, activebufline)
     call add(buffers, bufentry.number)
   endfor
 
-  if s:single_tab_mode && exists("t:ff_jumps")
-    let bufferjumps = t:ff_jumps
+  if s:single_tab_mode && exists("t:controlspace_jumps")
+    let bufferjumps = t:controlspace_jumps
   else
-    let bufferjumps = s:ff_jumps
+    let bufferjumps = s:controlspace_jumps
   endif
 
   let jumplines = []
@@ -1205,24 +1214,24 @@ endfunction
 function! <SID>clear_search_mode()
   let s:search_letters          = []
   let s:search_mode             = 0
-  let t:ff_search_history_index = -1
+  let t:controlspace_search_history_index = -1
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>switch_search_mode(switch)
@@ -1233,7 +1242,7 @@ function! <SID>switch_search_mode(switch)
   let s:search_mode = a:switch
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>unique_list(list)
@@ -1244,9 +1253,9 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ' '
 
   if s:preview_mode && (s:preview_mode_orginal_buffer == a:bufnum)
-    let indicators .= g:ff_unicode_font ? "☆" : "*"
+    let indicators .= g:controlspace_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
-    let indicators .= g:ff_unicode_font ? "★" : "*"
+    let indicators .= g:controlspace_unicode_font ? "★" : "*"
   endif
 
   if getbufvar(a:bufnum, "&modified")
@@ -1274,14 +1283,14 @@ function! <SID>find_activebufline(activebuf, buflist)
 endfunction
 
 function! <SID>go_to_start_window()
-  if exists("t:ff_start_window")
-    silent! exe t:ff_start_window . "wincmd w"
+  if exists("t:controlspace_start_window")
+    silent! exe t:controlspace_start_window . "wincmd w"
   endif
 
-  if exists("t:ff_winrestcmd") && (winrestcmd() != t:ff_winrestcmd)
-    silent! exe t:ff_winrestcmd
+  if exists("t:controlspace_winrestcmd") && (winrestcmd() != t:controlspace_winrestcmd)
+    silent! exe t:controlspace_winrestcmd
 
-    if winrestcmd() != t:ff_winrestcmd
+    if winrestcmd() != t:controlspace_winrestcmd
       wincmd =
     endif
   endif
@@ -1337,12 +1346,12 @@ function! <SID>tab_command(key)
     silent! exe "normal! " . tab_nr . "gt"
   endif
 
-  call <SID>ff_toggle(0)
+  call <SID>controlspace_toggle(0)
 endfunction
 
 function! <SID>keypressed(key)
   if a:key ==# "?"
-    let g:ff_show_key_info = !g:ff_show_key_info
+    let g:controlspace_show_key_info = !g:controlspace_show_key_info
     call <SID>set_status_line()
     redraw!
     return
@@ -1404,14 +1413,14 @@ function! <SID>keypressed(key)
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 2
-      call <SID>ff_toggle(1)
+      call <SID>controlspace_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
-      call <SID>ff_toggle(1)
+      call <SID>controlspace_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_session(<SID>get_selected_session_name())
     elseif a:key ==# "j"
@@ -1431,9 +1440,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "g")
+    elseif (a:key ==# "Home") || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "G")
+    elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
     endif
   elseif s:session_mode == 2
@@ -1445,14 +1454,14 @@ function! <SID>keypressed(key)
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 1
-      call <SID>ff_toggle(1)
+      call <SID>controlspace_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_session(s:active_session_name)
     elseif (a:key ==# "l") || (a:key ==# "BS")
       let s:last_browsed_session = line(".")
       call <SID>kill(0, 0)
       let s:session_mode = 0
-      call <SID>ff_toggle(1)
+      call <SID>controlspace_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_session(<SID>get_selected_session_name())
     elseif a:key ==# "j"
@@ -1472,9 +1481,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "g")
+    elseif (a:key ==# "Home") || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "G")
+    elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
     endif
   elseif s:file_mode
@@ -1507,7 +1516,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "-"
       silent! exe "tabm-1"
     elseif a:key ==# "_"
-      let t:ff_label = ""
+      let t:controlspace_label = ""
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -1534,9 +1543,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "g")
+    elseif (a:key ==# "Home") || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "G")
+    elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
@@ -1561,7 +1570,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:session_mode = 1
-        call <SID>ff_toggle(1)
+        call <SID>controlspace_toggle(1)
       endif
     endif
   else
@@ -1569,7 +1578,7 @@ function! <SID>keypressed(key)
       call <SID>load_buffer()
     elseif a:key ==# "Space"
       call <SID>load_many_buffers()
-    elseif (a:key ==# "C-Space") || (a:key ==# "Nul")
+    elseif (a:key ==# "Tab")
       call <SID>preview_buffer(0)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
@@ -1598,7 +1607,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "-"
       silent! exe "tabm-1"
     elseif a:key ==# "_"
-      let t:ff_label = ""
+      let t:controlspace_label = ""
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -1636,9 +1645,9 @@ function! <SID>keypressed(key)
       call feedkeys("j")
     elseif a:key ==# "Up"
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "g")
+    elseif (a:key ==# "Home") || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "G")
+    elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
     elseif a:key ==# "a"
       call <SID>toggle_single_tab_mode()
@@ -1670,7 +1679,7 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:session_mode = 1
-        call <SID>ff_toggle(1)
+        call <SID>controlspace_toggle(1)
       endif
     elseif a:key ==# "A"
       call <SID>toggle_file_mode()
@@ -1686,10 +1695,10 @@ function! <SID>keypressed(key)
 endfunction
 
 function! <SID>toggle_file_mode()
-  if !s:file_mode && !empty(g:ff_project_root_markers)
+  if !s:file_mode && !empty(g:controlspace_project_root_markers)
     let marker_found = 0
 
-    for marker in g:ff_project_root_markers
+    for marker in g:controlspace_project_root_markers
       if filereadable(marker) || isdirectory(marker)
         let marker_found = 1
         break
@@ -1712,16 +1721,16 @@ function! <SID>toggle_file_mode()
   let s:file_mode = !s:file_mode
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>set_status_line()
   if has('statusline')
     hi default link User1 LineNr
-    let &l:statusline = "%1* " . g:ff_symbols.ff . "  %*  " . ff#statusline_info_segment()
+    let &l:statusline = "%1*\ \ " . g:controlspace_symbols.cs . "\ \ %*\ \ " . controlspace#statusline_info_segment()
 
-    if g:ff_show_key_info
-      let key_info = "  %=%1* " . ff#statusline_key_info_segment() . " "
+    if g:controlspace_show_key_info
+      let key_info = "  %=%1* " . controlspace#statusline_key_info_segment() . " "
 
       if strlen(&l:statusline) + strlen(key_info) > &columns
         let key_info = "  %=%1* ? ... "
@@ -1753,7 +1762,7 @@ function! <SID>set_up_buffer()
     au BufLeave <buffer> silent! exe "set timeoutlen=" . b:old_timeoutlen
   endif
 
-  augroup FFLeave
+  augroup ControlSpaceLeave
     au!
     au BufLeave <buffer> call <SID>kill(0, 1)
   augroup END
@@ -1761,15 +1770,15 @@ function! <SID>set_up_buffer()
   " set up syntax highlighting
   if has("syntax")
     syn clear
-    syn match FFNormal /  .*/
-    syn match FFSelected /> .*/hs=s+1
+    syn match ControlSpaceNormal /  .*/
+    syn match ControlSpaceSelected /> .*/hs=s+1
 
-    hi def FFNormal ctermfg=black ctermbg=white
-    hi def FFSelected ctermfg=white ctermbg=black
+    hi def ControlSpaceNormal ctermfg=black ctermbg=white
+    hi def ControlSpaceSelected ctermfg=white ctermbg=black
   endif
 
   call clearmatches()
-  hi def FFFound ctermfg=NONE ctermbg=NONE cterm=underline
+  hi def ControlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline
 
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
@@ -1791,8 +1800,8 @@ endfunction
 function! <SID>compare_bufentries(a, b)
   if t:sort_order == 1
     if s:single_tab_mode
-      if exists("t:ff_list[" . a:a.number . "]") && exists("t:ff_list[" . a:b.number . "]")
-        return t:ff_list[a:a.number] - t:ff_list[a:b.number]
+      if exists("t:controlspace_list[" . a:a.number . "]") && exists("t:controlspace_list[" . a:b.number . "]")
+        return t:controlspace_list[a:a.number] - t:controlspace_list[a:b.number]
       endif
     endif
     return a:a.number - a:b.number
@@ -1891,7 +1900,7 @@ function! <SID>display_list(displayedbufs, buflist)
     let empty_list_message = "  List empty"
 
     if &columns < (strlen(empty_list_message) + 2)
-      if g:ff_unicode_font
+      if g:controlspace_unicode_font
         let dots_symbol = "…"
         let dots_symbol_size = 1
       else
@@ -1907,7 +1916,7 @@ function! <SID>display_list(displayedbufs, buflist)
     endwhile
 
     " handle wrong strlen for unicode dots symbol
-    if g:ff_unicode_font && empty_list_message =~ "…"
+    if g:controlspace_unicode_font && empty_list_message =~ "…"
       let empty_list_message .= "  "
     endif
 
@@ -1932,10 +1941,10 @@ function! <SID>display_list(displayedbufs, buflist)
     endfor
 
     if !any_buffer_listed
-      au! FFLeave BufLeave
+      au! ControlSpaceLeave BufLeave
       noremap <silent> <buffer> q :q<CR>
-      if g:ff_set_default_mapping
-        silent! exe 'noremap <silent><buffer>' . g:ff_default_mapping_key . ' :q<CR>'
+      if g:controlspace_set_default_mapping
+        silent! exe 'noremap <silent><buffer>' . g:controlspace_default_mapping_key . ' :q<CR>'
       endif
     endif
 
@@ -1992,13 +2001,13 @@ endfunction
 function! <SID>goto(line)
   if b:bufcount < 1 | return | endif
   if a:line < 1
-    if g:ff_cyclic_list
+    if g:controlspace_cyclic_list
       call <SID>goto(b:bufcount - a:line)
     else
       call cursor(1, 1)
     endif
   elseif a:line > b:bufcount
-    if g:ff_cyclic_list
+    if g:controlspace_cyclic_list
       call <SID>goto(a:line - b:bufcount)
     else
       call cursor(b:bufcount, 1)
@@ -2039,7 +2048,7 @@ function! <SID>load_many_buffers()
 
   exec ":b " . nr
 
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
   call <SID>move(current_line)
 endfunction
 
@@ -2064,7 +2073,7 @@ function! <SID>load_many_files()
 
   exec ":e " . file
 
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
   call <SID>move(current_line)
 endfunction
 
@@ -2084,7 +2093,7 @@ endfunction
 function! <SID>preview_buffer(nr, ...)
   if !s:preview_mode
     let s:preview_mode = 1
-    let s:preview_mode_orginal_buffer = winbufnr(t:ff_start_window)
+    let s:preview_mode_orginal_buffer = winbufnr(t:controlspace_start_window)
   endif
 
   let nr = a:nr ? a:nr : <SID>get_selected_buffer()
@@ -2100,17 +2109,17 @@ function! <SID>preview_buffer(nr, ...)
     silent! exe c
   endfor
 
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>load_buffer_into_window(winnr)
-  if exists("t:ff_start_window")
-    let old_start_window = t:ff_start_window
-    let t:ff_start_window = a:winnr
+  if exists("t:controlspace_start_window")
+    let old_start_window = t:controlspace_start_window
+    let t:controlspace_start_window = a:winnr
   endif
   call <SID>load_buffer()
   if exists("old_start_window")
-    let t:ff_start_window = old_start_window
+    let t:controlspace_start_window = old_start_window
   endif
 endfunction
 
@@ -2153,14 +2162,14 @@ function! <SID>delete_buffer()
           silent! exe "tabn " . t
 
           let tab_window = bufwinnr(b)
-          let ff_list    = gettabvar(t, "ff_list")
+          let controlspace_list    = gettabvar(t, "controlspace_list")
 
-          call remove(ff_list, nr)
+          call remove(controlspace_list, nr)
 
           silent! exe tab_window . "wincmd w"
 
-          if !empty(ff_list)
-            silent! exe "b" . keys(ff_list)[0]
+          if !empty(controlspace_list)
+            silent! exe "b" . keys(controlspace_list)[0]
           else
             enew
           endif
@@ -2172,21 +2181,21 @@ function! <SID>delete_buffer()
     silent! exe "bdelete " . nr
 
     call <SID>forget_buffers_in_all_tabs([nr])
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
 function! <SID>forget_buffers_in_all_tabs(numbers)
   for t in range(1, tabpagenr("$"))
-    let ff_list = gettabvar(t, "ff_list")
+    let controlspace_list = gettabvar(t, "controlspace_list")
 
     for nr in a:numbers
-      if exists("ff_list[" . nr . "]")
-        call remove(ff_list, nr)
+      if exists("controlspace_list[" . nr . "]")
+        call remove(controlspace_list, nr)
       endif
     endfor
 
-    call settabvar(t, "ff_list", ff_list)
+    call settabvar(t, "controlspace_list", controlspace_list)
   endfor
 endfunction
 
@@ -2233,7 +2242,7 @@ function! <SID>delete_hidden_noname_buffers(internal)
   endif
 
   if !a:internal
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
@@ -2241,7 +2250,7 @@ endfunction
 function! <SID>delete_foreign_buffers(internal)
   let buffers = {}
   for t in range(1, tabpagenr('$'))
-    silent! call extend(buffers, gettabvar(t, 'ff_list'))
+    silent! call extend(buffers, gettabvar(t, 'controlspace_list'))
   endfor
 
   if !a:internal
@@ -2251,7 +2260,7 @@ function! <SID>delete_foreign_buffers(internal)
   call <SID>keep_buffers_for_keys(buffers)
 
   if !a:internal
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
@@ -2265,17 +2274,17 @@ function! <SID>add_tab_buffer()
     return
   endif
 
-  if !exists('t:ff_list')
-    let t:ff_list = {}
+  if !exists('t:controlspace_list')
+    let t:controlspace_list = {}
   endif
 
   let current = bufnr('%')
 
-  if !exists("t:ff_list[" . current . "]") &&
+  if !exists("t:controlspace_list[" . current . "]") &&
         \ getbufvar(current, '&modifiable') &&
         \ getbufvar(current, '&buflisted') &&
-        \ current != bufnr("__FF__")
-    let t:ff_list[current] = len(t:ff_list) + 1
+        \ current != bufnr("__CS__")
+    let t:controlspace_list[current] = len(t:controlspace_list) + 1
   endif
 endfunction
 
@@ -2284,25 +2293,25 @@ function! <SID>add_jump()
     return
   endif
 
-  if !exists("t:ff_jumps")
-    let t:ff_jumps = []
+  if !exists("t:controlspace_jumps")
+    let t:controlspace_jumps = []
   endif
 
   let current = bufnr('%')
 
-  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__FF__")
-    call add(s:ff_jumps, current)
-    let s:ff_jumps = <SID>unique_list(s:ff_jumps)
+  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__CS__")
+    call add(s:controlspace_jumps, current)
+    let s:controlspace_jumps = <SID>unique_list(s:controlspace_jumps)
 
-    if len(s:ff_jumps) > g:ff_max_jumps + 1
-      unlet s:ff_jumps[0]
+    if len(s:controlspace_jumps) > g:controlspace_max_jumps + 1
+      unlet s:controlspace_jumps[0]
     endif
 
-    call add(t:ff_jumps, current)
-    let t:ff_jumps = <SID>unique_list(t:ff_jumps)
+    call add(t:controlspace_jumps, current)
+    let t:controlspace_jumps = <SID>unique_list(t:controlspace_jumps)
 
-    if len(t:ff_jumps) > g:ff_max_jumps + 1
-      unlet t:ff_jumps[0]
+    if len(t:controlspace_jumps) > g:controlspace_max_jumps + 1
+      unlet t:controlspace_jumps[0]
     endif
   endif
 endfunction
@@ -2315,7 +2324,7 @@ function! <SID>toggle_single_tab_mode()
   endif
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>toggle_order()
@@ -2327,14 +2336,14 @@ function! <SID>toggle_order()
     endif
 
     call <SID>kill(0, 0)
-    call <SID>ff_toggle(1)
+    call <SID>controlspace_toggle(1)
   endif
 endfunction
 
 function! <SID>refresh_files()
   let s:files = []
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>remove_file()
@@ -2354,7 +2363,7 @@ function! <SID>remove_file()
   call delete(path)
 
   call <SID>kill(0, 0)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>move_file()
@@ -2390,7 +2399,7 @@ function! <SID>move_file()
   let s:files = []
 
   call <SID>kill(0, 1)
-  call <SID>ff_toggle(1)
+  call <SID>controlspace_toggle(1)
 endfunction
 
 function! <SID>explore_directory()
@@ -2430,10 +2439,10 @@ function! <SID>close_tab()
     return
   endif
 
-  if exists("t:ff_label") && !empty(t:ff_label)
-    let buf_count = len(ff#bufferlist(tabpagenr()))
+  if exists("t:controlspace_label") && !empty(t:controlspace_label)
+    let buf_count = len(controlspace#bufferlist(tabpagenr()))
 
-    if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:ff_label . "' with " . buf_count . " buffers?")
+    if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:controlspace_label . "' with " . buf_count . " buffers?")
       return
     endif
   endif
@@ -2445,7 +2454,7 @@ function! <SID>close_tab()
   call <SID>delete_hidden_noname_buffers(1)
   call <SID>delete_foreign_buffers(1)
 
-  call <SID>ff_toggle(0)
+  call <SID>controlspace_toggle(0)
 endfunction
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
@@ -2455,8 +2464,8 @@ function! <SID>close_buffer()
   let found_tabs = 0
 
   for t in range(1, tabpagenr('$'))
-    let ff_list = gettabvar(t, 'ff_list')
-    if !empty(ff_list) && exists("ff_list[" . nr . "]")
+    let controlspace_list = gettabvar(t, 'controlspace_list')
+    if !empty(controlspace_list) && exists("controlspace_list[" . nr . "]")
       let found_tabs += 1
     endif
   endfor
@@ -2471,7 +2480,7 @@ endfunction
 function! <SID>detach_buffer()
   let nr = <SID>get_selected_buffer()
 
-  if exists('t:ff_list[' . nr . ']')
+  if exists('t:controlspace_list[' . nr . ']')
     let selected_buffer_window = bufwinnr(nr)
     if selected_buffer_window != -1
       call <SID>move("down")
@@ -2494,20 +2503,20 @@ function! <SID>detach_buffer()
     else
       call <SID>kill(0, 0)
     endif
-    call remove(t:ff_list, nr)
-    call <SID>ff_toggle(1)
+    call remove(t:controlspace_list, nr)
+    call <SID>controlspace_toggle(1)
   endif
 
   return nr
 endfunction
 
-if !(has("ruby") && g:ff_use_ruby_bindings)
+if !(has("ruby") && g:controlspace_use_ruby_bindings)
   finish
 endif
 
-let s:ff_folder = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let s:controlspace_folder = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
 ruby << EOF
 require "pathname"
-require Pathname.new(VIM.evaluate("s:ff_folder")).parent.join("ruby", "ff").to_s
+require Pathname.new(VIM.evaluate("s:controlspace_folder")).parent.join("ruby", "controlspace").to_s
 EOF
