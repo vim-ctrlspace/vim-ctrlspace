@@ -87,7 +87,7 @@ command! -nargs=0 -range FF :call <SID>ff_toggle(0)
 command! -nargs=0 -range FFTabLabel :call <SID>new_tab_label()
 
 if g:ff_use_tabline
-  set tabline=%!FFTabLine()
+  set tabline=%!ff#tabline()
 endif
 
 function! <SID>set_default_mapping(key, action)
@@ -176,7 +176,7 @@ au BufEnter * call <SID>add_tab_buffer()
 let s:ff_jumps = []
 au BufEnter * call <SID>add_jump()
 
-function! FFList(tabnr)
+function! ff#bufferlist(tabnr)
   let buffer_list     = {}
   let ff              = gettabvar(a:tabnr, "ff_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
@@ -204,7 +204,7 @@ function! FFList(tabnr)
   return buffer_list
 endfunction
 
-function! FFStatusLineKeyInfoSegment(...)
+function! ff#statusline_key_info_segment(...)
   let separator = (a:0 > 0) ? a:1 : " "
   let keys      = ["?"]
 
@@ -331,7 +331,7 @@ function! FFStatusLineKeyInfoSegment(...)
   return join(keys, separator)
 endfunction
 
-function! FFStatusLineInfoSegment(...)
+function! ff#statusline_info_segment(...)
   let statusline_elements = []
 
   if s:file_mode
@@ -376,7 +376,7 @@ function! FFStatusLineInfoSegment(...)
   return join(statusline_elements, separator)
 endfunction
 
-function! FFTabLine()
+function! ff#tabline()
   let last_tab    = tabpagenr("$")
   let current_tab = tabpagenr()
   let tabline     = ''
@@ -386,7 +386,7 @@ function! FFTabLine()
     let buflist             = tabpagebuflist(t)
     let bufnr               = buflist[winnr - 1]
     let bufname             = bufname(bufnr)
-    let bufs_number         = len(FFList(t))
+    let bufs_number         = len(ff#bufferlist(t))
     let bufs_number_to_show = ""
 
     if bufs_number > 1
@@ -448,7 +448,7 @@ function! <SID>new_tab_label()
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
-  for b in map(keys(FFList(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(ff#bufferlist(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -494,7 +494,7 @@ function! <SID>create_session_digest()
     let line = [t, gettabvar(t, "ff_label")]
     let bufs = []
 
-    for bname in values(FFList(t))
+    for bname in values(ff#bufferlist(t))
       let bufname = fnamemodify(bname, ":.")
 
       if !filereadable(bufname)
@@ -549,7 +549,7 @@ function! <SID>save_session(name)
   for t in range(1, last_tab)
     let line = [t, gettabvar(t, "ff_label"), tabpagenr() == t]
 
-    let ff_list = FFList(t)
+    let ff_list = ff#bufferlist(t)
 
     let bufs     = []
     let visibles = []
@@ -1712,10 +1712,10 @@ endfunction
 function! <SID>set_status_line()
   if has('statusline')
     hi default link User1 LineNr
-    let &l:statusline = "%1* " . g:ff_symbols.ff . "  %*  " . FFStatusLineInfoSegment()
+    let &l:statusline = "%1* " . g:ff_symbols.ff . "  %*  " . ff#statusline_info_segment()
 
     if g:ff_show_key_info
-      let key_info = "  %=%1* " . FFStatusLineKeyInfoSegment() . " "
+      let key_info = "  %=%1* " . ff#statusline_key_info_segment() . " "
 
       if strlen(&l:statusline) + strlen(key_info) > &columns
         let key_info = "  %=%1* ? ... "
@@ -2425,7 +2425,7 @@ function! <SID>close_tab()
   endif
 
   if exists("t:ff_label") && !empty(t:ff_label)
-    let buf_count = len(FFList(tabpagenr()))
+    let buf_count = len(ff#bufferlist(tabpagenr()))
 
     if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:ff_label . "' with " . buf_count . " buffers?")
       return
