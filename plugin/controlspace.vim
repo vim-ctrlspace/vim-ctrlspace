@@ -33,7 +33,7 @@ endfunction
 function! <SID>define_symbols()
   if g:controlspace_unicode_font
     let symbols = {
-          \ "cs"      : "␣",
+          \ "cs"      : "▢",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
