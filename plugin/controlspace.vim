@@ -662,7 +662,7 @@ function! <SID>get_workspace_names()
   if filereadable(filename)
     for line in readfile(filename)
       if line =~? "CS_WORKSPACE_BEGIN: "
-        call add(names, line[18:])
+        call add(names, line[20:])
       endif
     endfor
   endif
