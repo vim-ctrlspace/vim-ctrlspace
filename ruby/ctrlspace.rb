@@ -1,4 +1,4 @@
-module ControlSpace
+module CtrlSpace
   def self.find_subsequence(bufname, offset, search_letters)
     positions      = []
     noise          = 0
