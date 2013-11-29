@@ -1,4 +1,4 @@
-" Vim-CtrlSpace - The Vim (Work)Space Controller
+" Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
 " Version:      3.1.9
 "
