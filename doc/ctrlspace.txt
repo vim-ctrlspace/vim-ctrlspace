@@ -1,0 +1,54 @@
+*ctrlspace.txt*            For Vim version 7.4            Last change: 2013-12-03
+*ctrlspace*
+
+
+
+
+
+
+                            Vim-CtrlSpace 3.1.9~
+
+                         Vim Workspace Controller
+
+
+
+
+
+
+Copyright (c) 2013 Szymon Wrozynski
+
+==============================================================================
+Table of Contents
+
+    1. About...................................................|ctrlspace-about|
+    2. Usage...................................................|ctrlspace-usage|
+    3. Keys.....................................................|ctrlspace-keys|
+    4. Configuration...................................|ctrlspace-configuration|
+    5. Author and License.............................|ctrlspace-author-license|
+
+------------------------------------------------------------------------------
+1. About                                                       *ctrlspace-about*
+
+------------------------------------------------------------------------------
+2. Usage                                                       *ctrlspace-usage*
+
+------------------------------------------------------------------------------
+2. Keys                                                         *ctrlspace-keys*
+
+------------------------------------------------------------------------------
+3. Configuration                                       *ctrlspace-configuration*
+
+------------------------------------------------------------------------------
+4. Author and License                                 *ctrlspace-author-license*
+
+Vim-CtrlSpace has been written by Szymon Wrozynski and Contributors
+(https://github.com/szw/vim-ctrlspace/commits/master). It is licensed
+under the same terms as Vim itself. For more info see |license|.
+
+It was based on the BufferList plugin by Robert Lillack
+(https://github.com/roblillack/vim-bufferlist). Moreover some concepts of and
+inspiration has been taken from Vim-Tabber (https://github.com/fweep/vim-tabber)
+by Jim Steward and Tabline (https://github.com/mkitt/tabline.vim) by Matthew
+Kitt.
+
+vim:tw=78:ts=8:ft=help:norl:
