@@ -21,8 +21,7 @@ Its name follows the convention of naming similar plugins after their default ma
 
 Here's a small demonstration. Viewing in HD advised!
 
-<iframe width="640" height="360" src="http://www.youtube.com/embed/09l92uwKupI?rel=0" 
-frameborder="0" allowfullscreen></iframe>
+[![Demo](https://raw.github.com/szw/vim-ctrlspace/master/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
 
 The Demo has been recorded with: 
 
