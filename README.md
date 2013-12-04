@@ -9,10 +9,10 @@ About
 ### TL;DR
 
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim while working with
-buffers, tabs, windows, and so on. It is meant to organize your Vim screen space and your workspace 
-effectively. To accomplish that **Vim-CtrlSpace** introduces a concept of separated buffer
-lists per tab and provides a lot of power around that (buffer and file management, multiple
-workspaces stored on disk, fuzzy search, tab management, and more).
+buffers, tabs, windows, and so on. It is meant to organize your Vim screen space and your workspace
+effectively. To accomplish that **Vim-CtrlSpace** introduces a concept of separated buffer lists per
+tab and provides a lot of power around that (buffer and file management, multiple workspaces stored
+on disk, fuzzy search, tab management, and more).
 
 Its name follows the convention of naming similar plugins after their default mappings (like
 *Command-T* or *CtrlP*). Obviously, the plugin mapping is by default `Ctrl + Space`. 
@@ -70,7 +70,7 @@ one is the screen size. With this approach you are limited to the screen size. A
 code in split windows doesn't fit the windows at all, even if you have a full HD screen with Vim
 maximized. The second one is a lot of distraction. Sometimes you might want just to focus on a one
 particular file. To address that I have developed a tool called
-[Vim-Maximizer](https://github.com/szw/vim-maximizer). Vim Maximizer allows you to temporarily
+[Vim-Maximizer](https://github.com/szw/vim-maximizer). *Vim-Maximizer* allows you to temporarily
 maximize one split window, just by pressing `F3` (by default). It is even shown in the demo movie
 above. That was cool, but still I needed something better, especially since I started working on
 13-inch laptop.
@@ -222,12 +222,12 @@ the following way:
 
 <tr>
 <th>Description</th>
-<td><small>Tab number</small></td>
-<td><small>Buffers count</small></td>
-<td><small>Modified indicator</small></td>
-<td><small>Opening bracket<br/>(only for buffer names)</small></td>
-<td><small>Buffer or tab name</small></td>
-<td><small>Closing bracket<br/>(only for buffer names)</small></td>
+<td>Tab number</td>
+<td>Buffers count</td>
+<td>Modified indicator</td>
+<td>Opening bracket<br/>(only for buffer names)</td>
+<td>Buffer or tab name</td>
+<td>Closing bracket<br/>(only for buffer names)</td>
 </tr>
 
 </table>
@@ -244,19 +244,19 @@ Buffers and workspaces can have additional indicators:
 <tr>
 <th>Unicode Symbol</th>
 <th>ASCII Symbol</th>
-<th>Description</th>
+<th>Indicator</th>
 </tr>
 
 <tr>
 <td><code>+</code></td>
 <td><code>+</code></td>
-<td>Item Modified indicator</td>
+<td>Item modified</td>
 </tr>
 
 <tr>
 <td><code>★</code></td>
 <td><code>&#42;</code></td>
-<td>Item Visible indicator</td>
+<td>Item visible (or active)</td>
 </tr>
 
 </table>
@@ -281,8 +281,8 @@ paths. Here's the full available keys listing:
 </tr>
 
 <tr>
-<td><code>Return</code>
-</td><td>Opens the selected buffer</td>
+<td><code>Return</code></td>
+<td>Opens the selected buffer</td>
 </tr>
 
 <tr>
@@ -506,7 +506,7 @@ Some of keys presented in the Single Tab mode are not available here. The missin
 
 #### Add Mode
 
-The _file_ mode, or the _append file_ mode. It allow you to add a file (as a buffer) to the current
+The _file_ mode, or the _append file_ mode. It allows you to add a file (as a buffer) to the current
 tab. In other words, it opens files from the current project directory. Always, the current working
 directory is considered here. The plugin tries to estimate if the contents of the current directory
 can be considered as a valid project. It looks for so called _project root markers_. The markers are
@@ -534,8 +534,8 @@ and available immediately.
 </tr>
 
 <tr>
-<td><code>Return</code>
-</td><td>Opens the selected file</td>
+<td><code>Return</code></td>
+<td>Opens the selected file</td>
 </tr>
 
 <tr>
@@ -709,8 +709,8 @@ windows, they will be recreated as vertical splits while loading.
 </tr>
 
 <tr>
-<td><code>Return</code>
-</td><td>Loads (or save) the selected workspace</td>
+<td><code>Return</code></td>
+<td>Loads (or save) the selected workspace</td>
 </tr>
 
 <tr>
