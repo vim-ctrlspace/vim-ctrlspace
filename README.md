@@ -123,11 +123,10 @@ Usage
 
 ### Status Bar
 
-After pressing `<C-Space>` (default) **Vim-CtrlSpace** invites you with a window at the bottom of the
-screen (a bit similar to *CtrlP*). Notice, **Vim-CtrlSpace** requires a status bar. If you are using
-a plugin customizing the status bar this could be a bit tricky. In the Troubleshoting section I will
-provide you with guides how to enable **Vim-Vim-CtrlSpace** status bar with different status bar
-plugins (*Airline*, *LightLine*, *Vim-Powerline*, etc).
+**Vim-CtrlSpace** requires a status bar. If you are using a plugin customizing the status bar this
+could be a bit tricky. In the API section I will provide you with guides how to use
+**Vim-CtrlSpace** status bar with different status bar plugins (*Airline*, *LightLine*,
+*Vim-Powerline*, etc).
 
 #### Status Bar Symbols
 
@@ -193,14 +192,82 @@ plugins (*Airline*, *LightLine*, *Vim-Powerline*, etc).
 </tbody>
 </table>
 
-### Single Tab Mode
+### Tabline
+
+**Vim-CtrlSpace** can try to set a custom tabline. If this option is enabled
+(`g:ctrlspace_use_tabline`), the plugin will set a custom tabline for you. The tabs are described in
+the following way:
+
+<table>
+
+<tr>
+<th>Unicode</th>
+<td><code>1</code></td>
+<td><code>²</code></td>
+<td><code>+</code></td>
+<td><code>[</code></td>
+<td><code>README.md</code></td>
+<td><code>]</code></td>
+</tr>
+
+<tr>
+<th>ASCII</th>
+<td><code>1</code></td>
+<td><code>:2</code></td>
+<td><code>+</code></td>
+<td><code>[</code></td>
+<td><code>README.md</code></td>
+<td><code>]</code></td>
+</tr>
+
+<tr>
+<th>Description</th>
+<td><small>Tab number</small></td>
+<td><small>Buffers count</small></td>
+<td><small>Modified indicator</small></td>
+<td><small>Opening bracket<br/>(only for buffer names)</small></td>
+<td><small>Buffer or tab name</small></td>
+<td><small>Closing bracket<br/>(only for buffer names)</small></td>
+</tr>
+
+</table>
+
+### Main modes
 
 The plugin has many modes available. In a modal editor like Vim this should not fear you ;). I believe
-its modes are very simple to recognize and understand. The main one is the Single Tab mode. In that
-mode, the plugin shows you buffers related to the current tab only. It's almost like a normal mode
-in Vim ;). From that point you can follow many paths. Here's the full available keys listing:
+its modes are very simple to recognize and understand.
 
-#### Keys Reference
+Buffers and workspaces can have additional indicators:
+
+<table>
+
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td><code>+</code></td>
+<td><code>+</code></td>
+<td>Item Modified indicator</td>
+</tr>
+
+<tr>
+<td><code>★</code></td>
+<td><code>&#42;</code></td>
+<td>Item Visible indicator</td>
+</tr>
+
+</table>
+
+#### Single Tab Mode
+
+The main one is the Single Tab mode. In that mode, the plugin shows you buffers related to the
+current tab only. It's almost like a normal mode in Vim ;). From that point you can follow many
+paths. Here's the full available keys listing:
+
+##### Keys Reference
 
 <table>
 
@@ -431,13 +498,13 @@ nonames)</td>
 
 </table>
 
-### All Tabs Mode
+#### All Tabs Mode
 
 This mode is almost identical like the Single Tab mode, except it shows you all available buffers.
 Some of keys presented in the Single Tab mode are not available here. The missing ones are `f` and
 `c` - since they are coupled tightly with the current tab.
 
-### Add Mode
+#### Add Mode
 
 The _file_ mode, or the _append file_ mode. It allow you to add a file (as a buffer) to the current
 tab. In other words, it opens files from the current project directory. Always, the current working
@@ -453,7 +520,7 @@ data. Sometimes, for very large project this could be time consuming (I've notic
 a project with over 2200 files). After that, the content of the current working directory is cached
 and available immediately. 
 
-#### Keys Reference
+##### Keys Reference
 
 <table>
 
@@ -617,16 +684,102 @@ nonames)</td>
 
 </table>
 
+#### Workspace Mode
+
+The plugin lets you to save and load so called workspaces. It's the whole set of opened windows,
+tabs, their names, and buffers of course. In the Workspace mode **Vim-CtrlSpace** shows you available
+workspaces instead of buffers. By default this mode is shown with the "load" state. The second state
+available is the "save" one.
+
+Workspaces are saved in the file inside the project directory. It's name and path is determined by
+proper plugin configuration options (`g:ctrlspace_workspace_file`). If in a tab there are 2 or more
+windows, they will be recreated as vertical splits while loading.
+
+##### Key Reference
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggle available keys info (depends on space available in the status bar)</td>
+</tr>
+
+<tr>
+<td><code>Return</code>
+</td><td>Loads (or save) the selected workspace</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code>, <code>w</code></td>
+<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+</tr>
+
+<tr>
+<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
+<tr>
+<td><code>a</code></td>
+<td>Appends the selected workspace to the current one</td>
+</tr>
+
+<tr>
+<td><code>s</code></td>
+<td>Toggle the workspace state from load or save (or backward)</td>
+</tr>
+
+
+<tr>
+<td><code>S</code></td>
+<td>Saves the workspace immediately</td>
+</tr>
+
+<tr>
+<td><code>d</code></td>
+<td>Deletes the selected workspace</td>
+</tr>
+
+<tr>
+<td><code>j</code></td>
+<td>Moves the selection bar down</td>
+</tr>
+
+<tr>
+<td><code>J</code></td>
+<td>Moves the selection bar to the bottom of the list</td>
+</tr>
+
+<tr>
+<td><code>k</code></td>
+<td>Moves the selection bar up</td>
+</tr>
+
+<tr>
+<td><code>K</code></td>
+<td>Moves the selection bar to the top of the list</td>
+</tr>
+
+</tbody>
+
+</table>
+
+### Auxiliary Modes
+
 #### Preview Mode
 
 #### Search Mode
 
 #### Nop Mode
 
-#### Workspace Mode
 
 Configuration
 -------------
 
 API 
 ---
+
