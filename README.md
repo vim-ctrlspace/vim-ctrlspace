@@ -265,9 +265,9 @@ Buffers and workspaces can have additional indicators:
 
 </table>
 
-#### General Key Groups
+#### Simplified Key Diagram
 
-This is a summary diagram of key groups used in **Vim-CtrlSpace** modes.
+This is a simplified diagram of key groups used in **Vim-CtrlSpace** modes.
 
 ![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/cs_keys.png)
 
