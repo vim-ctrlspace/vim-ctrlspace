@@ -1189,9 +1189,9 @@ add/remove) a custom tab name.
 
 ### Functions
 
-**Vim-CtrlSpace** provides you a couple of functions defined in the common `ctrlspace` namespace. They can
-be used for status bar, tabline integration, or just for more advanced interactions with other
-plugins.
+**Vim-CtrlSpace** provides you a couple of functions defined in the common `ctrlspace` namespace.
+They can be used for status bar, tabline integration, or just for more advanced interactions with
+other plugins.
 
 #### `ctrlspace#bufferlist(tabnr)`
 
