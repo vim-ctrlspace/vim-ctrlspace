@@ -119,7 +119,7 @@ repository to your `.vim` directory. In case of Vundle, add:
 to you `.vimrc`.
 
 If you want to increase fuzzy search speed, make sure you have decent Ruby bindings in your Vim
-enabled (compiled in). The plugin will try to use your Ruby in available by default.
+enabled (compiled in). The plugin will try to use your Ruby if available by default.
 
 Usage
 -----
@@ -296,7 +296,7 @@ paths. Here's the full available keys listing:
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -356,12 +356,12 @@ paths. Here's the full available keys listing:
 
 <tr>
 <td><code>-</code></td>
-<td>Move the current tab to the left (decreases its number)</td>
+<td>Moves the current tab to the left (decreases its number)</td>
 </tr>
 
 <tr>
 <td><code>+</code></td>
-<td>Move the current tab to the right (increases its number)</td>
+<td>Moves the current tab to the right (increases its number)</td>
 </tr>
 
 <tr>
@@ -465,12 +465,12 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Create a new named buffer being a sibling to the selected one</td>
+<td>Creates a new named buffer being a sibling to the selected one</td>
 </tr>
 
 <tr>
 <td><code>E</code></td>
-<td>Open a directory of the selected buffer</td>
+<td>Opens a directory of the selected buffer</td>
 </tr>
 
 <tr>
@@ -505,7 +505,7 @@ nonames)</td>
 
 <tr>
 <td><code>S</code></td>
-<td>Save the workspace immediately (or create a new one if none)</td>
+<td>Saves the workspace immediately (or creates a new one if none)</td>
 </tr>
 
 <tr>
@@ -556,18 +556,27 @@ Some of keys presented in the Single Tab mode are not available here. The missin
 </table>
 
 The _file_ mode, or the _append file_ mode. It allows you to add a file (as a buffer) to the current
-tab. In other words, it opens files from the current project directory. Always, the current working
+tab. In other words, it opens files from the current project directory. Always the current working
 directory is considered here. The plugin tries to estimate if the contents of the current directory
 can be considered as a valid project. It looks for so called _project root markers_. The markers are
-usually repository directories or files like `.git`. In there is no presence of such root makers,
+usually repository directories or files like `.git`. If there is no presence of such root makers,
 the plugin will ask you if the current directory should be permanently considered as a project root.
-This is to prevent you from accidental loading root of i.e. you home directory, as it would be
+This will prevent you from accidental loading root of i.e. your home directory, as it would be
 really time consuming and rather pointless.
 
 For the first time (or after some file/directory changing actions) the file list is populated with
 data. Sometimes, for very large project this could be time consuming (I've noticed a lag for
 a project with over 2200 files). After that, the content of the current working directory is cached
 and available immediately. 
+
+###### A search tech notice
+
+<small>
+For a really big project you might notice some lags while typing the search text. Not really
+annoying I think, but you could have a feeling that plugin does not respond immediately. It's
+a known issue but if it disturbs you a lot, post a Github issue on the project page and I will
+focus on that again.
+</small>
 
 ##### Keys Reference
 
@@ -579,7 +588,7 @@ and available immediately.
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -629,12 +638,12 @@ and available immediately.
 
 <tr>
 <td><code>-</code></td>
-<td>Move the current tab to the left (decreases its number)</td>
+<td>Moves the current tab to the left (decreases its number)</td>
 </tr>
 
 <tr>
 <td><code>+</code></td>
-<td>Move the current tab to the right (increases its number)</td>
+<td>Moves the current tab to the right (increases its number)</td>
 </tr>
 
 <tr>
@@ -691,17 +700,17 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Create a new named buffer being a sibling to the selected one</td>
+<td>Creates a new named buffer being a sibling to the selected one</td>
 </tr>
 
 <tr>
 <td><code>E</code></td>
-<td>Open a directory of the selected buffer</td>
+<td>Opens a directory of the selected buffer</td>
 </tr>
 
 <tr>
 <td><code>r</code></td>
-<td>Refreshes the file list (force reloading)</td>
+<td>Refreshes the file list (forces reloading)</td>
 </tr>
 
 <tr>
@@ -754,14 +763,14 @@ nonames)</td>
 </tbody>
 </table>
 
-The plugin lets you to save and load so called workspaces. It's the whole set of opened windows,
-tabs, their names, and buffers of course. In the Workspace mode **Vim-CtrlSpace** shows you available
-workspaces instead of buffers. By default this mode is shown with the "load" state. The second state
-available is the "save" one.
+The plugin lets you to save and load so called workspaces. A workspace is a set of opened windows,
+tabs, their names, and buffers. In the Workspace mode **Vim-CtrlSpace** shows you available
+workspaces instead of buffer names. By default this mode is shown with the "load" state. The second
+available state is the "save" one.
 
-Workspaces are saved in the file inside the project directory. It's name and path is determined by
-proper plugin configuration options (`g:ctrlspace_workspace_file`). If in a tab there are 2 or more
-windows, they will be recreated as vertical splits while loading.
+Workspaces are saved in the file inside the project directory. Its name and path is determined by
+proper plugin configuration options (`g:ctrlspace_workspace_file`). If there are 2 or more
+split windows in a tab, they will be recreated as vertical splits while loading.
 
 ##### Keys Reference
 
@@ -773,7 +782,7 @@ windows, they will be recreated as vertical splits while loading.
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -798,7 +807,7 @@ windows, they will be recreated as vertical splits while loading.
 
 <tr>
 <td><code>s</code></td>
-<td>Toggle the workspace state from load or save (or backward)</td>
+<td>Toggles the workspace state from load or save (or backward)</td>
 </tr>
 
 <tr>
@@ -858,8 +867,8 @@ of the main ones.
 </table>
 
 This mode applies to buffer main modes: Single Tab and All Tabs ones. You can invoke the Preview
-mode by hitting the `Tab` key. Hitting `Tab` does almost the same as `Space` - it shows you the
-selected buffer, but unlike with `Space`, the change of the target window content is not permanent.
+mode by hitting the `Tab` key. Hitting `Tab` does almost the same thing as `Space` - it shows you the
+selected buffer, but unlike `Space`, the change of the target window content is not permanent.
 When you quit the plugin window, the old (previous) content of the target window is restored.
 
 Also the plugin jumps history remains unchanged and the selected buffer won't be added to the tab
@@ -867,7 +876,7 @@ buffer list. In that way, you can just preview a buffer before actually opening 
 `Return`, etc). 
 
 Those previewed files are marked on the list with the star symbol and the original content is
-marked with empty star too:
+marked with an empty star too:
 
 <table>
 <thead>
@@ -906,7 +915,7 @@ this is the extact Search mode. In the entering phase the following keys are ava
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -920,7 +929,7 @@ this is the extact Search mode. In the entering phase the following keys are ava
 </tr>
 
 <tr>
-<td></code>/<code></td>
+<td><code>/</code></td>
 <td>Toggles the entering phase</td>
 </tr>
 
@@ -960,7 +969,7 @@ and there are no results at all. In other words, the Nop can happen in the enter
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -982,7 +991,7 @@ and there are no results at all. In other words, the Nop can happen in the enter
 
 <tr>
 <td><code>?</code></td>
-<td>Toggle available keys info (depends on space available in the status bar)</td>
+<td>Toggles available keys info (depends on space available in the status bar)</td>
 </tr>
 
 <tr>
@@ -1049,7 +1058,6 @@ Turns on the default mapping. If you turn this option off (`0`) you will have to
 mapping to the `CtrlSpace` yourself. Default value: `1`.
 
 ### `g:ctrlspace_default_mapping_key`
-g:ctrlspace_("default_mapping_key", "<C-Space>")
 
 By default, **Vim-CtrlSpace** maps itself to Ctrl + Space. If you want to change the default mapping
 provide it here as a string with valid Vim keystroke notation. Default value: `"<C-Space>"`.
@@ -1063,17 +1071,17 @@ you continue to move down after you reach the last one. Default value: `1`.
 ### `g:ctrlspace_max_jumps`
 
 The size of jumps history. The jumps list size will not exceed that number. That means, the entries
-older than the last n jumps will be removed. Default value: 100.
+older than the last _n_ jumps will be removed. Default value: `100`.
 
 ### `g:ctrlspace_max_searches`
 
 The size of search history. The search list size will not exceed that number. That means, the entries
-older than the last n searches will be removed. Default value: 100.
+older than the last _n_ searches will be removed. Default value: `100`.
 
 ### `g:ctrlspace_default_sort_order`
 
-The default sort order. `0` turns off sorting, `1` - the default sorting is chronological, `2`
-- alphanumeric. Default value: `2`.
+The default sort order. `0` turns off sorting, `1` - the default sorting is chronological,
+`2` - alphanumeric. Default value: `2`.
 
 ### `g:ctrlspace_use_ruby_bindings`
 
@@ -1089,12 +1097,8 @@ Should **Vim-CtrlSpace** change your default tabline to its own? Default value: 
 This entry provides an array of strings with default names of workspaces file. If a name is preceded
 with a directory, and that directory is found in the project root, that entry will be used.
 Otherwise that would be the last one. In that way you can hide the workspaces file, for example, in
-the repository directory. Default value:
-
-    let g:ctrlspace_workspace_file = [".git/cs_workspaces", 
-                                    \ ".svn/cs_workspaces", 
-                                    \ "CVS/cs_workspaces", 
-                                    \ ".cs_workspaces"]
+the repository directory. Default value: `[".git/cs_workspaces", ".svn/cs_workspaces", 
+"CVS/cs_workspaces", ".cs_workspaces"]`.
 
 ### `g:ctrlspace_cache_dir`
 
