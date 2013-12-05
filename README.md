@@ -1170,9 +1170,9 @@ as shown below:
     hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
     hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
 
-The colors defined above can be seen in the demo movie. The fit well to the
-[Seoul256](https://github.com/junegunn/seoul256.vim) Vim colorset. Other useful example can be found
-here:
+The colors defined above can be seen in the demo movie. They fit well in the
+[Seoul256](https://github.com/junegunn/seoul256.vim) color scheme. Other useful example can be
+found here:
 
     hi CtrlSpaceSelected term=reverse ctermfg=white ctermbg=black cterm=bold
     hi CtrlSpaceNormal   term=NONE    ctermfg=black ctermbg=228   cterm=NONE
