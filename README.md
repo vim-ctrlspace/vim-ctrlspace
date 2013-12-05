@@ -236,7 +236,7 @@ the following way:
 
 </table>
 
-### Main modes
+### Main Modes
 
 The plugin has many modes available. In a modal editor like Vim this should not fear you ;). I believe
 its modes are very simple to recognize and understand.
@@ -264,6 +264,16 @@ Buffers and workspaces can have additional indicators:
 </tr>
 
 </table>
+
+#### General Key Groups
+
+This is a summary diagram of key groups used in **Vim-CtrlSpace** modes.
+
+![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/cs_keys.png)
+
+_This file is licensed under GNU FDL license. It is derived from
+[Qwerty.svg](http://commons.wikimedia.org/wiki/File:Qwerty.svg) file by [Oona
+Räisänen](http://en.wikipedia.org/wiki/User:Mysid) &copy; 2005._
 
 #### Single Tab Mode
 
@@ -569,14 +579,12 @@ data. Sometimes, for very large project this could be time consuming (I've notic
 a project with over 2200 files). After that, the content of the current working directory is cached
 and available immediately. 
 
-###### A search tech notice
+###### Search Tech Note
 
-<small>
 For a really big project you might notice some lags while typing the search text. Not really
 annoying I think, but you could have a feeling that plugin does not respond immediately. It's
 a known issue but if it disturbs you a lot, post a Github issue on the project page and I will
 focus on that again.
-</small>
 
 ##### Keys Reference
 
