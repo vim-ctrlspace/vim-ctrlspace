@@ -18,6 +18,8 @@
 " Usage:
 " https://github.com/szw/vim-ctrlspace/blob/master/README.md
 
+scriptencoding utf-8
+
 if exists('g:ctrlspace_loaded')
   finish
 endif
