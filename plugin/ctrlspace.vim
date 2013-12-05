@@ -105,8 +105,8 @@ if g:ctrlspace_set_default_mapping
   call <SID>set_default_mapping(g:ctrlspace_default_mapping_key, ":CtrlSpace<CR>")
 endif
 
-let s:files                 = []
-let s:preview_mode          = 0
+let s:files                   = []
+let s:preview_mode            = 0
 let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []

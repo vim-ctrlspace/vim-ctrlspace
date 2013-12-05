@@ -17,6 +17,9 @@ on disk, fuzzy search, tab management, and more).
 Its name follows the convention of naming similar plugins after their default mappings (like
 *Command-T* or *CtrlP*). Obviously, the plugin mapping is by default `Ctrl + Space`. 
 
+If you like (and use) the plugin please don't forget to add a :star:! This will let me know
+how many users it has and then how to proceed with its further development :).
+
 ### Demo
 
 Here's a small demonstration. Viewing in HD advised!
@@ -121,14 +124,15 @@ enabled (compiled in). The plugin will try to use your Ruby in available by defa
 Usage
 -----
 
-### Status Bar
+### Status Line
 
 **Vim-CtrlSpace** requires a status bar. If you are using a plugin customizing the status bar this
-could be a bit tricky. In the API section I will provide you with guides how to use
-**Vim-CtrlSpace** status bar with different status bar plugins (*Airline*, *LightLine*,
-*Vim-Powerline*, etc).
+could be a bit tricky. For example [vim-airline](https://github.com/bling/vim-airline) plugin might
+require you to set: `let g:airline_exclude_preview = 1` option and
+[LightLine](https://github.com/itchyny/lightline.vim) will require to use custom status line
+segments, provided by **Vim-CtrlSpace** API.  
 
-#### Status Bar Symbols
+#### Status Line Symbols
 
 <table>
 <thead>
@@ -262,6 +266,21 @@ Buffers and workspaces can have additional indicators:
 </table>
 
 #### Single Tab Mode
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>⊙</code></td>
+<td><code>TAB</code></td>
+</tr>
+</tbody>
+</table>
 
 The main one is the Single Tab mode. In that mode, the plugin shows you buffers related to the
 current tab only. It's almost like a normal mode in Vim ;). From that point you can follow many
@@ -500,11 +519,41 @@ nonames)</td>
 
 #### All Tabs Mode
 
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>∷</code></td>
+<td><code>ALL</code></td>
+</tr>
+</tbody>
+</table>
+
 This mode is almost identical like the Single Tab mode, except it shows you all available buffers.
 Some of keys presented in the Single Tab mode are not available here. The missing ones are `f` and
-`c` - since they are coupled tightly with the current tab.
+`c` - as they are coupled tightly with the current tab.
 
 #### Add Mode
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>○</code></td>
+<td><code>ADD</code></td>
+</tr>
+</tbody>
+</table>
 
 The _file_ mode, or the _append file_ mode. It allows you to add a file (as a buffer) to the current
 tab. In other words, it opens files from the current project directory. Always, the current working
@@ -686,6 +735,25 @@ nonames)</td>
 
 #### Workspace Mode
 
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>⋮ → ∙</code></td>
+<td><code>LOAD</code></td>
+</tr>
+<tr>
+<td><code>∙ → ⋮</code></td>
+<td><code>SAVE</code></td>
+</tr>
+</tbody>
+</table>
+
 The plugin lets you to save and load so called workspaces. It's the whole set of opened windows,
 tabs, their names, and buffers of course. In the Workspace mode **Vim-CtrlSpace** shows you available
 workspaces instead of buffers. By default this mode is shown with the "load" state. The second state
@@ -695,7 +763,7 @@ Workspaces are saved in the file inside the project directory. It's name and pat
 proper plugin configuration options (`g:ctrlspace_workspace_file`). If in a tab there are 2 or more
 windows, they will be recreated as vertical splits while loading.
 
-##### Key Reference
+##### Keys Reference
 
 <table>
 
@@ -733,7 +801,6 @@ windows, they will be recreated as vertical splits while loading.
 <td>Toggle the workspace state from load or save (or backward)</td>
 </tr>
 
-
 <tr>
 <td><code>S</code></td>
 <td>Saves the workspace immediately</td>
@@ -770,16 +837,386 @@ windows, they will be recreated as vertical splits while loading.
 
 ### Auxiliary Modes
 
+This modes are just blended into the main ones. They can be considered as a special cases or states
+of the main ones.
+
 #### Preview Mode
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>⌕</code></td>
+<td><code>&#42;</code></td>
+</tr>
+</tbody>
+</table>
+
+This mode applies to buffer main modes: Single Tab and All Tabs ones. You can invoke the Preview
+mode by hitting the `Tab` key. Hitting `Tab` does almost the same as `Space` - it shows you the
+selected buffer, but unlike with `Space`, the change of the target window content is not permanent.
+When you quit the plugin window, the old (previous) content of the target window is restored.
+
+Also the plugin jumps history remains unchanged and the selected buffer won't be added to the tab
+buffer list. In that way, you can just preview a buffer before actually opening it (with `Space`,
+`Return`, etc). 
+
+Those previewed files are marked on the list with the star symbol and the original content is
+marked with empty star too:
+
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Previewed buffer</td>
+<td><code>★</code></td>
+<td><code>&#42;</code></td>
+</tr>
+<tr>
+<td>Original buffer</td>
+<td><code>☆</code></td>
+<td><code>&#42;</code></td>
+</tr>
+</tbody>
+</table>
 
 #### Search Mode
 
+This mode is composed of two states or two phases. The first one is the entering phase. Technically,
+this is the extact Search mode. In the entering phase the following keys are available:
+
+##### Keys Reference (entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggle available keys info (depends on space available in the status bar)</td>
+</tr>
+
+<tr>
+<td><code>Return</code></td>
+<td>Closes the entering phase. Accepts the entered content.</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Removes the previouse entered character, or closes the entering phase if no character found.</td>
+</tr>
+
+<tr>
+<td></code>/<code></td>
+<td>Toggles the entering phase</td>
+</tr>
+
+<tr>
+<td><code>\</code></td>
+<td>Toggles the entering phase (only in the Add mode)</td>
+</tr>
+
+<tr>
+<td><code>a..z A..Z 0..9</code></td>
+<td>The charactes allowed in the entering phase</td>
+</tr>
+
+</tbody>
+
+</table>
+
+Besides the entering phase there is also a second state possible. That is the state of having
+a search query entered. The successfully entered query behaves just like a kind of sorting. In fact,
+it is a kind of sorting and filtering function. So it doesn't impact on other modes except it
+narrows the result set. 
+
+It's worth to mention that in that mode the `Backspace` key removes the search query entirely.
+
 #### Nop Mode
 
+Nop mode happens when i.e. there are no results at all (empty list), or you are typing your query,
+and there are no results at all. In other words, the Nop can happen in the entering phase or not.
+
+##### Nop (entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggle available keys info (depends on space available in the status bar)</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Removes the previouse entered character, or closes the entering phase if no character found.</td>
+</tr>
+
+</tbody>
+
+</table>
+
+##### Nop (outside the entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggle available keys info (depends on space available in the status bar)</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Deletes the search query</td>
+</tr>
+
+<tr>
+<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
+<tr>
+<td><code>a</code></td>
+<td>Toggles between Single Tab and All Tabs modes</td>
+</tr>
+
+<tr>
+<td><code>A</code></td>
+<td>Enters the Add (file) mode</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>Brings back the previous searched text</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + n</code></td>
+<td>Jumps to the next searched text</td>
+</tr>
+
+</tbody>
+
+</table>
 
 Configuration
 -------------
 
+Vim-CtrlSpace has following configuration options. Almost all of them are declared as global
+variables and should be defined in your `.vimrc` file in the similar form:
+
+    let g:ctrlspace_foo_bar = 123
+
+### `g:ctrlspace_height`
+
+Sets the minimal height of the plugin window. Default value: `1`.
+
+### `g:ctrlspace_max_height`
+
+Sets the maximum height of the plugin window. If `0` provided it uses 1/3 of the screen height.
+Default value: `0`.
+
+### `g:ctrlspace_show_unnamed`
+
+Adjusts the displaying of unnamed buffers. If you set `g:ctrlspace_show_unnamed = 1` then unnamed
+buffers will be shown on the list all time. However, if you set this value to `2`, unnamed buffers
+will be displayed only if they are modified or just visible on the screen. Of course you can hide
+unnamed buffers permanently by setting `g:ctrlspace_show_unnamed = 0`. Default value: `2`.
+
+### `g:ctrlspace_set_default_mapping`
+
+Turns on the default mapping. If you turn this option off (`0`) you will have to provide your own
+mapping to the `CtrlSpace` yourself. Default value: `1`.
+
+### `g:ctrlspace_default_mapping_key`
+g:ctrlspace_("default_mapping_key", "<C-Space>")
+
+By default, **Vim-CtrlSpace** maps itself to Ctrl + Space. If you want to change the default mapping
+provide it here as a string with valid Vim keystroke notation. Default value: `"<C-Space>"`.
+
+### `g:ctrlspace_cyclic_list`
+
+Determines if the list should be cyclic or not. The cyclic list means you will jump to the last item
+if you continue to move up beyond the first one and vice-versa. You will jump to the first one if
+you continue to move down after you reach the last one. Default value: `1`.
+
+### `g:ctrlspace_max_jumps`
+
+The size of jumps history. The jumps list size will not exceed that number. That means, the entries
+older than the last n jumps will be removed. Default value: 100.
+
+### `g:ctrlspace_max_searches`
+
+The size of search history. The search list size will not exceed that number. That means, the entries
+older than the last n searches will be removed. Default value: 100.
+
+### `g:ctrlspace_default_sort_order`
+
+The default sort order. `0` turns off sorting, `1` - the default sorting is chronological, `2`
+- alphanumeric. Default value: `2`.
+
+### `g:ctrlspace_use_ruby_bindings`
+
+If set to `1`, the plugin will try to use your compiled in Ruby bindings to increase speed of fuzzy
+search algorithm. Regex operations are much faster in Ruby than in VimScript. Default value: `1`.
+
+### `g:ctrlspace_use_tabline`
+
+Should **Vim-CtrlSpace** change your default tabline to its own? Default value: `1`.
+
+### `g:ctrlspace_workspace_file`
+
+This entry provides an array of strings with default names of workspaces file. If a name is preceded
+with a directory, and that directory is found in the project root, that entry will be used.
+Otherwise that would be the last one. In that way you can hide the workspaces file, for example, in
+the repository directory. Default value:
+
+    let g:ctrlspace_workspace_file = [".git/cs_workspaces", 
+                                    \ ".svn/cs_workspaces", 
+                                    \ "CVS/cs_workspaces", 
+                                    \ ".cs_workspaces"]
+
+### `g:ctrlspace_cache_dir`
+
+A directory for the **Vim-CtrlSpace** cache file (`.cs_cache`). By default your `$HOME` directory
+will be used. 
+
+### `g:ctrlspace_project_root_markers`
+
+An array of directory names which presence indicates the project root. If no marker is found, you
+will be asked to confirm you want to collect all files from the current working directory. Make it
+empty to disable. Default value: `[".git", ".hg", ".svn", ".bzr", "_darcs"]`
+
+### `g:ctrlspace_unicode_font`
+
+Set to `1` if you want to use Unicode symbols, or `0` otherwise. Default value: `1`.
+
+### `g:ctrlspace_symbols`
+
+Enables you to provide your own symbols. It's useful if for example your font doesn't contain
+enough symbols or the glyphs are poorly rendered. Default value:
+
+    if g:ctrlspace_unicode_font
+      let g:ctrlspace_symbols = {
+            \ "cs"      : "▢",
+            \ "tab"     : "⊙",
+            \ "all"     : "∷",
+            \ "add"     : "○",
+            \ "load"    : "⋮ → ∙",
+            \ "save"    : "∙ → ⋮",
+            \ "ord"     : "₁²₃",
+            \ "abc"     : "авс",
+            \ "prv"     : "⌕",
+            \ "s_left"  : "›",
+            \ "s_right" : "‹"
+            \ }
+    else
+      let g:ctrlspace_symbols = {
+            \ "cs"      : "CS",
+            \ "tab"     : "TAB",
+            \ "all"     : "ALL",
+            \ "add"     : "ADD",
+            \ "load"    : "LOAD",
+            \ "save"    : "SAVE",
+            \ "ord"     : "123",
+            \ "abc"     : "ABC",
+            \ "prv"     : "*",
+            \ "s_left"  : "[",
+            \ "s_right" : "]"
+            \ }
+    endif
+
+### `g:ctrlspace_ignored_files`
+
+The expression used to ignore some files, during collecting. It is used in addition to the
+`wildignore` option in Vim (see `:help wildignore`). Default value: `'\v(tmp|temp)[\/]'`
+
+### `g:ctrlspace_show_key_info`
+
+Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not (`0`).
+Default value: `0`.
+
+### Colors
+
+The plugin allows you to define its colors entirely. By default it comes with pure black and white
+color set. You are supposed to tweak its colors on your own (in the `.vimrc` file). This can be done
+as shown below:
+
+    hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
+    hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
+    hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+
+The colors defined above can be seen in the demo movie. The fit well to the
+[Seoul256](https://github.com/junegunn/seoul256.vim) Vim colorset. Other useful example can be found
+here:
+
+    hi CtrlSpaceSelected term=reverse ctermfg=white ctermbg=black cterm=bold
+    hi CtrlSpaceNormal   term=NONE    ctermfg=black ctermbg=228   cterm=NONE
+    hi CtrlSpaceFound    ctermfg=125  ctermbg=NONE  cterm=bold
+
+If you use a console Vim [that chart](http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html)
+might be helpful.
+
 API 
 ---
 
+### Commands
+
+The plugin provides you 2 commands: `CtrlSpace` and `CtrlSpaceTabLabel`. The first one shows the
+plugin window. It is meant to be used in custom mappings or more sophisticated plugin integration.
+The second one allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or
+add/remove) a custom tab name.
+
+### Functions
+
+**Vim-CtrlSpace** provides you a couple of functions defined in the common `ctrlspace` namespace. They can
+be used for status bar, tabline integration, or just for more advanced interactions with other
+plugins.
+
+#### `ctrlspace#bufferlist(tabnr)`
+
+Returns a directory of buffer number and name pairs for given tab. This is the content of the
+internal buffer list belonging to the specified tab.
+
+#### `ctrlspace#statusline_key_info_segment(...)`
+
+Returns the info about available keys for the current plugin mode (toggled by `?`). It can take an
+optional separator. It can be useful for a custom status line integration (i.e. in plugins like
+[LightLine](https://github.com/itchyny/lightline.vim))
+
+#### `ctrlspace#statusline_info_segment(...)`
+
+Returns the info about the mode of the plugin. It can take an optional separator. It can be useful
+for a custom status line integration (i.e. in plugins like
+[LightLine](https://github.com/itchyny/lightline.vim))
+
+#### `ctrlspace#tabline()`
+
+Provides the custom tabline string.
+
+Author and License
+------------------
+
+Copyright &copy; 2013 Szymon Wrozynski. MIT License.
+**Vim-CtrlSpace** is based on Robert Lillack plugin [VIM
+bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005 Robert Lillack.
