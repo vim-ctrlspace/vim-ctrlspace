@@ -1217,6 +1217,6 @@ Provides the custom tabline string.
 Author and License
 ------------------
 
-Copyright &copy; 2013 Szymon Wrozynski. MIT License.
+Copyright &copy; 2013 Szymon Wrozynski and Contributors. MIT License.
 **Vim-CtrlSpace** is based on Robert Lillack plugin [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005 Robert Lillack.
