@@ -1224,7 +1224,7 @@ function! <SID>clear_search_mode()
 endfunction
 
 function! <SID>update_search_results()
-  if s:search_mode && s:update_search_results
+  if s:update_search_results
     let s:update_search_results = 0
     call <SID>kill(0, 0)
     call <SID>ctrlspace_toggle(1)
@@ -1254,8 +1254,8 @@ function! <SID>switch_search_mode(switch)
 
   let s:search_mode = a:switch
 
-  call <SID>kill(0, 0)
-  call <SID>ctrlspace_toggle(1)
+  call <SID>set_status_line()
+  redraw!
 endfunction
 
 function! <SID>unique_list(list)
