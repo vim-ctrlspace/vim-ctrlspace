@@ -1161,6 +1161,14 @@ The expression used to ignore some files, during collecting. It is used in addit
 Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not (`0`).
 Default value: `0`.
 
+### `g:ctrlspace_search_timing`
+
+Allows you to adjust search smoothness. Contains an array with two integer values. If size of the
+list is lower than the first value, then that value will be used for search delay. Similarly, if
+size of the list is greater than the second value, then that value will be used for search delay.
+In all other cases the delay will be equal the list size. That way the plugin ensures smooth search
+input behavior. Default value: `[100, 600]`
+
 ### Colors
 
 The plugin allows you to define its colors entirely. By default it comes with pure black and white

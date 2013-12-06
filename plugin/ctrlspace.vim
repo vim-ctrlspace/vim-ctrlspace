@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.1.9
+" Version:      3.2.0
 "
 " Installation:
 " Place in ~/.vim/plugin/ctrlspace.vim or in case of Pathogen:
