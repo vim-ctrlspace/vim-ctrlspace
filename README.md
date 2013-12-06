@@ -1167,7 +1167,7 @@ Allows you to adjust search smoothness. Contains an array with two integer value
 list is lower than the first value, then that value will be used for search delay. Similarly, if
 size of the list is greater than the second value, then that value will be used for search delay.
 In all other cases the delay will be equal the list size. That way the plugin ensures smooth search
-input behavior. Default value: `[100, 600]`
+input behavior. Default value: `[100, 500]`
 
 ### Colors
 

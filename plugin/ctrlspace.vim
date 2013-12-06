@@ -84,6 +84,7 @@ call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 0)
+call <SID>define_config_variable("search_timing", [100, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label()
@@ -1136,13 +1137,15 @@ function! <SID>ctrlspace_toggle(internal)
   endif
 
   " adjust search timing
-  if displayedbufs < 200
-    set updatetime=200
-  elseif displayedbufs > 600
-    set updatetime=600
+  if displayedbufs < g:ctrlspace_search_timing[0]
+    let search_timing = g:ctrlspace_search_timing[0]
+  elseif displayedbufs > g:ctrlspace_search_timing[1]
+    let search_timing = g:ctrlspace_search_timing[1]
   else
-    silent! exe "set updatetime=" . displayedbufs
+    let search_timing = displayedbufs
   endif
+
+  silent! exe "set updatetime=" . search_timing
 
   call <SID>display_list(displayedbufs, buflist)
   call <SID>set_status_line()
