@@ -1135,6 +1135,15 @@ function! <SID>ctrlspace_toggle(internal)
     endif
   endif
 
+  " adjust search timing
+  if displayedbufs < 200
+    set updatetime=200
+  elseif displayedbufs > 600
+    set updatetime=600
+  else
+    silent! exe "set updatetime=" . displayedbufs
+  endif
+
   call <SID>display_list(displayedbufs, buflist)
   call <SID>set_status_line()
 
@@ -1253,6 +1262,7 @@ function! <SID>switch_search_mode(switch)
   endif
 
   let s:search_mode = a:switch
+  let s:update_search_results = 1
 
   call <SID>set_status_line()
   redraw!
@@ -1782,7 +1792,6 @@ function! <SID>set_up_buffer()
   endif
 
   let b:old_updatetime = &updatetime
-  set updatetime=400
 
   augroup CtrlSpaceUpdateSearch
     au!
