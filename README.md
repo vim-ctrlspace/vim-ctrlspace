@@ -16,8 +16,7 @@ Its name follows the convention of naming similar plugins after their default ma
 If you like (and use) the plugin please don't forget to add a :star:! This will let me know
 how many users it has and then how to proceed with its further development :).
 
-Demo
-----
+### Demo
 
 Here's a small demonstration. Viewing in HD advised!
 
