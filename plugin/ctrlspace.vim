@@ -112,6 +112,7 @@ let s:preview_mode            = 0
 let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
+let s:update_search_results   = 0
 
 function! <SID>init_project_roots()
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -1005,15 +1006,15 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
-    let s:single_tab_mode         = 1
-    let s:nop_mode                = 0
-    let s:new_search_performed    = 0
-    let s:search_mode             = 0
-    let s:file_mode               = 0
-    let s:workspace_mode            = 0
-    let s:last_browsed_workspace    = 0
-    let s:restored_search_mode    = 0
-    let s:search_letters          = []
+    let s:single_tab_mode                = 1
+    let s:nop_mode                       = 0
+    let s:new_search_performed           = 0
+    let s:search_mode                    = 0
+    let s:file_mode                      = 0
+    let s:workspace_mode                 = 0
+    let s:last_browsed_workspace         = 0
+    let s:restored_search_mode           = 0
+    let s:search_letters                 = []
     let t:ctrlspace_search_history_index = -1
 
     if !exists("t:sort_order")
@@ -1222,18 +1223,28 @@ function! <SID>clear_search_mode()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
+function! <SID>update_search_results()
+  if s:search_mode && s:update_search_results
+    let s:update_search_results = 0
+    call <SID>kill(0, 0)
+    call <SID>ctrlspace_toggle(1)
+  endif
+endfunction
+
 function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
-  call <SID>kill(0, 0)
-  call <SID>ctrlspace_toggle(1)
+  let s:update_search_results = 1
+  call <SID>set_status_line()
+  redraw!
 endfunction
 
 function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
-  call <SID>kill(0, 0)
-  call <SID>ctrlspace_toggle(1)
+  let s:update_search_results = 1
+  call <SID>set_status_line()
+  redraw!
 endfunction
 
 function! <SID>switch_search_mode(switch)
@@ -1304,6 +1315,14 @@ function! <SID>kill(buflistnr, final)
   endif
 
   let s:killing_now = 1
+
+  if exists("b:old_updatetime")
+    silent! exe "set updatetime=" . b:old_updatetime
+  endif
+
+  if exists("b:old_timeoutlen")
+    silent! exe "set timeoutlen=" . b:old_timeoutlen
+  endif
 
   if a:buflistnr
     silent! exe ':' . a:buflistnr . 'bwipeout'
@@ -1760,9 +1779,15 @@ function! <SID>set_up_buffer()
   if &timeout
     let b:old_timeoutlen = &timeoutlen
     set timeoutlen=10
-    au BufEnter <buffer> set timeoutlen=10
-    au BufLeave <buffer> silent! exe "set timeoutlen=" . b:old_timeoutlen
   endif
+
+  let b:old_updatetime = &updatetime
+  set updatetime=400
+
+  augroup CtrlSpaceUpdateSearch
+    au!
+    au CursorHold <buffer> call <SID>update_search_results()
+  augroup END
 
   augroup CtrlSpaceLeave
     au!

@@ -575,16 +575,9 @@ This will prevent you from accidental loading root of i.e. your home directory, 
 really time consuming and rather pointless.
 
 For the first time (or after some file/directory changing actions) the file list is populated with
-data. Sometimes, for very large project this could be time consuming (I've noticed a lag for
+data. Sometimes, for a very large project this could be time consuming (I've noticed a lag for
 a project with over 2200 files). After that, the content of the current working directory is cached
 and available immediately. 
-
-###### Search Tech Note
-
-For a really big project you might notice some lags while typing the search text. Not really
-annoying I think, but you could have a feeling that plugin does not respond immediately. It's
-a known issue but if it disturbs you a lot, post a Github issue on the project page and I will
-focus on that again.
 
 ##### Keys Reference
 
