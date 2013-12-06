@@ -13,8 +13,8 @@ on disk, fuzzy search, tab management, and more).
 Its name follows the convention of naming similar plugins after their default mappings (like
 *Command-T* or *CtrlP*). Obviously, the plugin mapping is by default `Ctrl + Space`. 
 
-If you like (and use) the plugin please don't forget to add a star (:star:)! This will help me
-to estimate the plugin popularity and that way I will better proceed its further development :).
+If you like the plugin please don't forget to add a star (:star:)! This will help me to estimate the
+plugin popularity and that way I will proceed better its further development :).
 
 ### Demo
 
@@ -1162,10 +1162,10 @@ Default value: `0`.
 
 ### `g:ctrlspace_search_timing`
 
-Allows you to adjust search smoothness. Contains an array with two integer values. If the size of
-the list is lower than the first value, then that value will be used for search delay. Similarly, if
+Allows you to adjust search smoothness. Contains an array of two integer values. If the size of
+the list is lower than the first value, that value will be used for search delay. Similarly, if
 the size of the list is greater than the second value, then that value will be used for search
-delay.  In all other cases the delay will be equal the list size. That way the plugin ensures smooth
+delay. In all other cases the delay will equal the list size. That way the plugin ensures smooth
 search input behavior. Default value: `[100, 500]`
 
 ### Colors
