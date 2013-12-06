@@ -1,12 +1,8 @@
 Vim-CtrlSpace
 =============
 
-Vim Workspace Controller
-
-About
+TL;DR
 -----
-
-### TL;DR
 
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim while working with
 buffers, tabs, windows, and so on. It is meant to organize your Vim screen space and your workspace
@@ -20,7 +16,8 @@ Its name follows the convention of naming similar plugins after their default ma
 If you like (and use) the plugin please don't forget to add a :star:! This will let me know
 how many users it has and then how to proceed with its further development :).
 
-### Demo
+Demo
+----
 
 Here's a small demonstration. Viewing in HD advised!
 
@@ -38,6 +35,9 @@ The Demo has been recorded with:
 
 - Music: [Professor Kliq - Curriculum
   Vitae](http://www.jamendo.com/pl/list/a109465/curriculum-vitae)
+
+About
+-----
 
 ### The Story
 
