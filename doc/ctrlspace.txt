@@ -1,4 +1,4 @@
-*ctrlspace.txt*            For Vim version 7.4            Last change: 2013-12-03
+*ctrlspace.txt*            For Vim version 7.4            Last change: 2013-12-07
 *ctrlspace*
 
 
@@ -6,16 +6,16 @@
 
 
 
-                            Vim-CtrlSpace 3.1.9~
+                            Vim-CtrlSpace 3.2.1~
 
-                         Vim Workspace Controller
-
-
+                          Vim Workspace Controller
 
 
 
 
-Copyright (c) 2013 Szymon Wrozynski
+
+
+Copyright (c) 2013 Szymon Wrozynski and Contributors
 
 ==============================================================================
 Table of Contents
@@ -29,6 +29,17 @@ Table of Contents
 ------------------------------------------------------------------------------
 1. About                                                       *ctrlspace-about*
 
+Vim-CtrlSpace is a great plugin that helps you to get more power from Vim
+while working with buffers, tabs, windows, and so on. It is meant to organize
+your Vim screen space and your workspace effectively. To accomplish that
+Vim-CtrlSpace introduces a concept of separated buffer lists per tab and
+provides a lot of power around that (buffer and file management, multiple
+workspaces stored on disk, fuzzy search, tab management, and more).
+
+Its name follows the convention of naming similar plugins after their default
+mappings (like Command-T or CtrlP). Obviously, the plugin mapping is by
+default Ctrl + Space.
+
 ------------------------------------------------------------------------------
 2. Usage                                                       *ctrlspace-usage*
 
@@ -39,16 +50,17 @@ Table of Contents
 3. Configuration                                       *ctrlspace-configuration*
 
 ------------------------------------------------------------------------------
-4. Author and License                                 *ctrlspace-author-license*
+4. Authors and License                               *ctrlspace-authors-license*
 
-Vim-CtrlSpace has been written by Szymon Wrozynski and Contributors
-(https://github.com/szw/vim-ctrlspace/commits/master). It is licensed
-under the same terms as Vim itself. For more info see |license|.
+Copyright (c) 2013 Szymon Wrozynski and Contributors
+(https://github.com/szw/vim-ctrlspace/commits/master).
+Licensed under MIT License conditions
+(https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26).
 
-It was based on the BufferList plugin by Robert Lillack
-(https://github.com/roblillack/vim-bufferlist). Moreover some concepts of and
-inspiration has been taken from Vim-Tabber (https://github.com/fweep/vim-tabber)
-by Jim Steward and Tabline (https://github.com/mkitt/tabline.vim) by Matthew
-Kitt.
+Vim-CtrlSpace is based on Robert Lillack plugin VIM bufferlist
+(https://github.com/roblillack/vim-bufferlist) (c) 2005 Robert Lillack.
+Moreover some concepts of and inspiration has been taken from Vim-Tabber
+(https://github.com/fweep/vim-tabber) by Jim Steward and Tabline
+(https://github.com/mkitt/tabline.vim) by Matthew Kitt.
 
 vim:tw=78:ts=8:ft=help:norl:

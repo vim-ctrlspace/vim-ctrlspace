@@ -1226,9 +1226,13 @@ for a custom status line integration (i.e. in plugins like
 
 Provides the custom tabline string.
 
-Author and License
-------------------
+Authors and License
+-------------------
 
-Copyright &copy; 2013 Szymon Wrozynski and Contributors. MIT License.
+Copyright &copy; 2013 [Szymon Wrozynski and
+Contributors](https://github.com/szw/vim-ctrlspace/commits/master). Licensed under [MIT
+License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26) conditions.
 **Vim-CtrlSpace** is based on Robert Lillack plugin [VIM
-bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005 Robert Lillack.
+bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005 Robert Lillack. Moreover some
+concepts of and inspiration has been taken from [Vim-Tabber](https://github.com/fweep/vim-tabber) by
+Jim Steward and [Tabline](https://github.com/mkitt/tabline.vim) by Matthew Kitt.
