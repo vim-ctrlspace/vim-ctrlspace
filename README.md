@@ -82,7 +82,7 @@ And that was the moment when **Vim-CtrlSpace** came to play.
 ### Vim-CtrlSpace Idea
 
 First, I wanted a cool buffer list. Something neat and easy. MinibufExplorer and friends have some
-issues with hidden buffers. Also, I have troubles when I have too many buffers open. The list gets
+issues with unnamed buffers. Also, I have troubles when I have too many buffers open. The list gets
 longer and longer. A tool like CtrlP was helpful to some point (especially when I was looking for
 a buffer), but it doesn't show you all buffers available. 
 
