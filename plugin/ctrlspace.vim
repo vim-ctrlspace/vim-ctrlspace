@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.1
+" Version:      3.2.2
 "
 " The MIT License (MIT)
 
@@ -94,7 +94,7 @@ call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 0)
-call <SID>define_config_variable("search_timing", [100, 500])
+call <SID>define_config_variable("search_timing", [50, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label()
@@ -238,6 +238,7 @@ function! ctrlspace#statusline_key_info_segment(...)
       endif
 
       call add(keys, "q")
+      call add(keys, "Q")
       call add(keys, "a")
       call add(keys, "A")
       call add(keys, "^p")
@@ -276,6 +277,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "[")
     call add(keys, "]")
     call add(keys, "q")
+    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "J")
     call add(keys, "k")
@@ -295,6 +297,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "CR")
     call add(keys, "BS")
     call add(keys, "q")
+    call add(keys, "Q")
 
     if s:workspace_mode == 1
       call add(keys, "a")
@@ -328,6 +331,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "]")
     call add(keys, "o")
     call add(keys, "q")
+    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "J")
     call add(keys, "k")
@@ -846,7 +850,6 @@ function! <SID>load_workspace(bang, name)
     silent! exe c
   endfor
 
-
   if a:bang
     echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been loaded."
     let s:active_workspace_digest = <SID>create_workspace_digest()
@@ -858,6 +861,27 @@ function! <SID>load_workspace(bang, name)
     call <SID>kill(0, 0)
     call <SID>ctrlspace_toggle(1)
   endif
+endfunction
+
+function! <SID>quit_vim()
+  if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
+        \ && !<SID>confirmed("Current workspace not saved. Proceed anyway?")
+    return
+  endif
+
+  " check for modified buffers
+  for b in range(1, bufnr("$"))
+    if getbufvar(b, '&modified')
+      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
+        return
+      else
+        break
+      endif
+    endif
+  endfor
+
+  call <SID>kill(0, 1)
+  qa!
 endfunction
 
 function! <SID>find_subsequence(bufname, offset)
@@ -1413,6 +1437,8 @@ function! <SID>keypressed(key)
         call <SID>toggle_file_mode()
       elseif a:key ==# "q"
         call <SID>kill(0, 1)
+      elseif a:key ==# "Q"
+        call <SID>quit_vim()
       elseif a:key ==# "C-p"
         call <SID>restore_search_letters("previous")
       elseif a:key ==# "C-n"
@@ -1451,6 +1477,8 @@ function! <SID>keypressed(key)
       call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
     elseif a:key ==# "a"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif a:key ==# "s"
@@ -1494,6 +1522,8 @@ function! <SID>keypressed(key)
       call <SID>save_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -1570,6 +1600,8 @@ function! <SID>keypressed(key)
       call <SID>refresh_files()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"
@@ -1661,6 +1693,8 @@ function! <SID>keypressed(key)
       call <SID>toggle_order()
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"

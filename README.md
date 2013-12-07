@@ -404,6 +404,11 @@ paths. Here's the full available keys listing:
 </tr>
 
 <tr>
+<td><code>Q</code></td>
+<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+</tr>
+
+<tr>
 <td><code>j</code></td>
 <td>Moves the selection bar down</td>
 </tr>
@@ -672,6 +677,11 @@ and available immediately.
 </tr>
 
 <tr>
+<td><code>Q</code></td>
+<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+</tr>
+
+<tr>
 <td><code>j</code></td>
 <td>Moves the selection bar down</td>
 </tr>
@@ -798,6 +808,11 @@ split windows in a tab, they will be recreated as vertical splits while loading.
 <tr>
 <td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
+<tr>
+<td><code>Q</code></td>
+<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
 </tr>
 
 <tr>
@@ -1005,6 +1020,11 @@ and there are no results at all. In other words, the Nop can happen in the enter
 </tr>
 
 <tr>
+<td><code>Q</code></td>
+<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+</tr>
+
+<tr>
 <td><code>a</code></td>
 <td>Toggles between Single Tab and All Tabs modes</td>
 </tr>
@@ -1166,7 +1186,7 @@ Allows you to adjust search smoothness. Contains an array of two integer values.
 the list is lower than the first value, that value will be used for search delay. Similarly, if
 the size of the list is greater than the second value, then that value will be used for search
 delay. In all other cases the delay will equal the list size. That way the plugin ensures smooth
-search input behavior. Default value: `[100, 500]`
+search input behavior. Default value: `[50, 500]`
 
 ### Colors
 
