@@ -25,7 +25,7 @@ Here's a small demonstration. Viewing in HD advised!
 The Demo has been recorded with: 
 
 - a console Vim 7.4 (Menslo font)
-- a bit modified [Seoul 256 colorscheme](https://github.com/szw/seoul256.vim)
+- a bit modified [Seoul256 color scheme](https://github.com/szw/seoul256.vim)
 - following Vim-CtrlSpace settings in .vimrc:
 
         hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
