@@ -917,7 +917,22 @@ marked with an empty star too:
 
 #### Search Mode
 
-This mode is composed of two states or two phases. The first one is the entering phase. Technically,
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>›&#95;‹</code></td>
+<td><code>[&#95;]</code></td>
+</tr>
+</tbody>
+</table>
+
+This mode is composed of two states or two phases. The first one is the _entering phase_. Technically,
 this is the extact Search mode. In the entering phase the following keys are available:
 
 ##### Keys Reference (entering phase)
@@ -971,10 +986,14 @@ It's worth to mention that in that mode the `Backspace` key removes the search q
 
 #### Nop Mode
 
-Nop mode happens when i.e. there are no results at all (empty list), or you are typing your query,
-and there are no results at all. In other words, the Nop can happen in the entering phase or not.
+Nop (Non-Operational) mode happens when i.e. there are no items to show (empty list), or you are
+trying to type a Search query, and there are no results at all. That means the Nop can happen during
+the _entering phase_ of the Search mode or in some other cases. Those other cases can occur, for
+example, when you have only not listed buffers available in the tab (like e.g. help window and some
+preview ones). As you will see, in such circumstances - outside the entering phase - there is
+a greater number of resque options available.
 
-##### Nop (entering phase)
+##### Nop (Search entering phase)
 
 <table>
 
