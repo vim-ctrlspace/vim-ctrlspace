@@ -479,7 +479,7 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Edits a buffer being a sibling to the selected one (it will create a new one if necessary)</td>
+<td>Edits a sibling of the selected buffer (it will create a new one if necessary)</td>
 </tr>
 
 <tr>
@@ -710,7 +710,7 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Edits a buffer being a sibling to the selected one (it will create a new one if necessary)</td>
+<td>Edits a sibling of the selected buffer (it will create a new one if necessary)</td>
 </tr>
 
 <tr>
