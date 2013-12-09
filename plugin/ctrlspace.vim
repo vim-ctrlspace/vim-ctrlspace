@@ -2511,8 +2511,6 @@ function! <SID>edit_file()
     return
   endif
 
-  let s:files = []
-
   call <SID>kill(0, 1)
   silent! exe "e " . new_file
 endfunction!

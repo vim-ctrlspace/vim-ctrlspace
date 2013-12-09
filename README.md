@@ -479,12 +479,12 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Creates a new named buffer being a sibling to the selected one</td>
+<td>Edits a buffer being a sibling to the selected one (it will create a new one if necessary)</td>
 </tr>
 
 <tr>
 <td><code>E</code></td>
-<td>Opens a directory of the selected buffer</td>
+<td>Explores a directory of the selected buffer</td>
 </tr>
 
 <tr>
@@ -710,12 +710,12 @@ nonames)</td>
 
 <tr>
 <td><code>e</code></td>
-<td>Creates a new named buffer being a sibling to the selected one</td>
+<td>Edits a buffer being a sibling to the selected one (it will create a new one if necessary)</td>
 </tr>
 
 <tr>
 <td><code>E</code></td>
-<td>Opens a directory of the selected buffer</td>
+<td>Explores a directory of the selected buffer</td>
 </tr>
 
 <tr>
