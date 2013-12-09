@@ -405,7 +405,7 @@ paths. Here's the full available keys listing:
 
 <tr>
 <td><code>Q</code></td>
-<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+<td>Detects unsaved workspaces or tab buffers and closes Vim (with a prompt if necessary)</td>
 </tr>
 
 <tr>
@@ -678,7 +678,7 @@ and available immediately.
 
 <tr>
 <td><code>Q</code></td>
-<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+<td>Detects unsaved workspaces or tab buffers and closes Vim (with a prompt if necessary)</td>
 </tr>
 
 <tr>
@@ -812,7 +812,7 @@ split windows in a tab, they will be recreated as vertical splits while loading.
 
 <tr>
 <td><code>Q</code></td>
-<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+<td>Detects unsaved workspaces or tab buffers and closes Vim (with a prompt if necessary)</td>
 </tr>
 
 <tr>
@@ -1040,7 +1040,7 @@ a greater number of resque options available.
 
 <tr>
 <td><code>Q</code></td>
-<td>Detects unsaved workspaces or buffers and closes Vim (with a prompt if necessary)</td>
+<td>Detects unsaved workspaces or tab buffers and closes Vim (with a prompt if necessary)</td>
 </tr>
 
 <tr>
