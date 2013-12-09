@@ -1196,8 +1196,8 @@ enough symbols or the glyphs are poorly rendered. Default value:
             \ }
     endif
 
-Of course, you don't have to mind the `g:ctrlspace_unicode_font` settings. Just provide one array
-here.
+Of course, you don't have to mind the `g:ctrlspace_unicode_font` settings anymore. Just provide one
+array here.
 
 ### `g:ctrlspace_ignored_files`
 
@@ -1227,7 +1227,7 @@ as shown below:
     hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
     hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
 
-The colors defined above can be seen in the demo movie. They fit well in the
+The colors defined above can be seen in the demo movie. They fit well the
 [Seoul256](https://github.com/junegunn/seoul256.vim) color scheme. Another useful example can be
 found here:
 
