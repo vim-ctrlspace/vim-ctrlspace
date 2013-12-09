@@ -870,8 +870,8 @@ function! <SID>quit_vim()
   endif
 
   " check for modified buffers
-  for b in range(1, bufnr("$"))
-    if getbufvar(b, '&modified')
+  for t in range(1, tabpagenr("$"))
+    if <SID>tab_contains_modified_buffers(t)
       if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
         return
       else
