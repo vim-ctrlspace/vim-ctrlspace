@@ -297,7 +297,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "w")
     call add(keys, "^f")
     call add(keys, "^b")
-r   call add(keys, "^d")
+    call add(keys, "^d")
     call add(keys, "^u")
   elseif s:workspace_mode
     call add(keys, "CR")
