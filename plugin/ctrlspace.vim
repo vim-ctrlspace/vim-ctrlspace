@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.3
+" Version:      3.2.4
 "
 " The MIT License (MIT)
 
@@ -125,6 +125,7 @@ let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
 let s:update_search_results   = 0
+let s:project_root            = ""
 
 function! <SID>init_project_roots()
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -296,7 +297,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "w")
     call add(keys, "^f")
     call add(keys, "^b")
-    call add(keys, "^d")
+r   call add(keys, "^d")
     call add(keys, "^u")
   elseif s:workspace_mode
     call add(keys, "CR")
@@ -565,6 +566,9 @@ function! <SID>save_workspace(name)
 
   call <SID>kill(0, 1)
 
+  let old_cwd = fnamemodify(".", ":p:h")
+  silent! exe "cd " . s:project_root
+
   let filename = <SID>workspace_file()
   let last_tab = tabpagenr("$")
 
@@ -632,6 +636,8 @@ function! <SID>save_workspace(name)
   let s:active_workspace_name   = name
   let s:active_workspace_digest = <SID>create_workspace_digest()
   let s:workspace_names         = []
+
+  silent! exe "cd " . old_cwd
 
   echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been saved."
 endfunction
@@ -778,6 +784,9 @@ function! <SID>load_workspace(bang, name)
 
   call <SID>kill(0, 1)
 
+  let old_cwd = fnamemodify(".", ":p:h")
+  silent! exe "cd " . s:project_root
+
   let commands = []
 
   if a:bang
@@ -874,6 +883,8 @@ function! <SID>load_workspace(bang, name)
     call <SID>kill(0, 0)
     call <SID>ctrlspace_toggle(1)
   endif
+
+  silent! exe "cd " . old_cwd
 endfunction
 
 function! <SID>quit_vim()
@@ -1065,6 +1076,14 @@ function! <SID>ctrlspace_toggle(internal)
     let s:search_letters                 = []
     let t:ctrlspace_search_history_index = -1
 
+    if empty(s:project_root)
+      let s:project_root = <SID>find_project_root()
+      if empty(s:project_root)
+        echo g:ctrlspace_symbols.cs . " - Cannot continue with an unknown project root."
+        return
+      endif
+    endif
+
     if !exists("t:sort_order")
       let t:sort_order = g:ctrlspace_default_sort_order
     endif
@@ -1104,8 +1123,10 @@ function! <SID>ctrlspace_toggle(internal)
     if empty(s:files)
       echo g:ctrlspace_symbols.cs . " - Collecting files..."
 
-      let s:files = []
+      let s:files            = []
       let s:all_files_cached = []
+
+
       let i = 1
 
       for fname in split(globpath('.', '**'), '\n')
@@ -1817,30 +1838,51 @@ function! <SID>keypressed(key)
   endif
 endfunction
 
-function! <SID>toggle_file_mode()
-  if !s:file_mode && !empty(g:ctrlspace_project_root_markers)
-    let marker_found = 0
+function! <SID>find_project_root()
+  let project_root = fnamemodify(".", ":p:h")
 
-    for marker in g:ctrlspace_project_root_markers
-      if filereadable(marker) || isdirectory(marker)
-        let marker_found = 1
+  if !empty(g:ctrlspace_project_root_markers)
+    let root_found = 0
+
+    let candidate = fnamemodify(project_root, ":p:h")
+    let last_candidate = ""
+
+    while candidate != last_candidate
+      for marker in g:ctrlspace_project_root_markers
+        let marker_path = candidate . "/" . marker
+        if filereadable(marker_path) || isdirectory(marker_path)
+          let root_found = 1
+          break
+        endif
+      endfor
+
+      if !root_found
+        let root_found = index(s:project_roots, candidate) != -1
+      endif
+
+      if root_found
+        let project_root = candidate
         break
       endif
-    endfor
 
-    if !marker_found
-      let project_root = fnamemodify(".", ":p")
+      let last_candidate = candidate
+      let candidate = fnamemodify(candidate, ":p:h:h")
+    endwhile
 
-      if index(s:project_roots, project_root) == -1
-        if !<SID>confirmed("Project root not found. Do you really want to display '" . project_root . "'?")
-          return
-        endif
-
+    if !root_found
+      let project_root = <SID>get_input("No project root found. Set the project root: ", project_root, "dir")
+      if !empty(project_root) && isdirectory(project_root)
         call <SID>add_project_root(project_root)
+      else
+        let project_root = ""
       endif
     endif
   endif
 
+  return project_root
+endfunction
+
+function! <SID>toggle_file_mode()
   let s:file_mode = !s:file_mode
 
   call <SID>kill(0, 0)
@@ -1875,6 +1917,8 @@ function! <SID>set_up_buffer()
   setlocal nonumber
   setlocal nocursorcolumn
   setlocal nocursorline
+
+  silent! exe "lcd " . s:project_root
 
   let b:search_patterns = {}
 
@@ -2217,7 +2261,7 @@ endfunction
 
 function! <SID>load_many_files()
   let file_number = <SID>get_selected_buffer()
-  let file = s:files[file_number - 1]
+  let file = fnamemodify(s:files[file_number - 1], ":p")
   let current_line = line(".")
 
   call <SID>kill(0, 0)
@@ -2231,7 +2275,7 @@ endfunction
 
 function! <SID>load_file(...)
   let file_number = <SID>get_selected_buffer()
-  let file = s:files[file_number - 1]
+  let file = fnamemodify(s:files[file_number - 1], ":p")
 
   call <SID>kill(0, 1)
 
@@ -2562,6 +2606,8 @@ function! <SID>explore_directory()
     return
   endif
 
+  let path = fnamemodify(path, ":p")
+
   call <SID>kill(0, 1)
   silent! exe "e " . path
 endfunction!
@@ -2579,6 +2625,8 @@ function! <SID>edit_file()
   if empty(new_file) || isdirectory(new_file)
     return
   endif
+
+  let new_file = fnamemodify(new_file, ":p")
 
   call <SID>kill(0, 1)
   silent! exe "e " . new_file

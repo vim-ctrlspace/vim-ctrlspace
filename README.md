@@ -237,6 +237,21 @@ are displayed in the following way:
 
 </table>
 
+### Project root
+
+The plugin requires a project root to work properly. If you open the plugin window for the first
+time it will try to find out the possible root directory. First, it starts in the Vim current
+working directory and check if there are so called root markers. The root markers are characteristic
+files or directories that are available in a typical project root directory, like e.g. `.git` or
+`.hg` directories. You can define them yourself in the `g:ctrlspace_project_root_markers` variable.
+If no markers found, the plugin will check if perhaps this directory is a known root. The known
+roots are those ones you provided (accepted) yourself when no markers are found. If the current
+directory cannot be proven as a project root, the algorithm will repeat the whole procedure in the
+parent directory. 
+
+After checking all predecessors it will ask you to provide the root folder. After your acceptance
+that root folder will be pemanently stored in the `.cs_cache` file.
+
 ### Main Modes
 
 The plugin offers you a few modes. In a modal editor like Vim this should not fear you ;). I believe
@@ -593,21 +608,13 @@ available here. The missing ones are `f` and `c` - as they are tightly coupled w
 </table>
 
 The _file_ mode, or the _file append_ mode. It allows you to _add_ a file (as a buffer) to the
-current tab. In other words, it opens files from the current project directory. Notice, only the
-current working directory is considered here. Moreover, you should also avoid the `autochdir` option
-because **Vim-CtrlSpace** makes a lot of assumptions regarding your current working directory path.
-Therefore it is advised to add `set noautochdir` to your `.vimrc` file.
-
-The plugin tries to estimate if the contents of the current directory can be considered as a valid
-project. It looks for so called _project root markers_. The markers are usually repository
-directories or files like `.git`. If there is no presence of such root makers, the plugin will ask
-you whether the current directory should be permanently considered as a project root. This will
-prevent you from accidental loading root of i.e. your home directory, as it would be really time
-consuming and rather pointless.
+current tab. In other words, it opens files from the project root directory. Notice, only the
+project root directory is considered here. This will prevent you from accidental loading root of
+i.e. your home directory, as it would be really time consuming and rather pointless.
 
 For the first time (or after some disk operations) the file list is populated with data. Sometimes,
 for a very large project this could be quite time consuming (I've noticed a lag for a project with
-over 2200 files). After that, the content of the current working directory is cached and available
+over 2200 files). After that, the content of the project root directory is cached and available
 immediately. All the time you can force plugin to refresh the list with the `r` key.
 
 ##### Keys Reference
@@ -1218,7 +1225,7 @@ will be used.
 ### `g:ctrlspace_project_root_markers`
 
 An array of directory names which presence indicates the project root. If no marker is found, you
-will be asked to confirm you want to collect all files from the current working directory. Make this
+will be asked to confirm the project root basing on the current working directory. Make this
 array empty to disable this functionality. Default value: `[".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]`.
 
 ### `g:ctrlspace_unicode_font`
