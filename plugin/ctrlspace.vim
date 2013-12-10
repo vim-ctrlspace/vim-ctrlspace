@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.2
+" Version:      3.2.3
 "
 " The MIT License (MIT)
 
@@ -176,8 +176,8 @@ function! <SID>init_key_names()
   let control_letters = join(control_letters_list, " ")
 
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " .
-                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar"
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d " .
+                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar PageUp PageDown"
 
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
 
@@ -294,6 +294,10 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "^p")
     call add(keys, "^n")
     call add(keys, "w")
+    call add(keys, "^f")
+    call add(keys, "^b")
+    call add(keys, "^d")
+    call add(keys, "^u")
   elseif s:workspace_mode
     call add(keys, "CR")
     call add(keys, "BS")
@@ -312,6 +316,10 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "k")
     call add(keys, "K")
     call add(keys, "w")
+    call add(keys, "^f")
+    call add(keys, "^b")
+    call add(keys, "^d")
+    call add(keys, "^u")
   else
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -360,6 +368,10 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "^n")
     call add(keys, "S")
     call add(keys, "w")
+    call add(keys, "^f")
+    call add(keys, "^b")
+    call add(keys, "^d")
+    call add(keys, "^u")
   endif
 
   return join(keys, separator)
@@ -1517,6 +1529,14 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
+    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+      call <SID>move("pgdown")
+    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+      call <SID>move("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move("half_pgup")
     endif
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
@@ -1560,6 +1580,14 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
+    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+      call <SID>move("pgdown")
+    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+      call <SID>move("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move("half_pgup")
     endif
   elseif s:file_mode
     if a:key ==# "CR"
@@ -1624,6 +1652,14 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
+    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+      call <SID>move("pgdown")
+    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+      call <SID>move("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move("half_pgup")
     elseif a:key ==? "A"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
@@ -1728,6 +1764,14 @@ function! <SID>keypressed(key)
       call <SID>move(1)
     elseif (a:key ==# "End") || (a:key ==# "J")
       call <SID>move(line("$"))
+    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+      call <SID>move("pgdown")
+    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+      call <SID>move("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move("half_pgup")
     elseif a:key ==# "a"
       call <SID>toggle_single_tab_mode()
     elseif a:key ==# "f" && s:single_tab_mode
@@ -2066,6 +2110,30 @@ function! <SID>move(where)
   elseif a:where == "down"
     call <SID>goto(line(".")+1)
   elseif a:where == "mouse"
+    call <SID>goto(newpos)
+  elseif a:where == "pgup"
+    let newpos = line(".") - winheight(0)
+    if newpos < 1
+      let newpos = 1
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "pgdown"
+    let newpos = line(".") + winheight(0)
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "half_pgup"
+    let newpos = line(".") - winheight(0) / 2
+    if newpos < 1
+      let newpos = 1
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "half_pgdown"
+    let newpos = line(".") + winheight(0) / 2
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
     call <SID>goto(newpos)
   else
     call <SID>goto(a:where)

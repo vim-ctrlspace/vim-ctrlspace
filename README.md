@@ -530,6 +530,26 @@ nonames)</td>
 <td>Enters the Workspace mode</td>
 </tr>
 
+<tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
+</tr>
+
 </tbody>
 
 </table>
@@ -574,12 +594,16 @@ available here. The missing ones are `f` and `c` - as they are tightly coupled w
 
 The _file_ mode, or the _file append_ mode. It allows you to _add_ a file (as a buffer) to the
 current tab. In other words, it opens files from the current project directory. Notice, only the
-current working directory is considered here. The plugin tries to estimate if the contents of the
-current directory can be considered as a valid project. It looks for so called _project root
-markers_. The markers are usually repository directories or files like `.git`. If there is no
-presence of such root makers, the plugin will ask you whether the current directory should be
-permanently considered as a project root. This will prevent you from accidental loading root of
-i.e. your home directory, as it would be really time consuming and rather pointless.
+current working directory is considered here. Moreover, you should also avoid the `autochdir` option
+because **Vim-CtrlSpace** makes a lot of assumptions regarding your current working directory path.
+Therefore it is advised to add `set noautochdir` to your `.vimrc` file.
+
+The plugin tries to estimate if the contents of the current directory can be considered as a valid
+project. It looks for so called _project root markers_. The markers are usually repository
+directories or files like `.git`. If there is no presence of such root makers, the plugin will ask
+you whether the current directory should be permanently considered as a project root. This will
+prevent you from accidental loading root of i.e. your home directory, as it would be really time
+consuming and rather pointless.
 
 For the first time (or after some disk operations) the file list is populated with data. Sometimes,
 for a very large project this could be quite time consuming (I've noticed a lag for a project with
@@ -751,6 +775,26 @@ nonames)</td>
 <td>Enters the Workspace mode</td>
 </tr>
 
+<tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
+</tr>
+
 </tbody>
 
 </table>
@@ -856,6 +900,26 @@ split windows in a tab, they will be recreated as vertical splits while loading.
 <tr>
 <td><code>K</code></td>
 <td>Moves the selection bar to the top of the list</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
 </tr>
 
 </tbody>
