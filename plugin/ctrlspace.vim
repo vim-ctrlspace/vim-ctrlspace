@@ -572,7 +572,7 @@ function! <SID>save_workspace(name)
   let filename = <SID>workspace_file()
   let last_tab = tabpagenr("$")
 
-  let lines      = []
+  let lines        = []
   let in_workspace = 0
 
   let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
@@ -1079,7 +1079,7 @@ function! <SID>ctrlspace_toggle(internal)
     if empty(s:project_root)
       let s:project_root = <SID>find_project_root()
       if empty(s:project_root)
-        echo g:ctrlspace_symbols.cs . " - Cannot continue with an unknown project root."
+        echo g:ctrlspace_symbols.cs . " - Cannot continue with the project root not set."
         return
       endif
     endif

@@ -237,7 +237,7 @@ are displayed in the following way:
 
 </table>
 
-### Project root
+### Project Root
 
 The plugin requires a project root to work properly. If you open the plugin window for the first
 time it will try to find out the possible root directory. First, it starts in the Vim current
