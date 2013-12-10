@@ -87,9 +87,10 @@ call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
-call <SID>define_config_variable("workspace_file", [".git/cs_workspaces", ".svn/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
+call <SID>define_config_variable("workspace_file",
+      \ [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
 call <SID>define_config_variable("cache_dir", expand($HOME))
-call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs"]) " make empty to disable
+call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
