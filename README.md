@@ -1214,8 +1214,10 @@ Should **Vim-CtrlSpace** change your default tabline to its own? Default value: 
 This entry provides an array of strings with default names of workspaces file. If a name is preceded
 with a directory, and that directory is found in the project root, that entry will be used.
 Otherwise that would be the last one. In that way you can hide the workspaces file, for example, in
-the repository directory. Default value: `[".git/cs_workspaces", ".svn/cs_workspaces",
-".hg/cs_workspaces", ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]`.
+the repository directory. Default value: 
+
+    [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", 
+    \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 
 ### `g:ctrlspace_cache_dir`
 
