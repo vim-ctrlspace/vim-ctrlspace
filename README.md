@@ -1314,10 +1314,27 @@ API
 
 ### Commands
 
-The plugin provides you 2 commands: `CtrlSpace` and `CtrlSpaceTabLabel`. The first one shows the
-plugin window. It is meant to be used in custom mappings or more sophisticated plugin integration.
-The second one allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or
-add/remove) a custom tab name.
+At the moment **Vim-CtrlSpace** provides you 4 commands: `CtrlSpace` and `CtrlSpaceTabLabel`,
+`CtrlSpaceSaveWorkspace`, and `CtrlSpaceLoadWorkspace`.
+
+#### `CtrlSpace`
+
+Shows the plugin window. It is meant to be used in custom mappings or more sophisticated plugin
+integration.
+
+#### `CtrlSpaceTabLabel`
+
+Allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or add/remove) a custom
+tab name.
+
+#### `CtrlSpaceSaveWorkspace my workspace`
+
+Saves the workspace with the given name.
+
+#### `CtrlSpaceSaveLoad my workspace`
+
+Loads the workspace with the given name. It has also a banged version (`CtrlSpaceSaveLoad! my
+workspace`) which performs appending instead of loading.
 
 ### Functions
 

@@ -99,6 +99,8 @@ call <SID>define_config_variable("search_timing", [50, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label()
+command! -nargs=+ -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
+command! -nargs=+ -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
 if g:ctrlspace_use_tabline
   set tabline=%!ctrlspace#tabline()
@@ -565,6 +567,13 @@ function! <SID>save_workspace(name)
   endif
 
   call <SID>kill(0, 1)
+  call <SID>save_workspace_externally(name)
+endfunction
+
+function <SID>save_workspace_externally(name)
+  if !<SID>project_root_found()
+    return
+  endif
 
   let old_cwd = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
@@ -575,8 +584,8 @@ function! <SID>save_workspace(name)
   let lines        = []
   let in_workspace = 0
 
-  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
-  let workspace_end_marker   = "CS_WORKSPACE_END: " . name
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -633,13 +642,13 @@ function! <SID>save_workspace(name)
 
   call writefile(lines, filename)
 
-  let s:active_workspace_name   = name
+  let s:active_workspace_name   = a:name
   let s:active_workspace_digest = <SID>create_workspace_digest()
   let s:workspace_names         = []
 
   silent! exe "cd " . old_cwd
 
-  echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been saved."
+  echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been saved."
 endfunction
 
 function! <SID>delete_workspace(name)
@@ -735,7 +744,7 @@ function! <SID>confirmed(msg)
 endfunction
 
 function! <SID>load_workspace(bang, name)
-  if !empty(s:active_workspace_name) && a:bang
+  if !empty(s:active_workspace_name) && !a:bang
     let msg = ""
 
     if a:name == s:active_workspace_name
@@ -751,11 +760,33 @@ function! <SID>load_workspace(bang, name)
     endif
   endif
 
+  call <SID>kill(0, 1)
+
+  call <SID>load_workspace_externally(a:bang, a:name)
+
+  if a:bang
+    call <SID>ctrlspace_toggle(0)
+    let s:workspace_mode = 1
+    call <SID>kill(0, 0)
+    call <SID>ctrlspace_toggle(1)
+  endif
+endfunction
+
+" bang == 0) load
+" bang == 1) append
+function! <SID>load_workspace_externally(bang, name)
+  if !<SID>project_root_found()
+    return
+  endif
+
+  let old_cwd = fnamemodify(".", ":p:h")
+  silent! exe "cd " . s:project_root
+
   let filename = <SID>workspace_file()
 
   if !filereadable(filename)
     echo g:ctrlspace_symbols.cs . " - Workspaces file '" . filename . "' not found."
-    call <SID>kill(0, 1)
+    silent! exe "cd " . old_cwd
     return
   endif
 
@@ -778,25 +809,20 @@ function! <SID>load_workspace(bang, name)
   if empty(lines)
     echo g:ctrlspace_symbols.cs . " - Workspace '" . a:name . "' not found in file '" . filename . "'."
     let s:workspace_names = []
-    call <SID>kill(0, 1)
+    silent! exe "cd " . old_cwd
     return
   endif
 
-  call <SID>kill(0, 1)
-
-  let old_cwd = fnamemodify(".", ":p:h")
-  silent! exe "cd " . s:project_root
-
   let commands = []
 
-  if a:bang
+  if !a:bang
     echo g:ctrlspace_symbols.cs . " - Loading workspace '" . a:name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
-    let create_first_tab      = 0
+    let create_first_tab        = 0
     let s:active_workspace_name = a:name
   else
     echo g:ctrlspace_symbols.cs . " - Appending workspace '" . a:name . "'..."
@@ -835,7 +861,7 @@ function! <SID>load_workspace(bang, name)
     if create_first_tab
       call add(commands, "tabe")
     else
-      let create_first_tab = 1 " we want omit only first tab creation if a:bang == 1
+      let create_first_tab = 1 " we want omit only first tab creation if a:bang == 0 (append mode)
     endif
 
     for fname in readable_files
@@ -872,16 +898,12 @@ function! <SID>load_workspace(bang, name)
     silent! exe c
   endfor
 
-  if a:bang
+  if !a:bang
     echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been loaded."
     let s:active_workspace_digest = <SID>create_workspace_digest()
   else
     let s:active_workspace_digest = ""
     echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been appended."
-    call <SID>ctrlspace_toggle(0)
-    let s:workspace_mode = 1
-    call <SID>kill(0, 0)
-    call <SID>ctrlspace_toggle(1)
   endif
 
   silent! exe "cd " . old_cwd
@@ -1062,6 +1084,17 @@ function! <SID>prepare_buflist_to_display(buflist)
   endfor
 endfunction
 
+function! <SID>project_root_found()
+  if empty(s:project_root)
+    let s:project_root = <SID>find_project_root()
+    if empty(s:project_root)
+      echo g:ctrlspace_symbols.cs . " - Cannot continue with the project root not set."
+      return 0
+    endif
+  endif
+  return 1
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
@@ -1076,12 +1109,8 @@ function! <SID>ctrlspace_toggle(internal)
     let s:search_letters                 = []
     let t:ctrlspace_search_history_index = -1
 
-    if empty(s:project_root)
-      let s:project_root = <SID>find_project_root()
-      if empty(s:project_root)
-        echo g:ctrlspace_symbols.cs . " - Cannot continue with the project root not set."
-        return
-      endif
+    if !<SID>project_root_found()
+      return
     endif
 
     if !exists("t:sort_order")
@@ -1508,13 +1537,13 @@ function! <SID>keypressed(key)
     endif
   elseif s:workspace_mode == 1
     if a:key ==# "CR"
-      call <SID>load_workspace(1, <SID>get_selected_workspace_name())
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif a:key ==# "q"
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "a"
-      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+      call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -1541,7 +1570,7 @@ function! <SID>keypressed(key)
       call <SID>move("mouse")
     elseif a:key ==# "2-LeftMouse"
       call <SID>move("mouse")
-      call <SID>load_workspace(1, <SID>get_selected_workspace_name())
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif a:key ==# "Down"
       call feedkeys("j")
     elseif a:key ==# "Up"
