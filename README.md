@@ -68,7 +68,7 @@ This approach works, and works very well. In fact, you can never touch the real 
 there. You can even disable so called *hidden* buffers to make sure you manage only what you see in
 tabs.
 
-I was working that way a long time. However, there are some subtle issues behind the scene. The
+I've been working that way for a long time. However, there are some subtle issues behind the scene. The
 first one is the screen size. With this approach you are limited to the screen size. At some point
 the code in split windows doesn't fit those windows at all, even if you have a full HD screen with
 Vim maximized. The second issue is a lot of distraction. Sometimes you might want just to focus on
