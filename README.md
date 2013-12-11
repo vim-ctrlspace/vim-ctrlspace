@@ -245,12 +245,12 @@ working directory and check if there are so called root markers. The root marker
 files or directories that are available in a typical project root directory, like e.g. `.git` or
 `.hg` directories. You can define them yourself in the `g:ctrlspace_project_root_markers` variable.
 If no markers found, the plugin will check if perhaps this directory is a known root. The known
-roots are those ones you provided (accepted) yourself when no markers are found. If the current
+roots are those ones you provided (accepted) yourself when no markers were found. If the current
 directory cannot be proven as a project root, the algorithm will repeat the whole procedure in the
-parent directory. 
+parent one. 
 
-After checking all predecessors it will ask you to provide the root folder. After your acceptance
-that root folder will be pemanently stored in the `.cs_cache` file.
+After checking all predecessors it will ask you to provide the root folder explicitly. After your
+acceptance that root folder will be stored pemanently in the `.cs_cache` file.
 
 ### Main Modes
 
