@@ -541,6 +541,11 @@ nonames)</td>
 </tr>
 
 <tr>
+<td><code>L</code></td>
+<td>Loads the last active workspace (if present)</td>
+</tr>
+
+<tr>
 <td><code>w</code></td>
 <td>Enters the Workspace mode</td>
 </tr>
@@ -848,6 +853,10 @@ Workspaces are saved in a file inside the project directory. Its name and path i
 proper plugin configuration options (`g:ctrlspace_workspace_file`). If there are 2 or more
 split windows in a tab, they will be recreated as vertical splits while loading.
 
+It's also possible to automatically load the last active workspace on Vim startup and save it active
+workspace on Vim exit. See `g:ctrlspace_load_last_workspace_on_start` and
+`g:ctrlspace_save_workspace_on_exit` for more details.
+
 ##### Keys Reference
 
 <table>
@@ -894,6 +903,11 @@ split windows in a tab, they will be recreated as vertical splits while loading.
 <tr>
 <td><code>S</code></td>
 <td>Saves the workspace immediately</td>
+</tr>
+
+<tr>
+<td><code>L</code></td>
+<td>Loads the last active workspace (if present)</td>
 </tr>
 
 <tr>
@@ -1231,6 +1245,15 @@ the repository directory. Default value:
     [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", 
     \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 
+### `g:ctrlspace_save_workspace_on_exit`
+
+Saves the active workspace (if present) on Vim quit. If this option is set, the Vim quit (`Q`) action 
+from the plugin modes does not check for workspace changes. Default value: `0`.
+
+### `g:ctrlspace_load_last_workspace_on_start`
+
+Loads the last active workspace (if found) on Vim startup. Default value: `0`.
+
 ### `g:ctrlspace_cache_dir`
 
 A directory for the **Vim-CtrlSpace** cache file (`.cs_cache`). By default your `$HOME` directory
@@ -1341,14 +1364,16 @@ integration.
 Allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or add/remove) a custom
 tab name.
 
-#### `:CtrlSpaceSaveWorkspace my workspace`
+#### `:CtrlSpaceSaveWorkspace [my workspace]`
 
-Saves the workspace with the given name.
+Saves the workspace with the given name. If no name is given then it saves the active workspace (if
+present).
 
-#### `:CtrlSpaceLoadWorkspace my workspace`
+#### `:CtrlSpaceLoadWorkspace [my workspace]`
 
 Loads the workspace with the given name. It has also a banged version (`:CtrlSpaceLoadWorkspace! my
-workspace`) which performs appending instead of loading.
+workspace`) which performs appending instead of loading. If no name is give then it loads (or
+appends) the active workspace (if present).
 
 ### Functions
 

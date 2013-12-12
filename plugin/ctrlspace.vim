@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.4
+" Version:      3.2.5
 "
 " The MIT License (MIT)
 
@@ -89,6 +89,8 @@ call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("workspace_file",
       \ [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
+call <SID>define_config_variable("save_workspace_on_exit", 0)
+call <SID>define_config_variable("load_last_workspace_on_start", 0)
 call <SID>define_config_variable("cache_dir", expand($HOME))
 call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]) " make empty to disable
 call <SID>define_config_variable("unicode_font", 1)
@@ -99,8 +101,8 @@ call <SID>define_config_variable("search_timing", [50, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label()
-command! -nargs=+ -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
-command! -nargs=+ -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
+command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
+command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
 if g:ctrlspace_use_tabline
   set tabline=%!ctrlspace#tabline()
@@ -202,6 +204,14 @@ au BufEnter * call <SID>add_tab_buffer()
 
 let s:ctrlspace_jumps = []
 au BufEnter * call <SID>add_jump()
+
+if g:ctrlspace_save_workspace_on_exit
+  au VimLeavePre * CtrlSpaceSaveWorkspace
+endif
+
+if g:ctrlspace_load_last_workspace_on_start
+  au VimEnter * nested CtrlSpaceLoadWorkspace
+endif
 
 function! ctrlspace#bufferlist(tabnr)
   let buffer_list     = {}
@@ -313,6 +323,7 @@ function! ctrlspace#statusline_key_info_segment(...)
 
     call add(keys, "s")
     call add(keys, "S")
+    call add(keys, "L")
     call add(keys, "d")
     call add(keys, "j")
     call add(keys, "J")
@@ -370,6 +381,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "^p")
     call add(keys, "^n")
     call add(keys, "S")
+    call add(keys, "L")
     call add(keys, "w")
     call add(keys, "^f")
     call add(keys, "^b")
@@ -578,14 +590,25 @@ function <SID>save_workspace_externally(name)
   let old_cwd = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
 
+  if empty(a:name)
+    if !empty(s:active_workspace_name)
+      let name = s:active_workspace_name
+    else
+      silent! exe "cd " . old_cwd
+      return
+    endif
+  else
+    let name = a:name
+  endif
+
   let filename = <SID>workspace_file()
   let last_tab = tabpagenr("$")
 
   let lines        = []
   let in_workspace = 0
 
-  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
-  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . name
 
   if filereadable(filename)
     for old_line in readfile(filename)
@@ -642,13 +665,14 @@ function <SID>save_workspace_externally(name)
 
   call writefile(lines, filename)
 
-  let s:active_workspace_name   = a:name
+  call <SID>set_active_workspace_name(name)
+
   let s:active_workspace_digest = <SID>create_workspace_digest()
   let s:workspace_names         = []
 
   silent! exe "cd " . old_cwd
 
-  echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been saved."
+  echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_workspace(name)
@@ -684,7 +708,7 @@ function! <SID>delete_workspace(name)
   call writefile(lines, filename)
 
   if s:active_workspace_name ==? a:name
-    let s:active_workspace_name   = ""
+    call <SID>set_active_workspace_name("")
     let s:active_workspace_digest = ""
   endif
 
@@ -716,6 +740,41 @@ function! <SID>get_workspace_names()
   return names
 endfunction
 
+function! <SID>get_last_active_workspace_name()
+  let filename = <SID>workspace_file()
+
+  if filereadable(filename)
+    for line in readfile(filename)
+      if line =~? "CS_LAST_WORKSPACE: "
+        return line[19:]
+      endif
+    endfor
+  endif
+
+  return ""
+endfunction
+
+function! <SID>set_active_workspace_name(name)
+  let s:active_workspace_name = a:name
+
+  let filename = <SID>workspace_file()
+  let lines    = []
+
+  if filereadable(filename)
+    for line in readfile(filename)
+      if !(line =~? "CS_LAST_WORKSPACE: ")
+        call add(lines, line)
+      endif
+    endfor
+  endif
+
+  if !empty(s:active_workspace_name)
+    call insert(lines, "CS_LAST_WORKSPACE: " . s:active_workspace_name)
+  endif
+
+  call writefile(lines, filename)
+endfunction
+
 function! <SID>get_selected_workspace_name()
   return s:workspace_names[<SID>get_selected_buffer() - 1]
 endfunction
@@ -741,6 +800,13 @@ endfunction
 
 function! <SID>confirmed(msg)
   return <SID>get_input(a:msg . " (type 'yes' to confirm): ") ==? "yes"
+endfunction
+
+function! <SID>load_last_active_workspace()
+  let last_active_workspace = <SID>get_last_active_workspace_name()
+  if !empty(last_active_workspace)
+    call <SID>load_workspace(0, last_active_workspace)
+  endif
 endfunction
 
 function! <SID>load_workspace(bang, name)
@@ -785,13 +851,23 @@ function! <SID>load_workspace_externally(bang, name)
   let filename = <SID>workspace_file()
 
   if !filereadable(filename)
-    echo g:ctrlspace_symbols.cs . " - Workspaces file '" . filename . "' not found."
     silent! exe "cd " . old_cwd
     return
   endif
 
-  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
-  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
+  if empty(a:name)
+    let name = <SID>get_last_active_workspace_name()
+
+    if empty(name)
+      silent! exe "cd " . old_cwd
+      return
+    endif
+  else
+    let name = a:name
+  endif
+
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . name
 
   let lines      = []
   let in_workspace = 0
@@ -807,7 +883,7 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if empty(lines)
-    echo g:ctrlspace_symbols.cs . " - Workspace '" . a:name . "' not found in file '" . filename . "'."
+    echo g:ctrlspace_symbols.cs . " - Workspace '" . name . "' not found in file '" . filename . "'."
     let s:workspace_names = []
     silent! exe "cd " . old_cwd
     return
@@ -816,16 +892,16 @@ function! <SID>load_workspace_externally(bang, name)
   let commands = []
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . " - Loading workspace '" . a:name . "'..."
+    echo g:ctrlspace_symbols.cs . " - Loading workspace '" . name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
     let create_first_tab        = 0
-    let s:active_workspace_name = a:name
+    call <SID>set_active_workspace_name(name)
   else
-    echo g:ctrlspace_symbols.cs . " - Appending workspace '" . a:name . "'..."
+    echo g:ctrlspace_symbols.cs . " - Appending workspace '" . name . "'..."
     let create_first_tab = 1
   endif
 
@@ -899,18 +975,19 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been loaded."
+    echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been loaded."
     let s:active_workspace_digest = <SID>create_workspace_digest()
   else
     let s:active_workspace_digest = ""
-    echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been appended."
+    echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been appended."
   endif
 
   silent! exe "cd " . old_cwd
 endfunction
 
 function! <SID>quit_vim()
-  if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
+  if !g:ctrlspace_save_workspace_on_exit && !empty(s:active_workspace_name)
+        \ && (s:active_workspace_digest !=# <SID>create_workspace_digest())
         \ && !<SID>confirmed("Current workspace not saved. Proceed anyway?")
     return
   endif
@@ -1551,6 +1628,8 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_workspace(s:active_workspace_name)
+    elseif a:key ==# "L"
+      call <SID>load_last_active_workspace()
     elseif (a:key ==# "w") || (a:key ==# "BS")
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -1602,6 +1681,8 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "S"
       call <SID>save_workspace(s:active_workspace_name)
+    elseif a:key ==# "L"
+      call <SID>load_last_active_workspace()
     elseif (a:key ==# "w") || (a:key ==# "BS")
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -1846,6 +1927,8 @@ function! <SID>keypressed(key)
       else
         call <SID>save_workspace(s:active_workspace_name)
       endif
+    elseif a:key ==# "L"
+      call <SID>load_last_active_workspace()
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
