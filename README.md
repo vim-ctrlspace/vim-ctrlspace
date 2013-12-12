@@ -60,7 +60,7 @@ tiny plugin (270 LOC), but a bit abandoned. Now, about 7 months later, **Vim-Ctr
 Typical Vim usage, exhibited by many Vim power users, is to treat tabs as units of work on different
 topics. If, for example, I work on a web application with User management, I can have a tab
 containing a User model and test files, perhaps a User controller file, and some view files. If it
-would be possible (actually in **Vim-CtrlSpace** it is!) I could name that tab "Users". Then, if
+would be possible (actually in **Vim-CtrlSpace** it is!) I could name that tab _Users_. Then, if
 I move to, let's say Posts I can have similar set of open files in the next tab. That way I can go
 back and forward between these two concerns. In the third tab I could have e.g. config files, etc.
 
@@ -96,7 +96,7 @@ buffer list), or perform many other actions. Of course, it's possible to access 
 (the list of all open buffers) - in that way, you can easily add new friends to the current tab. It's
 also perfectly valid to have a buffer shared among many tabs at the same time (it will be listed on
 many lists). Similarly, you can have a buffer that is not connected to any particular tab. It's just
-a hidden buffer (not displayed at the moment), visible only in the "all buffers" list.
+a hidden buffer (not displayed at the moment), visible only in the _all buffers_ list.
 
 That was a breaking change. Next things are just consequences of that little invention. I've added
 a lot of buffer operations (opening, closing, renaming, etc), the ability of opening files (together
@@ -827,12 +827,24 @@ nonames)</td>
 </tbody>
 </table>
 
-The plugin lets you to save and load so called workspaces. A workspace is a set of opened windows,
-tabs, their names, and buffers. In the Workspace mode **Vim-CtrlSpace** shows you available
-workspaces instead of buffers. By default this mode is displayed with the "load" state. The second
-available state is "save".
+The plugin allows you to save and load so called _workspaces_. A workspace is a set of opened
+windows, tabs, their names, and buffers. In fact, the word _workspace_ can be considered as
+a synonym of a _session_ in **Vim-CtrlSpace**.
 
-Workspaces are saved in the file inside the project directory. Its name and path is determined by
+The ability of having so many _sessions_ available at hand creates a lot of interesting use cases!
+For example, you can have a workspace for each task or feature you are working on. It's very easy to
+switch from one workspace to another, thus this could be helpful with reviewing completed tasks and
+continuing work on an item after some period of time. Moreover, you can have special workspaces
+that are prepared to be appended to others. Consider, e.g. a _Config_ workspace. Imagine, you have
+a separate workspace with the only one tab named _Config_ and some config files opened there. You
+can easily append that workspace to you current or next ones, depending on your needs. That way
+you are able to group the common and repetative sets of files in just one place and reuse that group
+in many contexts.
+
+In the Workspace mode **Vim-CtrlSpace** shows you available workspaces instead of buffers.
+By default this mode is displayed in the _LOAD_ state. The second available state is _SAVE_.
+
+Workspaces are saved in a file inside the project directory. Its name and path is determined by
 proper plugin configuration options (`g:ctrlspace_workspace_file`). If there are 2 or more
 split windows in a tab, they will be recreated as vertical splits while loading.
 
