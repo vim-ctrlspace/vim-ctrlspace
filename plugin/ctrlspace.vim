@@ -2083,9 +2083,17 @@ function! <SID>display_list(displayedbufs, buflist)
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
 
-    for bufentry in buflist
-      let buftext .= bufentry.text
-    endfor
+    ruby VIM.command("let buftext = '#{CtrlSpace.get_buflist_string(VIM.evaluate('buflist'))}'")
+    " let buflen = len(buflist)
+    " let counter = 0
+    " while counter < buflen
+    "    let buftext .= buflist[counter].text
+    "    let counter += 1
+    " endwhile
+    " for bufentry in buflist
+    "   let buftext .= bufentry.text
+    " endfor
+    " call system('echo -n "\t\t\tend concat buflist - 2 " >> /tmp/foo;date "+%s" >> /tmp/foo')
 
     silent! put! =buftext
     " is there any way to NOT delete into a register? bummer...

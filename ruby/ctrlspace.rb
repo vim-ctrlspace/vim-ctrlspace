@@ -1,3 +1,4 @@
+#encoding: utf-8
 module CtrlSpace
   def self.find_subsequence(bufname, offset, search_letters)
     positions      = []
@@ -53,5 +54,10 @@ module CtrlSpace
     end
 
     noise
+  end
+
+  def self.get_buflist_string(buflist)
+    # TODO test how much slower to return only the list and join in vim
+    buflist.map {|bufitem| bufitem['text']}.join
   end
 end
