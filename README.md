@@ -790,9 +790,7 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 <tr>
 <td>Closing</td>
 <td><code>C</code></td>
-<td>Closes the current tab, then performs <code>F</code> (closes
-forgotten buffers - probably those ones from just closed tab) and <code>D</code> (closes empty
-nonames)</td>
+<td>Closes the current tab, then closes forgotten buffers and empty nonames</td>
 </tr>
 
 <tr>
