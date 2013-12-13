@@ -250,7 +250,8 @@ directory cannot be proven as a project root, the algorithm will repeat the whol
 parent one. 
 
 After checking all predecessors it will ask you to provide the root folder explicitly. After your
-acceptance that root folder will be stored pemanently in the `.cs_cache` file.
+acceptance that root folder will be stored pemanently in the `.cs_cache` file as serve as a known
+root later.
 
 ### Main Modes
 
@@ -317,16 +318,18 @@ Here's the full listing of full available keys:
 
 <table>
 
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
 
 <tr>
+<td>Help</td>
 <td><code>?</code></td>
 <td>Toggles info about available keys (depends on space left in the status bar)</td>
 </tr>
 
 <tr>
+<td rowspan="6">Opening</td>
 <td><code>Return</code></td>
 <td>Opens a selected buffer</td>
 </tr>
@@ -339,21 +342,6 @@ Here's the full listing of full available keys:
 <tr>
 <td><code>Tab</code></td>
 <td>Enters the Preview mode for selected buffer</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Goes back (in this mode it will just close the plugin window)</td>
-</tr>
-
-<tr>
-<td><code>/</code></td>
-<td>Enters the Search mode</td>
-</tr>
-
-<tr>
-<td><code>\</code></td>
-<td>Enters the Search mode in the Add (files) mode immediately (a shortcut for <code>A/</code>)</td>
 </tr>
 
 <tr>
@@ -372,6 +360,33 @@ Here's the full listing of full available keys:
 </tr>
 
 <tr>
+<td rowspan="5">Searching & sorting</td>
+<td><code>/</code></td>
+<td>Enters the Search mode</td>
+</tr>
+
+<tr>
+<td><code>\</code></td>
+<td>Enters the Search mode in the Add (files) mode immediately (a shortcut for <code>A/</code>)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>Brings back the previous searched text</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + n</code></td>
+<td>Brings the next searched text - just the opposite to <code>Ctrl + p</code></td>
+</tr>
+
+<tr>
+<td><code>o</code></td>
+<td>Toggles the sorting order (chronological vs alphanumeric)</td>
+</tr>
+
+<tr>
+<td rowspan="8">Tabs</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
 </tr>
@@ -412,8 +427,9 @@ Here's the full listing of full available keys:
 </tr>
 
 <tr>
-<td><code>o</code></td>
-<td>Toggles the sorting order (chronological vs alphanumeric)</td>
+<td rowspan="3">Exiting</td>
+<td><code>Backspace</code></td>
+<td>Goes back (in this mode it will just close the plugin window)</td>
 </tr>
 
 <tr>
@@ -427,18 +443,19 @@ Here's the full listing of full available keys:
 </tr>
 
 <tr>
+<td rowspan="11">Moving</td>
 <td><code>j</code></td>
 <td>Moves the selection bar down</td>
 </tr>
 
 <tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
+<td><code>k</code></td>
+<td>Moves the selection bar up</td>
 </tr>
 
 <tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
+<td><code>J</code></td>
+<td>Moves the selection bar to the bottom of the list</td>
 </tr>
 
 <tr>
@@ -448,7 +465,7 @@ Here's the full listing of full available keys:
 
 <tr>
 <td><code>p</code></td>
-<td>Moves the selection bar to the previous opened buffer</td>
+<td>Moves the selection bar to the <em>previous</em> opened buffer</td>
 </tr>
 
 <tr>
@@ -462,6 +479,27 @@ Here's the full listing of full available keys:
 </tr>
 
 <tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td rowspan="6">Closing</td>
 <td><code>d</code></td>
 <td>Deletes the selected buffer (closes it)</td>
 </tr>
@@ -496,6 +534,7 @@ nonames)</td>
 </tr>
 
 <tr>
+<td rowspan="4">Disk operations</td>
 <td><code>e</code></td>
 <td>Edits a sibling of the selected buffer (it will create a new one if necessary)</td>
 </tr>
@@ -516,6 +555,7 @@ nonames)</td>
 </tr>
 
 <tr>
+<td rowspan="3">Mode changing</td>
 <td><code>a</code></td>
 <td>Toggles between Single Tab and All Tabs modes</td>
 </tr>
@@ -526,16 +566,12 @@ nonames)</td>
 </tr>
 
 <tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
+<td><code>w</code></td>
+<td>Enters the Workspace mode</td>
 </tr>
 
 <tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl + p</code></td>
-</tr>
-
-<tr>
+<td rowspan="2">Workspace shortcuts</td>
 <td><code>S</code></td>
 <td>Saves the workspace immediately (or creates a new one if none)</td>
 </tr>
@@ -543,31 +579,6 @@ nonames)</td>
 <tr>
 <td><code>L</code></td>
 <td>Loads the last active workspace (if present)</td>
-</tr>
-
-<tr>
-<td><code>w</code></td>
-<td>Enters the Workspace mode</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
 </tr>
 
 </tbody>
@@ -626,16 +637,18 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 
 <table>
 
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
 
 <tr>
+<td>Help</td>
 <td><code>?</code></td>
 <td>Toggles info about available keys (depends on space left in the status bar)</td>
 </tr>
 
 <tr>
+<td rowspan="5">Opening</td>
 <td><code>Return</code></td>
 <td>Opens a selected file</td>
 </tr>
@@ -643,16 +656,6 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 <tr>
 <td><code>Space</code></td>
 <td>Opens a selected file but stays in the <b>Vim-CtrlSpace</b> window</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code>, <code>a</code>, and <code>A</code></td>
-<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
-</tr>
-
-<tr>
-<td><code>/</code> and <code>\</code></td>
-<td>Enters the Search mode</td>
 </tr>
 
 <tr>
@@ -671,6 +674,23 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 </tr>
 
 <tr>
+<td rowspan="3">Exiting</td>
+<td><code>Backspace</code>, <code>a</code>, and <code>A</code></td>
+<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+</tr>
+
+<tr>
+<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on plugin mappings</td>
+</tr>
+
+<tr>
+<td><code>Q</code></td>
+<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were found)</td>
+</tr>
+
+<tr>
+<td rowspan="8">Tabs</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
 </tr>
@@ -711,23 +731,25 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 </tr>
 
 <tr>
-<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin mappings</td>
+<td rowspan="3">Searching</td>
+<td><code>/</code> and <code>\</code></td>
+<td>Enters the Search mode</td>
 </tr>
 
 <tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were found)</td>
+<td><code>Ctrl + p</code></td>
+<td>Brings back the previous searched text</td>
 </tr>
 
 <tr>
+<td><code>Ctrl + n</code></td>
+<td>Brings the next searched text - just the opposite to <code>Ctrl + p</code></td>
+</tr>
+
+<tr>
+<td rowspan="8">Moving</td>
 <td><code>j</code></td>
 <td>Moves the selection bar down</td>
-</tr>
-
-<tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
 </tr>
 
 <tr>
@@ -736,11 +758,37 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 </tr>
 
 <tr>
+<td><code>J</code></td>
+<td>Moves the selection bar to the bottom of the list</td>
+</tr>
+
+<tr>
 <td><code>K</code></td>
 <td>Moves the selection bar to the top of the list</td>
 </tr>
 
 <tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td>Closing</td>
 <td><code>C</code></td>
 <td>Closes the current tab, then performs <code>F</code> (closes
 forgotten buffers - probably those ones from just closed tab) and <code>D</code> (closes empty
@@ -748,6 +796,7 @@ nonames)</td>
 </tr>
 
 <tr>
+<td rowspan="5">Disk operations</td>
 <td><code>e</code></td>
 <td>Edits a sibling of the selected buffer (it will create a new one if necessary)</td>
 </tr>
@@ -773,38 +822,9 @@ nonames)</td>
 </tr>
 
 <tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl + p</code></td>
-</tr>
-
-<tr>
+<td>Mode changing</td>
 <td><code>w</code></td>
 <td>Enters the Workspace mode</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim behavior)</td>
 </tr>
 
 </tbody>
@@ -861,21 +881,24 @@ workspace on Vim exit. See `g:ctrlspace_load_last_workspace_on_start` and
 
 <table>
 
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
 
 <tr>
+<td>Help</td>
 <td><code>?</code></td>
 <td>Toggles info about available keys (depends on space left in the status bar)</td>
 </tr>
 
 <tr>
+<td>Accepting</td>
 <td><code>Return</code></td>
 <td>Loads (or save) the selected workspace</td>
 </tr>
 
 <tr>
+<td rowspan="3">Exiting</td>
 <td><code>Backspace</code>, <code>w</code></td>
 <td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
 </tr>
@@ -891,6 +914,7 @@ workspace on Vim exit. See `g:ctrlspace_load_last_workspace_on_start` and
 </tr>
 
 <tr>
+<td rowspan="5">Workspace operations</td>
 <td><code>a</code></td>
 <td>Appends a selected workspace to the current one</td>
 </tr>
@@ -916,18 +940,19 @@ workspace on Vim exit. See `g:ctrlspace_load_last_workspace_on_start` and
 </tr>
 
 <tr>
+<td rowspan="8">Moving</td>
 <td><code>j</code></td>
 <td>Moves the selection bar down</td>
 </tr>
 
 <tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
+<td><code>k</code></td>
+<td>Moves the selection bar up</td>
 </tr>
 
 <tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
+<td><code>J</code></td>
+<td>Moves the selection bar to the bottom of the list</td>
 </tr>
 
 <tr>
@@ -1229,7 +1254,11 @@ The default sort order. `0` turns off sorting, `1` - the default sorting is chro
 
 If set to `1`, the plugin will try to use your compiled in Ruby bindings to increase the speed of
 fuzzy search algorithm. Regex operations are much faster in Ruby than in VimScript. Default value:
-`1`.
+`1`. 
+
+> To see if you have Ruby bindings enabled you can use the command `:version` and see if there is
+> a `+ruby` entry. Or just try the following one: `:ruby puts RUBY_VERSION` - you should get the Ruby
+> version or just an error.
 
 ### `g:ctrlspace_use_tabline`
 
