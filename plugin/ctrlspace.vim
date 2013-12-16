@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.5
+" Version:      3.2.6
 "
 " The MIT License (MIT)
 
@@ -106,6 +106,10 @@ command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_
 
 if g:ctrlspace_use_tabline
   set tabline=%!ctrlspace#tabline()
+
+  if has("gui_running") && (&go =~# "e")
+    set guitablabel=%{ctrlspace#guitablabel()}
+  endif
 endif
 
 function! <SID>set_default_mapping(key, action)
@@ -437,6 +441,71 @@ function! ctrlspace#statusline_info_segment(...)
   return join(statusline_elements, separator)
 endfunction
 
+function! <SID>tab_bufs_number_to_show(bufs_number)
+  let bufs_number_to_show = ""
+
+  if a:bufs_number > 1
+    if g:ctrlspace_unicode_font
+      let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+      let number_str    = string(a:bufs_number)
+
+      for i in range(0, len(number_str) - 1)
+        let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
+      endfor
+    else
+      let bufs_number_to_show = ":" . a:bufs_number
+    endif
+  endif
+
+  return bufs_number_to_show
+endfunction
+
+function! <SID>tab_title(tabnr, bufnr, bufname)
+  let bufname = a:bufname
+  let bufnr   = a:bufnr
+  let title   = gettabvar(a:tabnr, "ctrlspace_label")
+
+  if empty(title)
+    if bufname ==# "__CS__"
+      if s:preview_mode && exists("s:preview_mode_orginal_buffer")
+        let bufnr = s:preview_mode_orginal_buffer
+      else
+        let bufnr = winbufnr(t:ctrlspace_start_window)
+      endif
+
+      let bufname = bufname(bufnr)
+    endif
+
+    if empty(bufname)
+      let title = "[" . bufnr . "*No Name]"
+    else
+      let title = "[" . fnamemodify(bufname, ':t') . "]"
+    endif
+  endif
+
+  return title
+endfunction
+
+function! ctrlspace#guitablabel()
+  let winnr               = tabpagewinnr(v:lnum)
+  let buflist             = tabpagebuflist(v:lnum)
+  let bufnr               = buflist[winnr - 1]
+  let bufname             = bufname(bufnr)
+  let bufs_number         = len(ctrlspace#bufferlist(v:lnum))
+  let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
+  let title               = <SID>tab_title(v:lnum, bufnr, bufname)
+
+  let label = '' . v:lnum . bufs_number_to_show . ' '
+
+  if <SID>tab_contains_modified_buffers(v:lnum)
+    let label .= '+ '
+  endif
+
+  let label .= title . ' '
+
+  return label
+endfunction
+
 function! ctrlspace#tabline()
   let last_tab    = tabpagenr("$")
   let current_tab = tabpagenr()
@@ -448,40 +517,8 @@ function! ctrlspace#tabline()
     let bufnr               = buflist[winnr - 1]
     let bufname             = bufname(bufnr)
     let bufs_number         = len(ctrlspace#bufferlist(t))
-    let bufs_number_to_show = ""
-
-    if bufs_number > 1
-      if g:ctrlspace_unicode_font
-        let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
-        let number_str    = string(bufs_number)
-
-        for i in range(0, len(number_str) - 1)
-          let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
-        endfor
-      else
-        let bufs_number_to_show = ":" . bufs_number
-      endif
-    endif
-
-    let title = gettabvar(t, "ctrlspace_label")
-
-    if empty(title)
-      if bufname ==# "__CS__"
-        if s:preview_mode && exists("s:preview_mode_orginal_buffer")
-          let bufnr = s:preview_mode_orginal_buffer
-        else
-          let bufnr = winbufnr(t:ctrlspace_start_window)
-        endif
-
-        let bufname = bufname(bufnr)
-      endif
-
-      if empty(bufname)
-        let title = "[" . bufnr . "*No Name]"
-      else
-        let title = "[" . fnamemodify(bufname, ':t') . "]"
-      endif
-    endif
+    let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
+    let title               = <SID>tab_title(t, bufnr, bufname)
 
     let tabline .= '%' . t . 'T'
     let tabline .= (t == current_tab ? '%#TabLineSel#' : '%#TabLine#')
@@ -1746,9 +1783,9 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
-      silent! exe "tabm+1"
+      silent! exe "tabm" . tabpagenr()
     elseif a:key ==# "-"
-      silent! exe "tabm-1"
+      silent! exe "tabm" . (tabpagenr() - 1)
     elseif a:key ==# "_"
       let t:ctrlspace_label = ""
       redraw!
@@ -1847,9 +1884,9 @@ function! <SID>keypressed(key)
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
-      silent! exe "tabm+1"
+      silent! exe "tabm" . tabpagenr()
     elseif a:key ==# "-"
-      silent! exe "tabm-1"
+      silent! exe "tabm" . (tabpagenr() - 2)
     elseif a:key ==# "_"
       let t:ctrlspace_label = ""
       redraw!
@@ -2057,12 +2094,12 @@ function! <SID>set_up_buffer()
     syn match CtrlSpaceNormal /  .*/
     syn match CtrlSpaceSelected /> .*/hs=s+1
 
-    hi def CtrlSpaceNormal ctermfg=black ctermbg=white
-    hi def CtrlSpaceSelected ctermfg=white ctermbg=black
+    hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
+    hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
   endif
 
   call clearmatches()
-  hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline
+  hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
 
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name

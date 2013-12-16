@@ -237,6 +237,8 @@ are displayed in the following way:
 
 </table>
 
+If GUI tabs are detected, this option will also set the proper function to `guitablabel`.
+
 ### Project Root
 
 The plugin requires a project root to work properly. If you open the plugin window for the first
@@ -1428,6 +1430,10 @@ for a custom status line integration (i.e. in plugins like
 #### `ctrlspace#tabline()`
 
 Provides the custom tabline string.
+
+#### `ctrlspace#guitablabel()`
+
+Provides the custom label for GVim's tabs.
 
 Authors and License
 -------------------
