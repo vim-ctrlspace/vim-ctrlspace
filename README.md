@@ -20,7 +20,7 @@ plugin popularity and that way I will proceed better its further development :).
 
 Here's a small demonstration. Viewing in HD advised!
 
-[![Demo](https://raw.github.com/szw/vim-ctrlspace/master/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
+[![Demo](https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
 
 The Demo has been recorded with: 
 
@@ -289,7 +289,7 @@ Moreover, buffers and workspaces listed in the plugin window can have additional
 
 This is a simplified diagram of key groups used in **Vim-CtrlSpace** modes.
 
-![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/cs_keys.png)
+![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.png)
 
 _This file is licensed under GNU FDL license. It is derived from
 [Qwerty.svg](http://commons.wikimedia.org/wiki/File:Qwerty.svg) file by [Oona
@@ -388,9 +388,14 @@ Here's the full listing of full available keys:
 </tr>
 
 <tr>
-<td rowspan="8">Tabs</td>
+<td rowspan="9">Tabs</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
+</tr>
+
+<tr>
+<td><code>Y</code></td>
+<td>Copies (yanks) the existing tab into a new one</td>
 </tr>
 
 <tr>
@@ -692,9 +697,14 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 </tr>
 
 <tr>
-<td rowspan="8">Tabs</td>
+<td rowspan="9">Tabs</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
+</tr>
+
+<tr>
+<td><code>Y</code></td>
+<td>Copies (yanks) the existing tab into a new one</td>
 </tr>
 
 <tr>

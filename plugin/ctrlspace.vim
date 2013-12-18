@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.6
+" Version:      3.2.7
 "
 " The MIT License (MIT)
 
@@ -287,6 +287,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "s")
     call add(keys, "t")
     call add(keys, "T")
+    call add(keys, "Y")
     call add(keys, "0..9")
     call add(keys, "-")
     call add(keys, "+")
@@ -349,6 +350,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "s")
     call add(keys, "t")
     call add(keys, "T")
+    call add(keys, "Y")
     call add(keys, "0..9")
     call add(keys, "-")
     call add(keys, "+")
@@ -1576,6 +1578,39 @@ function! <SID>tab_command(key)
 
   if a:key ==# "T"
     silent! exe "tabnew"
+  elseif a:key ==# "Y"
+    let source_tab_nr = tabpagenr()
+    let source_label = exists("t:ctrlspace_label") ? t:ctrlspace_label : ""
+    let source_list = copy(t:ctrlspace_list)
+    let source_jumps = copy(t:ctrlspace_jumps)
+
+    if exists("t:ctrlspace_search_history")
+      let source_search_history = copy(t:ctrlspace_search_history)
+    endif
+
+    if exists("t:ctrlspace_search_history_index")
+      let source_search_history_index = copy(t:ctrlspace_search_history_index)
+    endif
+
+    silent! exe "tabnew"
+
+    let t:ctrlspace_label = empty(source_label) ? ("Copy of tab " . source_tab_nr) : (source_label . " (copy)")
+    let t:ctrlspace_list = source_list
+    let t:ctrlspace_jumps = source_jumps
+
+    if exists("source_search_history")
+      let t:ctrlspace_search_history = source_search_history
+    endif
+
+    if exists("source_search_history_index")
+      let t:ctrlspace_search_history_index = source_search_history_index
+    endif
+
+    call <SID>ctrlspace_toggle(0)
+    call <SID>kill(0, 1)
+    call <SID>ctrlspace_toggle(0)
+    call <SID>close_buffer()
+    call <SID>kill(0, 1)
   elseif a:key ==# "["
     silent! exe "normal! gT"
   elseif a:key ==# "]"
@@ -1778,6 +1813,8 @@ function! <SID>keypressed(key)
       call <SID>load_file("tabnew")
     elseif a:key ==# "T"
       call <SID>tab_command(a:key)
+    elseif a:key ==# "Y"
+      call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
     elseif a:key =~? "^[0-9]$"
@@ -1878,6 +1915,8 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
     elseif a:key ==# "T"
+      call <SID>tab_command(a:key)
+    elseif a:key ==# "Y"
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
