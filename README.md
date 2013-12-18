@@ -57,8 +57,8 @@ Of course, there are many plugins allowing you to see, change, and manage buffer
 tiny plugin (270 LOC), but a bit abandoned. Now, about 7 months later, **Vim-CtrlSpace** has about
 2.5K LOC and still uses some code of that Rob's plugin :). 
 
-Typical Vim usage, exhibited by many Vim power users, is to treat tabs as units of work on different
-topics. If, for example, I work on a web application with User management, I can have a tab
+Characteristic Vim usage, exhibited by many Vim power users, is to treat tabs as units of work on 
+different topics. If, for example, I work on a web application with User management, I can have a tab
 containing a User model and test files, perhaps a User controller file, and some view files. If it
 would be possible (actually in **Vim-CtrlSpace** it is!) I could name that tab _Users_. Then, if
 I move to, let's say Posts I can have similar set of open files in the next tab. That way I can go
@@ -68,11 +68,11 @@ This approach works, and works very well. In fact, you can never touch the real 
 there. You can even disable so called *hidden* buffers to make sure you manage only what you see in
 tabs.
 
-I've been working that way for a long time. However, there are some subtle issues behind the scene. The
-first one is the screen size. With this approach you are limited to the screen size. At some point
-the code in split windows doesn't fit those windows at all, even if you have a full HD screen with
-Vim maximized. The second issue is a lot of distraction. Sometimes you might want just to focus on
-a one particular file. To address that I have developed a tool called
+I've been working that way for a long time. However, there are some subtle issues behind the scene. 
+The first one is the screen size. With this approach you are limited to the screen size. At some 
+point the code in split windows doesn't fit those windows at all, even if you have a full HD screen 
+with Vim maximized. The second issue is a lot of distraction. Sometimes you might want just to focus 
+on a one particular file. To address that I have developed a tool called
 [Vim-Maximizer](https://github.com/szw/vim-maximizer). *Vim-Maximizer* allows you to temporarily
 maximize one split window, just by pressing `F3` (by default). This can be seen in the demo movie
 above. That was cool, but still I needed something better, especially since I started working on
@@ -242,22 +242,24 @@ If GUI tabs are detected, this option will also set the proper function to `guit
 ### Tab Management
 
 Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The plugin lets you to
-perform many typical tab actions easily e.g. switching (`[` and `]`), moving (`+` and `-`), closing
+perform many classic tab actions easily e.g. switching (`[` and `]`), moving (`+` and `-`), closing
 (uppercase `C`), or renaming (`=`). 
 
 You can also create empty tabs (`T`) or copy them (`Y`). The latter action is useful if you want to
-split your tab (your group of buffers) into smaller ones. For example, the tab _Users_ (holding
-model files, controller files and views) could be split into something like _Users - models_ and
-_Users - views_. _Users - models_ could then have model and controller files whereas _Users - views_
-could be storing controller and view ones. With the help of tab copying (`Y`) all you need is
-to copy the _Users_ tab, close superfluous buffers in each (lowercase `c`), and finally rename both (`=`).
+split your tab (your group of buffers) into smaller ones. Referring to the demo example, the tab
+_Users_ (holding model files, controller files and views) could be split into something like 
+_Users - Models_ and _Users - Views_. _Users - Models_ could then have model and controller files 
+whereas _Users - Views_ could be storing controller and view ones. With the help of tab copying
+(`Y`) all you need is to copy the _Users_ tab, close superfluous buffers in each (lowercase `c`),
+and finally rename both (`=`).  Of course, the split shown in that example might be a bit dummy but
+in a typical project there are a lot of natural splits, like for example, backend and frontend layers.
 
 ### Project Root
 
 The plugin requires a project root to work properly. If you open the plugin window for the first
 time it will try to find out the possible root directory. First, it starts in the Vim current
 working directory and check if there are so called root markers. The root markers are characteristic
-files or directories that are available in a typical project root directory, like e.g. `.git` or
+files or directories that are available in an exemplary project root directory, like e.g. `.git` or
 `.hg` directories. You can define them yourself in the `g:ctrlspace_project_root_markers` variable.
 If no markers found, the plugin will check if perhaps this directory is a known root. The known
 roots are those ones you provided (accepted) yourself when no markers were found. If the current
