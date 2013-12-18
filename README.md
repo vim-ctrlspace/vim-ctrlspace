@@ -239,6 +239,19 @@ are displayed in the following way:
 
 If GUI tabs are detected, this option will also set the proper function to `guitablabel`.
 
+### Tab Management
+
+Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The plugin lets you to
+perform many typical tab actions easily e.g. switching (`[` and `]`), moving (`+` and `-`), closing
+(uppercase `C`), or renaming (`=`). 
+
+You can also create empty tabs (`T`) or copy them (`Y`). The latter action is useful if you want to
+split your tab (your group of buffers) into smaller ones. For example, the tab _Users_ (holding
+model files, controller files and views) could be split into something like _Users - models_ and
+_Users - views_. _Users - models_ could then have model and controller files whereas _Users - views_
+could be storing controller and view ones. With the help of tab copying (`Y`) all you need is
+to copy the _Users_ tab, close superfluous buffers in each (lowercase `c`), and finally rename both (`=`).
+
 ### Project Root
 
 The plugin requires a project root to work properly. If you open the plugin window for the first
@@ -254,7 +267,7 @@ parent one.
 After checking all predecessors it will ask you to provide the root folder explicitly. After your
 acceptance that root folder will be stored pemanently in the `.cs_cache` file as serve as a known
 root later.
-
+ 
 ### Main Modes
 
 The plugin offers you a few modes. In a modal editor like Vim this should not fear you ;). I believe
