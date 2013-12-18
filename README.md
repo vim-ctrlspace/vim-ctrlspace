@@ -395,7 +395,7 @@ Here's the full listing of full available keys:
 
 <tr>
 <td><code>Y</code></td>
-<td>Copies (yanks) the existing tab into a new one</td>
+<td>Copies (yanks) the current tab into a new one</td>
 </tr>
 
 <tr>
@@ -704,7 +704,7 @@ immediately. All the time you can force plugin to refresh the list with the `r` 
 
 <tr>
 <td><code>Y</code></td>
-<td>Copies (yanks) the existing tab into a new one</td>
+<td>Copies (yanks) the current tab into a new one</td>
 </tr>
 
 <tr>

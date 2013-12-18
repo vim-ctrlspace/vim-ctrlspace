@@ -1610,7 +1610,8 @@ function! <SID>tab_command(key)
     call <SID>kill(0, 1)
     call <SID>ctrlspace_toggle(0)
     call <SID>close_buffer()
-    call <SID>kill(0, 1)
+    call <SID>jump("previous")
+    call <SID>load_buffer()
   elseif a:key ==# "["
     silent! exe "normal! gT"
   elseif a:key ==# "]"
