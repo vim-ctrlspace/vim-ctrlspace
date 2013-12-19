@@ -983,7 +983,7 @@ bar)</td>
 
 <tr>
 <td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on mappings</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
 </tr>
 
 <tr>
@@ -1226,6 +1226,11 @@ bar)</td>
 character found.</td>
 </tr>
 
+<tr>
+<td><code>Esc</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
 </tbody>
 
 </table>
@@ -1251,7 +1256,7 @@ bar)</td>
 
 <tr>
 <td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on mappings</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
 </tr>
 
 <tr>

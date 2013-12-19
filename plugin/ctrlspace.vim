@@ -260,10 +260,6 @@ function! ctrlspace#statusline_key_info_segment(...)
         call add(keys, "BS")
       endif
 
-      if !g:ctrlspace_use_mouse_and_arrows
-        call add(keys, "Esc")
-      endif
-
       call add(keys, "q")
       call add(keys, "Q")
       call add(keys, "a")
@@ -272,6 +268,10 @@ function! ctrlspace#statusline_key_info_segment(...)
       call add(keys, "^n")
     else
       call add(keys, "BS")
+    endif
+
+    if !g:ctrlspace_use_mouse_and_arrows
+      call add(keys, "Esc")
     endif
 
     return join(keys, separator)
@@ -286,6 +286,10 @@ function! ctrlspace#statusline_key_info_segment(...)
     endif
     call add(keys, "a..z")
     call add(keys, "0..9")
+
+    if !g:ctrlspace_use_mouse_and_arrows
+      call add(keys, "Esc")
+    endif
   elseif s:file_mode
     call add(keys, "CR")
     call add(keys, "Sp")
@@ -1693,6 +1697,8 @@ function! <SID>keypressed(key)
       elseif !empty(s:search_letters)
         call <SID>clear_search_mode()
       endif
+    elseif a:key ==# "Esc"
+      call <SID>kill(0, 1)
     endif
     return
   endif
@@ -1708,6 +1714,8 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
+    elseif a:key ==# "Esc"
+      call <SID>kill(0, 1)
     endif
   elseif s:workspace_mode == 1
     if a:key ==# "CR"
