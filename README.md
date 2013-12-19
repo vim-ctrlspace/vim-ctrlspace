@@ -1363,7 +1363,7 @@ in Ruby than in VimScript. Default value: `1`.
 Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
 `1`.
 
-### `use_mouse_and_arrows`
+### `g:ctrlspace_use_mouse_and_arrows`
 
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
 keys. Disables the `Esc` key if turned on. Default value: `0`.
