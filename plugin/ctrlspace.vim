@@ -2165,6 +2165,11 @@ function! <SID>set_up_buffer()
   call clearmatches()
   hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
 
+  if !g:ctrlspace_use_mouse_and_arrows
+    " Block unnecessary escape sequences!
+    noremap <silent><buffer><esc>[ <Nop>
+  endif
+
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
     silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_name . "\")<CR>"
