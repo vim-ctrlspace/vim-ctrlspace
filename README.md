@@ -265,14 +265,15 @@ and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`).
 
 You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
 useful if you want to split your tab (your group of buffers) into smaller ones.
-Referring to the demo example, the tab _Users_ (holding model files, controller
-files and views) could be split into something like _Users (models)_ and _Users
-(views)_. _Users (models)_ could then have model and controller files whereas
-_Users (views)_ could be storing controller and view ones. With the help of tab
-copying (`Y`) all you need is to copy the _Users_ tab, close superfluous buffers
-in each (lowercase `c`), and finally rename both (`=`). Of course, the split
-shown in that example might be a bit dummy but in a typical project there are
-a lot of natural splits, like for example, backend and frontend layers.
+Referring to the demo example, the tab `Users` (holding model files, controller
+files and views) could be split into something like `Users (models)` and 
+`Users (views)`. `Users (models)` could then have model and controller files 
+whereas `Users (views)` could be storing controller and view ones. With the 
+help of tab copying (`Y`) all you need is to copy the `Users` tab, close 
+superfluous buffers in each (lowercase `c`), and finally rename both (`=`). 
+Of course, the split shown in that example might be a bit dummy but in 
+a typical project there are a lot of natural splits, like for example, 
+backend and frontend layers.
 
 ### Project Root
 
@@ -483,7 +484,7 @@ name)</td>
 </tr>
 
 <tr>
-<td><code>q</code> and <code>Ctrl + Space</code>&#42;</td>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on plugin mappings</td>
 </tr>
 
@@ -742,7 +743,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on plugin mappings</td>
 </tr>
 
@@ -981,7 +982,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on mappings</td>
 </tr>
 
@@ -1249,7 +1250,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td><code>q</code> / <code>Ctrl + Space</code>&#42;</td>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on mappings</td>
 </tr>
 
@@ -1361,6 +1362,11 @@ in Ruby than in VimScript. Default value: `1`.
 
 Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
 `1`.
+
+### `use_mouse_and_arrows`
+
+Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
+keys. Disables the `Esc` key if turned on. Default value: `0`.
 
 ### `g:ctrlspace_workspace_file`
 

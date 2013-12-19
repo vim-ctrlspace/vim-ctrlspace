@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.7
+" Version:      3.2.8
 "
 " The MIT License (MIT)
 
@@ -87,6 +87,7 @@ call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
+call <SID>define_config_variable("use_mouse_and_arrows", 0)
 call <SID>define_config_variable("workspace_file",
       \ [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
 call <SID>define_config_variable("save_workspace_on_exit", 0)
@@ -185,8 +186,12 @@ function! <SID>init_key_names()
   let control_letters = join(control_letters_list, " ")
 
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d " .
-                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right BSlash Bar PageUp PageDown"
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d Bar BSlash " .
+                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right PageUp PageDown"
+
+  if !g:ctrlspace_use_mouse_and_arrows
+    let special_chars .= " Esc"
+  endif
 
   let special_chars .= has("gui_running") ? " C-Space" : " Nul"
 
@@ -255,6 +260,10 @@ function! ctrlspace#statusline_key_info_segment(...)
         call add(keys, "BS")
       endif
 
+      if !g:ctrlspace_use_mouse_and_arrows
+        call add(keys, "Esc")
+      endif
+
       call add(keys, "q")
       call add(keys, "Q")
       call add(keys, "a")
@@ -281,6 +290,11 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "CR")
     call add(keys, "Sp")
     call add(keys, "BS")
+
+    if !g:ctrlspace_use_mouse_and_arrows
+      call add(keys, "Esc")
+    endif
+
     call add(keys, "/")
     call add(keys, '\')
     call add(keys, "v")
@@ -319,6 +333,11 @@ function! ctrlspace#statusline_key_info_segment(...)
   elseif s:workspace_mode
     call add(keys, "CR")
     call add(keys, "BS")
+
+    if !g:ctrlspace_use_mouse_and_arrows
+      call add(keys, "Esc")
+    endif
+
     call add(keys, "q")
     call add(keys, "Q")
 
@@ -344,6 +363,11 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "Sp")
     call add(keys, "Tab")
     call add(keys, "BS")
+
+    if !g:ctrlspace_use_mouse_and_arrows
+      call add(keys, "Esc")
+    endif
+
     call add(keys, "/")
     call add(keys, '\')
     call add(keys, "v")
@@ -1648,7 +1672,7 @@ function! <SID>keypressed(key)
         endif
       elseif a:key ==# "A"
         call <SID>toggle_file_mode()
-      elseif a:key ==# "q"
+      elseif (a:key ==# "q") || (a:key ==# "Esc")
         call <SID>kill(0, 1)
       elseif a:key ==# "Q"
         call <SID>quit_vim()
@@ -1688,7 +1712,7 @@ function! <SID>keypressed(key)
   elseif s:workspace_mode == 1
     if a:key ==# "CR"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
-    elseif a:key ==# "q"
+    elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -1714,26 +1738,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif a:key ==# "MouseDown"
+    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("up")
-    elseif a:key ==# "MouseUp"
+    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("down")
-    elseif a:key ==# "LeftRelease"
+    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
-    elseif a:key ==# "2-LeftMouse"
+    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
-    elseif a:key ==# "Down"
+    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("j")
-    elseif a:key ==# "Up"
+    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "J")
+    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -1743,7 +1767,7 @@ function! <SID>keypressed(key)
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif a:key ==# "q"
+    elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -1767,26 +1791,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif a:key ==# "MouseDown"
+    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("up")
-    elseif a:key ==# "MouseUp"
+    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("down")
-    elseif a:key ==# "LeftRelease"
+    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
-    elseif a:key ==# "2-LeftMouse"
+    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif a:key ==# "Down"
+    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("j")
-    elseif a:key ==# "Up"
+    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "J")
+    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -1833,7 +1857,7 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "r"
       call <SID>refresh_files()
-    elseif a:key ==# "q"
+    elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -1841,26 +1865,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif a:key ==# "MouseDown"
+    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("up")
-    elseif a:key ==# "MouseUp"
+    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("down")
-    elseif a:key ==# "LeftRelease"
+    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
-    elseif a:key ==# "2-LeftMouse"
+    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
       call <SID>load_file()
-    elseif a:key ==# "Down"
+    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("j")
-    elseif a:key ==# "Up"
+    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "J")
+    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -1936,7 +1960,7 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "o" && empty(s:search_letters)
       call <SID>toggle_order()
-    elseif a:key ==# "q"
+    elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -1955,26 +1979,26 @@ function! <SID>keypressed(key)
       call <SID>delete_buffer()
     elseif a:key ==# "D"
       call <SID>delete_hidden_noname_buffers(0)
-    elseif a:key ==# "MouseDown"
+    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("up")
-    elseif a:key ==# "MouseUp"
+    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("down")
-    elseif a:key ==# "LeftRelease"
+    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
-    elseif a:key ==# "2-LeftMouse"
+    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
       call <SID>move("mouse")
       call <SID>load_buffer()
-    elseif a:key ==# "Down"
+    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("j")
-    elseif a:key ==# "Up"
+    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
       call feedkeys("k")
-    elseif (a:key ==# "Home") || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
       call <SID>move(1)
-    elseif (a:key ==# "End") || (a:key ==# "J")
+    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif (a:key ==# "PageDown") || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif (a:key ==# "PageUp") || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
