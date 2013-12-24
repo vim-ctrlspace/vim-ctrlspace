@@ -1489,7 +1489,7 @@ function! <SID>add_search_letter(letter)
   let s:new_search_performed = 1
   let s:update_search_results = 1
   call <SID>set_status_line()
-  redraw!
+  redraws
 endfunction
 
 function! <SID>remove_search_letter()
@@ -1497,7 +1497,7 @@ function! <SID>remove_search_letter()
   let s:new_search_performed = 1
   let s:update_search_results = 1
   call <SID>set_status_line()
-  redraw!
+  redraws
 endfunction
 
 function! <SID>switch_search_mode(switch)
@@ -1509,7 +1509,7 @@ function! <SID>switch_search_mode(switch)
   let s:update_search_results = 1
 
   call <SID>set_status_line()
-  redraw!
+  redraws
 endfunction
 
 function! <SID>unique_list(list)
@@ -1662,7 +1662,7 @@ function! <SID>keypressed(key)
   if a:key ==# "?"
     let g:ctrlspace_show_key_info = !g:ctrlspace_show_key_info
     call <SID>set_status_line()
-    redraw!
+    redraws
     return
   endif
 
