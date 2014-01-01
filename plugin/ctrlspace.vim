@@ -4,7 +4,7 @@
 "
 " The MIT License (MIT)
 
-" Copyright (c) 2013 Szymon Wrozynski <szymon@wrozynski.com> and Contributors
+" Copyright (c) 2013-2014 Szymon Wrozynski <szymon@wrozynski.com> and Contributors
 " Original BufferList plugin code - copyright (c) 2005 Robert Lillack <rob@lillack.de>
 
 " Permission is hereby granted, free of charge, to any person obtaining a copy

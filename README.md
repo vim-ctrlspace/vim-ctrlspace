@@ -1555,7 +1555,7 @@ Provides the custom label for GVim's tabs.
 Authors and License
 -------------------
 
-Copyright &copy; 2013 [Szymon Wrozynski and
+Copyright &copy; 2013-2014 [Szymon Wrozynski and
 Contributors](https://github.com/szw/vim-ctrlspace/commits/master). Licensed
 under [MIT
 License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
