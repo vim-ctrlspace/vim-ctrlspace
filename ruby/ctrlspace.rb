@@ -60,4 +60,70 @@ module CtrlSpace
     # TODO test how much slower to return only the list and join in vim
     buflist.map {|bufitem| bufitem['text']}.join
   end
+
+  def self.decorate_with_indicators(name, bufnum, preview_mode_orginal_buffer, bufwinnr, modified, ctrlspace_unicode_font)
+    indicators = ' '
+    name
+
+    if (preview_mode_orginal_buffer == bufnum)
+        indicators += ctrlspace_unicode_font ? "☆" : "*"
+    elsif (bufwinnr != -1)
+        indicators += ctrlspace_unicode_font ? "★" : "*"
+    end
+
+    if modified
+        indicators += "+"
+    end
+
+    if indicators.length > 1
+        name += indicators
+    end
+
+    name
+  end
+
+  def self.get_magic_bufname(entry, columns, dots_symbol, dots_symbol_size, workspace_mode, active_workspace_name, star_symbol, file_mode, active_workspace_digest, workspace_digest, bufwinnr, preview_mode_orginal_buffer, modified, ctrlspace_unicode_font)
+
+      if (!file_mode && !workspace_mode)
+
+
+        bufname = entry['raw']
+        if (bufname.length + 6 > columns)
+            bufpart = bufname.length - columns + 6 + dots_symbol_size
+            bufname = bufname[bufpart..-1]
+            bufname = "#{dots_symbol}#{bufname}"
+        end
+
+        if (workspace_mode)
+            if (entry['raw'] == active_workspace_name)
+                bufname += star_symbol
+
+                if (active_workspace_digest != workspace_digest)
+                    bufname += "+"
+                end
+            end
+        end
+
+    else
+        bufname = self.decorate_with_indicators(entry['raw'], entry['number'], preview_mode_orginal_buffer, bufwinnr, modified, ctrlspace_unicode_font)
+    end
+
+      bufname
+  end
+
+  def self.space_pad(bufname, columns, ctrlspace_unicode_font)
+
+    if (bufname.length < columns)
+       bufname += " " * (columns - bufname.length)
+    end
+
+    if (ctrlspace_unicode_font)
+      bufname += "  "
+    end
+
+    bufname = "  " + bufname + "\n"
+
+    bufname
+  end
+
 end
