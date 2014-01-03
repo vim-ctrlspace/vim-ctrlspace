@@ -1188,43 +1188,57 @@ function! <SID>restore_search_letters(direction)
 endfunction
 
 function! <SID>prepare_buflist_to_display(buflist)
+  if g:ctrlspace_unicode_font
+    let dots_symbol = "…"
+    let dots_symbol_size = 1
+    let star_symbol = " ★"
+  else
+    let dots_symbol = "..."
+    let dots_symbol_size = 3
+    let star_symbol = " *"
+  endif
+
+  let workspace_digest = <SID>create_workspace_digest()
+
   for entry in a:buflist
     let bufname = entry.raw
 
-    if strlen(bufname) + 6 > &columns
-      if g:ctrlspace_unicode_font
-        let dots_symbol = "…"
-        let dots_symbol_size = 1
-      else
-        let dots_symbol = "..."
-        let dots_symbol_size = 3
-      endif
+    let modified = getbufvar(entry.number, "&modified")
 
-      let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
+    "if strlen(bufname) + 6 > &columns
+    " let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
+    "endif
+    if (s:preview_mode)
+        ruby VIM.command("let bufname = '#{CtrlSpace.get_magic_bufname(VIM.evaluate('entry'), VIM.evaluate('&columns'), VIM.evaluate('dots_symbol'), VIM.evaluate('dots_symbol_size'), VIM.evaluate('s:workspace_mode'), VIM.evaluate('s:active_workspace_name'), VIM.evaluate('star_symbol'), VIM.evaluate('s:file_mode'), VIM.evaluate('s:active_workspace_digest'), VIM.evaluate('workspace_digest'), VIM.evaluate('bufwinnr(entry.number)'), VIM.evaluate('s:preview_mode_orginal_buffer'), VIM.evaluate('modified'), VIM.evaluate('g:ctrlspace_unicode_font'))}'")
+    else
+        ruby VIM.command("let bufname = '#{CtrlSpace.get_magic_bufname(VIM.evaluate('entry'), VIM.evaluate('&columns'), VIM.evaluate('dots_symbol'), VIM.evaluate('dots_symbol_size'), VIM.evaluate('s:workspace_mode'), VIM.evaluate('s:active_workspace_name'), VIM.evaluate('star_symbol'), VIM.evaluate('s:file_mode'), VIM.evaluate('s:active_workspace_digest'), VIM.evaluate('workspace_digest'), VIM.evaluate('bufwinnr(entry.number)'), 0, VIM.evaluate('modified'), VIM.evaluate('g:ctrlspace_unicode_font'))}'")
     endif
 
-    if !s:file_mode && !s:workspace_mode
-      let bufname = <SID>decorate_with_indicators(bufname, entry.number)
-    elseif s:workspace_mode
-      if entry.raw ==# s:active_workspace_name
-        let bufname .= g:ctrlspace_unicode_font ? " ★" : " *"
 
-        if s:active_workspace_digest !=# <SID>create_workspace_digest()
-          let bufname .= "+"
-        endif
-      endif
-    endif
+    " if !s:file_mode && !s:workspace_mode
+    "    let bufname = <SID>decorate_with_indicators(bufname, entry.number)
+    " " elseif s:workspace_mode
+    " "   if entry.raw ==# s:active_workspace_name
+    " "     let bufname .= star_symbol
 
-    while strlen(bufname) < &columns
-      let bufname .= " "
-    endwhile
+    " "     if s:active_workspace_digest !=# workspace_digest
+    " "       let bufname .= "+"
+    " "     endif
+    " "   endif
+    " endif
 
-    " handle wrong strlen for unicode dots symbol
-    if g:ctrlspace_unicode_font && bufname =~ "…"
-      let bufname .= "  "
-    endif
 
-    let entry.text = "  " . bufname . "\n"
+"    while strlen(bufname) < &columns
+"      let bufname .= " "
+"    endwhile
+"
+"    " handle wrong strlen for unicode dots symbol
+"    if g:ctrlspace_unicode_font && bufname =~ "…"
+"      let bufname .= "  "
+"    endif
+"
+"    let entry.text = "  " . bufname . "\n"
+    ruby VIM.command("let entry.text = '#{CtrlSpace.space_pad(VIM.evaluate('bufname'), VIM.evaluate('&columns'), VIM.evaluate('g:ctrlspace_unicode_font'))}'")
   endfor
 endfunction
 
@@ -1361,9 +1375,11 @@ function! <SID>ctrlspace_toggle(internal)
         endif
 
         " count displayed buffers
-        let displayedbufs += 1
 
         call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
+
+        let displayedbufs += 1
+
       endif
     endfor
   endif
@@ -2259,6 +2275,7 @@ endfunction
 
 function! <SID>display_list(displayedbufs, buflist)
   setlocal modifiable
+
   if a:displayedbufs > 0
     if s:file_mode && empty(s:search_letters)
       let buflist = a:buflist
@@ -2275,14 +2292,23 @@ function! <SID>display_list(displayedbufs, buflist)
       let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
 
       call <SID>prepare_buflist_to_display(buflist)
+      " ruby VIM.command("let buflist = '#{CtrlSpace::BufListDisplay.prepare_buflist_to_display(VIM.evaluate('buflist'), VIM.evaluate('s:file_mode'), VIM.evaluate('s:workspace_mode'), VIM.evaluate('s:active_workspace_name'), VIM.evaluate('g:ctrlspace_unicode_font'), VIM.evaluate('<SID>create_workspace_digest()'), VIM.evaluate('s:active_workspace_digest'), VIM.evaluate('&columns'))}'")
     endif
 
     " input the buffer list, delete the trailing newline, & fill with blank lines
     let buftext = ""
 
-    for bufentry in buflist
-      let buftext .= bufentry.text
-    endfor
+
+    ruby VIM.command("let buftext = '#{CtrlSpace.get_buflist_string(VIM.evaluate('buflist'))}'")
+    " let buflen = len(buflist)
+    " let counter = 0
+    " while counter < buflen
+    "    let buftext .= buflist[counter].text
+    "    let counter += 1
+    " endwhile
+    " for bufentry in buflist
+    "   let buftext .= bufentry.text
+    " endfor
 
     silent! put! =buftext
     " is there any way to NOT delete into a register? bummer...
