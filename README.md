@@ -132,11 +132,11 @@ just clone the repository to your `.vim` directory. In case of Vundle, add:
 
     Bundle "szw/vim-ctrlspace" 
 
-to you `.vimrc`.
+to your `.vimrc`.
 
-If you want to increase fuzzy search speed, make sure you have decent Ruby
-bindings enabled in (compiled into) your Vim. The plugin will try to use your
-Ruby by default.
+If you want to increase plugin speed (e.g. fuzzy search), make sure you have 
+decent Ruby bindings enabled in (compiled into) your Vim. The plugin will try 
+to use your Ruby by default.
 
 Usage
 -----
