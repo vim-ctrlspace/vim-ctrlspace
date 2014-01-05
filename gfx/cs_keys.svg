@@ -42,7 +42,7 @@
    inkscape:current-layer="svg2" /><metadata
    id="metadata872"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata>
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata>
  <defs
    id="defs4"><marker
    refX="0"
@@ -747,7 +747,7 @@
    id="path103"
    d="m 394.19075,173.5 19,0 c 1,0 2,2 2,3 l 0,17 c 0,2 -1,3 -2,3 l -19,0 c -2,0 -3,-1 -3,-3 l 0,-17 c 0,-1 1,-3 3,-3 z" /><path
    inkscape:connector-curvature="0"
-   style="fill:#ffffff;stroke:#202326;stroke-width:0"
+   style="fill:#ff6600;stroke:#202326;stroke-width:0;fill-opacity:1"
    id="path105"
    d="m 59.190753,56.5 20,0 c 1,0 3,1 3,3 l 0,18 c 0,1 -2,3 -3,3 l -20,0 c -2,0 -3,-2 -3,-3 l 0,-18 c 0,-2 1,-3 3,-3 z" /><path
    inkscape:connector-curvature="0"
@@ -840,6 +840,7 @@
 
 
 
+
   </g><g
    id="g205"
    transform="matrix(0.774557,0,0,0.77345,-170.47025,-8.8173)">
@@ -848,6 +849,7 @@
    id="text207"
    y="192"
    x="400">W</text>
+
 
 
 
@@ -878,6 +880,7 @@
 
 
 
+
   </g><g
    id="g213"
    transform="matrix(0.774557,0,0,0.77345,-109.10725,-8.8173)">
@@ -886,6 +889,7 @@
    id="text215"
    y="192"
    x="400">R</text>
+
 
 
 
@@ -916,6 +920,7 @@
 
 
 
+
   </g><g
    id="g221"
    transform="matrix(0.774557,0,0,0.77345,-48.733947,-8.8173)">
@@ -924,6 +929,7 @@
    id="text223"
    y="192"
    x="400">Y</text>
+
 
 
 
@@ -954,6 +960,7 @@
 
 
 
+
   </g><g
    id="g229"
    transform="matrix(0.774557,0,0,0.77345,13.619063,-8.8173)">
@@ -962,6 +969,7 @@
    id="text231"
    y="192"
    x="400">I</text>
+
 
 
 
@@ -992,6 +1000,7 @@
 
 
 
+
   </g><g
    id="g237"
    transform="matrix(0.774557,0,0,0.77345,70.033353,-8.8173)">
@@ -1000,6 +1009,7 @@
    id="text239"
    y="192"
    x="400">P</text>
+
 
 
 
@@ -1030,6 +1040,7 @@
 
 
 
+
   </g><g
    id="g245"
    transform="matrix(0.774557,0,0,0.77345,-159.58325,16.8789)">
@@ -1038,6 +1049,7 @@
    id="text247"
    y="192"
    x="400">S</text>
+
 
 
 
@@ -1068,6 +1080,7 @@
 
 
 
+
   </g><g
    id="g253"
    transform="matrix(0.774557,0,0,0.77345,-100.19925,16.8789)">
@@ -1076,6 +1089,7 @@
    id="text255"
    y="192"
    x="400">F</text>
+
 
 
 
@@ -1106,6 +1120,7 @@
 
 
 
+
   </g><g
    id="g261"
    transform="matrix(0.774557,0,0,0.77345,-41.805747,16.8789)">
@@ -1114,6 +1129,7 @@
    id="text263"
    y="192"
    x="400">H</text>
+
 
 
 
@@ -1144,6 +1160,7 @@
 
 
 
+
   </g><g
    id="g269"
    transform="matrix(0.774557,0,0,0.77345,17.577923,16.8789)">
@@ -1152,6 +1169,7 @@
    id="text271"
    y="192"
    x="400">K</text>
+
 
 
 
@@ -1182,6 +1200,7 @@
 
 
 
+
   </g><g
    id="g277"
    transform="matrix(0.774557,0,0,0.77345,-178.38825,41.5868)">
@@ -1190,6 +1209,7 @@
    id="text279"
    y="192"
    x="400">Z</text>
+
 
 
 
@@ -1220,6 +1240,7 @@
 
 
 
+
   </g><g
    id="g285"
    transform="matrix(0.774557,0,0,0.77345,-119.00425,41.5868)">
@@ -1228,6 +1249,7 @@
    id="text287"
    y="192"
    x="400">C</text>
+
 
 
 
@@ -1258,6 +1280,7 @@
 
 
 
+
   </g><g
    id="g293"
    transform="matrix(0.774557,0,0,0.77345,-59.620947,41.5868)">
@@ -1266,6 +1289,7 @@
    id="text295"
    y="192"
    x="400">B</text>
+
 
 
 
@@ -1296,6 +1320,7 @@
 
 
 
+
   </g><g
    id="g301"
    transform="matrix(0.774557,0,0,0.77345,-1.226847,41.5868)">
@@ -1304,6 +1329,7 @@
    id="text303"
    y="192"
    x="400">M</text>
+
 
 
 
@@ -1334,6 +1360,7 @@
 
 
 
+
   </g><g
    id="g423"
    transform="matrix(0.774557,0,0,0.77345,-157.60325,-77.0109)">
@@ -1342,6 +1369,7 @@
    id="text425"
    y="192"
    x="400">F2</text>
+
 
 
 
@@ -1372,6 +1400,7 @@
 
 
 
+
   </g><g
    id="g431"
    transform="matrix(0.774557,0,0,0.77345,-98.220247,-77.0109)">
@@ -1380,6 +1409,7 @@
    id="text433"
    y="192"
    x="400">F4</text>
+
 
 
 
@@ -1410,6 +1440,7 @@
 
 
 
+
   </g><g
    id="g439"
    transform="matrix(0.774557,0,0,0.77345,-23.990447,-77.0109)">
@@ -1418,6 +1449,7 @@
    id="text441"
    y="192"
    x="400">F6</text>
+
 
 
 
@@ -1448,6 +1480,7 @@
 
 
 
+
   </g><g
    id="g447"
    transform="matrix(0.774557,0,0,0.77345,35.393153,-77.0109)">
@@ -1456,6 +1489,7 @@
    id="text449"
    y="192"
    x="400">F8</text>
+
 
 
 
@@ -1486,6 +1520,7 @@
 
 
 
+
   </g><g
    id="g455"
    transform="matrix(0.774557,0,0,0.77345,105.66355,-77.0109)">
@@ -1494,6 +1529,7 @@
    id="text457"
    y="192"
    x="400">F10</text>
+
 
 
 
@@ -1524,6 +1560,7 @@
 
 
 
+
   </g><g
    id="g463"
    transform="matrix(0.774557,0,0,0.77345,165.04675,-77.0109)">
@@ -1532,6 +1569,7 @@
    id="text465"
    y="192"
    x="400">F12</text>
+
 
 
 
@@ -1562,6 +1600,7 @@
 
 
 
+
   </g><g
    id="g507"
    transform="matrix(0.774557,0,0,0.77345,-220.94625,-29.5719)">
@@ -1570,6 +1609,7 @@
    id="text509"
    y="192"
    x="400">1</text>
+
 
 
 
@@ -1600,6 +1640,7 @@
 
 
 
+
   </g><g
    id="g515"
    transform="matrix(0.774557,0,0,0.77345,-162.55225,-29.5719)">
@@ -1608,6 +1649,7 @@
    id="text517"
    y="192"
    x="400">3</text>
+
 
 
 
@@ -1638,6 +1680,7 @@
 
 
 
+
   </g><g
    id="g523"
    transform="matrix(0.774557,0,0,0.77345,-102.17925,-29.5719)">
@@ -1646,6 +1689,7 @@
    id="text525"
    y="192"
    x="400">5</text>
+
 
 
 
@@ -1676,6 +1720,7 @@
 
 
 
+
   </g><g
    id="g531"
    transform="matrix(0.774557,0,0,0.77345,-42.795247,-29.5719)">
@@ -1684,6 +1729,7 @@
    id="text533"
    y="192"
    x="400">7</text>
+
 
 
 
@@ -1714,6 +1760,7 @@
 
 
 
+
   </g><g
    id="g539"
    transform="matrix(0.774557,0,0,0.77345,15.598493,-29.5719)">
@@ -1733,6 +1780,7 @@
 
 
 
+
   </g><g
    id="g543"
    transform="matrix(0.774557,0,0,0.77345,46.280253,-29.5719)">
@@ -1741,6 +1789,7 @@
    id="text545"
    y="192"
    x="400">0</text>
+
 
 
 
@@ -1807,6 +1856,7 @@
 
 
 
+
   </g><g
    id="g573"
    transform="matrix(0.774557,0,0,0.77345,-240.74125,65.3059)">
@@ -1815,6 +1865,7 @@
    id="text575"
    y="192"
    x="400">Ctrl</text>
+
 
 
 
@@ -1845,6 +1896,7 @@
 
 
 
+
   </g><g
    id="g581"
    transform="matrix(0.774557,0,0,0.77345,15.598493,-44.3965)">
@@ -1853,6 +1905,7 @@
    id="text583"
    y="194"
    x="400">(</text>
+
 
 
 
@@ -1883,6 +1936,7 @@
 
 
 
+
   </g><g
    id="g589"
    transform="matrix(0.774557,0,0,0.77345,-13.103447,-44.3965)">
@@ -1891,6 +1945,7 @@
    id="text591"
    y="194"
    x="400">*</text>
+
 
 
 
@@ -1921,6 +1976,7 @@
 
 
 
+
   </g><g
    id="g597"
    transform="matrix(0.774557,0,0,0.77345,-72.487047,-43.4081)">
@@ -1929,6 +1985,7 @@
    id="text599"
    y="192"
    x="400">^</text>
+
 
 
 
@@ -1959,6 +2016,7 @@
 
 
 
+
   </g><g
    id="g605"
    transform="matrix(0.774557,0,0,0.77345,-132.86025,-43.4081)">
@@ -1967,6 +2025,7 @@
    id="text607"
    y="192"
    x="400">$</text>
+
 
 
 
@@ -1997,6 +2056,7 @@
 
 
 
+
   </g><g
    id="g613"
    transform="matrix(0.774557,0,0,0.77345,-193.23425,-43.4081)">
@@ -2005,6 +2065,7 @@
    id="text615"
    y="192"
    x="400">@</text>
+
 
 
 
@@ -2035,6 +2096,7 @@
 
 
 
+
   </g><g
    id="g621"
    transform="matrix(0.774557,0,0,0.77345,-229.85425,39.61)">
@@ -2043,6 +2105,7 @@
    id="text623"
    y="192"
    x="400">Shift</text>
+
 
 
 
@@ -2077,6 +2140,7 @@
 
 
 
+
   </g><path
    inkscape:connector-curvature="0"
    style="fill:none;stroke:#2b2828;stroke-width:0"
@@ -2089,6 +2153,7 @@
    id="text635"
    y="192"
    x="400">`</text>
+
 
 
 
@@ -2119,6 +2184,7 @@
 
 
 
+
   </g><g
    id="g641"
    transform="matrix(0.774557,0,0,0.77345,-250.63825,-16.7238)">
@@ -2127,6 +2193,7 @@
    id="text643"
    y="192"
    x="400">Tab</text>
+
 
 
 
@@ -2157,6 +2224,7 @@
 
 
 
+
   </g><g
    id="g649"
    transform="matrix(0.774557,0,0,0.77345,-235.79225,17.8673)">
@@ -2165,6 +2233,7 @@
    id="text651"
    y="192"
    x="400">Lock</text>
+
 
 
 
@@ -2195,6 +2264,7 @@
 
 
 
+
   </g><g
    id="g657"
    transform="matrix(0.774557,0,0,0.77345,74.982153,-44.3965)">
@@ -2203,6 +2273,7 @@
    id="text659"
    y="192"
    x="400">_</text>
+
 
 
 
@@ -2233,6 +2304,7 @@
 
 
 
+
   </g><g
    id="g665"
    transform="matrix(0.774557,0,0,0.77345,104.67365,-44.3965)">
@@ -2241,6 +2313,7 @@
    id="text667"
    y="192"
    x="400">+</text>
+
 
 
 
@@ -2271,6 +2344,7 @@
 
 
 
+
   </g><g
    id="g673"
    transform="matrix(0.774557,0,0,0.77345,135.35575,-44.3965)">
@@ -2279,6 +2353,7 @@
    id="text675"
    y="194"
    x="400">|</text>
+
 
 
 
@@ -2309,6 +2384,7 @@
 
 
 
+
   </g><g
    id="g681"
    transform="matrix(0.774557,0,0,0.77345,93.786953,-17.7122)">
@@ -2317,6 +2393,7 @@
    id="text683"
    y="192"
    x="400">{</text>
+
 
 
 
@@ -2347,6 +2424,7 @@
 
 
 
+
   </g><g
    id="g689"
    transform="matrix(0.774557,0,0,0.77345,123.47875,-17.7122)">
@@ -2355,6 +2433,7 @@
    id="text691"
    y="192"
    x="400">}</text>
+
 
 
 
@@ -2385,6 +2464,7 @@
 
 
 
+
   </g><g
    id="g697"
    transform="matrix(0.774557,0,0,0.77345,72.013153,6.99565)">
@@ -2393,6 +2473,7 @@
    id="text699"
    y="192"
    x="400">:</text>
+
 
 
 
@@ -2423,6 +2504,7 @@
 
 
 
+
   </g><g
    id="g705"
    transform="matrix(0.774557,0,0,0.77345,100.71475,7.98405)">
@@ -2431,6 +2513,7 @@
    id="text707"
    y="192"
    x="400">&quot;</text>
+
 
 
 
@@ -2461,6 +2544,7 @@
 
 
 
+
   </g><g
    id="g713"
    transform="matrix(0.774557,0,0,0.77345,82.899853,33.6803)">
@@ -2469,6 +2553,7 @@
    id="text715"
    y="192"
    x="400">?</text>
+
 
 
 
@@ -2499,6 +2584,7 @@
 
 
 
+
   </g><g
    id="g721"
    transform="matrix(0.774557,0,0,0.77345,53.208053,33.6803)">
@@ -2507,6 +2593,7 @@
    id="text723"
    y="192"
    x="400">&gt;</text>
+
 
 
 
@@ -2537,6 +2624,7 @@
 
 
 
+
   </g><g
    id="g729"
    transform="matrix(0.774557,0,0,0.77345,22.526653,33.6803)">
@@ -2545,6 +2633,7 @@
    id="text731"
    y="192"
    x="400">&lt;</text>
+
 
 
 
@@ -2611,6 +2700,7 @@
 
 
 
+
   </g><g
    id="g11615"
    transform="translate(12.190753,1.5)"><path
@@ -2655,6 +2745,7 @@
      x="73.109688"
      y="298.59991">Tabs operations</tspan></text>
 
+
 <text
    sodipodi:linespacing="125%"
    id="text7892"
@@ -2666,6 +2757,7 @@
      x="73.109688"
      id="tspan7894"
      sodipodi:role="line">Buffer/file opening</tspan></text>
+
 
 <text
    xml:space="preserve"
@@ -2679,6 +2771,7 @@
      x="73.109688"
      y="359.59991">Item select</tspan></text>
 
+
 <text
    sodipodi:linespacing="125%"
    id="text7900"
@@ -2690,6 +2783,7 @@
      x="239.31743"
      id="tspan7902"
      sodipodi:role="line">Closing operations</tspan></text>
+
 
 <text
    xml:space="preserve"
@@ -2703,6 +2797,7 @@
      x="239.31743"
      y="298.59991">Disk operations</tspan></text>
 
+
 <text
    xml:space="preserve"
    style="font-size:11.27818203px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -2714,6 +2809,7 @@
      id="tspan7910"
      x="239.31743"
      y="359.59991">Quit / Back</tspan></text>
+
 
 <text
    sodipodi:linespacing="125%"
@@ -2727,6 +2823,7 @@
      id="tspan7914"
      sodipodi:role="line">Search</tspan></text>
 
+
 <text
    xml:space="preserve"
    style="font-size:11.27818203px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -2738,5 +2835,6 @@
      id="tspan7918"
      x="401.52014"
      y="329.59991">Mode/order change</tspan></text>
+
 
 </svg>
