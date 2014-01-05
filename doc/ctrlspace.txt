@@ -778,8 +778,8 @@ chronological, `2` - alphanumeric. Default value: `2`.
 3.10. *g:ctrlspace_use_ruby_bindings*
 
 If set to `1`, the plugin will try to use your compiled in Ruby bindings to
-increase the speed of fuzzy search algorithm. Regex operations are much faster
-in Ruby than in VimScript. Default value: `1`.
+increase the speed of the plugin (e.g. while fuzzy search, since regex
+operations are much faster in Ruby than in VimScript). Default value: `1`.
 
 To see if you have Ruby bindings enabled you can use the command `:version`
 and see if there is a `+ruby` entry. Or just try the following one: >
