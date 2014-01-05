@@ -2285,8 +2285,6 @@ function! <SID>display_list(displayedbufs, buflist)
     endif
 
     silent! put! =buftext
-    " is there any way to NOT delete into a register? bummer...
-    "normal! Gdd$
     normal! GkJ
     let fill = <SID>make_filler()
     while winheight(0) > line(".")
