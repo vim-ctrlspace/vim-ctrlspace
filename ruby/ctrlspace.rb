@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module CtrlSpace
   def self.find_subsequence(bufname, offset, search_letters)
     positions      = []
@@ -53,5 +55,53 @@ module CtrlSpace
     end
 
     noise
+  end
+
+  def self.prepare_buftext_to_display(buflist)
+    columns                      = VIM.evaluate("&columns")
+    unicode_font                 = VIM.evaluate("g:ctrlspace_unicode_font") > 0
+    file_mode                    = VIM.evaluate("s:file_mode") > 0
+    workspace_mode               = VIM.evaluate("s:workspace_mode") > 0
+    preview_mode                 = VIM.evaluate("s:preview_mode") > 0
+    active_workspace_name        = VIM.evaluate("s:active_workspace_name")
+    active_workspace_digest      = VIM.evaluate("s:active_workspace_digest")
+
+    buftext                      = ""
+
+    buflist.each do |entry|
+      bufname = entry["raw"]
+
+      if bufname.length + 6 > columns
+        dots_symbol = unicode_font ? "…" : "..."
+        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + 6 + dots_symbol.length)..-1]}"
+      end
+
+      if !file_mode && !workspace_mode
+        indicators = " "
+
+        if preview_mode && (VIM.evaluate("s:preview_mode_original_buffer") == entry["number"])
+          indicators << (unicode_font ? "☆" : "*")
+        elsif VIM.evaluate("bufwinnr(#{entry["number"]})") != -1
+          indicators << (unicode_font ? "★" : "*")
+        end
+
+        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
+
+        bufname << indicators if indicators.length > 1
+      elsif workspace_mode
+        if entry["raw"] == active_workspace_name
+          bufname << (unicode_font ? " ★" : " *")
+          bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+        end
+      end
+
+      while bufname.length < columns
+        bufname << " "
+      end
+
+      buftext << "  #{bufname}\n"
+    end
+
+    buftext
   end
 end

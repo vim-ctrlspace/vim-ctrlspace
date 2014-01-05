@@ -169,7 +169,6 @@ function! <SID>add_project_root(directory)
     call add(lines, "CS_PROJECT_ROOT: " . root)
   endfor
 
-
   call writefile(lines, cache_file)
 endfunction
 
@@ -497,8 +496,8 @@ function! <SID>tab_title(tabnr, bufnr, bufname)
 
   if empty(title)
     if bufname ==# "__CS__"
-      if s:preview_mode && exists("s:preview_mode_orginal_buffer")
-        let bufnr = s:preview_mode_orginal_buffer
+      if s:preview_mode && exists("s:preview_mode_original_buffer")
+        let bufnr = s:preview_mode_original_buffer
       else
         let bufnr = winbufnr(t:ctrlspace_start_window)
       endif
@@ -1187,45 +1186,53 @@ function! <SID>restore_search_letters(direction)
   call <SID>ctrlspace_toggle(1)
 endfunction
 
-function! <SID>prepare_buflist_to_display(buflist)
-  for entry in a:buflist
-    let bufname = entry.raw
+function! <SID>prepare_buftext_to_display(buflist)
+  if has("ruby") && g:ctrlspace_use_ruby_bindings
+    ruby VIM.command("return '#{CtrlSpace.prepare_buftext_to_display(VIM.evaluate('a:buflist'))}'")
+  else
+    let buftext = ""
 
-    if strlen(bufname) + 6 > &columns
-      if g:ctrlspace_unicode_font
-        let dots_symbol = "…"
-        let dots_symbol_size = 1
-      else
-        let dots_symbol = "..."
-        let dots_symbol_size = 3
+    for entry in a:buflist
+      let bufname = entry.raw
+
+      if strlen(bufname) + 6 > &columns
+        if g:ctrlspace_unicode_font
+          let dots_symbol = "…"
+          let dots_symbol_size = 1
+        else
+          let dots_symbol = "..."
+          let dots_symbol_size = 3
+        endif
+
+        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
       endif
 
-      let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
-    endif
+      if !s:file_mode && !s:workspace_mode
+        let bufname = <SID>decorate_with_indicators(bufname, entry.number)
+      elseif s:workspace_mode
+        if entry.raw ==# s:active_workspace_name
+          let bufname .= g:ctrlspace_unicode_font ? " ★" : " *"
 
-    if !s:file_mode && !s:workspace_mode
-      let bufname = <SID>decorate_with_indicators(bufname, entry.number)
-    elseif s:workspace_mode
-      if entry.raw ==# s:active_workspace_name
-        let bufname .= g:ctrlspace_unicode_font ? " ★" : " *"
-
-        if s:active_workspace_digest !=# <SID>create_workspace_digest()
-          let bufname .= "+"
+          if s:active_workspace_digest !=# <SID>create_workspace_digest()
+            let bufname .= "+"
+          endif
         endif
       endif
-    endif
 
-    while strlen(bufname) < &columns
-      let bufname .= " "
-    endwhile
+      while strlen(bufname) < &columns
+        let bufname .= " "
+      endwhile
 
-    " handle wrong strlen for unicode dots symbol
-    if g:ctrlspace_unicode_font && bufname =~ "…"
-      let bufname .= "  "
-    endif
+      " handle wrong strlen for unicode dots symbol
+      if g:ctrlspace_unicode_font && bufname =~ "…"
+        let bufname .= "  "
+      endif
 
-    let entry.text = "  " . bufname . "\n"
-  endfor
+      let buftext .= "  " . bufname . "\n"
+    endfor
+
+    return buftext
+  endif
 endfunction
 
 function! <SID>project_root_found()
@@ -1296,9 +1303,8 @@ function! <SID>ctrlspace_toggle(internal)
     if empty(s:files)
       echo g:ctrlspace_symbols.cs . " - Collecting files..."
 
-      let s:files            = []
-      let s:all_files_cached = []
-
+      let s:files             = []
+      let s:all_files_cached  = []
 
       let i = 1
 
@@ -1311,11 +1317,12 @@ function! <SID>ctrlspace_toggle(internal)
 
         call add(s:files, fname_modified)
         call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
+
         let i += 1
       endfor
 
-      call <SID>prepare_buflist_to_display(s:all_files_cached)
       call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+      let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
       echo g:ctrlspace_symbols.cs . " - Collecting files... Done (" . len(s:files) . ")."
@@ -1519,7 +1526,7 @@ endfunction
 function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ' '
 
-  if s:preview_mode && (s:preview_mode_orginal_buffer == a:bufnum)
+  if s:preview_mode && (s:preview_mode_original_buffer == a:bufnum)
     let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
     let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
@@ -1592,8 +1599,8 @@ function! <SID>kill(buflistnr, final)
     call <SID>go_to_start_window()
 
     if s:preview_mode
-      exec ":b " . s:preview_mode_orginal_buffer
-      unlet s:preview_mode_orginal_buffer
+      exec ":b " . s:preview_mode_original_buffer
+      unlet s:preview_mode_original_buffer
       let s:preview_mode = 0
     endif
   endif
@@ -2261,7 +2268,7 @@ function! <SID>display_list(displayedbufs, buflist)
   setlocal modifiable
   if a:displayedbufs > 0
     if s:file_mode && empty(s:search_letters)
-      let buflist = a:buflist
+      let buftext = s:all_files_buftext
     else
       if !empty(s:search_letters)
         call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
@@ -2274,15 +2281,8 @@ function! <SID>display_list(displayedbufs, buflist)
       " trim the list in search mode
       let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
 
-      call <SID>prepare_buflist_to_display(buflist)
+      let buftext = <SID>prepare_buftext_to_display(buflist)
     endif
-
-    " input the buffer list, delete the trailing newline, & fill with blank lines
-    let buftext = ""
-
-    for bufentry in buflist
-      let buftext .= bufentry.text
-    endfor
 
     silent! put! =buftext
     " is there any way to NOT delete into a register? bummer...
@@ -2515,7 +2515,7 @@ endfunction
 function! <SID>preview_buffer(nr, ...)
   if !s:preview_mode
     let s:preview_mode = 1
-    let s:preview_mode_orginal_buffer = winbufnr(t:ctrlspace_start_window)
+    let s:preview_mode_original_buffer = winbufnr(t:ctrlspace_start_window)
   endif
 
   let nr = a:nr ? a:nr : <SID>get_selected_buffer()
