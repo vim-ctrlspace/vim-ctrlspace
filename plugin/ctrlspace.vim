@@ -606,7 +606,10 @@ function! ctrlspace#tabline()
 endfunction
 
 function! <SID>new_tab_label()
-  let t:ctrlspace_label = <SID>get_input("Label for tab " . tabpagenr() . ": ", exists("t:ctrlspace_label") ? t:ctrlspace_label : "")
+  let t:ctrlspace_label = <SID>get_input(
+        \ "Label for tab " . tabpagenr() . ": ",
+        \ exists("t:ctrlspace_label") ? t:ctrlspace_label : ""
+        \ )
 endfunction
 
 function! <SID>tab_contains_modified_buffers(tabnr)
@@ -1892,14 +1895,21 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
+      call <SID>set_status_line()
+      redraws
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm" . tabpagenr()
+      call <SID>set_status_line()
+      redraws
     elseif a:key ==# "-"
       silent! exe "tabm" . (tabpagenr() - 1)
+      call <SID>set_status_line()
+      redraws
     elseif a:key ==# "_"
       let t:ctrlspace_label = ""
+      call <SID>set_status_line()
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -1995,14 +2005,21 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label()
+      call <SID>set_status_line()
+      redraws
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm" . tabpagenr()
+      call <SID>set_status_line()
+      redraws
     elseif a:key ==# "-"
       silent! exe "tabm" . (tabpagenr() - 2)
+      call <SID>set_status_line()
+      redraws
     elseif a:key ==# "_"
       let t:ctrlspace_label = ""
+      call <SID>set_status_line()
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
