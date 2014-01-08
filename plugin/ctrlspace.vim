@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.2.8
+" Version:      3.2.9
 "
 " The MIT License (MIT)
 
@@ -89,15 +89,26 @@ call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
 call <SID>define_config_variable("workspace_file",
-      \ [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"])
+      \ [
+      \   ".git/cs_workspaces",
+      \   ".svn/cs_workspaces",
+      \   ".hg/cs_workspaces",
+      \   ".bzr/cs_workspaces",
+      \   "CVS/cs_workspaces",
+      \   ".cs_workspaces"
+      \ ])
 call <SID>define_config_variable("save_workspace_on_exit", 0)
 call <SID>define_config_variable("load_last_workspace_on_start", 0)
 call <SID>define_config_variable("cache_dir", expand($HOME))
-call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]) " make empty to disable
+
+" make empty to disable
+call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"])
+
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("show_key_info", 0)
+call <SID>define_config_variable("show_tab_info", !&showtabline)
 call <SID>define_config_variable("search_timing", [50, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
@@ -185,8 +196,9 @@ function! <SID>init_key_names()
   let control_letters = join(control_letters_list, " ")
 
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d Bar BSlash " .
-                    \ "MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse Down Up Home End Left Right PageUp PageDown"
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d " .
+                    \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
+                    \ "Down Up Home End Left Right PageUp PageDown"
 
   if !g:ctrlspace_use_mouse_and_arrows
     let special_chars .= " Esc"
@@ -247,6 +259,29 @@ function! ctrlspace#bufferlist(tabnr)
   endfor
 
   return buffer_list
+endfunction
+
+function! ctrlspace#statusline_tab_info_segment(...)
+  let last_tab            = tabpagenr("$")
+  let current_tab         = tabpagenr()
+  let separator           = (a:0 > 0) ? a:1 : " "
+  let winnr               = tabpagewinnr(current_tab)
+  let buflist             = tabpagebuflist(current_tab)
+  let bufnr               = buflist[winnr - 1]
+  let bufname             = bufname(bufnr)
+  let bufs_number         = len(ctrlspace#bufferlist(current_tab))
+  let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
+  let title               = <SID>tab_title(current_tab, bufnr, bufname)
+
+  let tabinfo             = separator . current_tab . bufs_number_to_show . "/" . last_tab . " "
+
+  if <SID>tab_contains_modified_buffers(current_tab)
+    let tabinfo .= "+ "
+  endif
+
+  let tabinfo .= title . separator
+
+  return tabinfo
 endfunction
 
 function! ctrlspace#statusline_key_info_segment(...)
@@ -2122,14 +2157,24 @@ function! <SID>set_status_line()
     hi default link User1 LineNr
     let &l:statusline = "%1*\ \ " . g:ctrlspace_symbols.cs . "\ \ %*\ \ " . ctrlspace#statusline_info_segment()
 
-    if g:ctrlspace_show_key_info
-      let key_info = "  %=%1* " . ctrlspace#statusline_key_info_segment() . " "
+    if g:ctrlspace_show_key_info || g:ctrlspace_show_tab_info
+      let info = "  %=%1* "
 
-      if strlen(&l:statusline) + strlen(key_info) > &columns
-        let key_info = "  %=%1* ? ... "
+      if g:ctrlspace_show_tab_info
+        let info .= ctrlspace#statusline_tab_info_segment()
       endif
 
-      let &l:statusline .= key_info
+      if g:ctrlspace_show_key_info
+        let key_info = ctrlspace#statusline_key_info_segment() . " "
+
+        if strlen(&l:statusline) + strlen(info) + strlen(key_info) > &columns
+          let key_info = " ? ... "
+        endif
+
+        let info .= key_info
+      endif
+
+      let &l:statusline .= info
     endif
   endif
 endfunction

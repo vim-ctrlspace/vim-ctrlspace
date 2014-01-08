@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-01
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-08
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.2.8~
+                               Vim-CtrlSpace 3.2.9~
 
                             Vim Workspace Controller
 
@@ -884,7 +884,13 @@ addition to the |wildignore| option in Vim. Default value: `'\v(tmp|temp)[\/]'`.
 Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
 (`0`). Default value: `0`.
 
-3.22. *g:ctrlspace_search_timing*
+3.22. *g:ctrlspace_show_tab_info*
+
+Should the tab info be visible (`1`) or not (`0`). Default value:
+`!&showtabline`. That means that it will be enabled by default if you turn off
+the default tabline.
+
+3.23. *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -893,7 +899,7 @@ value, then that value will be used for search delay. In all other cases the
 delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50,500]`.
 
-3.23. Colors~
+3.24. Colors~
 
 The plugin allows you to define its colors entirely. By default it comes with
 pure black and white color set. You are supposed to tweak its colors on your own
@@ -970,11 +976,17 @@ Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (i.e. in
 plugins like LightLine (https://github.com/itchyny/lightline.vim))
 
-4.2.4. *ctrlspace#tabline()*
+4.2.4. *ctrlspace#statusline_tab_info_segment(...)*
+
+Returns the info about the current tab (tab number, label, etc.). It is useful
+if you don't use the custom tabline string (or perhaps you have set
+`showtabline` to `0` (see `:help` `showtabline` for more info)).
+
+4.2.5. *ctrlspace#tabline()*
 
 Provides the custom tabline string.
 
-4.2.5. *ctrlspace#guitablabel()*
+4.2.6. *ctrlspace#guitablabel()*
 
 Provides the custom label for GVim's tabs.
 

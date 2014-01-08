@@ -1459,6 +1459,11 @@ value: `'\v(tmp|temp)[\/]'`
 Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
 (`0`). Default value: `0`.
 
+### `g:ctrlspace_show_tab_info`
+
+Should the _tab info_ be visible (`1`) or not (`0`). Default value:
+`!&showtabline`.
+
 ### `g:ctrlspace_search_timing`
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
@@ -1543,6 +1548,12 @@ line integration (i.e. in plugins like
 Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (i.e. in
 plugins like [LightLine](https://github.com/itchyny/lightline.vim))
+
+#### `ctrlspace#statusline_tab_info_segment(...)`
+
+Returns the info about the current tab (tab number, label, etc.). It is useful
+if you don't use the custom tabline string (or perhaps you have set
+`showtabline` to `0` (see `:help showtabline` for more info)).
 
 #### `ctrlspace#tabline()`
 
