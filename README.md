@@ -1462,7 +1462,8 @@ Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
 ### `g:ctrlspace_show_tab_info`
 
 Should the _tab info_ be visible (`1`) or not (`0`). Default value:
-`!&showtabline`.
+`!&showtabline`. That means that it will be enabled by default if you turn off
+the default tabline.
 
 ### `g:ctrlspace_search_timing`
 
