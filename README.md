@@ -261,7 +261,8 @@ If GUI tabs are detected, this option will also set the proper function to
 
 Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
 plugin lets you to perform many classic tab actions easily e.g. switching (`[`
-and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`). 
+and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`). The
+list of all tabs can be seen with `l`.
 
 You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
 useful if you want to split your tab (your group of buffers) into smaller ones.
@@ -431,7 +432,7 @@ full available keys:
 </tr>
 
 <tr>
-<td rowspan="9">Tabs</td>
+<td rowspan="9">Tabs operations</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
 </tr>
@@ -458,13 +459,12 @@ full available keys:
 
 <tr>
 <td><code>=</code></td>
-<td>Changes the tab name (leave it blank to remove the custom name)</td>
+<td>Changes the tab name</td>
 </tr>
 
 <tr>
 <td><code>&#95;</code></td>
-<td>Removes a custom tab name (the same as <code>=</code> with a blank
-name)</td>
+<td>Removes a custom tab name</td>
 </tr>
 
 <tr>
@@ -485,7 +485,7 @@ name)</td>
 
 <tr>
 <td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin mappings</td>
+<td>Closes the list <br/>&#42; - depends on plugin settings</td>
 </tr>
 
 <tr>
@@ -744,7 +744,7 @@ bar)</td>
 
 <tr>
 <td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin mappings</td>
+<td>Closes the list <br/>&#42; - depends on plugin settings</td>
 </tr>
 
 <tr>
@@ -754,7 +754,7 @@ found)</td>
 </tr>
 
 <tr>
-<td rowspan="9">Tabs</td>
+<td rowspan="9">Tabs operations</td>
 <td><code>T</code></td>
 <td>Creates a new tab and stays in the plugin window</td>
 </tr>
@@ -781,7 +781,7 @@ found)</td>
 
 <tr>
 <td><code>=</code></td>
-<td>Changes the tab name (leave it blank to remove the custom name)</td>
+<td>Changes the tab name</td>
 </tr>
 
 <tr>
@@ -1016,6 +1016,147 @@ found)</td>
 <tr>
 <td><code>d</code></td>
 <td>Deletes the selected workspace</td>
+</tr>
+
+<tr>
+<td rowspan="8">Moving</td>
+<td><code>j</code></td>
+<td>Moves the selection bar down</td>
+</tr>
+
+<tr>
+<td><code>k</code></td>
+<td>Moves the selection bar up</td>
+</tr>
+
+<tr>
+<td><code>J</code></td>
+<td>Moves the selection bar to the bottom of the list</td>
+</tr>
+
+<tr>
+<td><code>K</code></td>
+<td>Moves the selection bar to the top of the list</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + f</code></td>
+<td>Moves the selection bar one screen down (just like standard Vim
+behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + b</code></td>
+<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + d</code></td>
+<td>Moves the selection bar a half screen down (just like standard Vim
+behavior)</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + u</code></td>
+<td>Moves the selection bar a half screen up (just like standard Vim
+behavior)</td>
+</tr>
+
+</tbody>
+
+</table>
+
+#### Tablist Mode
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>▭▬▭</code></td>
+<td><code>TABS</code></td>
+</tr>
+</tbody>
+</table>
+
+In this mode you can list all tabs. It is useful if the tabline too long to be
+rendered properly or it is just turned off via `showtabline` option.
+
+##### Keys Reference
+
+<table>
+
+<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td>Help</td>
+<td><code>?</code></td>
+<td>Toggles info about available keys (depends on space left in the status
+bar)</td>
+</tr>
+
+<tr>
+<td rowspan="3">Opening and closing</td>
+<td><code>Return</code></td>
+<td>Opens a selected tab</td>
+</tr>
+
+<tr>
+<td><code>Space</code></td>
+<td>Opens a selected tab but stays in the <b>Vim-CtrlSpace</b> window</td>
+</tr>
+
+<tr>
+<td><code>c</code></td>
+<td>Closes the selected tab, then closes forgotten buffers and empty nonames</td>
+</tr>
+
+<tr>
+<td rowspan="2">Exiting</td>
+<td><code>Backspace</code>, <code>l</code></td>
+<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+</tr>
+
+<tr>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on plugin settings</td>
+</tr>
+
+<tr>
+<td rowspan="6">Tabs operations</td>
+<td><code>-</code></td>
+<td>Moves the current tab backward (decreases its number)</td>
+</tr>
+
+<tr>
+<td><code>+</code></td>
+<td>Moves the selected forward (increases its number)</td>
+</tr>
+
+<tr>
+<td><code>=</code></td>
+<td>Changes the selected tab name</td>
+</tr>
+
+<tr>
+<td><code>&#95;</code></td>
+<td>Removes the selected tab name</td>
+</tr>
+
+<tr>
+<td><code>[</code></td>
+<td>Goes to the previous tab</td>
+</tr>
+
+<tr>
+<td><code>]</code></td>
+<td>Goes to the next tab</td>
 </tr>
 
 <tr>

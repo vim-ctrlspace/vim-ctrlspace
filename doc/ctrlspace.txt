@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.2.9~
+                               Vim-CtrlSpace 3.3.0~
 
                             Vim Workspace Controller
 
@@ -120,7 +120,8 @@ If GUI tabs are detected, this option will also set the proper function to
 
 Tabs in Vim-CtrlSpace (like in Vim) are groups of related buffers. The
 plugin lets you to perform many classic tab actions easily e.g. switching (`[`
-and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`).
+and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`). The
+list of all tabs can be seen with `l`.
 
 You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
 useful if you want to split your tab (your group of buffers) into smaller ones.
@@ -218,7 +219,7 @@ C-n       | Brings the next searched text - just the opposite to `C-p`
 ----------+----------------------------------------------------------------
 o         | Toggles the sorting order (chronological vs alphanumeric)
 
-2.5.1.1.4. Tabs~
+2.5.1.1.4. Tabs operations~
 
 Key       | Action
 ==========+================================================================
@@ -232,9 +233,9 @@ Y         | Copies (yanks) the current tab into a new one
 ----------+----------------------------------------------------------------
 +         | Moves the current tab to the right (increases its number)
 ----------+----------------------------------------------------------------
-=         | Changes the tab name (leave it blank to remove the custom name)
+=         | Changes the tab name
 ----------+----------------------------------------------------------------
-_         | Removes a custom tab name (the same as `=` with a blank name)
+_         | Removes a custom tab name
 ----------+----------------------------------------------------------------
 [         | Goes to the previous (left) tab
 ----------+----------------------------------------------------------------
@@ -406,7 +407,7 @@ C-Space   |
 Q         | Quits Vim (but with a prompt if unsaved workspaces or tab
           | buffers were found)
 
-2.5.3.1.4. Tabs~
+2.5.3.1.4. Tabs operations~
 
 Key       | Action
 ==========+================================================================
@@ -420,7 +421,7 @@ Y         | Copies (yanks) the current tab into a new one
 ----------+----------------------------------------------------------------
 +         | Moves the current tab to the right (increases its number)
 ----------+----------------------------------------------------------------
-=         | Changes the tab name (leave it blank to remove the custom name)
+=         | Changes the tab name
 ----------+----------------------------------------------------------------
 _         | Removes a custom tab name
 ----------+----------------------------------------------------------------
@@ -595,6 +596,82 @@ C-d       | Moves the selection bar a half screen down
 ----------+----------------------------------------------------------------
 C-u       | Moves the selection bar a half screen up
           | (just like standard Vim behavior)
+
+2.5.5. Tablist Mode
+
+Unicode Symbol | ASCII Symbol
+===============+=============
+      ▭▬▭      |    TABS
+
+In this mode you can list all tabs. It is useful if the tabline too long to be
+rendered properly or it is just turned off via `showtabline` option.
+
+2.5.5.1. Keys Reference
+
+2.5.5.1.1. Help~
+
+Key       | Action
+==========+================================================================
+?         | Toggles info about available keys
+          | (depends on space left in the status bar)
+
+2.5.5.1.2. Opening and closing~
+
+Key       | Action
+==========+================================================================
+CR        | Opens a selected tab
+----------+----------------------------------------------------------------
+Space     | Opens a selected tab but stays in the Vim-CtrlSpace window
+----------+----------------------------------------------------------------
+c         | Closes the selected tab, then closes forgotten buffers and
+          | empty nonames
+
+2.5.5.1.3. Exiting~
+
+Key       | Action
+==========+================================================================
+Backspace | Goes back (here it will return to Single Tab or All Tabs mode)
+l         |
+----------+----------------------------------------------------------------
+q         | Closes the list - depends on settings
+Esc       |
+C-Space   |
+
+2.5.5.1.4. Tabs operations~
+
+Key       | Action
+==========+================================================================
+-         | Moves the current tab backward (decreases its number)
+----------+----------------------------------------------------------------
++         | Moves the selected forward (increases its number)
+----------+----------------------------------------------------------------
+=         | Changes the selected tab name
+----------+----------------------------------------------------------------
+_         | Removes the selected tab name
+----------+----------------------------------------------------------------
+[         | Goes to the previous tab
+----------+----------------------------------------------------------------
+]         | Goes to the next tab
+
+2.5.5.1.5. Moving~
+
+Key       | Action
+==========+================================================================
+j         | Moves the selection bar down
+----------+----------------------------------------------------------------
+k         | Moves the selection bar up
+----------+----------------------------------------------------------------
+J         | Moves the selection bar to the bottom of the list
+----------+----------------------------------------------------------------
+K         | Moves the selection bar to the top of the list
+----------+----------------------------------------------------------------
+C-f       | Moves the selection bar one screen down
+----------+----------------------------------------------------------------
+C-b       | Moves the selection bar one screen up
+----------+----------------------------------------------------------------
+C-d       | Moves the selection bar a half screen down
+----------+----------------------------------------------------------------
+C-u       | Moves the selection bar a half screen up
 
 2.6. Auxiliary Modes~
 
