@@ -115,7 +115,7 @@ call <SID>define_config_variable("search_timing", [50, 500])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
-command! -nargs=0 -range CtrlSpaceTabLabelClear :call <SID>remove_tab_label(0)
+command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
@@ -428,8 +428,8 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "^u")
   else
     call add(keys, "CR")
-    call add(keys, "Sp")
     call add(keys, "Tab")
+    call add(keys, "Sp")
     call add(keys, "BS")
 
     if !g:ctrlspace_use_mouse_and_arrows
@@ -1950,6 +1950,7 @@ function! <SID>keypressed(key)
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
+      call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "Space"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)

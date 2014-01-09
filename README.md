@@ -1104,12 +1104,12 @@ bar)</td>
 <tr>
 <td rowspan="3">Opening and closing</td>
 <td><code>Return</code></td>
-<td>Opens a selected tab</td>
+<td>Opens a selected tab and enters the Single Tab mode</td>
 </tr>
 
 <tr>
 <td><code>Space</code></td>
-<td>Opens a selected tab but stays in the <b>Vim-CtrlSpace</b> window</td>
+<td>Opens a selected tab but stays in the Tablist mode</td>
 </tr>
 
 <tr>
@@ -1654,6 +1654,10 @@ sophisticated plugin integration.
 
 Allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or
 add/remove) a custom tab name.
+
+#### `:CtrlSpaceClearTabLabel`
+
+Removes a custom tab label.
 
 #### `:CtrlSpaceSaveWorkspace [my workspace]`
 
