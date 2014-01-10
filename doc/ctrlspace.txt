@@ -601,7 +601,7 @@ C-u       | Moves the selection bar a half screen up
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
-      ▭▬▭      |    TABS
+      ∘∘∘      |    TABS
 
 In this mode you can list all tabs. It is useful if the tabline too long to be
 rendered properly or it is just turned off via `showtabline` option.

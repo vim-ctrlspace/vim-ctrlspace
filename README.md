@@ -1077,7 +1077,7 @@ behavior)</td>
 </thead>
 <tbody>
 <tr>
-<td><code>▭▬▭</code></td>
+<td><code>∘∘∘</code></td>
 <td><code>TABS</code></td>
 </tr>
 </tbody>

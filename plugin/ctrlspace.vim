@@ -49,7 +49,7 @@ function! <SID>define_symbols()
           \ "tab"     : "⊙",
           \ "all"     : "∷",
           \ "add"     : "○",
-          \ "tabs"    : "▭▬▭",
+          \ "tabs"    : "∘∘∘",
           \ "load"    : "⋮ → ∙",
           \ "save"    : "∙ → ⋮",
           \ "ord"     : "₁²₃",
