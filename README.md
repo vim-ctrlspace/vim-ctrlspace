@@ -1102,8 +1102,13 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="3">Opening and closing</td>
+<td rowspan="4">Opening and closing</td>
 <td><code>Return</code></td>
+<td>Opens a selected tab</td>
+</tr>
+
+<tr>
+<td><code>Tab</code></td>
 <td>Opens a selected tab and enters the Single Tab mode</td>
 </tr>
 

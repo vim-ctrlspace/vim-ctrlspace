@@ -402,6 +402,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "^u")
   elseif s:tablist_mode
     call add(keys, "CR")
+    call add(keys, "Tab")
     call add(keys, "Sp")
     call add(keys, "BS")
 
@@ -1947,6 +1948,10 @@ function! <SID>keypressed(key)
     endif
   elseif s:tablist_mode
     if a:key ==# "CR"
+      let tab_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . tab_nr . "gt"
+    elseif a:key ==# "Tab"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"

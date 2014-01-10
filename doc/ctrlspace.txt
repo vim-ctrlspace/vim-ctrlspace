@@ -619,7 +619,9 @@ Key       | Action
 
 Key       | Action
 ==========+================================================================
-CR        | Opens a selected tab and enters the Single Tab mode
+CR        | Opens a selected tab
+----------+----------------------------------------------------------------
+Tab       | Opens a selected tab and enters the Single Tab mode
 ----------+----------------------------------------------------------------
 Space     | Opens a selected tab but stays in the Tablist mode
 ----------+----------------------------------------------------------------
