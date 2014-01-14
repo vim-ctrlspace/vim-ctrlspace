@@ -72,13 +72,13 @@ module CtrlSpace
     buflist.each do |entry|
       bufname = (RUBY_VERSION.to_f < 1.9) ? entry["raw"].to_s : entry["raw"].to_s.force_encoding("UTF-8")
 
-      if bufname.length + 6 > columns
+      if bufname.length + 7 > columns
         dots_symbol = unicode_font ? "…" : "..."
-        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + 6 + dots_symbol.length)..-1]}"
+        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + 7 + dots_symbol.length)..-1]}"
       end
 
       if !file_mode && !workspace_mode && !tablist_mode
-        indicators = " "
+        indicators = [""]
 
         if preview_mode && (VIM.evaluate("s:preview_mode_original_buffer") == entry["number"])
           indicators << (unicode_font ? "☆" : "*")
@@ -88,17 +88,17 @@ module CtrlSpace
 
         indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
 
-        bufname << indicators if indicators.length > 1
+        bufname << indicators.join(" ") if indicators.length > 1
       elsif workspace_mode
         if entry["raw"] == active_workspace_name
           bufname << (unicode_font ? " ★" : " *")
-          bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << " +" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
         end
       elsif tablist_mode
-        indicators = " "
+        indicators = [""]
         indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
         indicators << "+" if VIM.evaluate("<SID>tab_contains_modified_buffers(#{entry["number"]})") > 0
-        bufname << indicators if indicators.length > 1
+        bufname << indicators.join(" ") if indicators.length > 1
       end
 
       while bufname.length < columns

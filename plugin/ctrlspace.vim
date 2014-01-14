@@ -1279,7 +1279,7 @@ function! <SID>prepare_buftext_to_display(buflist)
     for entry in a:buflist
       let bufname = entry.raw
 
-      if strlen(bufname) + 6 > &columns
+      if strlen(bufname) + 7 > &columns
         if g:ctrlspace_unicode_font
           let dots_symbol = "…"
           let dots_symbol_size = 1
@@ -1288,7 +1288,7 @@ function! <SID>prepare_buftext_to_display(buflist)
           let dots_symbol_size = 3
         endif
 
-        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 6 + dots_symbol_size)
+        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 7 + dots_symbol_size)
       endif
 
       if !s:file_mode && !s:workspace_mode && !s:tablist_mode
@@ -1298,22 +1298,22 @@ function! <SID>prepare_buftext_to_display(buflist)
           let bufname .= g:ctrlspace_unicode_font ? " ★" : " *"
 
           if s:active_workspace_digest !=# <SID>create_workspace_digest()
-            let bufname .= "+"
+            let bufname .= " +"
           endif
         endif
       elseif s:tablist_mode
-        let indicators = " "
+        let indicators = [""]
 
         if entry.number == tabpagenr()
-          let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+          call add(indicators, g:ctrlspace_unicode_font ? "★" : "*")
         endif
 
         if <SID>tab_contains_modified_buffers(entry.number)
-          let indicators .= "+"
+          call add(indicators, "+")
         endif
 
-        if strlen(indicators) > 1
-          let bufname .= indicators
+        if len(indicators) > 1
+          let bufname .= join(indicators, " ")
         endif
       endif
 
@@ -1638,20 +1638,20 @@ function! <SID>unique_list(list)
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)
-  let indicators = ' '
+  let indicators = [""]
 
   if s:preview_mode && (s:preview_mode_original_buffer == a:bufnum)
-    let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
+    call add(indicators, g:ctrlspace_unicode_font ? "☆" : "*")
   elseif bufwinnr(a:bufnum) != -1
-    let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+    call add(indicators, g:ctrlspace_unicode_font ? "★" : "*")
   endif
 
   if getbufvar(a:bufnum, "&modified")
-    let indicators .= "+"
+    call add(indicators, "+")
   endif
 
   if len(indicators) > 1
-    return a:name . indicators
+    return a:name . join(indicators, " ")
   else
     return a:name
   endif
