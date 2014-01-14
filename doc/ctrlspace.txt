@@ -619,9 +619,9 @@ Key       | Action
 
 Key       | Action
 ==========+================================================================
-CR        | Opens a selected tab
+CR        | Opens a selected tab and enters the Single Tab mode
 ----------+----------------------------------------------------------------
-Tab       | Opens a selected tab and enters the Single Tab mode
+Tab       | Opens a selected tab and closes the plugin window
 ----------+----------------------------------------------------------------
 Space     | Opens a selected tab but stays in the Tablist mode
 ----------+----------------------------------------------------------------

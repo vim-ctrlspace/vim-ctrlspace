@@ -1947,11 +1947,11 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgup")
     endif
   elseif s:tablist_mode
-    if a:key ==# "CR"
+    if a:key ==# "Tab"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
-    elseif a:key ==# "Tab"
+    elseif a:key ==# "CR"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"

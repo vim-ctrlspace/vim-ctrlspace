@@ -1104,12 +1104,12 @@ bar)</td>
 <tr>
 <td rowspan="4">Opening and closing</td>
 <td><code>Return</code></td>
-<td>Opens a selected tab</td>
+<td>Opens a selected tab and enters the Single Tab mode</td>
 </tr>
 
 <tr>
 <td><code>Tab</code></td>
-<td>Opens a selected tab and enters the Single Tab mode</td>
+<td>Opens a selected tab and closes the plugin window</td>
 </tr>
 
 <tr>
