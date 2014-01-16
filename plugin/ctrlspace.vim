@@ -1113,7 +1113,7 @@ function! <SID>load_workspace_externally(bang, name)
     endif
 
     if !empty(tab_label)
-      call add(commands, "let t:ctrlspace_label = '" . tab_label . "'")
+      call add(commands, "let t:ctrlspace_label = \"" . escape(tab_label, '"') . "\"")
     endif
   endfor
 
