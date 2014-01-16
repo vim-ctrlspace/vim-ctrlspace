@@ -646,7 +646,7 @@ function! <SID>new_tab_label(tabnr)
         \ exists("t:ctrlspace_label") ? t:ctrlspace_label : ""
         \ )
   if !empty(label)
-    call settabvar(a:tabnr, "ctrlspace_label", label)
+    call settabvar(tabnr, "ctrlspace_label", label)
   endif
 endfunction
 
