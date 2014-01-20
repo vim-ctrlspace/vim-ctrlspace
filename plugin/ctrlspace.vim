@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.0
+" Version:      3.3.1
 "
 " The MIT License (MIT)
 
@@ -416,6 +416,8 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "_")
     call add(keys, "[")
     call add(keys, "]")
+    call add(keys, "t")
+    call add(keys, "y")
     call add(keys, "l")
     call add(keys, "c")
     call add(keys, "q")
@@ -1970,6 +1972,24 @@ function! <SID>keypressed(key)
       silent! exe "normal! " . tab_nr . "gt"
       call <SID>ctrlspace_toggle(0)
       call <SID>close_tab()
+      call <SID>kill(0, 0)
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "t"
+      let tab_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . tab_nr . "gt"
+      call <SID>ctrlspace_toggle(0)
+      call <SID>tab_command("T")
+      call <SID>kill(0, 0)
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "y"
+      let tab_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . tab_nr . "gt"
+      call <SID>ctrlspace_toggle(0)
+      call <SID>tab_command("Y")
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)

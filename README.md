@@ -1134,7 +1134,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="6">Tabs operations</td>
+<td rowspan="8">Tabs operations</td>
 <td><code>-</code></td>
 <td>Moves the current tab backward (decreases its number)</td>
 </tr>
@@ -1162,6 +1162,16 @@ bar)</td>
 <tr>
 <td><code>]</code></td>
 <td>Goes to the next tab</td>
+</tr>
+
+<tr>
+<td><code>t</code></td>
+<td>Creates a new tab nexto to the current one</td>
+</tr>
+
+<tr>
+<td><code>y</code></td>
+<td>Creates a copy of the current tab</td>
 </tr>
 
 <tr>

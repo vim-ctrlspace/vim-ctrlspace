@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-08
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-20
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.3.0~
+                               Vim-CtrlSpace 3.3.1~
 
                             Vim Workspace Controller
 
@@ -40,7 +40,7 @@ Its name follows the convention of naming similar plugins after their default
 mappings (like Command-T or CtrlP). Obviously, the plugin mapping is by
 default <C-Space>.
 
-1.1. Demo~
+1.1 Demo~
 
 Here's a small demonstration. Viewing in HD advised!
 
@@ -62,7 +62,7 @@ The Demo has been recorded with:
 ------------------------------------------------------------------------------
 2. Usage                                                       *ctrlspace-usage*
 
-2.1. Status Line~
+2.1 Status Line~
 
 Vim-CtrlSpace requires a status bar. If you are using a plugin customizing
 the status bar this could be a bit tricky. For example
@@ -75,7 +75,7 @@ set: >
 option and LightLine (https://github.com/itchyny/lightline.vim) will require
 to use custom status line segments, provided by Vim-CtrlSpace API.
 
-2.1.1. Status Line Symbols~
+2.1.1 Status Line Symbols~
 
 Unicode Symbol | ASCII Symbol | Description
 ===============+==============+===================================
@@ -101,7 +101,7 @@ Unicode Symbol | ASCII Symbol | Description
     авс        |      ABC     | Order buffers alphabetically
                |              | (in Single Tab and All Tabs modes)
 
-2.2. Tabline~
+2.2 Tabline~
 
 Vim-CtrlSpace can set a custom tabline. If the proper option is enabled
 (g:ctrlspace_use_tabline), the plugin will set a custom tabline for you. The
@@ -116,7 +116,7 @@ Desc    | Tab | Buffers | Modified | Name
 If GUI tabs are detected, this option will also set the proper function to
 `guitablabel`.
 
-2.3. Tab Management~
+2.3 Tab Management~
 
 Tabs in Vim-CtrlSpace (like in Vim) are groups of related buffers. The
 plugin lets you to perform many classic tab actions easily e.g. switching (`[`
@@ -135,7 +135,7 @@ Of course, the split shown in that example might be a bit dummy but in
 a typical project there are a lot of natural splits, like for example,
 backend and frontend layers.
 
-2.4. Project Root~
+2.4 Project Root~
 
 The plugin requires a project root to work properly. If you open the plugin
 window for the first time it will try to find out the possible root directory.
@@ -153,7 +153,7 @@ After checking all predecessors it will ask you to provide the root folder
 explicitly. After your acceptance that root folder will be stored pemanently in
 the `.cs_cache` file as serve as a known root later.
 
-2.5. Main Modes~
+2.5 Main Modes~
 
 The plugin offers you a few modes. In a modal editor like Vim this should not
 fear you ;). I believe its modes are very simple to recognize and understand.
@@ -168,7 +168,7 @@ Unicode Symbol | ASCII Symbol | Indicator
 ---------------+--------------+-------------------------
        ★       |       *      | Item visible (or active)
 
-2.5.1. Single Tab Mode~
+2.5.1 Single Tab Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -179,16 +179,16 @@ buffers related to the current tab. It's almost like a normal mode in Vim ;).
 It's like a root from you can follow many paths. Here's the full listing of
 full available keys:
 
-2.5.1.1. Keys Reference~
+2.5.1.1 Keys Reference~
 
-2.5.1.1.1. Help~
+2.5.1.1.1 Help~
 
 Key       | Action
 ==========+================================================================
 ?         | Toggles info about available keys
           | (depends on space left in the status bar)
 
-2.5.1.1.2. Opening~
+2.5.1.1.2 Opening~
 
 Key       | Action
 ==========+================================================================
@@ -204,7 +204,7 @@ s         | Opens selected buffer in a new horizontal split
 ----------+----------------------------------------------------------------
 t         | Opens selected buffer in a new tab
 
-2.5.1.1.3. Searching & sorting~
+2.5.1.1.3 Searching & sorting~
 
 Key       | Action
 ==========+================================================================
@@ -219,7 +219,7 @@ C-n       | Brings the next searched text - just the opposite to `C-p`
 ----------+----------------------------------------------------------------
 o         | Toggles the sorting order (chronological vs alphanumeric)
 
-2.5.1.1.4. Tabs operations~
+2.5.1.1.4 Tabs operations~
 
 Key       | Action
 ==========+================================================================
@@ -241,7 +241,7 @@ _         | Removes a custom tab name
 ----------+----------------------------------------------------------------
 ]         | Goes to the next (right) tab
 
-2.5.1.1.5. Exiting~
+2.5.1.1.5 Exiting~
 
 Key       | Action
 ==========+================================================================
@@ -254,7 +254,7 @@ C-Space   |
 Q         | Quits Vim (but with a prompt if unsaved workspaces or tab
           | buffers were found)
 
-2.5.1.1.6. Moving~
+2.5.1.1.6 Moving~
 
 Key       | Action
 ==========+================================================================
@@ -286,7 +286,7 @@ C-d       | Moves the selection bar a half screen down
 C-u       | Moves the selection bar a half screen up
           | (just like standard Vim behavior)
 
-2.5.1.1.7. Closing~
+2.5.1.1.7 Closing~
 
 Key       | Action
 ==========+================================================================
@@ -308,7 +308,7 @@ C         | Closes the current tab, then performs `F` (closes forgotten
           | (closes empty nonames)
 ----------+----------------------------------------------------------------
 
-2.5.1.1.8. Disk operations~
+2.5.1.1.8 Disk operations~
 
 Key       | Action
 ==========+================================================================
@@ -321,7 +321,7 @@ R         | Removes the selected buffer (file) entirely (from the disk too)
 ----------+----------------------------------------------------------------
 m         | Moves or renames the selected buffer (together with its file)
 
-2.5.1.1.9. Mode changing~
+2.5.1.1.9 Mode changing~
 
 Key       | Action
 ==========+================================================================
@@ -331,7 +331,7 @@ A         | Enters the Add (file) mode
 ----------+----------------------------------------------------------------
 w         | Enters the Workspace mode
 
-2.5.1.1.10. Workspace shortcuts~
+2.5.1.1.10 Workspace shortcuts~
 
 Key       | Action
 ==========+================================================================
@@ -340,7 +340,7 @@ S         | Saves the workspace immediately (or creates a new one if none)
 L         | Loads the last active workspace (if present)
 
 
-2.5.2. All Tabs Mode~
+2.5.2 All Tabs Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -351,7 +351,7 @@ available buffers (from all tabs and unrelated ones too). Some of keys presented
 in the Single Tab mode are not available here. The missing ones are `f` and
 `c` - as they are tightly coupled with the current tab.
 
-2.5.3. Add Mode~
+2.5.3 Add Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -369,16 +369,16 @@ consuming (I've noticed a lag for a project with over 2200 files). After that,
 the content of the project root directory is cached and available immediately.
 All the time you can force plugin to refresh the list with the `r` key.
 
-2.5.3.1. Keys Reference~
+2.5.3.1 Keys Reference~
 
-2.5.3.1.1. Help~
+2.5.3.1.1 Help~
 
 Key       | Action
 ==========+================================================================
 ?         | Toggles info about available keys
           | (depends on space left in the status bar)
 
-2.5.3.1.2. Opening~
+2.5.3.1.2 Opening~
 
 Key       | Action
 ==========+================================================================
@@ -392,7 +392,7 @@ s         | Opens a selected file in a new horizontal split
 ----------+----------------------------------------------------------------
 t         | Opens a selected file in a new tab
 
-2.5.3.1.3. Exiting~
+2.5.3.1.3 Exiting~
 
 Key       | Action
 ==========+================================================================
@@ -407,7 +407,7 @@ C-Space   |
 Q         | Quits Vim (but with a prompt if unsaved workspaces or tab
           | buffers were found)
 
-2.5.3.1.4. Tabs operations~
+2.5.3.1.4 Tabs operations~
 
 Key       | Action
 ==========+================================================================
@@ -429,7 +429,7 @@ _         | Removes a custom tab name
 ----------+----------------------------------------------------------------
 ]         | Goes to the next (right) tab
 
-2.5.3.1.5. Searching~
+2.5.3.1.5 Searching~
 
 Key       | Action
 ==========+================================================================
@@ -440,7 +440,7 @@ C-p       | Brings back the previous searched text
 ----------+----------------------------------------------------------------
 C-n       | Brings the next searched text - just the opposite to `C-p`
 
-2.5.3.1.6. Moving~
+2.5.3.1.6 Moving~
 
 Key       | Action
 ==========+================================================================
@@ -464,14 +464,14 @@ C-d       | Moves the selection bar a half screen down
 C-u       | Moves the selection bar a half screen up
           | (just like standard Vim behavior)
 
-2.5.3.1.7. Closing~
+2.5.3.1.7 Closing~
 
 Key       | Action
 ==========+================================================================
 C         | Closes the current tab, then closes forgotten buffers and
           | empty nonames
 
-2.5.3.1.8. Disk operations~
+2.5.3.1.8 Disk operations~
 
 Key       | Action
 ==========+================================================================
@@ -486,13 +486,13 @@ R         | Removes the selected file entirely
 ----------+----------------------------------------------------------------
 m         | Moves or renames the selected file
 
-2.5.3.1.9. Mode changing~
+2.5.3.1.9 Mode changing~
 
 Key       | Action
 ==========+================================================================
 w         | Enters the Workspace mode
 
-2.5.4. Workspace Mode~
+2.5.4 Workspace Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -530,22 +530,22 @@ startup and save it active workspace on Vim exit. See
 `g:ctrlspace_load_last_workspace_on_start` and
 `g:ctrlspace_save_workspace_on_exit` for more details.
 
-2.5.4.1. Keys Reference~
+2.5.4.1 Keys Reference~
 
-2.5.4.1.1. Help~
+2.5.4.1.1 Help~
 
 Key       | Action
 ==========+================================================================
 ?         | Toggles info about available keys
           | (depends on space left in the status bar)
 
-2.5.4.1.2. Accepting~
+2.5.4.1.2 Accepting~
 
 Key       | Action
 ==========+================================================================
 CR        | Loads (or save) the selected workspace
 
-2.5.4.1.3. Exiting~
+2.5.4.1.3 Exiting~
 
 Key       | Action
 ==========+================================================================
@@ -559,7 +559,7 @@ C-Space   |
 Q         | Quits Vim (but with a prompt if unsaved workspaces or tab
           | buffers were found)
 
-2.5.4.1.4. Workspace operations~
+2.5.4.1.4 Workspace operations~
 
 Key       | Action
 ==========+================================================================
@@ -573,7 +573,7 @@ L         | Loads the last active workspace (if present)
 ----------+----------------------------------------------------------------
 d         | Deletes the selected workspace
 
-2.5.4.1.5. Moving~
+2.5.4.1.5 Moving~
 
 Key       | Action
 ==========+================================================================
@@ -597,7 +597,7 @@ C-d       | Moves the selection bar a half screen down
 C-u       | Moves the selection bar a half screen up
           | (just like standard Vim behavior)
 
-2.5.5. Tablist Mode
+2.5.5 Tablist Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -608,14 +608,14 @@ rendered properly or it is just turned off via `showtabline` option.
 
 2.5.5.1. Keys Reference
 
-2.5.5.1.1. Help~
+2.5.5.1.1 Help~
 
 Key       | Action
 ==========+================================================================
 ?         | Toggles info about available keys
           | (depends on space left in the status bar)
 
-2.5.5.1.2. Opening and closing~
+2.5.5.1.2 Opening and closing~
 
 Key       | Action
 ==========+================================================================
@@ -628,7 +628,7 @@ Space     | Opens a selected tab but stays in the Tablist mode
 c         | Closes the selected tab, then closes forgotten buffers and
           | empty nonames
 
-2.5.5.1.3. Exiting~
+2.5.5.1.3 Exiting~
 
 Key       | Action
 ==========+================================================================
@@ -639,7 +639,7 @@ q         | Closes the list - depends on settings
 Esc       |
 C-Space   |
 
-2.5.5.1.4. Tabs operations~
+2.5.5.1.4 Tabs operations~
 
 Key       | Action
 ==========+================================================================
@@ -654,8 +654,12 @@ _         | Removes the selected tab name
 [         | Goes to the previous tab
 ----------+----------------------------------------------------------------
 ]         | Goes to the next tab
+----------+----------------------------------------------------------------
+t         | Creates a new tab nexto to the current one
+----------+----------------------------------------------------------------
+y         | Creates a copy of the current tab
 
-2.5.5.1.5. Moving~
+2.5.5.1.5 Moving~
 
 Key       | Action
 ==========+================================================================
@@ -675,12 +679,12 @@ C-d       | Moves the selection bar a half screen down
 ----------+----------------------------------------------------------------
 C-u       | Moves the selection bar a half screen up
 
-2.6. Auxiliary Modes~
+2.6 Auxiliary Modes~
 
 These modes are just blended into the main ones. They can be considered as
 special cases or states of the main ones.
 
-2.6.1. Preview Mode~
+2.6.1 Preview Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -705,7 +709,7 @@ Previewed buffer   |        ★       |      *
 -------------------+----------------+-------------
 Original buffer    |        ☆       |      *
 
-2.6.2. Search Mode~
+2.6.2 Search Mode~
 
 Unicode Symbol | ASCII Symbol
 ===============+=============
@@ -715,7 +719,7 @@ This mode is composed of two states or two phases. The first one is the
 "entering phase". Technically, this is the extact Search mode. In the entering
 phase the following keys are available:
 
-2.6.2.1. Keys Reference (entering phase)~
+2.6.2.1 Keys Reference (entering phase)~
 
 Key       | Action
 ==========+================================================================
@@ -743,7 +747,7 @@ function. So it doesn't impact on other modes except it narrows the result set.
 It's worth to mention that in that mode the `Backspace` key removes the search
 query entirely.
 
-2.6.3. Nop Mode~
+2.6.3 Nop Mode~
 
 Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
 list), or you are trying to type a Search query, and there are no results at
@@ -753,7 +757,7 @@ have only not listed buffers available in the tab (like e.g. help window and
 some preview ones). As you will see, in such circumstances - that is outside
 the entering phase - there is a greater number of resque options available.
 
-2.6.3.1. Nop (Search entering phase)~
+2.6.3.1 Nop (Search entering phase)~
 
 Key       | Action
 ==========+================================================================
@@ -765,7 +769,7 @@ Backspace | Removes the previouse entered character, or closes the entering
 ----------+----------------------------------------------------------------
 Esc       | Closes the list - depends on settings
 
-2.6.3.2. Nop (outside the entering phase)~
+2.6.3.2 Nop (outside the entering phase)~
 
 Key       | Action
 ==========+================================================================
@@ -799,16 +803,16 @@ similar form: >
 
     let g:ctrlspace_foo_bar = 123
 <
-3.1. *g:ctrlspace_height*
+3.1 *g:ctrlspace_height*
 
 Sets the minimal height of the plugin window. Default value: `1`.
 
-3.2. *g:ctrlspace_max_height*
+3.2 *g:ctrlspace_max_height*
 
 Sets the maximum height of the plugin window. If `0` provided it uses 1/3 of the
 screen height. Default value: `0`.
 
-3.3. *g:ctrlspace_show_unnamed*
+3.3 *g:ctrlspace_show_unnamed*
 
 Adjusts the displaying of unnamed buffers. If you set
 `g:ctrlspace_show_unnamed` `=` `1` then unnamed buffers will be shown on the list
@@ -817,44 +821,44 @@ displayed only if they are modified or just visible on the screen. Of course you
 can hide unnamed buffers permanently by setting `g:ctrlspace_show_unnamed` `=` `0`.
 Default value: `2`.
 
-3.4. *g:ctrlspace_set_default_mapping*
+3.4 *g:ctrlspace_set_default_mapping*
 
 Turns on the default mapping. If you turn this option off (`0`) you will have to
 provide your own mapping to the `CtrlSpace` yourself. Default value: `1`.
 
-3.5. *g:ctrlspace_default_mapping_key*
+3.5 *g:ctrlspace_default_mapping_key*
 
 By default, Vim-CtrlSpace maps itself to `C-Space`. If you want to
 change the default mapping provide it here as a string with valid Vim keystroke
 notation. Default value: `"<C-Space>"`.
 
-3.6. *g:ctrlspace_cyclic_list*
+3.6 *g:ctrlspace_cyclic_list*
 
 Determines if the list should be cyclic or not. The cyclic list means you will
 jump to the last item if you continue to move up beyond the first one and
 vice-versa. You will jump to the first one if you continue to move down after
 you reach the bottom of the list. Default value: `1`.
 
-3.7. *g:ctrlspace_max_jumps*
+3.7 *g:ctrlspace_max_jumps*
 
 The size of jumps history. Each tab has its own jumps list (plus there is an
 extra one for all buffers). Those lists are accessible via `p` and `n` keys.
 Their size will not exceed a number given in that option. That means, the
 entries older than _n_ last jumps will be removed. Default value: `100`.
 
-3.8. *g:ctrlspace_max_searches*
+3.8 *g:ctrlspace_max_searches*
 
 The size of search history. Each tab has its own search history available
 through `C-p` and `C-n`. The search list size will not exceed the
 number given here. That means, the entries older than `n` last searches will be
 removed. Default value: `100`.
 
-3.9. *g:ctrlspace_default_sort_order*
+3.9 *g:ctrlspace_default_sort_order*
 
 The default sort order. `0` turns off sorting, `1` - the default sorting is
 chronological, `2` - alphanumeric. Default value: `2`.
 
-3.10. *g:ctrlspace_use_ruby_bindings*
+3.10 *g:ctrlspace_use_ruby_bindings*
 
 If set to `1`, the plugin will try to use your compiled in Ruby bindings to
 increase the speed of the plugin (e.g. while fuzzy search, since regex
@@ -867,16 +871,16 @@ and see if there is a `+ruby` entry. Or just try the following one: >
 <
 - you should get the Ruby version or just an error.
 
-3.11. *g:ctrlspace_use_tabline*
+3.11 *g:ctrlspace_use_tabline*
 
 Should Vim-CtrlSpace change your default tabline to its own? Default value: `1`.
 
-3.12. *g:ctrlspace_use_mouse_and_arrows*
+3.12 *g:ctrlspace_use_mouse_and_arrows*
 
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
 keys. Disables the `Esc` key if turned on. Default value: `0`.
 
-3.13. *g:ctrlspace_workspace_file*
+3.13 *g:ctrlspace_workspace_file*
 
 This entry provides an array of strings with default names of workspaces file.
 If a name is preceded with a directory, and that directory is found in the
@@ -887,22 +891,22 @@ directory. Default value: >
     [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces",
     \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 <
-3.14. *g:ctrlspace_save_workspace_on_exit*
+3.14 *g:ctrlspace_save_workspace_on_exit*
 
 Saves the active workspace (if present) on Vim quit. If this option is set, the
 Vim quit (`Q`) action from the plugin modes does not check for workspace
 changes. Default value: `0`.
 
-3.15. *g:ctrlspace_load_last_workspace_on_start*
+3.15 *g:ctrlspace_load_last_workspace_on_start*
 
 Loads the last active workspace (if found) on Vim startup. Default value: `0`.
 
-3.16. *g:ctrlspace_cache_dir*
+3.16 *g:ctrlspace_cache_dir*
 
 A directory for the **Vim-CtrlSpace** cache file (`.cs_cache`). By default your
 `$HOME` directory will be used.
 
-3.17. *g:ctrlspace_project_root_markers*
+3.17 *g:ctrlspace_project_root_markers*
 
 An array of directory names which presence indicates the project root. If no
 marker is found, you will be asked to confirm the project root basing on the
@@ -911,11 +915,11 @@ Default value: >
 
     [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 <
-3.18. *g:ctrlspace_unicode_font*
+3.18 *g:ctrlspace_unicode_font*
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise. Default value: `1`.
 
-3.19. *g:ctrlspace_symbols*
+3.19 *g:ctrlspace_symbols*
 
 Enables you to provide your own symbols. It's useful if for example your font
 doesn't contain enough symbols or the glyphs are poorly rendered. Default value: >
@@ -953,23 +957,23 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
 Of course, you don't have to mind the |g:ctrlspace_unicode_font| settings
 anymore. Just provide one array here.
 
-3.20. *g:ctrlspace_ignored_files*
+3.20 *g:ctrlspace_ignored_files*
 
 The expression used to ignore some files during file collecting. It is used in
 addition to the |wildignore| option in Vim. Default value: `'\v(tmp|temp)[\/]'`.
 
-3.21. *g:ctrlspace_show_key_info*
+3.21 *g:ctrlspace_show_key_info*
 
 Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
 (`0`). Default value: `0`.
 
-3.22. *g:ctrlspace_show_tab_info*
+3.22 *g:ctrlspace_show_tab_info*
 
 Should the tab info be visible (`1`) or not (`0`). Default value:
 `!&showtabline`. That means that it will be enabled by default if you turn off
 the default tabline.
 
-3.23. *g:ctrlspace_search_timing*
+3.23 *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -978,7 +982,7 @@ value, then that value will be used for search delay. In all other cases the
 delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50,500]`.
 
-3.24. Colors~
+3.24 Colors~
 
 The plugin allows you to define its colors entirely. By default it comes with
 pure black and white color set. You are supposed to tweak its colors on your own
@@ -1004,72 +1008,72 @@ helpful.
 ------------------------------------------------------------------------------
 4. API                                                           *ctrlspace-api*
 
-4.1. Commands~
+4.1 Commands~
 
 At the moment Vim-CtrlSpace provides you 4 commands: `:CtrlSpace` and
 `:CtrlSpaceTabLabel`, `:CtrlSpaceSaveWorkspace`, and `:CtrlSpaceLoadWorkspace`.
 
-4.1.1. *:CtrlSpace*
+4.1.1 *:CtrlSpace*
 
 Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration.
 
-4.1.2. *:CtrlSpaceTabLabel*
+4.1.2 *:CtrlSpaceTabLabel*
 
 Allows you to define a custom mapping (outside Vim-CtrlSpace) to change
 a custom tab name.
 
-4.1.3. *:CtrlSpaceClearTabLabel*
+4.1.3 *:CtrlSpaceClearTabLabel*
 
 Removes a custom tab label.
 
-4.1.4. *:CtrlSpaceSaveWorkspace* [my workspace]
+4.1.4 *:CtrlSpaceSaveWorkspace* [my workspace]
 
 Saves the workspace with the given name. If no name is given then it saves the
 active workspace (if present).
 
-4.1.5. *:CtrlSpaceLoadWorkspace* [my workspace]
+4.1.5 *:CtrlSpaceLoadWorkspace* [my workspace]
 
 Loads the workspace with the given name. It has also a banged version
 (*:CtrlSpaceLoadWorkspace!* `my` `workspace`) which performs appending instead of
 loading. If no name is give then it loads (or appends) the active workspace (if
 present).
 
-4.2. Functions~
+4.2 Functions~
 
 Vim-CtrlSpace provides you a couple of functions defined in the common
 `ctrlspace` namespace. They can be used for custom status line integration,
 tabline integration, or just for more advanced interactions with other plugins.
 
-4.2.1. *ctrlspace#bufferlist(tabnr)*
+4.2.1 *ctrlspace#bufferlist(tabnr)*
 
 Returns a directory of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
 
-4.2.2. *ctrlspace#statusline_key_info_segment(...)*
+4.2.2 *ctrlspace#statusline_key_info_segment(...)*
 
 Returns the info about available keys for the current plugin mode (toggled by
 `?`). It can take an optional separator. It can be useful for a custom status
 line integration (i.e. in plugins like LightLine
 (https://github.com/itchyny/lightline.vim))
 
-4.2.3. *ctrlspace#statusline_info_segment(...)*
+4.2.3 *ctrlspace#statusline_info_segment(...)*
 
 Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (i.e. in
 plugins like LightLine (https://github.com/itchyny/lightline.vim))
 
-4.2.4. *ctrlspace#statusline_tab_info_segment(...)*
+4.2.4 *ctrlspace#statusline_tab_info_segment(...)*
 
 Returns the info about the current tab (tab number, label, etc.). It is useful
 if you don't use the custom tabline string (or perhaps you have set
 `showtabline` to `0` (see `:help` `showtabline` for more info)).
 
-4.2.5. *ctrlspace#tabline()*
+4.2.5 *ctrlspace#tabline()*
 
 Provides the custom tabline string.
 
-4.2.6. *ctrlspace#guitablabel()*
+4.2.6 *ctrlspace#guitablabel()*
 
 Provides the custom label for GVim's tabs.
 
