@@ -1223,7 +1223,8 @@ endfunction
 
 function! <SID>display_search_patterns()
   for pattern in keys(b:search_patterns)
-    call matchadd("CtrlSpaceFound", "\\c" . pattern)
+    " escape ~ sign because of E874: (NFA) Could not pop the stack !
+    call matchadd("CtrlSpaceFound", "\\c" .substitute(pattern, '\~', '\\~', "g"))
   endfor
 endfunction
 
