@@ -2401,7 +2401,6 @@ function! <SID>set_status_line()
 endfunction
 
 function! <SID>set_up_buffer()
-  setlocal noshowcmd
   setlocal noswapfile
   setlocal buftype=nofile
   setlocal bufhidden=delete
@@ -2409,6 +2408,9 @@ function! <SID>set_up_buffer()
   setlocal nomodifiable
   setlocal nowrap
   setlocal nonumber
+  if exists('+relativenumber')
+    setlocal norelativenumber
+  endif
   setlocal nocursorcolumn
   setlocal nocursorline
 
