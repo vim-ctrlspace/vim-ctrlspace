@@ -643,10 +643,7 @@ endfunction
 
 function! <SID>new_tab_label(tabnr)
   let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
-  let label = <SID>get_input(
-        \ "Label for tab " . tabnr . ": ",
-        \ exists("t:ctrlspace_label") ? t:ctrlspace_label : ""
-        \ )
+  let label = <SID>get_input("Label for tab " . tabnr . ": ", gettabvar(tabnr, "ctrlspace_label"))
   if !empty(label)
     call settabvar(tabnr, "ctrlspace_label", label)
   endif
