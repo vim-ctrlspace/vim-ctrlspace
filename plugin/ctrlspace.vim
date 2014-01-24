@@ -1382,6 +1382,8 @@ function! <SID>ctrlspace_toggle(internal)
       endif
     endif
   elseif !a:internal
+    " make sure preview window is closed
+    silent! exe "pclose"
     let t:ctrlspace_start_window = winnr()
     let t:ctrlspace_winrestcmd = winrestcmd()
   endif
