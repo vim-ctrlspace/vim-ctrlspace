@@ -1473,7 +1473,7 @@ function! <SID>ctrlspace_toggle(internal)
 
       if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode ||
             \ (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-        let search_noise = <SID>find_lowest_search_noise(bufname)
+        let search_noise = (s:workspace_mode || s:tablist_mode) ? 0 : <SID>find_lowest_search_noise(bufname)
 
         if search_noise == -1
           continue
