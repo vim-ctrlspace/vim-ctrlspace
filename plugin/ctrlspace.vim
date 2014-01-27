@@ -404,6 +404,7 @@ function! ctrlspace#statusline_key_info_segment(...)
   elseif s:tablist_mode
     call add(keys, "CR")
     call add(keys, "Tab")
+    call add(keys, "0..9")
     call add(keys, "Sp")
     call add(keys, "BS")
 
@@ -1962,6 +1963,20 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "Space"
       let tab_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . tab_nr . "gt"
+      call <SID>ctrlspace_toggle(0)
+      call <SID>kill(0, 0)
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key =~? "^[0-9]$"
+      let tab_nr   = str2nr((a:key == "0") ? "10" : a:key)
+      let last_tab = tabpagenr("$")
+
+      if tab_nr > last_tab
+        let tab_nr = last_tab
+      endif
+
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
       call <SID>ctrlspace_toggle(0)

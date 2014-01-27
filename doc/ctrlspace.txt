@@ -629,6 +629,8 @@ Tab       | Opens a selected tab and closes the plugin window
 ----------+----------------------------------------------------------------
 Space     | Opens a selected tab but stays in the Tablist mode
 ----------+----------------------------------------------------------------
+0..9      | Jumps to the n-th tab (0 is for the 10th one)
+----------+----------------------------------------------------------------
 c         | Closes the selected tab, then closes forgotten buffers and
           | empty nonames
 

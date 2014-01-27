@@ -1112,7 +1112,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="4">Opening and closing</td>
+<td rowspan="5">Opening and closing</td>
 <td><code>Return</code></td>
 <td>Opens a selected tab and enters the Single Tab mode</td>
 </tr>
@@ -1125,6 +1125,11 @@ bar)</td>
 <tr>
 <td><code>Space</code></td>
 <td>Opens a selected tab but stays in the Tablist mode</td>
+</tr>
+
+<tr>
+<td><code>0..9</code></td>
+<td>Jumps to the n-th tab (0 is for the 10th one)</td>
 </tr>
 
 <tr>
