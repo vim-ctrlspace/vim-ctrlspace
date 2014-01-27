@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-20
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-27
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.3.1~
+                               Vim-CtrlSpace 3.3.2~
 
                             Vim Workspace Controller
 
@@ -320,6 +320,8 @@ E         | Explores a directory of the selected buffer
 R         | Removes the selected buffer (file) entirely (from the disk too)
 ----------+----------------------------------------------------------------
 m         | Moves or renames the selected buffer (together with its file)
+----------+----------------------------------------------------------------
+y         | Copies selected file (won't work with buffers without files)
 
 2.5.1.1.9 Mode changing~
 
@@ -485,6 +487,8 @@ r         | Refreshes the file list (forces reloading)
 R         | Removes the selected file entirely
 ----------+----------------------------------------------------------------
 m         | Moves or renames the selected file
+----------+----------------------------------------------------------------
+y         | Copies the selected file
 
 2.5.3.1.9 Mode changing~
 

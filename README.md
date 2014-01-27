@@ -592,7 +592,7 @@ empty nonames)</td>
 </tr>
 
 <tr>
-<td rowspan="4">Disk operations</td>
+<td rowspan="5">Disk operations</td>
 <td><code>e</code></td>
 <td>Edits a sibling of the selected buffer (it will create a new one if
 necessary)</td>
@@ -611,6 +611,11 @@ necessary)</td>
 <tr>
 <td><code>m</code></td>
 <td>Moves or renames the selected buffer (together with its file)</td>
+</tr>
+
+<tr>
+<td><code>y</code></td>
+<td>Copies selected file (won't work with buffers without files)</td>
 </tr>
 
 <tr>
@@ -867,7 +872,7 @@ behavior)</td>
 </tr>
 
 <tr>
-<td rowspan="5">Disk operations</td>
+<td rowspan="6">Disk operations</td>
 <td><code>e</code></td>
 <td>Edits a sibling of the selected buffer (it will create a new one if
 necessary)</td>
@@ -891,6 +896,11 @@ necessary)</td>
 <tr>
 <td><code>m</code></td>
 <td>Moves or renames the selected file</td>
+</tr>
+
+<tr>
+<td><code>y</code></td>
+<td>Copies the selected file</td>
 </tr>
 
 <tr>

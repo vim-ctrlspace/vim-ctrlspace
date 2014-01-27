@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.1
+" Version:      3.3.2
 "
 " The MIT License (MIT)
 
@@ -363,6 +363,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "r")
     call add(keys, "R")
     call add(keys, "m")
+    call add(keys, "y")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -478,6 +479,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "E")
     call add(keys, "R")
     call add(keys, "m")
+    call add(keys, "y")
     call add(keys, "a")
     call add(keys, "A")
     call add(keys, "^p")
@@ -2160,6 +2162,8 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
+    elseif a:key ==# "y"
+      call <SID>copy_file()
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -2288,6 +2292,8 @@ function! <SID>keypressed(key)
       call <SID>remove_file()
     elseif a:key ==# "m"
       call <SID>move_file()
+    elseif a:key ==# "y"
+      call <SID>copy_file()
     elseif a:key ==# "S"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -3113,7 +3119,7 @@ function! <SID>explore_directory()
 
   call <SID>kill(0, 1)
   silent! exe "e " . path
-endfunction!
+endfunction
 
 function! <SID>edit_file()
   let nr   = <SID>get_selected_buffer()
@@ -3133,7 +3139,37 @@ function! <SID>edit_file()
 
   call <SID>kill(0, 1)
   silent! exe "e " . new_file
-endfunction!
+endfunction
+
+function! <SID>copy_file()
+  let nr   = <SID>get_selected_buffer()
+  let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
+
+  if !filereadable(path) || isdirectory(path)
+    return
+  endif
+
+  let new_file = <SID>get_input("Copy file to: ", path, "file")
+
+  if empty(new_file) || isdirectory(new_file)
+    return
+  endif
+
+  let new_file = fnamemodify(new_file, ":p")
+
+  let lines = readfile(path, "b")
+  call writefile(lines, new_file, "b")
+
+  let s:files = []
+
+  call <SID>kill(0, 1)
+
+  if !s:file_mode
+    silent! exe "e " . new_file
+  endif
+
+  call <SID>ctrlspace_toggle(1)
+endfunction
 
 function! <SID>close_tab()
   if tabpagenr("$") == 1
