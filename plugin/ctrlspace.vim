@@ -2433,6 +2433,7 @@ function! <SID>set_up_buffer()
   endif
   setlocal nocursorcolumn
   setlocal nocursorline
+  setlocal nolist
 
   silent! exe "lcd " . s:project_root
 
