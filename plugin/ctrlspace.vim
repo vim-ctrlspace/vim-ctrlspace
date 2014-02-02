@@ -119,14 +119,6 @@ command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
-if g:ctrlspace_use_tabline
-  set tabline=%!ctrlspace#tabline()
-
-  if has("gui_running") && (&go =~# "e")
-    set guitablabel=%{ctrlspace#guitablabel()}
-  endif
-endif
-
 function! <SID>set_default_mapping(key, action)
   let s:default_key = a:key
   if !empty(s:default_key)
@@ -3262,6 +3254,18 @@ function! <SID>detach_buffer()
 
   return nr
 endfunction
+
+if g:ctrlspace_use_tabline
+  set tabline=%!ctrlspace#tabline()
+
+  if has("gui_running") && (&go =~# "e")
+    set guitablabel=%{ctrlspace#guitablabel()}
+
+    " Fix MacVim issues:
+    " http://stackoverflow.com/questions/11595301/controlling-tab-names-in-vim
+    au BufEnter * set guitablabel=%{ctrlspace#guitablabel()}
+  endif
+endif
 
 if !(has("ruby") && g:ctrlspace_use_ruby_bindings)
   finish
