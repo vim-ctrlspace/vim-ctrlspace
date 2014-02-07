@@ -986,9 +986,14 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="3">Exiting</td>
+<td rowspan="4">Exiting</td>
 <td><code>Backspace</code>, <code>w</code></td>
 <td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+</tr>
+
+<tr>
+<td><code>l</code></td>
+<td>Goes to the Tablist mode</td>
 </tr>
 
 <tr>
@@ -1138,9 +1143,14 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="2">Exiting</td>
+<td rowspan="3">Exiting</td>
 <td><code>Backspace</code>, <code>l</code></td>
 <td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+</tr>
+
+<tr>
+<td><code>w</code></td>
+<td>Goes to the Workspace mode</td>
 </tr>
 
 <tr>

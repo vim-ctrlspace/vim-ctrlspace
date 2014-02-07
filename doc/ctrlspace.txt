@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-01-27
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-02-07
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.3.2~
+                               Vim-CtrlSpace 3.3.3~
 
                             Vim Workspace Controller
 
@@ -556,6 +556,8 @@ Key       | Action
 Backspace | Goes back (here it will return to Single Tab or All Tabs mode)
 w         |
 ----------+----------------------------------------------------------------
+l         | Goes to the Tablist mode
+----------+----------------------------------------------------------------
 q         | Closes the list - depends on settings
 Esc       |
 C-Space   |
@@ -640,6 +642,8 @@ Key       | Action
 ==========+================================================================
 Backspace | Goes back (here it will return to Single Tab or All Tabs mode)
 l         |
+----------+----------------------------------------------------------------
+w         | Goes to the Workspace mode
 ----------+----------------------------------------------------------------
 q         | Closes the list - depends on settings
 Esc       |

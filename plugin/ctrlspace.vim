@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.2
+" Version:      3.3.3
 "
 " The MIT License (MIT)
 
@@ -389,6 +389,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "k")
     call add(keys, "K")
     call add(keys, "w")
+    call add(keys, "l")
     call add(keys, "^f")
     call add(keys, "^b")
     call add(keys, "^d")
@@ -412,6 +413,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "]")
     call add(keys, "t")
     call add(keys, "y")
+    call add(keys, "w")
     call add(keys, "l")
     call add(keys, "c")
     call add(keys, "q")
@@ -1889,6 +1891,12 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgdown")
     elseif a:key ==# "C-u"
       call <SID>move("half_pgup")
+    elseif a:key ==# "l"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
     endif
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
@@ -1942,6 +1950,12 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgdown")
     elseif a:key ==# "C-u"
       call <SID>move("half_pgup")
+    elseif a:key ==# "l"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
     endif
   elseif s:tablist_mode
     if a:key ==# "Tab"
@@ -2072,6 +2086,15 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgdown")
     elseif a:key ==# "C-u"
       call <SID>move("half_pgup")
+    elseif a:key ==# "w"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:tablist_mode = 0
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     endif
   elseif s:file_mode
     if a:key ==# "CR"
