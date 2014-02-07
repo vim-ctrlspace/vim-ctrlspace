@@ -2584,12 +2584,12 @@ function! <SID>display_list(displayedbufs, buflist)
     if s:file_mode && empty(s:search_letters)
       let buftext = s:all_files_buftext
     else
-      if !empty(s:search_letters)
-        call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
-      elseif s:workspace_mode
+      if s:workspace_mode
         call sort(a:buflist, function(<SID>SID() . "compare_workspace_names"))
       elseif s:tablist_mode
         call sort(a:buflist, function(<SID>SID() . "compare_tab_names"))
+      elseif !empty(s:search_letters)
+        call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
       elseif exists("t:ctrlspace_sort_order")
         call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
       endif
