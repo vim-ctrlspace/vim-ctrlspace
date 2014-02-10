@@ -1366,9 +1366,9 @@ Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
 than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
 Habits of Effective Text Editing_](http://www.youtube.com/watch?v=p6K4iIMlouI)
 stated that if you needed more than 10 tabs then probably you were doing something
-wrong. In **Vim-CtrlSpace** tab pages are great labelled containers for buffers,
-and therefore their usage increases. That all means that the default tabline
-feature used in Vim to organize tab pages sometimes is not sufficient. For
+wrong. In **Vim-CtrlSpace** tab pages are great, labelled containers for buffers,
+and therefore their usage increases. All it means that the default tabline
+feature used in Vim to organize tab pages is not sufficient sometimes. For
 example, you might have more tabs (and with wider labels) which don't fit the
 tabline width, causing rendering problems.
 
