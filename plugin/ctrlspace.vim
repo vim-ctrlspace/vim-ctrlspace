@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.3
+" Version:      3.3.4
 "
 " The MIT License (MIT)
 
@@ -90,6 +90,7 @@ call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chr
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
+call <SID>define_config_variable("use_horizontal_splits", 0)
 call <SID>define_config_variable("workspace_file",
       \ [
       \   ".git/cs_workspaces",
@@ -1035,6 +1036,8 @@ function! <SID>load_workspace_externally(bang, name)
     return
   endif
 
+  let window_split_command = g:ctrlspace_use_horizontal_splits ? "sp " : "vs "
+
   let commands = []
 
   if !a:bang
@@ -1100,7 +1103,7 @@ function! <SID>load_workspace_externally(bang, name)
       call add(commands, "e " . visible_files[0])
 
       for visible_fname in visible_files[1:-1]
-        call add(commands, "vs " . visible_fname)
+        call add(commands, window_split_command . visible_fname)
       endfor
     endif
 

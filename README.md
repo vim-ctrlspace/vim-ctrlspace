@@ -59,7 +59,7 @@ buffers. In fact, **Vim-CtrlSpace** has been started as a set of improvements of
 a such existing plugin. It was named [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) by Rob Lillack. That
 was a neat and tiny plugin (270 LOC), but a bit abandoned. Now, about 7 months
-later, **Vim-CtrlSpace** has about 2.5K LOC and still uses some code of that
+later, **Vim-CtrlSpace** has about 3K LOC and still uses some code of that
 Rob's plugin :). 
 
 Characteristic Vim usage, exhibited by many Vim power users, is to treat tabs as
@@ -141,10 +141,13 @@ to use your Ruby by default.
 Usage
 -----
 
+**Vim-CtrlSpace** currently contains 3 different lists: _Buffer List_, _Tab List_,
+and _Workspace List_. Some of those have additional modes. 
+
 ### Status Line
 
 **Vim-CtrlSpace** requires a status bar. If you are using a plugin customizing
-the status bar this could be a bit tricky. For example
+the status bar this might be a bit tricky. For example
 [vim-airline](https://github.com/bling/vim-airline) plugin might require you to
 set: `let g:airline_exclude_preview = 1` option and
 [LightLine](https://github.com/itchyny/lightline.vim) will require to use custom
@@ -157,6 +160,7 @@ status line segments, provided by **Vim-CtrlSpace** API.
 <tr>
 <th>Unicode Symbol</th>
 <th>ASCII Symbol</th>
+<th>List</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -164,52 +168,68 @@ status line segments, provided by **Vim-CtrlSpace** API.
 <tr>
 <td><code>▢</code></td>
 <td><code>CS</code></td>
+<td>All</td>
 <td>Vim-CtrlSpace symbol</td>
 </tr>
 <tr>
 <td><code>⊙</code></td>
 <td><code>TAB</code></td>
+<td>Buffer List</td>
 <td>Single Tab mode indicator</td>
 </tr>
 <tr>
 <td><code>∷</code></td>
 <td><code>ALL</code></td>
+<td>Buffer List</td>
 <td>All Tabs mode indicator</td>
 </tr>
 <tr>
 <td><code>○</code></td>
 <td><code>ADD</code></td>
-<td>Add mode indicator</td>
+<td>Buffer List</td>
+<td>Add a File mode indicator</td>
 </tr>
 <tr>
 <td><code>⌕</code></td>
 <td><code>&#42;</code></td>
+<td>Buffer List</td>
 <td>Preview mode indicator</td>
-</tr>
-<tr>
-<td><code>⋮ → ∙</code></td>
-<td><code>LOAD</code></td>
-<td>Workspace mode (load)</td>
-</tr>
-<tr>
-<td><code>∙ → ⋮</code></td>
-<td><code>SAVE</code></td>
-<td>Workspace mode (save)</td>
 </tr>
 <tr>
 <td><code>›&#95;‹</code></td>
 <td><code>[&#95;]</code></td>
+<td>Buffer List</td>
 <td>Search mode or search order</td>
 </tr>
 <tr>
 <td><code>₁²₃</code></td>
 <td><code>123</code></td>
+<td>Buffer List</td>
 <td>Order buffers by numbers (in Single Tab and All Tabs modes)</td>
 </tr>
 <tr>
 <td><code>авс</code></td>
 <td><code>ABC</code></td>
+<td>Buffer List</td>
 <td>Order buffers alphabetically (in Single Tab and All Tabs modes)</td>
+</tr>
+<tr>
+<td><code>∘∘∘</code></td>
+<td><code>TABS</code></td>
+<td>Tab List</td>
+<td>Tab List indicator</td>
+</tr>
+<tr>
+<td><code>⋮ → ∙</code></td>
+<td><code>LOAD</code></td>
+<td>Workspace List</td>
+<td>Workspace Load mode</td>
+</tr>
+<tr>
+<td><code>∙ → ⋮</code></td>
+<td><code>SAVE</code></td>
+<td>Workspace List</td>
+<td>Workspace Save mode</td>
 </tr>
 </tbody>
 </table>
@@ -218,7 +238,8 @@ status line segments, provided by **Vim-CtrlSpace** API.
 
 **Vim-CtrlSpace** can set a custom tabline. If the proper option is enabled
 (`g:ctrlspace_use_tabline`), the plugin will set a custom tabline for you. The
-tabs in that tabline are displayed in the following way:
+tabs in that tabline are displayed in the following way (the same format is used
+also in the Tab List):
 
 <table>
 
@@ -260,9 +281,10 @@ If GUI tabs are detected, this option will also set the proper function to
 ### Tab Management
 
 Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
-plugin lets you to perform many classic tab actions easily e.g. switching (`[`
-and `]`), moving (`+` and `-`), closing (uppercase `C`), or renaming (`=`). The
-list of all tabs can be seen with `l`.
+plugin lets you to perform many classic tab actions easily in the Buffer List
+view and of course in the Tab List view (turned on with letter `l`). 
+Those ones include e.g. switching (`[` and `]`), moving (`+` and `-`), 
+closing (uppercase `C`), or renaming (`=`). 
 
 You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
 useful if you want to split your tab (your group of buffers) into smaller ones.
@@ -294,13 +316,20 @@ After checking all predecessors it will ask you to provide the root folder
 explicitly. After your acceptance that root folder will be stored pemanently in
 the `.cs_cache` file as serve as a known root later.
  
-### Main Modes
+### Lists
 
-The plugin offers you a few modes. In a modal editor like Vim this should not
-fear you ;). I believe its modes are very simple to recognize and understand.
+The plugin have 3 lists, and each of them can have additional modes. In a modal
+editor like Vim this should not fear you ;). I believe this division is clear
+to recognize and understand.
 
-Moreover, buffers and workspaces listed in the plugin window can have additional
-indicators (following the item text):
+#### Buffer List
+
+This is the basic list the plugin offers. Depending of its mode it can collect
+buffers from the current tab, buffers from all tabs, and even list of all
+project files (in the Add a File mode). 
+
+Items listed in the plugin window can have additional indicators 
+(following the item text):
 
 <table>
 
@@ -324,9 +353,10 @@ indicators (following the item text):
 
 </table>
 
-#### Simplified Key Diagram
+##### Simplified Key Diagram
 
-This is a simplified diagram of key groups used in **Vim-CtrlSpace** modes.
+This is a simplified diagram of key groups used in **Vim-CtrlSpace** Buffer
+List.
 
 ![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.png)
 
@@ -336,7 +366,7 @@ Räisänen](http://en.wikipedia.org/wiki/User:Mysid) &copy; 2005. The source of
 the generated graphics you can find
 [here](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.svg).*
 
-#### Single Tab Mode
+##### Single Tab Mode
 
 <table>
 <thead>
@@ -353,12 +383,11 @@ the generated graphics you can find
 </tbody>
 </table>
 
-The first main mode is the Single Tab. In that mode, the plugin shows you only
-buffers related to the current tab. It's almost like a normal mode in Vim ;).
-It's like a root from you can follow many paths. Here's the full listing of
+The first mode of Buffer List is the Single Tab one. In that mode, the plugin
+shows you only buffers related to the current tab. Here's the full listing of
 full available keys:
 
-##### Keys Reference
+###### Keys Reference
 
 <table>
 
@@ -411,7 +440,7 @@ full available keys:
 
 <tr>
 <td><code>\</code></td>
-<td>Enters the Search mode in the Add (files) mode immediately (a shortcut for
+<td>Enters the Search mode in the Add a File mode immediately (a shortcut for
 <code>A/</code>)</td>
 </tr>
 
@@ -619,19 +648,25 @@ necessary)</td>
 </tr>
 
 <tr>
-<td rowspan="3">Mode changing</td>
+<td rowspan="2">Mode changing</td>
 <td><code>a</code></td>
 <td>Toggles between Single Tab and All Tabs modes</td>
 </tr>
 
 <tr>
 <td><code>A</code></td>
-<td>Enters the Add (file) mode</td>
+<td>Enters the Add a File mode</td>
+</tr>
+
+<tr>
+<td rowspan="2">List changing</td>
+<td><code>l</code></td>
+<td>Toggles the Tab List view</td>
 </tr>
 
 <tr>
 <td><code>w</code></td>
-<td>Enters the Workspace mode</td>
+<td>Toggles the Workspace List view</td>
 </tr>
 
 <tr>
@@ -649,7 +684,7 @@ necessary)</td>
 
 </table>
 
-#### All Tabs Mode
+##### All Tabs Mode
 
 <table>
 <thead>
@@ -671,7 +706,7 @@ available buffers (from all tabs and unrelated ones too). Some of keys presented
 in the Single Tab mode are not available here. The missing ones are `f` and 
 `c` - as they are tightly coupled with the current tab.
 
-#### Add Mode
+##### Add a File Mode
 
 <table>
 <thead>
@@ -688,19 +723,19 @@ in the Single Tab mode are not available here. The missing ones are `f` and
 </tbody>
 </table>
 
-The _file_ mode, or the _file append_ mode. It allows you to _add_ a file (as
-a buffer) to the current tab. In other words, it opens files from the project
-root directory. Notice, only the project root directory is considered here. This
-will prevent you from accidental loading root of i.e. your home directory, as it
-would be really time consuming and rather pointless.
+It allows you to append a new file (as a buffer) to the current tab. In other
+words, it opens files from the project root directory. Notice, only the project
+root directory is considered here. This will prevent you from accidental loading
+root of i.e. your home directory, as it would be really time consuming (this
+mode starts file scanning) and rather pointless.
 
 For the first time (or after some disk operations) the file list is populated
 with data. Sometimes, for a very large project this could be quite time
 consuming (I've noticed a lag for a project with over 2200 files). After that,
 the content of the project root directory is cached and available immediately.
-All the time you can force plugin to refresh the list with the `r` key.
+All time you can force plugin to refresh the list with the `r` key.
 
-##### Keys Reference
+###### Keys Reference
 
 <table>
 
@@ -904,16 +939,21 @@ necessary)</td>
 </tr>
 
 <tr>
-<td>Mode changing</td>
+<td rowspan="2">List changing</td>
+<td><code>l</code></td>
+<td>Toggles the Tab List view</td>
+</tr>
+
+<tr>
 <td><code>w</code></td>
-<td>Enters the Workspace mode</td>
+<td>Toggles the Workspace List view</td>
 </tr>
 
 </tbody>
 
 </table>
 
-#### Workspace Mode
+##### Preview Mode
 
 <table>
 <thead>
@@ -924,12 +964,235 @@ necessary)</td>
 </thead>
 <tbody>
 <tr>
+<td><code>⌕</code></td>
+<td><code>&#42;</code></td>
+</tr>
+</tbody>
+</table>
+
+This mode works in a conjunction with buffer-related modes: Single Tab and All
+Tabs. You can invoke the Preview mode by hitting the `Tab` key. Hitting `Tab`
+does almost the same as `Space` - it shows you the selected buffer, but unlike
+`Space`, that change of the target window content is not permanent. When you
+quit the plugin window, the old (previous) content of the target window is
+restored.
+
+Also the jumps history remains unchanged and the selected buffer won't be added
+to the tab buffer list. In that way, you can just preview a buffer before
+actually opening it (with `Space`, `Return`, etc). 
+
+Those previewed files are marked on the list with the star symbol and the
+original content is marked with an empty star too:
+
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Previewed buffer</td>
+<td><code>★</code></td>
+<td><code>&#42;</code></td>
+</tr>
+<tr>
+<td>Original buffer</td>
+<td><code>☆</code></td>
+<td><code>&#42;</code></td>
+</tr>
+</tbody>
+</table>
+
+##### Search Mode
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>›&#95;‹</code></td>
+<td><code>[&#95;]</code></td>
+</tr>
+</tbody>
+</table>
+
+This mode is composed of two states or two phases. The first one is the
+_entering phase_. Technically, this is the extact Search mode. In the entering
+phase the following keys are available:
+
+###### Keys Reference (entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggles info about available keys (depends on space left in the status
+bar)</td>
+</tr>
+
+<tr>
+<td><code>Return</code></td>
+<td>Closes the entering phase. Accepts the entered content.</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Removes the previouse entered character, or closes the entering phase if no
+character found.</td>
+</tr>
+
+<tr>
+<td><code>/</code></td>
+<td>Toggles the entering phase</td>
+</tr>
+
+<tr>
+<td><code>\</code></td>
+<td>Toggles the entering phase (only in the Add a File mode)</td>
+</tr>
+
+<tr>
+<td><code>a..z A..Z 0..9</code></td>
+<td>The charactes allowed in the entering phase</td>
+</tr>
+
+</tbody>
+
+</table>
+
+Besides the entering phase there is also a second state possible. That is the
+state of having a search query entered. The successfully entered query behaves
+just like a kind of sorting. In fact, it is just a kind of sorting and filtering
+function. So it doesn't impact on other modes except it narrows the result set. 
+
+It's worth to mention that in that mode the `Backspace` key removes the search
+query entirely.
+
+##### Nop Mode
+
+Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
+list), or you are trying to type a Search query, and there are no results at
+all. That means the Nop can happen during the _entering phase_ of the Search
+mode or in some other cases. Those other cases can occur, for example, when you
+have only not listed buffers available in the tab (like e.g. help window and
+some preview ones). As you will see, in such circumstances - outside the
+entering phase - there is a greater number of resque options available.
+
+###### Nop (Search entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggles info about available keys (depends on space left in the status
+bar)</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Removes the previouse entered character, or closes the entering phase if no
+character found.</td>
+</tr>
+
+<tr>
+<td><code>Esc</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
+</tbody>
+
+</table>
+
+###### Nop (outside the entering phase)
+
+<table>
+
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+
+<tbody>
+
+<tr>
+<td><code>?</code></td>
+<td>Toggles info about available keys (depends on space left in the status
+bar)</td>
+</tr>
+
+<tr>
+<td><code>Backspace</code></td>
+<td>Deletes the search query</td>
+</tr>
+
+<tr>
+<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
+<td>Closes the list <br/>&#42; - depends on settings</td>
+</tr>
+
+<tr>
+<td><code>Q</code></td>
+<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
+found)</td>
+</tr>
+
+<tr>
+<td><code>a</code></td>
+<td>Toggles between Single Tab and All Tabs modes</td>
+</tr>
+
+<tr>
+<td><code>A</code></td>
+<td>Enters the Add a File mode</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>Brings back the previous searched text</td>
+</tr>
+
+<tr>
+<td><code>Ctrl + n</code></td>
+<td>Brings the next searched text - just the opposite to <code>Ctrl
++ p</code></td>
+</tr>
+
+</tbody>
+
+</table>
+
+#### Workspace List
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+<th>Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
 <td><code>⋮ → ∙</code></td>
 <td><code>LOAD</code></td>
+<td>Load mode</td>
 </tr>
 <tr>
 <td><code>∙ → ⋮</code></td>
 <td><code>SAVE</code></td>
+<td>Save mode</td>
 </tr>
 </tbody>
 </table>
@@ -950,14 +1213,15 @@ that workspace to you current or next ones, depending on your needs. That way
 you are able to group the common and repetative sets of files in just one place
 and reuse that group in many contexts.
 
-In the Workspace mode **Vim-CtrlSpace** shows you available workspaces instead
-of buffers. By default this mode is displayed in the _LOAD_ state. The second
-available state is _SAVE_.
+In the Workspace List **Vim-CtrlSpace** shows you available workspaces instead
+of buffers. By default this list is displayed in the Load mode. The second
+available mode is the Save one.
 
 Workspaces are saved in a file inside the project directory. Its name and path
 is determined by proper plugin configuration options
 (`g:ctrlspace_workspace_file`). If there are 2 or more split windows in a tab,
-they will be recreated as vertical splits while loading.
+they will be recreated as horizontal or vertical splits while loading (depending
+on `g:ctrlspace_use_horizontal_splits` settings).
 
 It's also possible to automatically load the last active workspace on Vim
 startup and save it active workspace on Vim exit. See
@@ -988,12 +1252,12 @@ bar)</td>
 <tr>
 <td rowspan="4">Exiting</td>
 <td><code>Backspace</code>, <code>w</code></td>
-<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+<td>Goes back (here it will return to the Buffer List)</td>
 </tr>
 
 <tr>
 <td><code>l</code></td>
-<td>Goes to the Tablist mode</td>
+<td>Goes to the Tab List</td>
 </tr>
 
 <tr>
@@ -1015,7 +1279,7 @@ found)</td>
 
 <tr>
 <td><code>s</code></td>
-<td>Toggles the workspace state from load or save (or backward)</td>
+<td>Toggles the mode from Load or Save (or backward)</td>
 </tr>
 
 <tr>
@@ -1081,7 +1345,7 @@ behavior)</td>
 
 </table>
 
-#### Tablist Mode
+#### Tab List
 
 <table>
 <thead>
@@ -1098,8 +1362,18 @@ behavior)</td>
 </tbody>
 </table>
 
-In this mode you can list all tabs. It is useful if the tabline too long to be
-rendered properly or it is just turned off via `showtabline` option.
+Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
+than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
+Habits of Effective Text Editing_](http://www.youtube.com/watch?v=p6K4iIMlouI)
+stated that if you needed more than 10 tabs then probably you were doing something
+wrong. In **Vim-CtrlSpace** tab pages are great labelled containers for buffers,
+and therefore their usage increases. That all means that the default tabline
+feature used in Vim to organize tab pages sometimes is not sufficient. For
+example, you might have more tabs (and with wider labels) which don't fit the
+tabline width, causing rendering problems.
+
+In the Tab List view you can list all tabs. You can even turn off your tabline 
+entirely and stick to that list only via Vim's `showtabline` option.
 
 ##### Keys Reference
 
@@ -1119,7 +1393,7 @@ bar)</td>
 <tr>
 <td rowspan="5">Opening and closing</td>
 <td><code>Return</code></td>
-<td>Opens a selected tab and enters the Single Tab mode</td>
+<td>Opens a selected tab and enters the Buffer List view</td>
 </tr>
 
 <tr>
@@ -1129,7 +1403,7 @@ bar)</td>
 
 <tr>
 <td><code>Space</code></td>
-<td>Opens a selected tab but stays in the Tablist mode</td>
+<td>Opens a selected tab but stays in the Tab List view</td>
 </tr>
 
 <tr>
@@ -1145,12 +1419,12 @@ bar)</td>
 <tr>
 <td rowspan="3">Exiting</td>
 <td><code>Backspace</code>, <code>l</code></td>
-<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
+<td>Goes back (here it will return to the Buffer List view)</td>
 </tr>
 
 <tr>
 <td><code>w</code></td>
-<td>Goes to the Workspace mode</td>
+<td>Goes to the Workspace List view</td>
 </tr>
 
 <tr>
@@ -1247,229 +1521,6 @@ behavior)</td>
 
 </table>
 
-### Auxiliary Modes
-
-These modes are just blended into the main ones. They can be considered as
-special cases or states of the main ones.
-
-#### Preview Mode
-
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⌕</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
-
-This mode applies to buffer-related modes: Single Tab and All Tabs. You can
-invoke the Preview mode by hitting the `Tab` key. Hitting `Tab` does almost the
-same as `Space` - it shows you the selected buffer, but unlike `Space`, that
-change of the target window content is not permanent. When you quit the plugin
-window, the old (previous) content of the target window is restored.
-
-Also the jumps history remains unchanged and the selected buffer won't be added
-to the tab buffer list. In that way, you can just preview a buffer before
-actually opening it (with `Space`, `Return`, etc). 
-
-Those previewed files are marked on the list with the star symbol and the
-original content is marked with an empty star too:
-
-<table>
-<thead>
-<tr>
-<th>Indicator</th>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Previewed buffer</td>
-<td><code>★</code></td>
-<td><code>&#42;</code></td>
-</tr>
-<tr>
-<td>Original buffer</td>
-<td><code>☆</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
-
-#### Search Mode
-
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>›&#95;‹</code></td>
-<td><code>[&#95;]</code></td>
-</tr>
-</tbody>
-</table>
-
-This mode is composed of two states or two phases. The first one is the
-_entering phase_. Technically, this is the extact Search mode. In the entering
-phase the following keys are available:
-
-##### Keys Reference (entering phase)
-
-<table>
-
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
-
-<tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
-
-<tr>
-<td><code>Return</code></td>
-<td>Closes the entering phase. Accepts the entered content.</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Removes the previouse entered character, or closes the entering phase if no
-character found.</td>
-</tr>
-
-<tr>
-<td><code>/</code></td>
-<td>Toggles the entering phase</td>
-</tr>
-
-<tr>
-<td><code>\</code></td>
-<td>Toggles the entering phase (only in the Add mode)</td>
-</tr>
-
-<tr>
-<td><code>a..z A..Z 0..9</code></td>
-<td>The charactes allowed in the entering phase</td>
-</tr>
-
-</tbody>
-
-</table>
-
-Besides the entering phase there is also a second state possible. That is the
-state of having a search query entered. The successfully entered query behaves
-just like a kind of sorting. In fact, it is just a kind of sorting and filtering
-function. So it doesn't impact on other modes except it narrows the result set. 
-
-It's worth to mention that in that mode the `Backspace` key removes the search
-query entirely.
-
-#### Nop Mode
-
-Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
-list), or you are trying to type a Search query, and there are no results at
-all. That means the Nop can happen during the _entering phase_ of the Search
-mode or in some other cases. Those other cases can occur, for example, when you
-have only not listed buffers available in the tab (like e.g. help window and
-some preview ones). As you will see, in such circumstances - that is outside the
-entering phase - there is a greater number of resque options available.
-
-##### Nop (Search entering phase)
-
-<table>
-
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
-
-<tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Removes the previouse entered character, or closes the entering phase if no
-character found.</td>
-</tr>
-
-<tr>
-<td><code>Esc</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on settings</td>
-</tr>
-
-</tbody>
-
-</table>
-
-##### Nop (outside the entering phase)
-
-<table>
-
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
-
-<tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Deletes the search query</td>
-</tr>
-
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on settings</td>
-</tr>
-
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
-
-<tr>
-<td><code>a</code></td>
-<td>Toggles between Single Tab and All Tabs modes</td>
-</tr>
-
-<tr>
-<td><code>A</code></td>
-<td>Enters the Add (file) mode</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl
-+ p</code></td>
-</tr>
-
-</tbody>
-
-</table>
 
 Configuration
 -------------
@@ -1554,6 +1605,11 @@ Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
 keys. Disables the `Esc` key if turned on. Default value: `0`.
 
+### `g:ctrlspace_use_horizontal_splits`
+
+Determines whether the plugin use vertical (`0`) or horizontal (`1`) splits if
+necessary while loading a workspace. Default value: `0`.
+
 ### `g:ctrlspace_workspace_file`
 
 This entry provides an array of strings with default names of workspaces file.
@@ -1602,6 +1658,7 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
             \ "tab"     : "⊙",
             \ "all"     : "∷",
             \ "add"     : "○",
+            \ "tabs"    : "∘∘∘",
             \ "load"    : "⋮ → ∙",
             \ "save"    : "∙ → ⋮",
             \ "ord"     : "₁²₃",
@@ -1616,6 +1673,7 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
             \ "tab"     : "TAB",
             \ "all"     : "ALL",
             \ "add"     : "ADD",
+            \ "tabs"    : "TABS",
             \ "load"    : "LOAD",
             \ "save"    : "SAVE",
             \ "ord"     : "123",
