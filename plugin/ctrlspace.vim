@@ -2796,10 +2796,10 @@ function! <SID>load_buffer(...)
   call <SID>kill(0, 1)
 
   if !empty(a:000)
-    exec ":" . a:1
+    silent! exe ":" . a:1
   endif
 
-  exec ":b " . nr
+  silent! exe ":b " . nr
 endfunction
 
 function! <SID>load_many_files()
