@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-02-09
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-03-01
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.3.4~
+                               Vim-CtrlSpace 3.3.5~
 
                             Vim Workspace Controller
 
@@ -790,6 +790,10 @@ w         | Goes to the Workspace List view
 q         | Closes the list - depends on settings
 Esc       |
 C-Space   |
+----------+----------------------------------------------------------------
+Q         | Quits Vim (but with a prompt if unsaved workspaces or tab
+          | buffers were found)
+
 
 Tabs operations~
 

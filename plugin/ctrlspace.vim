@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.4
+" Version:      3.3.5
 "
 " The MIT License (MIT)
 
@@ -418,6 +418,7 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "l")
     call add(keys, "c")
     call add(keys, "q")
+    call add(keys, "Q")
     call add(keys, "j")
     call add(keys, "J")
     call add(keys, "k")
@@ -2060,6 +2061,8 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
     elseif a:key ==# "j"
       call <SID>move("down")
     elseif a:key ==# "k"

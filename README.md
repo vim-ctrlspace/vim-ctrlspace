@@ -1417,7 +1417,7 @@ bar)</td>
 </tr>
 
 <tr>
-<td rowspan="3">Exiting</td>
+<td rowspan="4">Exiting</td>
 <td><code>Backspace</code>, <code>l</code></td>
 <td>Goes back (here it will return to the Buffer List view)</td>
 </tr>
@@ -1430,6 +1430,12 @@ bar)</td>
 <tr>
 <td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
 <td>Closes the list <br/>&#42; - depends on plugin settings</td>
+</tr>
+
+<tr>
+<td><code>Q</code></td>
+<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
+found)</td>
 </tr>
 
 <tr>
