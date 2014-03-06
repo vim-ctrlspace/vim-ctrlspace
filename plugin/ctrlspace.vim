@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.5
+" Version:      3.3.6
 "
 " The MIT License (MIT)
 
@@ -113,6 +113,7 @@ call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addit
 call <SID>define_config_variable("show_key_info", 0)
 call <SID>define_config_variable("show_tab_info", !&showtabline)
 call <SID>define_config_variable("search_timing", [50, 500])
+call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
@@ -1205,6 +1206,17 @@ function! <SID>find_lowest_search_noise(bufname)
           let noise          = subseq[0]
           let offset         = subseq[1][0] + 1
           let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
+
+          if !empty(g:ctrlspace_search_resonators)
+            if (subseq[1][0] > 0) && (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][0] - 1]) == -1)
+              let noise += 1
+            endif
+
+            if (subseq[1][-1] < bufname_len - 1)
+                  \ && (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][0] + 1]) == -1)
+              let noise += 1
+            endif
+          endif
         else
           let offset += 1
         endif

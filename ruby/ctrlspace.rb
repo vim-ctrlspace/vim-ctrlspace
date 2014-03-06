@@ -22,9 +22,10 @@ module CtrlSpace
   end
 
   def self.find_lowest_search_noise(bufname)
-    search_letters       = VIM.evaluate("s:search_letters")
-    noise                = -1
-    matched_string       = ""
+    search_letters    = VIM.evaluate("s:search_letters")
+    search_resonators = VIM.evaluate("g:ctrlspace_search_resonators")
+    noise             = -1
+    matched_string    = ""
 
     if search_letters.count == 0
       return 0
@@ -44,6 +45,11 @@ module CtrlSpace
           noise          = subseq[0]
           offset         = subseq[1][0] + 1
           matched_string = bufname[subseq[1][0]..subseq[1][-1]]
+
+          if !search_resonators.empty?
+            noise += 1 if (subseq[1][0] > 0) && !search_resonators.include?(bufname[subseq[1][0] - 1])
+            noise += 1 if (subseq[1][-1] < bufname_len - 1) && !search_resonators.include?(bufname[subseq[1][-1] + 1])
+          end
         else
           offset += 1
         end

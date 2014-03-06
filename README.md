@@ -1719,6 +1719,18 @@ value, then that value will be used for search delay. In all other cases the
 delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50, 500]`
 
+### `g:ctrlspace_search_resonators`
+
+Allows you to set characters which will be used to increase search accurancy. If
+such _resonator_ is found next to the searched sequence, it increases the search
+score. For example, consider following files: `zzzabczzz.txt`, `zzzzzzabc.txt`,
+and `zzzzz.abc.txt`. If you search for `abc` with default resonators, you will
+get the last file as the top relevant item, because there are two resonators
+(dots) next to the searched sequence. Next you would get the middle one (one dot
+around `abc`), and then the first one (no resonators at all). You can disable
+this behavior completely by providing an empty array. Default value: `['.', '/',
+'\', '_', '-']`
+
 ### Colors
 
 The plugin allows you to define its colors entirely. By default it comes with
