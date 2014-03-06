@@ -47,8 +47,8 @@ module CtrlSpace
           matched_string = bufname[subseq[1][0]..subseq[1][-1]]
 
           if !search_resonators.empty?
-            noise += 1 if (subseq[1][0] > 0) && !search_resonators.include?(bufname[subseq[1][0] - 1])
-            noise += 1 if (subseq[1][-1] < bufname_len - 1) && !search_resonators.include?(bufname[subseq[1][-1] + 1])
+            noise += 1 if (subseq[1][0] == 0) || !search_resonators.include?(bufname[subseq[1][0] - 1])
+            noise += 1 if (subseq[1][-1] == bufname_len - 1) || !search_resonators.include?(bufname[subseq[1][-1] + 1])
           end
         else
           offset += 1
