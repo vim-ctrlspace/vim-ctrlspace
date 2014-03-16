@@ -1417,8 +1417,7 @@ function! <SID>ctrlspace_toggle(internal)
     if empty(s:files)
       echo g:ctrlspace_symbols.cs . " - Collecting files..."
 
-      let s:files             = []
-      let s:all_files_cached  = []
+      let s:all_files_cached = []
 
       let i = 1
 
@@ -3100,6 +3099,32 @@ function! <SID>refresh_files()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
+function! <SID>update_file_list(path, new_path)
+  let files_length = len(s:files)
+  let new_path     = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
+
+  if !empty(a:path)
+    let index = 0
+
+    while index < files_length
+      if s:files[index] == a:path
+        call remove(s:files, index)
+        break
+      endif
+
+      let index += 1
+    endwhile
+  endif
+
+  if !empty(new_path)
+    call add(s:files, new_path)
+  endif
+
+  let s:all_files_cached = map(copy(s:files), '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
+  call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+  let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
+endfunction
+
 function! <SID>remove_file()
   let nr   = <SID>get_selected_buffer()
   let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
@@ -3113,7 +3138,7 @@ function! <SID>remove_file()
   endif
 
   call <SID>delete_buffer()
-  let s:files = []
+  call <SID>update_file_list(path, "")
   call delete(path)
 
   call <SID>kill(0, 0)
@@ -3150,7 +3175,8 @@ function! <SID>move_file()
     endif
   endfor
 
-  let s:files = []
+
+  call <SID>update_file_list(path, new_file)
 
   call <SID>kill(0, 1)
   call <SID>ctrlspace_toggle(1)
@@ -3209,7 +3235,7 @@ function! <SID>copy_file()
   let lines = readfile(path, "b")
   call writefile(lines, new_file, "b")
 
-  let s:files = []
+  call <SID>update_file_list("", new_file)
 
   call <SID>kill(0, 1)
 
