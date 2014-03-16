@@ -3104,16 +3104,11 @@ function! <SID>update_file_list(path, new_path)
   let new_path     = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
 
   if !empty(a:path)
-    let index = 0
+    let index = index(s:files, a:path)
 
-    while index < files_length
-      if s:files[index] == a:path
-        call remove(s:files, index)
-        break
-      endif
-
-      let index += 1
-    endwhile
+    if index >= 0
+      call remove(s:files, index)
+    endif
   endif
 
   if !empty(new_path)
