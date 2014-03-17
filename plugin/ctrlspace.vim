@@ -3117,7 +3117,12 @@ function! <SID>update_file_list(path, new_path)
 
   let s:all_files_cached = map(copy(s:files), '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
   call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+
+  let old_files_mode = s:file_mode
+
+  let s:file_mode = 1
   let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
+  let s:file_mode = old_files_mode
 endfunction
 
 function! <SID>remove_file()
