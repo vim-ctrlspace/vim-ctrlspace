@@ -889,26 +889,19 @@ jump to the last item if you continue to move up beyond the first one and
 vice-versa. You will jump to the first one if you continue to move down after
 you reach the bottom of the list. Default value: `1`.
 
-3.7 *g:ctrlspace_max_jumps*
-
-The size of jumps history. Each tab has its own jumps list (plus there is an
-extra one for all buffers). Those lists are accessible via `p` and `n` keys.
-Their size will not exceed a number given in that option. That means, the
-entries older than _n_ last jumps will be removed. Default value: `100`.
-
-3.8 *g:ctrlspace_max_searches*
+3.7 *g:ctrlspace_max_searches*
 
 The size of search history. Each tab has its own search history available
 through `C-p` and `C-n`. The search list size will not exceed the
 number given here. That means, the entries older than `n` last searches will be
 removed. Default value: `100`.
 
-3.9 *g:ctrlspace_default_sort_order*
+3.8 *g:ctrlspace_default_sort_order*
 
 The default sort order. `0` turns off sorting, `1` - the default sorting is
 chronological, `2` - alphanumeric. Default value: `2`.
 
-3.10 *g:ctrlspace_use_ruby_bindings*
+3.9 *g:ctrlspace_use_ruby_bindings*
 
 If set to `1`, the plugin will try to use your compiled in Ruby bindings to
 increase the speed of the plugin (e.g. while fuzzy search, since regex
@@ -921,21 +914,21 @@ and see if there is a `+ruby` entry. Or just try the following one: >
 <
 - you should get the Ruby version or just an error.
 
-3.11 *g:ctrlspace_use_tabline*
+3.10 *g:ctrlspace_use_tabline*
 
 Should Vim-CtrlSpace change your default tabline to its own? Default value: `1`.
 
-3.12 *g:ctrlspace_use_mouse_and_arrows*
+3.11 *g:ctrlspace_use_mouse_and_arrows*
 
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
 keys. Disables the `Esc` key if turned on. Default value: `0`.
 
-3.13 *g:ctrlspace_use_horizontal_splits*
+3.12 *g:ctrlspace_use_horizontal_splits*
 
 Determines whether the plugin use vertical (`0`) or horizontal (`1`) splits if
 necessary while loading a workspace. Default value: `0`.
 
-3.14 *g:ctrlspace_workspace_file*
+3.13 *g:ctrlspace_workspace_file*
 
 This entry provides an array of strings with default names of workspaces file.
 If a name is preceded with a directory, and that directory is found in the
@@ -946,22 +939,22 @@ directory. Default value: >
     [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces",
     \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 <
-3.15 *g:ctrlspace_save_workspace_on_exit*
+3.14 *g:ctrlspace_save_workspace_on_exit*
 
 Saves the active workspace (if present) on Vim quit. If this option is set, the
 Vim quit (`Q`) action from the plugin modes does not check for workspace
 changes. Default value: `0`.
 
-3.16 *g:ctrlspace_load_last_workspace_on_start*
+3.15 *g:ctrlspace_load_last_workspace_on_start*
 
 Loads the last active workspace (if found) on Vim startup. Default value: `0`.
 
-3.17 *g:ctrlspace_cache_dir*
+3.16 *g:ctrlspace_cache_dir*
 
 A directory for the **Vim-CtrlSpace** cache file (`.cs_cache`). By default your
 `$HOME` directory will be used.
 
-3.18 *g:ctrlspace_project_root_markers*
+3.17 *g:ctrlspace_project_root_markers*
 
 An array of directory names which presence indicates the project root. If no
 marker is found, you will be asked to confirm the project root basing on the
@@ -970,11 +963,11 @@ Default value: >
 
     [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 <
-3.19 *g:ctrlspace_unicode_font*
+3.18 *g:ctrlspace_unicode_font*
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise. Default value: `1`.
 
-3.20 *g:ctrlspace_symbols*
+3.19 *g:ctrlspace_symbols*
 
 Enables you to provide your own symbols. It's useful if for example your font
 doesn't contain enough symbols or the glyphs are poorly rendered. Default value: >
@@ -1014,23 +1007,23 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
 Of course, you don't have to mind the |g:ctrlspace_unicode_font| settings
 anymore. Just provide one array here.
 
-3.21 *g:ctrlspace_ignored_files*
+3.20 *g:ctrlspace_ignored_files*
 
 The expression used to ignore some files during file collecting. It is used in
 addition to the |wildignore| option in Vim. Default value: `'\v(tmp|temp)[\/]'`.
 
-3.22 *g:ctrlspace_show_key_info*
+3.21 *g:ctrlspace_show_key_info*
 
 Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
 (`0`). Default value: `0`.
 
-3.23 *g:ctrlspace_show_tab_info*
+3.22 *g:ctrlspace_show_tab_info*
 
 Should the tab info be visible (`1`) or not (`0`). Default value:
 `!&showtabline`. That means that it will be enabled by default if you turn off
 the default tabline.
 
-3.24 *g:ctrlspace_search_timing*
+3.23 *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -1039,7 +1032,7 @@ value, then that value will be used for search delay. In all other cases the
 delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50,500]`.
 
-3.25 *g:ctrlspace_search_resonators*
+3.24 *g:ctrlspace_search_resonators*
 
 Allows you to set characters which will be used to increase search accurancy. If
 such resonator is found next to the searched sequence, it increases the search
@@ -1051,7 +1044,7 @@ around `abc`), and then the first one (no resonators at all). You can disable
 this behavior completely by providing an empty array.
 Default value: `['.','/','\','_','-']`
 
-3.26 Colors~
+3.25 Colors~
 
 The plugin allows you to define its colors entirely. By default it comes with
 pure black and white color set. You are supposed to tweak its colors on your own

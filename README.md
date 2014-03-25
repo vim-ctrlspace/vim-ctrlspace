@@ -1589,13 +1589,6 @@ jump to the last item if you continue to move up beyond the first one and
 vice-versa. You will jump to the first one if you continue to move down after
 you reach the bottom of the list. Default value: `1`.
 
-### `g:ctrlspace_max_jumps`
-
-The size of jumps history. Each tab has its own jumps list (plus there is an
-extra one for all buffers). Those lists are accessible via `p` and `n` keys.
-Their size will not exceed a number given in that option. That means, the
-entries older than _n_ last jumps will be removed. Default value: `100`.
-
 ### `g:ctrlspace_max_searches`
 
 The size of search history. Each tab has its own search history available

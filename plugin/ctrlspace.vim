@@ -84,7 +84,6 @@ call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("cyclic_list", 1)
-call <SID>define_config_variable("max_jumps", 100)
 call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
@@ -219,11 +218,10 @@ call <SID>init_key_names()
 
 au BufEnter * call <SID>add_tab_buffer()
 
-let s:ctrlspace_jumps = []
-au BufEnter * call <SID>add_jump()
+let s:jump_counter = 0
 
-let s:tablist_jump_counter = 0
-au TabEnter * let s:tablist_jump_counter += 1 | let t:ctrlspace_tablist_jump_counter = s:tablist_jump_counter
+au BufEnter * call <SID>add_jump()
+au TabEnter * let s:jump_counter += 1 | let t:ctrlspace_tablist_jump_counter = s:jump_counter
 
 if g:ctrlspace_save_workspace_on_exit
   au VimLeavePre * CtrlSpaceSaveWorkspace
@@ -1254,7 +1252,7 @@ function! <SID>append_to_search_history()
     let t:ctrlspace_search_history = <SID>unique_list(t:ctrlspace_search_history)
 
     if len(t:ctrlspace_search_history) > g:ctrlspace_max_searches + 1
-      unlet t:ctrlspace_jumps[0]
+      unlet t:ctrlspace_search_history[0]
     endif
   endif
 endfunction
@@ -1564,10 +1562,6 @@ function! <SID>ctrlspace_toggle(internal)
   let b:buflist = buflist
   let b:bufcount = displayedbufs
 
-  if !s:file_mode && !s:workspace_mode && !s:tablist_mode
-    let b:jumplines = <SID>create_jumplines(buflist, activebufline)
-  endif
-
   " go to the correct line
   if !empty(s:search_letters) && s:new_search_performed
     call<SID>move(line("$"))
@@ -1578,34 +1572,6 @@ function! <SID>ctrlspace_toggle(internal)
     call <SID>move(activebufline)
   endif
   normal! zb
-endfunction
-
-function! <SID>create_jumplines(buflist, activebufline)
-  let buffers = []
-  for bufentry in a:buflist
-    call add(buffers, bufentry.number)
-  endfor
-
-  if s:single_tab_mode && exists("t:ctrlspace_jumps")
-    let bufferjumps = t:ctrlspace_jumps
-  else
-    let bufferjumps = s:ctrlspace_jumps
-  endif
-
-  let jumplines = []
-
-  for jumpbuf in bufferjumps
-    if bufwinnr(jumpbuf) == -1
-      let jumpline = index(buffers, jumpbuf)
-      if (jumpline >= 0)
-        call add(jumplines, jumpline + 1)
-      endif
-    endif
-  endfor
-
-  call add(jumplines, a:activebufline)
-
-  return reverse(<SID>unique_list(jumplines))
 endfunction
 
 function! <SID>clear_search_mode()
@@ -1751,7 +1717,6 @@ function! <SID>tab_command(key)
     let source_tab_nr = tabpagenr()
     let source_label = exists("t:ctrlspace_label") ? t:ctrlspace_label : ""
     let source_list = copy(t:ctrlspace_list)
-    let source_jumps = copy(t:ctrlspace_jumps)
 
     if exists("t:ctrlspace_search_history")
       let source_search_history = copy(t:ctrlspace_search_history)
@@ -1765,7 +1730,6 @@ function! <SID>tab_command(key)
 
     let t:ctrlspace_label = empty(source_label) ? ("Copy of tab " . source_tab_nr) : (source_label . " (copy)")
     let t:ctrlspace_list = source_list
-    let t:ctrlspace_jumps = source_jumps
 
     if exists("source_search_history")
       let t:ctrlspace_search_history = source_search_history
@@ -2786,7 +2750,7 @@ function! <SID>goto(line)
   endif
 endfunction
 
-function! <SID>compare_tab_jumps(a, b)
+function! <SID>compare_jumps(a, b)
   if a:a.counter > a:b.counter
     return -1
   elseif a:a.counter < a:b.counter
@@ -2798,12 +2762,13 @@ endfunction
 
 function! <SID>tab_jump(direction)
   let jumplines = []
+  let jumplines_len = tabpagenr("$")
 
-  for t in range(1, tabpagenr("$"))
+  for t in range(1, jumplines_len)
     call add(jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter") })
   endfor
 
-  call sort(jumplines, function(<SID>SID() . "compare_tab_jumps"))
+  call sort(jumplines, function(<SID>SID() . "compare_jumps"))
 
   if !exists("b:tab_jumppos")
     let b:tab_jumppos = 0
@@ -2812,8 +2777,8 @@ function! <SID>tab_jump(direction)
   if a:direction == "previous"
     let b:tab_jumppos += 1
 
-    if b:tab_jumppos == len(jumplines)
-      let b:tab_jumppos = len(jumplines) - 1
+    if b:tab_jumppos == jumplines_len
+      let b:tab_jumppos = jumplines_len - 1
     endif
   elseif a:direction == "next"
     let b:tab_jumppos -= 1
@@ -2827,6 +2792,15 @@ function! <SID>tab_jump(direction)
 endfunction
 
 function! <SID>jump(direction)
+  let jumplines = []
+  let jumplines_len = len(b:buflist)
+
+  for l in range(1, jumplines_len)
+    call add(jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter") })
+  endfor
+
+  call sort(jumplines, function(<SID>SID() . "compare_jumps"))
+
   if !exists("b:jumppos")
     let b:jumppos = 0
   endif
@@ -2834,8 +2808,8 @@ function! <SID>jump(direction)
   if a:direction == "previous"
     let b:jumppos += 1
 
-    if b:jumppos == len(b:jumplines)
-      let b:jumppos = len(b:jumplines) - 1
+    if b:jumppos == jumplines_len
+      let b:jumppos = jumplines_len - 1
     endif
   elseif a:direction == "next"
     let b:jumppos -= 1
@@ -2845,7 +2819,7 @@ function! <SID>jump(direction)
     endif
   endif
 
-  call <SID>move(string(b:jumplines[b:jumppos]))
+  call <SID>move(string(jumplines[b:jumppos]["line"]))
 endfunction
 
 function! <SID>load_many_buffers()
@@ -3102,26 +3076,11 @@ function! <SID>add_jump()
     return
   endif
 
-  if !exists("t:ctrlspace_jumps")
-    let t:ctrlspace_jumps = []
-  endif
-
   let current = bufnr('%')
 
   if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__CS__")
-    call add(s:ctrlspace_jumps, current)
-    let s:ctrlspace_jumps = <SID>unique_list(s:ctrlspace_jumps)
-
-    if len(s:ctrlspace_jumps) > g:ctrlspace_max_jumps + 1
-      unlet s:ctrlspace_jumps[0]
-    endif
-
-    call add(t:ctrlspace_jumps, current)
-    let t:ctrlspace_jumps = <SID>unique_list(t:ctrlspace_jumps)
-
-    if len(t:ctrlspace_jumps) > g:ctrlspace_max_jumps + 1
-      unlet t:ctrlspace_jumps[0]
-    endif
+    let s:jump_counter += 1
+    let b:ctrlspace_jump_counter = s:jump_counter
   endif
 endfunction
 
