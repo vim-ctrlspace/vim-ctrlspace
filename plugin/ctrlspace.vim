@@ -1646,14 +1646,24 @@ endfunction
 function! <SID>find_activebufline(activebuf, buflist)
   let activebufline = 0
 
+  let max_counter = 0
+  let last_line   = 0
+
   for bufentry in a:buflist
     let activebufline += 1
     if a:activebuf == bufentry.number
       return activebufline
     endif
+
+    let current_jump_counter = getbufvar(bufentry.number, "ctrlspace_jump_counter", 0)
+
+    if current_jump_counter > max_counter
+      let max_counter = current_jump_counter
+      let last_line = activebufline
+    endif
   endfor
 
-  return activebufline
+  return (last_line > 0) ? last_line : activebufline
 endfunction
 
 function! <SID>go_to_start_window()
@@ -2765,7 +2775,7 @@ function! <SID>tab_jump(direction)
   let jumplines_len = tabpagenr("$")
 
   for t in range(1, jumplines_len)
-    call add(jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter") })
+    call add(jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
   endfor
 
   call sort(jumplines, function(<SID>SID() . "compare_jumps"))
@@ -2796,7 +2806,7 @@ function! <SID>jump(direction)
   let jumplines_len = len(b:buflist)
 
   for l in range(1, jumplines_len)
-    call add(jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter") })
+    call add(jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
   endfor
 
   call sort(jumplines, function(<SID>SID() . "compare_jumps"))
