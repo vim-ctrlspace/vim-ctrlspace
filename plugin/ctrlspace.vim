@@ -2771,14 +2771,16 @@ function! <SID>compare_jumps(a, b)
 endfunction
 
 function! <SID>tab_jump(direction)
-  let jumplines = []
-  let jumplines_len = tabpagenr("$")
+  if !exists("b:tab_jumplines")
+    let b:tab_jumplines = []
+    let b:tab_jumplines_len = tabpagenr("$")
 
-  for t in range(1, jumplines_len)
-    call add(jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
-  endfor
+    for t in range(1, b:tab_jumplines_len)
+      call add(b:tab_jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
+    endfor
 
-  call sort(jumplines, function(<SID>SID() . "compare_jumps"))
+    call sort(b:tab_jumplines, function(<SID>SID() . "compare_jumps"))
+  endif
 
   if !exists("b:tab_jumppos")
     let b:tab_jumppos = 0
@@ -2787,8 +2789,8 @@ function! <SID>tab_jump(direction)
   if a:direction == "previous"
     let b:tab_jumppos += 1
 
-    if b:tab_jumppos == jumplines_len
-      let b:tab_jumppos = jumplines_len - 1
+    if b:tab_jumppos == b:tab_jumplines_len
+      let b:tab_jumppos = b:tab_jumplines_len - 1
     endif
   elseif a:direction == "next"
     let b:tab_jumppos -= 1
@@ -2798,18 +2800,20 @@ function! <SID>tab_jump(direction)
     endif
   endif
 
-  call <SID>move(string(jumplines[b:tab_jumppos]["tabnr"]))
+  call <SID>move(string(b:tab_jumplines[b:tab_jumppos]["tabnr"]))
 endfunction
 
 function! <SID>jump(direction)
-  let jumplines = []
-  let jumplines_len = len(b:buflist)
+  if !exists("b:jumplines")
+    let b:jumplines = []
+    let b:jumplines_len = len(b:buflist)
 
-  for l in range(1, jumplines_len)
-    call add(jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
-  endfor
+    for l in range(1, b:jumplines_len)
+      call add(b:jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
+    endfor
 
-  call sort(jumplines, function(<SID>SID() . "compare_jumps"))
+    call sort(b:jumplines, function(<SID>SID() . "compare_jumps"))
+  endif
 
   if !exists("b:jumppos")
     let b:jumppos = 0
@@ -2818,8 +2822,8 @@ function! <SID>jump(direction)
   if a:direction == "previous"
     let b:jumppos += 1
 
-    if b:jumppos == jumplines_len
-      let b:jumppos = jumplines_len - 1
+    if b:jumppos == b:jumplines_len
+      let b:jumppos = b:jumplines_len - 1
     endif
   elseif a:direction == "next"
     let b:jumppos -= 1
@@ -2829,7 +2833,7 @@ function! <SID>jump(direction)
     endif
   endif
 
-  call <SID>move(string(jumplines[b:jumppos]["line"]))
+  call <SID>move(string(b:jumplines[b:jumppos]["line"]))
 endfunction
 
 function! <SID>load_many_buffers()
