@@ -222,7 +222,8 @@ au BufEnter * call <SID>add_tab_buffer()
 let s:ctrlspace_jumps = []
 au BufEnter * call <SID>add_jump()
 
-au TabEnter * let t:ctrlspace_time = localtime()
+let s:tablist_jump_counter = 0
+au TabEnter * let s:tablist_jump_counter += 1 | let t:ctrlspace_tablist_jump_counter = s:tablist_jump_counter
 
 if g:ctrlspace_save_workspace_on_exit
   au VimLeavePre * CtrlSpaceSaveWorkspace
@@ -2786,9 +2787,9 @@ function! <SID>goto(line)
 endfunction
 
 function! <SID>compare_tab_jumps(a, b)
-  if a:a.time > a:b.time
+  if a:a.counter > a:b.counter
     return -1
-  elseif a:a.time < a:b.time
+  elseif a:a.counter < a:b.counter
     return 1
   else
     return 0
@@ -2799,7 +2800,7 @@ function! <SID>tab_jump(direction)
   let jumplines = []
 
   for t in range(1, tabpagenr("$"))
-    call add(jumplines, { "tabnr": t, "time": gettabvar(t, "ctrlspace_time") })
+    call add(jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter") })
   endfor
 
   call sort(jumplines, function(<SID>SID() . "compare_tab_jumps"))
