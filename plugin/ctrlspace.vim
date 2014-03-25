@@ -1985,15 +1985,15 @@ function! <SID>keypressed(key)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "p"
-      call <SID>tab_jump("previous")
+      call <SID>jump("previous")
     elseif a:key ==# "P"
-      call <SID>tab_jump("previous")
+      call <SID>jump("previous")
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
       call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "n"
-      call <SID>tab_jump("next")
+      call <SID>jump("next")
     elseif a:key ==# "c"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
@@ -2770,47 +2770,31 @@ function! <SID>compare_jumps(a, b)
   endif
 endfunction
 
-function! <SID>tab_jump(direction)
-  if !exists("b:tab_jumplines")
-    let b:tab_jumplines = []
-    let b:tab_jumplines_len = tabpagenr("$")
+function! <SID>create_tab_jumps()
+  let b:jumplines = []
+  let b:jumplines_len = tabpagenr("$")
 
-    for t in range(1, b:tab_jumplines_len)
-      call add(b:tab_jumplines, { "tabnr": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
-    endfor
+  for t in range(1, b:jumplines_len)
+    call add(b:jumplines, { "line": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
+  endfor
+endfunction
 
-    call sort(b:tab_jumplines, function(<SID>SID() . "compare_jumps"))
-  endif
+function! <SID>create_buffer_jumps()
+  let b:jumplines = []
+  let b:jumplines_len = len(b:buflist)
 
-  if !exists("b:tab_jumppos")
-    let b:tab_jumppos = 0
-  endif
-
-  if a:direction == "previous"
-    let b:tab_jumppos += 1
-
-    if b:tab_jumppos == b:tab_jumplines_len
-      let b:tab_jumppos = b:tab_jumplines_len - 1
-    endif
-  elseif a:direction == "next"
-    let b:tab_jumppos -= 1
-
-    if b:tab_jumppos < 0
-      let b:tab_jumppos = 0
-    endif
-  endif
-
-  call <SID>move(string(b:tab_jumplines[b:tab_jumppos]["tabnr"]))
+  for l in range(1, b:jumplines_len)
+    call add(b:jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
+  endfor
 endfunction
 
 function! <SID>jump(direction)
   if !exists("b:jumplines")
-    let b:jumplines = []
-    let b:jumplines_len = len(b:buflist)
-
-    for l in range(1, b:jumplines_len)
-      call add(b:jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
-    endfor
+    if s:tablist_mode
+      call <SID>create_tab_jumps()
+    else
+      call <SID>create_buffer_jumps()
+    endif
 
     call sort(b:jumplines, function(<SID>SID() . "compare_jumps"))
   endif
