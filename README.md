@@ -1501,6 +1501,23 @@ found)</td>
 </tr>
 
 <tr>
+<td><code>p</code></td>
+<td>Moves the selection bar to the <em>previous</em> opened tab</td>
+</tr>
+
+<tr>
+<td><code>P</code></td>
+<td>Moves the selection bar to the <em>previous</em> opened tab and opens it
+immediately</td>
+</tr>
+
+<tr>
+<td><code>n</code></td>
+<td>Moves the selection bar to the <em>next</em> opened tab (just the reverse
+of <code>p</code>)</td>
+</tr>
+
+<tr>
 <td><code>Ctrl + f</code></td>
 <td>Moves the selection bar one screen down (just like standard Vim
 behavior)</td>

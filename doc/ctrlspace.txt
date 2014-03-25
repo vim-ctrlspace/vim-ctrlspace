@@ -1,4 +1,4 @@
-*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-03-07
+*ctrlspace.txt*                  For Vim version 7.3      Last change: 2014-03-25
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 3.3.6~
+                               Vim-CtrlSpace 3.3.7~
 
                             Vim Workspace Controller
 
@@ -826,6 +826,14 @@ k         | Moves the selection bar up
 J         | Moves the selection bar to the bottom of the list
 ----------+----------------------------------------------------------------
 K         | Moves the selection bar to the top of the list
+----------+----------------------------------------------------------------
+p         | Moves the selection bar to the previous opened tab
+----------+----------------------------------------------------------------
+P         | Moves the selection bar to the previous opened tab and opens
+          | it immediately
+----------+----------------------------------------------------------------
+n         | Moves the selection bar to the next opened tab
+          | (just the reverse of `p`)
 ----------+----------------------------------------------------------------
 C-f       | Moves the selection bar one screen down
 ----------+----------------------------------------------------------------

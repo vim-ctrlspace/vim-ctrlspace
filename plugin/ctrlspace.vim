@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.6
+" Version:      3.3.7
 "
 " The MIT License (MIT)
 
@@ -222,6 +222,8 @@ au BufEnter * call <SID>add_tab_buffer()
 let s:ctrlspace_jumps = []
 au BufEnter * call <SID>add_jump()
 
+au TabEnter * let t:ctrlspace_time = localtime()
+
 if g:ctrlspace_save_workspace_on_exit
   au VimLeavePre * CtrlSpaceSaveWorkspace
 endif
@@ -424,6 +426,9 @@ function! ctrlspace#statusline_key_info_segment(...)
     call add(keys, "J")
     call add(keys, "k")
     call add(keys, "K")
+    call add(keys, "p")
+    call add(keys, "P")
+    call add(keys, "n")
     call add(keys, "^f")
     call add(keys, "^b")
     call add(keys, "^d")
@@ -2004,6 +2009,16 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "p"
+      call <SID>tab_jump("previous")
+    elseif a:key ==# "P"
+      call <SID>tab_jump("previous")
+      let tab_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      silent! exe "normal! " . tab_nr . "gt"
+      call <SID>ctrlspace_toggle(0)
+    elseif a:key ==# "n"
+      call <SID>tab_jump("next")
     elseif a:key ==# "c"
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
@@ -2768,6 +2783,46 @@ function! <SID>goto(line)
   else
     call cursor(a:line, 1)
   endif
+endfunction
+
+function! <SID>compare_tab_jumps(a, b)
+  if a:a.time > a:b.time
+    return -1
+  elseif a:a.time < a:b.time
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+function! <SID>tab_jump(direction)
+  let jumplines = []
+
+  for t in range(1, tabpagenr("$"))
+    call add(jumplines, { "tabnr": t, "time": gettabvar(t, "ctrlspace_time") })
+  endfor
+
+  call sort(jumplines, function(<SID>SID() . "compare_tab_jumps"))
+
+  if !exists("b:tab_jumppos")
+    let b:tab_jumppos = 0
+  endif
+
+  if a:direction == "previous"
+    let b:tab_jumppos += 1
+
+    if b:tab_jumppos == len(jumplines)
+      let b:tab_jumppos = len(jumplines) - 1
+    endif
+  elseif a:direction == "next"
+    let b:tab_jumppos -= 1
+
+    if b:tab_jumppos < 0
+      let b:tab_jumppos = 0
+    endif
+  endif
+
+  call <SID>move(string(jumplines[b:tab_jumppos]["tabnr"]))
 endfunction
 
 function! <SID>jump(direction)
