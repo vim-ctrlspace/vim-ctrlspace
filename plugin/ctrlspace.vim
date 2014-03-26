@@ -2907,63 +2907,67 @@ endfunction
 " deletes the selected buffer
 function! <SID>delete_buffer()
   let nr = <SID>get_selected_buffer()
-  if !getbufvar(str2nr(nr), '&modified')
-    let selected_buffer_window = bufwinnr(str2nr(nr))
-    if selected_buffer_window != -1
-      call <SID>move("down")
+
+  if getbufvar(str2nr(nr), '&modified') && !<SID>confirmed("The buffer contains unsaved changes. Proceed anyway?")
+    return
+  endif
+
+  let selected_buffer_window = bufwinnr(str2nr(nr))
+
+  if selected_buffer_window != -1
+    call <SID>move("down")
+    if <SID>get_selected_buffer() == nr
+      call <SID>move("up")
       if <SID>get_selected_buffer() == nr
-        call <SID>move("up")
-        if <SID>get_selected_buffer() == nr
-          if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
-            call <SID>kill(0, 0)
-            silent! exe selected_buffer_window . "wincmd w"
-            enew
-          else
-            return
-          endif
+        if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
+          call <SID>kill(0, 0)
+          silent! exe selected_buffer_window . "wincmd w"
+          enew
         else
-          call <SID>load_buffer_into_window(selected_buffer_window)
+          return
         endif
       else
         call <SID>load_buffer_into_window(selected_buffer_window)
       endif
     else
-      call <SID>kill(0, 0)
+      call <SID>load_buffer_into_window(selected_buffer_window)
+    endif
+  else
+    call <SID>kill(0, 0)
+  endif
+
+  let current_tab = tabpagenr()
+
+  for t in range(1, tabpagenr('$'))
+    if t == current_tab
+      continue
     endif
 
-    let current_tab = tabpagenr()
+    for b in tabpagebuflist(t)
+      if b == nr
+        silent! exe "tabn " . t
 
-    for t in range(1, tabpagenr('$'))
-      if t == current_tab
-        continue
-      endif
+        let tab_window = bufwinnr(b)
+        let ctrlspace_list    = gettabvar(t, "ctrlspace_list")
 
-      for b in tabpagebuflist(t)
-        if b == nr
-          silent! exe "tabn " . t
+        call remove(ctrlspace_list, nr)
 
-          let tab_window = bufwinnr(b)
-          let ctrlspace_list    = gettabvar(t, "ctrlspace_list")
+        silent! exe tab_window . "wincmd w"
 
-          call remove(ctrlspace_list, nr)
-
-          silent! exe tab_window . "wincmd w"
-
-          if !empty(ctrlspace_list)
-            silent! exe "b" . keys(ctrlspace_list)[0]
-          else
-            enew
-          endif
+        if !empty(ctrlspace_list)
+          silent! exe "b" . keys(ctrlspace_list)[0]
+        else
+          enew
         endif
-      endfor
+      endif
     endfor
+  endfor
 
-    silent! exe "tabn " . current_tab
-    silent! exe "bdelete " . nr
+  silent! exe "tabn " . current_tab
+  silent! exe "bdelete! " . nr
 
-    call <SID>forget_buffers_in_all_tabs([nr])
-    call <SID>ctrlspace_toggle(1)
-  endif
+  call <SID>forget_buffers_in_all_tabs([nr])
+  call <SID>ctrlspace_toggle(1)
 endfunction
 
 function! <SID>forget_buffers_in_all_tabs(numbers)
