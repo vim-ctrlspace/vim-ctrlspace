@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.7
+" Version:      3.3.8
 "
 " The MIT License (MIT)
 
@@ -84,7 +84,6 @@ call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("cyclic_list", 1)
-call <SID>define_config_variable("max_searches", 100)
 call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
@@ -1242,46 +1241,119 @@ function! <SID>display_search_patterns()
   endfor
 endfunction
 
-function! <SID>append_to_search_history()
-  if !empty(s:search_letters)
-    if !exists("t:ctrlspace_search_history")
-      let t:ctrlspace_search_history = []
+function! <SID>get_search_history_index()
+  if s:file_mode
+    if !exists("s:search_history_index")
+      let s:search_history_index = -1
     endif
 
-    call add(t:ctrlspace_search_history, copy(s:search_letters))
-    let t:ctrlspace_search_history = <SID>unique_list(t:ctrlspace_search_history)
-
-    if len(t:ctrlspace_search_history) > g:ctrlspace_max_searches + 1
-      unlet t:ctrlspace_search_history[0]
+    return s:search_history_index
+  else
+    if !exists("t:ctrlspace_search_history_index")
+      let t:ctrlspace_search_history_index = -1
     endif
+
+    return t:ctrlspace_search_history_index
   endif
 endfunction
 
-function! <SID>restore_search_letters(direction)
-  if !exists("t:ctrlspace_search_history")
+function! <SID>set_search_history_index(value)
+  if s:file_mode
+    let s:search_history_index = a:value
+  else
+    let t:ctrlspace_search_history_index = a:value
+  endif
+endfunction
+
+function! <SID>append_to_search_history()
+  if empty(s:search_letters)
     return
   endif
 
-  if a:direction == "previous"
-    let t:ctrlspace_search_history_index += 1
+  if s:file_mode
+    if !exists("s:search_history")
+      let s:search_history = {}
+    endif
 
-    if t:ctrlspace_search_history_index == len(t:ctrlspace_search_history)
-      let t:ctrlspace_search_history_index = len(t:ctrlspace_search_history) - 1
+    let history_store = s:search_history
+  else
+    if !exists("t:ctrlspace_search_history")
+      let t:ctrlspace_search_history = {}
+    endif
+
+    let history_store = t:ctrlspace_search_history
+  endif
+
+  let s:jump_counter += 1
+  let history_store[join(s:search_letters)] = s:jump_counter
+endfunction
+
+function! <SID>restore_search_letters(direction)
+  let history_stores = []
+
+  if exists("s:search_history") && !empty(s:search_history)
+    call add(history_stores, s:search_history)
+  endif
+
+  if !s:file_mode
+    let tab_range = s:single_tab_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
+
+    for t in tab_range
+      let tab_store = gettabvar(t, "ctrlspace_search_history", {})
+      if !empty(tab_store)
+        call add(history_stores, tab_store)
+      endif
+    endfor
+  endif
+
+  let history_store = {}
+
+  for store in history_stores
+    for [letters, counter] in items(store)
+      if exists("history_store." . letters) && history_store[letters] >= counter
+        continue
+      endif
+
+      let history_store[letters] = counter
+    endfor
+  endfor
+
+  if empty(history_store)
+    return
+  endif
+
+  let history_entries = []
+
+  for [letters, counter] in items(history_store)
+    call add(history_entries, { "letters": letters, "counter": counter })
+	endfor
+
+  call sort(history_entries, function(<SID>SID() . "compare_jumps"))
+
+  let history_index = <SID>get_search_history_index()
+
+  if a:direction == "previous"
+    let history_index += 1
+
+    if history_index == len(history_entries)
+      let history_index = len(history_entries) - 1
     endif
   elseif a:direction == "next"
-    let t:ctrlspace_search_history_index -= 1
+    let history_index -= 1
 
-    if t:ctrlspace_search_history_index < -1
-      let t:ctrlspace_search_history_index = -1
+    if history_index < -1
+      let history_index = -1
     endif
   endif
 
-  if t:ctrlspace_search_history_index < 0
+  if history_index < 0
     let s:search_letters = []
   else
-    let s:search_letters = copy(reverse(copy(t:ctrlspace_search_history))[t:ctrlspace_search_history_index])
+    let s:search_letters = split(history_entries[history_index]["letters"])
     let s:restored_search_mode = 1
   endif
+
+  call <SID>set_search_history_index(history_index)
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -1364,17 +1436,16 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
-    let s:single_tab_mode                = 1
-    let s:nop_mode                       = 0
-    let s:new_search_performed           = 0
-    let s:search_mode                    = 0
-    let s:file_mode                      = 0
-    let s:workspace_mode                 = 0
-    let s:tablist_mode                   = 0
-    let s:last_browsed_workspace         = 0
-    let s:restored_search_mode           = 0
-    let s:search_letters                 = []
-    let t:ctrlspace_search_history_index = -1
+    let s:single_tab_mode        = 1
+    let s:nop_mode               = 0
+    let s:new_search_performed   = 0
+    let s:search_mode            = 0
+    let s:file_mode              = 0
+    let s:workspace_mode         = 0
+    let s:tablist_mode           = 0
+    let s:last_browsed_workspace = 0
+    let s:restored_search_mode   = 0
+    let s:search_letters         = []
 
     if !<SID>project_root_found()
       return
@@ -1575,9 +1646,10 @@ function! <SID>ctrlspace_toggle(internal)
 endfunction
 
 function! <SID>clear_search_mode()
-  let s:search_letters          = []
-  let s:search_mode             = 0
+  let s:search_letters                 = []
+  let s:search_mode                    = 0
   let t:ctrlspace_search_history_index = -1
+  let s:search_history_index           = -1
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -1617,10 +1689,6 @@ function! <SID>switch_search_mode(switch)
 
   call <SID>set_status_line()
   redraws
-endfunction
-
-function! <SID>unique_list(list)
-  return filter(copy(a:list), 'index(a:list, v:val, v:key + 1) == -1')
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)

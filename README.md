@@ -1589,13 +1589,6 @@ jump to the last item if you continue to move up beyond the first one and
 vice-versa. You will jump to the first one if you continue to move down after
 you reach the bottom of the list. Default value: `1`.
 
-### `g:ctrlspace_max_searches`
-
-The size of search history. Each tab has its own search history available
-through `Ctrl + p` and `Ctrl + n`. The search list size will not exceed the
-number given here. That means, the entries older than _n_ last searches will be
-removed. Default value: `100`.
-
 ### `g:ctrlspace_default_sort_order`
 
 The default sort order. `0` turns off sorting, `1` - the default sorting is
