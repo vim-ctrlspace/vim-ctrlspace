@@ -1299,7 +1299,7 @@ function! <SID>restore_search_letters(direction)
     let tab_range = s:single_tab_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
 
     for t in tab_range
-      let tab_store = gettabvar(t, "ctrlspace_search_history", {})
+      let tab_store = <SID>gettabvar_with_default(t, "ctrlspace_search_history", {})
       if !empty(tab_store)
         call add(history_stores, tab_store)
       endif
@@ -1711,6 +1711,16 @@ function! <SID>decorate_with_indicators(name, bufnum)
   endif
 endfunction
 
+function! <SID>getbufvar_with_default(nr, name, default)
+  let value = getbufvar(a:nr, a:name)
+  return value == "" ? a:default : value
+endfunction
+
+function! <SID>gettabvar_with_default(nr, name, default)
+  let value = gettabvar(a:nr, a:name)
+  return value == "" ? a:default : value
+endfunction
+
 function! <SID>find_activebufline(activebuf, buflist)
   let activebufline = 0
 
@@ -1723,7 +1733,7 @@ function! <SID>find_activebufline(activebuf, buflist)
       return activebufline
     endif
 
-    let current_jump_counter = getbufvar(bufentry.number, "ctrlspace_jump_counter", 0)
+    let current_jump_counter = <SID>getbufvar_with_default(bufentry.number, "ctrlspace_jump_counter", 0)
 
     if current_jump_counter > max_counter
       let max_counter = current_jump_counter
@@ -2843,7 +2853,8 @@ function! <SID>create_tab_jumps()
   let b:jumplines_len = tabpagenr("$")
 
   for t in range(1, b:jumplines_len)
-    call add(b:jumplines, { "line": t, "counter": gettabvar(t, "ctrlspace_tablist_jump_counter", 0) })
+    let counter = <SID>gettabvar_with_default(t, "ctrlspace_tablist_jump_counter", 0)
+    call add(b:jumplines, { "line": t, "counter": counter })
   endfor
 endfunction
 
@@ -2852,7 +2863,8 @@ function! <SID>create_buffer_jumps()
   let b:jumplines_len = len(b:buflist)
 
   for l in range(1, b:jumplines_len)
-    call add(b:jumplines, { "line": l, "counter": getbufvar(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0) })
+    let counter = <SID>getbufvar_with_default(b:buflist[l - 1]["number"], "ctrlspace_jump_counter", 0)
+    call add(b:jumplines, { "line": l, "counter": counter })
   endfor
 endfunction
 
@@ -3016,7 +3028,7 @@ function! <SID>delete_buffer()
         silent! exe "tabn " . t
 
         let tab_window = bufwinnr(b)
-        let ctrlspace_list    = gettabvar(t, "ctrlspace_list")
+        let ctrlspace_list = gettabvar(t, "ctrlspace_list")
 
         call remove(ctrlspace_list, nr)
 
