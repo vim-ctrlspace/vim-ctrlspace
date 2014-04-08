@@ -259,7 +259,6 @@ function! ctrlspace#bufferlist(tabnr)
 endfunction
 
 function! ctrlspace#statusline_tab_info_segment(...)
-  let last_tab            = tabpagenr("$")
   let current_tab         = tabpagenr()
   let separator           = (a:0 > 0) ? a:1 : " "
   let winnr               = tabpagewinnr(current_tab)
@@ -270,7 +269,7 @@ function! ctrlspace#statusline_tab_info_segment(...)
   let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
   let title               = <SID>tab_title(current_tab, bufnr, bufname)
 
-  let tabinfo             = separator . current_tab . bufs_number_to_show . "/" . last_tab . " "
+  let tabinfo             = separator . current_tab . bufs_number_to_show . " "
 
   if <SID>tab_contains_modified_buffers(current_tab)
     let tabinfo .= "+ "
