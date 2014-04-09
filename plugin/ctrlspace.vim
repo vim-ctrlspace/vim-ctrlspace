@@ -84,6 +84,7 @@ call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
 call <SID>define_config_variable("use_horizontal_splits", 0)
+call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
 call <SID>define_config_variable("workspace_file",
       \ [
       \   ".git/cs_workspaces",
@@ -103,7 +104,6 @@ call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn",
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
-call <SID>define_config_variable("show_tab_info", !&showtabline)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
@@ -223,6 +223,19 @@ endif
 if g:ctrlspace_load_last_workspace_on_start
   au VimEnter * nested CtrlSpaceLoadWorkspace
 endif
+
+function! ctrlspace#statusline()
+  hi def link CtrlSpaceStatus StatusLine
+  hi default link User1 CtrlSpaceStatus
+
+  let statusline = "%1*" . g:ctrlspace_symbols.cs . "\ \ %1*\ \ " . ctrlspace#statusline_info_segment("    ")
+
+  if !&showtabline
+    let statusline .= "  %=%1*  " . ctrlspace#statusline_tab_info_segment()
+  endif
+
+  return statusline
+endfunction
 
 function! ctrlspace#bufferlist(tabnr)
   let buffer_list     = {}
@@ -1369,7 +1382,7 @@ function! <SID>ctrlspace_toggle(internal)
   silent! exe "set updatetime=" . search_timing
 
   call <SID>display_list(displayedbufs, buflist)
-  call <SID>set_status_line()
+  call <SID>set_statusline()
 
   if !empty(s:search_letters)
     call <SID>display_search_patterns()
@@ -1439,7 +1452,7 @@ function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
   let s:update_search_results = 1
-  call <SID>set_status_line()
+  call <SID>set_statusline()
   redraws
 endfunction
 
@@ -1447,7 +1460,7 @@ function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
   let s:update_search_results = 1
-  call <SID>set_status_line()
+  call <SID>set_statusline()
   redraws
 endfunction
 
@@ -1459,7 +1472,7 @@ function! <SID>switch_search_mode(switch)
   let s:search_mode = a:switch
   let s:update_search_results = 1
 
-  call <SID>set_status_line()
+  call <SID>set_statusline()
   redraws
 endfunction
 
@@ -1988,21 +2001,21 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label(0)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm" . tabpagenr()
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key ==# "-"
       silent! exe "tabm" . (tabpagenr() - 2)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key ==# "_"
       call <SID>remove_tab_label(0)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -2105,21 +2118,21 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
       call <SID>new_tab_label(0)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key =~? "^[0-9]$"
       call <SID>tab_command(a:key)
     elseif a:key ==# "+"
       silent! exe "tabm" . tabpagenr()
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key ==# "-"
       silent! exe "tabm" . (tabpagenr() - 2)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraws
     elseif a:key ==# "_"
       call <SID>remove_tab_label(0)
-      call <SID>set_status_line()
+      call <SID>set_statusline()
       redraw!
     elseif a:key ==# "["
       call <SID>tab_command(a:key)
@@ -2273,22 +2286,9 @@ function! <SID>toggle_file_mode()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
-function! <SID>set_status_line()
-  if has('statusline')
-    hi def link CtrlSpaceStatus StatusLine
-    hi default link User1 CtrlSpaceStatus
-
-    let &l:statusline = "%1*" . g:ctrlspace_symbols.cs . "\ \ %1*\ \ " . ctrlspace#statusline_info_segment("    ")
-
-    if g:ctrlspace_show_tab_info
-      let info = "  %=%1*  "
-
-      if g:ctrlspace_show_tab_info
-        let info .= ctrlspace#statusline_tab_info_segment()
-      endif
-
-      let &l:statusline .= info
-    endif
+function <SID>set_statusline()
+  if has("statusline")
+    silent! exe "let &l:statusline = " . g:ctrlspace_statusline_function
   endif
 endfunction
 

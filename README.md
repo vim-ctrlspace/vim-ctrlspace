@@ -11,6 +11,7 @@ Changes in version 4.0
 * Remove cyclic list option. All lists are cyclic from now.
 * Provide new symbols and new Tab List dynamic indicator
 * Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
+* Allow custom statusline functions
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
@@ -1650,11 +1651,10 @@ The expression used to ignore some files during file collecting. It is used in
 addition to the `wildignore` option in Vim (see `:help wildignore`). Default
 value: `'\v(tmp|temp)[\/]'`
 
-### `g:ctrlspace_show_tab_info`
+### `g:ctrlspace_statusline_function`
 
-Should the _tab info_ be visible (`1`) or not (`0`). Default value:
-`!&showtabline`. That means that it will be enabled by default if you turn off
-the default tabline.
+Allows to provide custom statusline function used by the CtrlSpace window. 
+Default value: `"ctrlspace#statusline()"`
 
 ### `g:ctrlspace_search_timing`
 
@@ -1756,6 +1756,10 @@ plugins like [LightLine](https://github.com/itchyny/lightline.vim))
 Returns the info about the current tab (tab number, label, etc.). It is useful
 if you don't use the custom tabline string (or perhaps you have set
 `showtabline` to `0` (see `:help showtabline` for more info)).
+
+#### `ctrlspace#statusline()`
+
+Provides the custom statusline string.
 
 #### `ctrlspace#tabline()`
 
