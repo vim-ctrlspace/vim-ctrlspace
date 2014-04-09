@@ -80,7 +80,6 @@ call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 0)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
-call <SID>define_config_variable("cyclic_list", 1)
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
@@ -603,7 +602,7 @@ function <SID>save_workspace_externally(name)
 
   silent! exe "cd " . old_cwd
 
-  echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been saved."
+  echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been saved."
 endfunction
 
 function! <SID>delete_workspace(name)
@@ -643,7 +642,7 @@ function! <SID>delete_workspace(name)
     let s:active_workspace_digest = ""
   endif
 
-  echo g:ctrlspace_symbols.cs . " - The workspace '" . a:name . "' has been deleted."
+  echo g:ctrlspace_symbols.cs . "  The workspace '" . a:name . "' has been deleted."
 
   let s:workspace_names = []
 
@@ -711,7 +710,7 @@ function! <SID>get_selected_workspace_name()
 endfunction
 
 function! <SID>get_input(msg, ...)
-  let msg = g:ctrlspace_symbols.cs . " - " . a:msg
+  let msg = g:ctrlspace_symbols.cs . "  " . a:msg
 
   call inputsave()
 
@@ -814,7 +813,7 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if empty(lines)
-    echo g:ctrlspace_symbols.cs . " - Workspace '" . name . "' not found in file '" . filename . "'."
+    echo g:ctrlspace_symbols.cs . "  Workspace '" . name . "' not found in file '" . filename . "'."
     let s:workspace_names = []
     silent! exe "cd " . old_cwd
     return
@@ -825,7 +824,7 @@ function! <SID>load_workspace_externally(bang, name)
   let commands = []
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . " - Loading workspace '" . name . "'..."
+    echo g:ctrlspace_symbols.cs . "  Loading workspace '" . name . "'..."
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -834,7 +833,7 @@ function! <SID>load_workspace_externally(bang, name)
     let create_first_tab        = 0
     call <SID>set_active_workspace_name(name)
   else
-    echo g:ctrlspace_symbols.cs . " - Appending workspace '" . name . "'..."
+    echo g:ctrlspace_symbols.cs . "  Appending workspace '" . name . "'..."
     let create_first_tab = 1
   endif
 
@@ -908,11 +907,11 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been loaded."
+    echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been loaded."
     let s:active_workspace_digest = <SID>create_workspace_digest()
   else
     let s:active_workspace_digest = ""
-    echo g:ctrlspace_symbols.cs . " - The workspace '" . name . "' has been appended."
+    echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been appended."
   endif
 
   silent! exe "cd " . old_cwd
@@ -1205,7 +1204,7 @@ function! <SID>project_root_found()
   if empty(s:project_root)
     let s:project_root = <SID>find_project_root()
     if empty(s:project_root)
-      echo g:ctrlspace_symbols.cs . " - Cannot continue with the project root not set."
+      echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
       return 0
     endif
   endif
@@ -1265,7 +1264,7 @@ function! <SID>ctrlspace_toggle(internal)
 
   if s:file_mode
     if empty(s:files)
-      echo g:ctrlspace_symbols.cs . " - Collecting files..."
+      echo g:ctrlspace_symbols.cs . "  Collecting files..."
 
       let s:all_files_cached = []
 
@@ -1288,7 +1287,7 @@ function! <SID>ctrlspace_toggle(internal)
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
-      echo g:ctrlspace_symbols.cs . " - Collecting files... Done (" . len(s:files) . ")."
+      echo g:ctrlspace_symbols.cs . "  Collecting files... Done (" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
@@ -2276,11 +2275,16 @@ endfunction
 
 function! <SID>set_status_line()
   if has('statusline')
-    hi default link User1 LineNr
-    let &l:statusline = "%1*\ \ " . g:ctrlspace_symbols.cs . "\ \ %*\ \ " . ctrlspace#statusline_info_segment()
+    hi def link CtrlSpaceStatus1 StatusLine
+    hi def link CtrlSpaceStatus2 StatusLine
+    hi def link CtrlSpaceStatus3 StatusLine
+    hi default link User1 CtrlSpaceStatus1
+    hi default link User2 CtrlSpaceStatus2
+    hi default link User3 CtrlSpaceStatus3
+    let &l:statusline = "%1*\ " . g:ctrlspace_symbols.cs . "\ \ %2*\ \ " . ctrlspace#statusline_info_segment("    ")
 
     if g:ctrlspace_show_tab_info
-      let info = "  %=%1* "
+      let info = "  %=%3* "
 
       if g:ctrlspace_show_tab_info
         let info .= ctrlspace#statusline_tab_info_segment()
@@ -2562,17 +2566,9 @@ endfunction
 function! <SID>goto(line)
   if b:bufcount < 1 | return | endif
   if a:line < 1
-    if g:ctrlspace_cyclic_list
-      call <SID>goto(b:bufcount - a:line)
-    else
-      call cursor(1, 1)
-    endif
+    call <SID>goto(b:bufcount - a:line)
   elseif a:line > b:bufcount
-    if g:ctrlspace_cyclic_list
-      call <SID>goto(a:line - b:bufcount)
-    else
-      call cursor(b:bufcount, 1)
-    endif
+    call <SID>goto(a:line - b:bufcount)
   else
     call cursor(a:line, 1)
   endif

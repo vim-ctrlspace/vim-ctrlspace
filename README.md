@@ -8,6 +8,7 @@ Changes in version 4.0
 * Displays unnamed buffers only if changed or currently displayed
 * Changes `A` binding to `o` (as of _Open_). Introduce File List instead of File Mode
 * Changes `\` binding to `O` (but limits its usage)
+* Remove cyclic list option. All lists are cyclic from now.
 * Provide new symbols and new Tab List dynamic indicator
 * Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
 
@@ -1542,13 +1543,6 @@ provide your own mapping to the `CtrlSpace` yourself. Default value: `1`.
 By default, **Vim-CtrlSpace** maps itself to `Ctrl + Space`. If you want to
 change the default mapping provide it here as a string with valid Vim keystroke
 notation. Default value: `"<C-Space>"`.
-
-### `g:ctrlspace_cyclic_list`
-
-Determines if the list should be cyclic or not. The cyclic list means you will
-jump to the last item if you continue to move up beyond the first one and
-vice-versa. You will jump to the first one if you continue to move down after
-you reach the bottom of the list. Default value: `1`.
 
 ### `g:ctrlspace_use_ruby_bindings`
 
