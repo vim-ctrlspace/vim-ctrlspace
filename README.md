@@ -16,9 +16,10 @@ you have cloned it from Github, or Vundle did it for you) and enter following
 commands:
 
     git fetch
-    git branch next origin/next
-    git checkout next
-    git pull
+    git checkout -t origin/next
+
+In case of Vundle, notice that Vundle will follow the change branch later so you
+will receive updates easily.
 
 TL;DR
 -----
@@ -149,7 +150,7 @@ Installation
 The plugin installation is really simple. You can use Vundle or Pathogen, or
 just clone the repository to your `.vim` directory. In case of Vundle, add:
 
-    Bundle "szw/vim-ctrlspace" 
+    Plugin 'szw/vim-ctrlspace' 
 
 to your `.vimrc`.
 
