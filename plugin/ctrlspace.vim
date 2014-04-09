@@ -267,7 +267,7 @@ function! ctrlspace#statusline_tab_info_segment(...)
     let tabinfo .= "+ "
   endif
 
-  let tabinfo .= title . separator
+  let tabinfo .= title
 
   return tabinfo
 endfunction
@@ -2275,16 +2275,13 @@ endfunction
 
 function! <SID>set_status_line()
   if has('statusline')
-    hi def link CtrlSpaceStatus1 StatusLine
-    hi def link CtrlSpaceStatus2 StatusLine
-    hi def link CtrlSpaceStatus3 StatusLine
-    hi default link User1 CtrlSpaceStatus1
-    hi default link User2 CtrlSpaceStatus2
-    hi default link User3 CtrlSpaceStatus3
-    let &l:statusline = "%1*\ " . g:ctrlspace_symbols.cs . "\ \ %2*\ \ " . ctrlspace#statusline_info_segment("    ")
+    hi def link CtrlSpaceStatus StatusLine
+    hi default link User1 CtrlSpaceStatus
+
+    let &l:statusline = "%1*" . g:ctrlspace_symbols.cs . "\ \ %1*\ \ " . ctrlspace#statusline_info_segment("    ")
 
     if g:ctrlspace_show_tab_info
-      let info = "  %=%3* "
+      let info = "  %=%1*  "
 
       if g:ctrlspace_show_tab_info
         let info .= ctrlspace#statusline_tab_info_segment()
