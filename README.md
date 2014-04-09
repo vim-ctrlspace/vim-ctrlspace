@@ -11,6 +11,15 @@ Changes in version 4.0
 * Provide new symbols and new Tab List dynamic indicator
 * Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
 
+If you want to try this new version please go to your plugin directory (assuming
+you have cloned it from Github, or Vundle did it for you) and enter following
+commands:
+
+    git fetch
+    git branch next origin/next
+    git checkout next
+    git pull
+
 TL;DR
 -----
 
