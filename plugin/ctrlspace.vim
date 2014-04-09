@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      3.3.8
+" Version:      4.0.0
 "
 " The MIT License (MIT)
 
@@ -45,30 +45,28 @@ endfunction
 function! <SID>define_symbols()
   if g:ctrlspace_unicode_font
     let symbols = {
-          \ "cs"      : "▢",
+          \ "cs"      : "♯",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
-          \ "add"     : "○",
-          \ "tabs"    : "∘∘∘",
+          \ "open"    : "◎",
+          \ "tabs"    : "○",
+          \ "c_tab"   : "●",
           \ "load"    : "⋮ → ∙",
           \ "save"    : "∙ → ⋮",
-          \ "ord"     : "₁²₃",
-          \ "abc"     : "авс",
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹"
           \ }
   else
     let symbols = {
-          \ "cs"      : "CS",
+          \ "cs"      : "#",
           \ "tab"     : "TAB",
           \ "all"     : "ALL",
-          \ "add"     : "ADD",
-          \ "tabs"    : "TABS",
+          \ "open"    : "OPEN",
+          \ "tabs"    : "-",
+          \ "c_tab"   : "+",
           \ "load"    : "LOAD",
           \ "save"    : "SAVE",
-          \ "ord"     : "123",
-          \ "abc"     : "ABC",
           \ "prv"     : "*",
           \ "s_left"  : "[",
           \ "s_right" : "]"
@@ -80,11 +78,9 @@ endfunction
 
 call <SID>define_config_variable("height", 1)
 call <SID>define_config_variable("max_height", 0)
-call <SID>define_config_variable("show_unnamed", 2)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("cyclic_list", 1)
-call <SID>define_config_variable("default_sort_order", 2) " 0 - no sort, 1 - chronological, 2 - alphanumeric
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
@@ -108,7 +104,6 @@ call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn",
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
-call <SID>define_config_variable("show_key_info", 0)
 call <SID>define_config_variable("show_tab_info", !&showtabline)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
@@ -244,10 +239,8 @@ function! ctrlspace#bufferlist(tabnr)
 
     let bufname = bufname(i)
 
-    if g:ctrlspace_show_unnamed && !strlen(bufname)
-      if !((g:ctrlspace_show_unnamed == 2) && !getbufvar(i, '&modified')) || (index(visible_buffers, i) != -1)
-        let bufname = '[' . i . '*No Name]'
-      endif
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+      let bufname = '[' . i . '*No Name]'
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
@@ -280,233 +273,28 @@ function! ctrlspace#statusline_tab_info_segment(...)
   return tabinfo
 endfunction
 
-function! ctrlspace#statusline_key_info_segment(...)
-  let separator = (a:0 > 0) ? a:1 : " "
-  let keys      = ["?"]
+function! <SID>create_status_tabline()
+  let current = tabpagenr()
+  let line    = ""
 
-  if s:nop_mode
-    if !s:search_mode
-      if !empty(s:search_letters)
-        call add(keys, "BS")
-      endif
+  for i in range(1, tabpagenr("$"))
+    let line .= (current == i ? g:ctrlspace_symbols.c_tab : g:ctrlspace_symbols.tabs)
+  endfor
 
-      call add(keys, "q")
-      call add(keys, "Q")
-      call add(keys, "a")
-      call add(keys, "A")
-      call add(keys, "^p")
-      call add(keys, "^n")
-    else
-      call add(keys, "BS")
-    endif
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-
-    return join(keys, separator)
-  endif
-
-  if s:search_mode
-    call add(keys, "BS")
-    call add(keys, "CR")
-    call add(keys, "/")
-    if s:file_mode
-      call add(keys, '\')
-    endif
-    call add(keys, "a..z")
-    call add(keys, "0..9")
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-  elseif s:file_mode
-    call add(keys, "CR")
-    call add(keys, "Sp")
-    call add(keys, "BS")
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-
-    call add(keys, "/")
-    call add(keys, '\')
-    call add(keys, "v")
-    call add(keys, "s")
-    call add(keys, "t")
-    call add(keys, "T")
-    call add(keys, "Y")
-    call add(keys, "0..9")
-    call add(keys, "-")
-    call add(keys, "+")
-    call add(keys, "=")
-    call add(keys, "_")
-    call add(keys, "[")
-    call add(keys, "]")
-    call add(keys, "l")
-    call add(keys, "q")
-    call add(keys, "Q")
-    call add(keys, "j")
-    call add(keys, "J")
-    call add(keys, "k")
-    call add(keys, "K")
-    call add(keys, "C")
-    call add(keys, "e")
-    call add(keys, "E")
-    call add(keys, "r")
-    call add(keys, "R")
-    call add(keys, "m")
-    call add(keys, "y")
-    call add(keys, "a")
-    call add(keys, "A")
-    call add(keys, "^p")
-    call add(keys, "^n")
-    call add(keys, "w")
-    call add(keys, "^f")
-    call add(keys, "^b")
-    call add(keys, "^d")
-    call add(keys, "^u")
-  elseif s:workspace_mode
-    call add(keys, "CR")
-    call add(keys, "BS")
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-
-    call add(keys, "q")
-    call add(keys, "Q")
-
-    if s:workspace_mode == 1
-      call add(keys, "a")
-    endif
-
-    call add(keys, "s")
-    call add(keys, "S")
-    call add(keys, "L")
-    call add(keys, "d")
-    call add(keys, "j")
-    call add(keys, "J")
-    call add(keys, "k")
-    call add(keys, "K")
-    call add(keys, "w")
-    call add(keys, "l")
-    call add(keys, "^f")
-    call add(keys, "^b")
-    call add(keys, "^d")
-    call add(keys, "^u")
-  elseif s:tablist_mode
-    call add(keys, "CR")
-    call add(keys, "Tab")
-    call add(keys, "0..9")
-    call add(keys, "Sp")
-    call add(keys, "BS")
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-
-    call add(keys, "-")
-    call add(keys, "+")
-    call add(keys, "=")
-    call add(keys, "_")
-    call add(keys, "[")
-    call add(keys, "]")
-    call add(keys, "t")
-    call add(keys, "y")
-    call add(keys, "w")
-    call add(keys, "l")
-    call add(keys, "c")
-    call add(keys, "q")
-    call add(keys, "Q")
-    call add(keys, "j")
-    call add(keys, "J")
-    call add(keys, "k")
-    call add(keys, "K")
-    call add(keys, "p")
-    call add(keys, "P")
-    call add(keys, "n")
-    call add(keys, "^f")
-    call add(keys, "^b")
-    call add(keys, "^d")
-    call add(keys, "^u")
-  else
-    call add(keys, "CR")
-    call add(keys, "Tab")
-    call add(keys, "Sp")
-    call add(keys, "BS")
-
-    if !g:ctrlspace_use_mouse_and_arrows
-      call add(keys, "Esc")
-    endif
-
-    call add(keys, "/")
-    call add(keys, '\')
-    call add(keys, "v")
-    call add(keys, "s")
-    call add(keys, "t")
-    call add(keys, "T")
-    call add(keys, "Y")
-    call add(keys, "0..9")
-    call add(keys, "-")
-    call add(keys, "+")
-    call add(keys, "=")
-    call add(keys, "_")
-    call add(keys, "[")
-    call add(keys, "]")
-    call add(keys, "l")
-    call add(keys, "o")
-    call add(keys, "q")
-    call add(keys, "Q")
-    call add(keys, "j")
-    call add(keys, "J")
-    call add(keys, "k")
-    call add(keys, "K")
-    call add(keys, "p")
-    call add(keys, "P")
-    call add(keys, "n")
-    call add(keys, "d")
-    call add(keys, "D")
-    if s:single_tab_mode
-      call add(keys, "f")
-    endif
-    call add(keys, "F")
-    if s:single_tab_mode
-      call add(keys, "c")
-    endif
-    call add(keys, "C")
-    call add(keys, "e")
-    call add(keys, "E")
-    call add(keys, "R")
-    call add(keys, "m")
-    call add(keys, "y")
-    call add(keys, "a")
-    call add(keys, "A")
-    call add(keys, "^p")
-    call add(keys, "^n")
-    call add(keys, "S")
-    call add(keys, "L")
-    call add(keys, "w")
-    call add(keys, "^f")
-    call add(keys, "^b")
-    call add(keys, "^d")
-    call add(keys, "^u")
-  endif
-
-  return join(keys, separator)
+  return line
 endfunction
 
 function! ctrlspace#statusline_info_segment(...)
   let statusline_elements = []
 
   if s:file_mode
-    call add(statusline_elements, g:ctrlspace_symbols.add)
+    call add(statusline_elements, g:ctrlspace_symbols.open)
   elseif s:workspace_mode == 1
     call add(statusline_elements, g:ctrlspace_symbols.load)
   elseif s:workspace_mode == 2
     call add(statusline_elements, g:ctrlspace_symbols.save)
   elseif s:tablist_mode
-    call add(statusline_elements, g:ctrlspace_symbols.tabs)
+    call add(statusline_elements, <SID>create_status_tabline())
   elseif s:single_tab_mode
     call add(statusline_elements, g:ctrlspace_symbols.tab)
   else
@@ -514,15 +302,7 @@ function! ctrlspace#statusline_info_segment(...)
   endif
 
   if !s:workspace_mode && !s:tablist_mode
-    if empty(s:search_letters) && !s:search_mode
-      if exists("t:ctrlspace_sort_order") && !s:file_mode
-        if t:ctrlspace_sort_order == 1
-          call add(statusline_elements, g:ctrlspace_symbols.ord)
-        elseif t:ctrlspace_sort_order == 2
-          call add(statusline_elements, g:ctrlspace_symbols.abc)
-        endif
-      endif
-    else
+    if !empty(s:search_letters) || s:search_mode
       let search_element = g:ctrlspace_symbols.s_left . join(s:search_letters, "")
 
       if s:search_mode
@@ -1449,10 +1229,6 @@ function! <SID>ctrlspace_toggle(internal)
     if !<SID>project_root_found()
       return
     endif
-
-    if !exists("t:ctrlspace_sort_order")
-      let t:ctrlspace_sort_order = g:ctrlspace_default_sort_order
-    endif
   endif
 
   " if we get called and the list is open --> close it
@@ -1508,7 +1284,7 @@ function! <SID>ctrlspace_toggle(internal)
         let i += 1
       endfor
 
-      call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+      call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
@@ -1552,10 +1328,8 @@ function! <SID>ctrlspace_toggle(internal)
 
         let bufname = fnamemodify(bufname(i), ":.")
 
-        if g:ctrlspace_show_unnamed && !strlen(bufname)
-          if !((g:ctrlspace_show_unnamed == 2) && !getbufvar(i, '&modified')) || (bufwinnr(i) != -1)
-            let bufname = '[' . i . '*No Name]'
-          endif
+        if !strlen(bufname) && (getbufvar(i, '&modified') || (bufwinnr(i) != -1))
+          let bufname = '[' . i . '*No Name]'
         endif
       endif
 
@@ -1851,13 +1625,6 @@ function! <SID>tab_command(key)
 endfunction
 
 function! <SID>keypressed(key)
-  if a:key ==# "?"
-    let g:ctrlspace_show_key_info = !g:ctrlspace_show_key_info
-    call <SID>set_status_line()
-    redraws
-    return
-  endif
-
   if s:nop_mode
     if !s:search_mode
       if a:key ==# "a"
@@ -1866,7 +1633,7 @@ function! <SID>keypressed(key)
         else
           call <SID>toggle_single_tab_mode()
         endif
-      elseif a:key ==# "A"
+      elseif a:key ==# "o"
         call <SID>toggle_file_mode()
       elseif (a:key ==# "q") || (a:key ==# "Esc")
         call <SID>kill(0, 1)
@@ -1902,7 +1669,7 @@ function! <SID>keypressed(key)
       else
         call <SID>remove_search_letter()
       endif
-    elseif (a:key ==# "/") || (a:key ==# "CR") || (s:file_mode && a:key ==# "BSlash")
+    elseif (a:key ==# "/") || (a:key ==# "CR")
       call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
@@ -1969,6 +1736,12 @@ function! <SID>keypressed(key)
       let s:workspace_mode = 0
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "o"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
     endif
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
@@ -2027,6 +1800,12 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:workspace_mode = 0
       let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "o"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
     endif
   elseif s:tablist_mode
@@ -2179,6 +1958,11 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "o"
+      call <SID>kill(0, 0)
+      let s:tablist_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
     endif
   elseif s:file_mode
     if a:key ==# "CR"
@@ -2191,7 +1975,7 @@ function! <SID>keypressed(key)
       else
         call <SID>toggle_file_mode()
       endif
-    elseif (a:key ==# "/") || (a:key ==# "BSlash")
+    elseif (a:key ==# "/") || (a:key ==# "O")
       call <SID>switch_search_mode(1)
     elseif a:key ==# "v"
       call <SID>load_file("vs")
@@ -2260,7 +2044,7 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgdown")
     elseif a:key ==# "C-u"
       call <SID>move("half_pgup")
-    elseif a:key ==? "A"
+    elseif a:key ==? "o"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
       call <SID>restore_search_letters("previous")
@@ -2342,8 +2126,6 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "]"
       call <SID>tab_command(a:key)
-    elseif a:key ==# "o" && empty(s:search_letters)
-      call <SID>toggle_order()
     elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
@@ -2428,13 +2210,13 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
-    elseif a:key ==# "A"
+    elseif a:key ==# "o"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
       call <SID>restore_search_letters("previous")
     elseif a:key ==# "C-n"
       call <SID>restore_search_letters("next")
-    elseif a:key ==# "BSlash"
+    elseif a:key ==# "O"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
     endif
@@ -2497,21 +2279,11 @@ function! <SID>set_status_line()
     hi default link User1 LineNr
     let &l:statusline = "%1*\ \ " . g:ctrlspace_symbols.cs . "\ \ %*\ \ " . ctrlspace#statusline_info_segment()
 
-    if g:ctrlspace_show_key_info || g:ctrlspace_show_tab_info
+    if g:ctrlspace_show_tab_info
       let info = "  %=%1* "
 
       if g:ctrlspace_show_tab_info
         let info .= ctrlspace#statusline_tab_info_segment()
-      endif
-
-      if g:ctrlspace_show_key_info
-        let key_info = ctrlspace#statusline_key_info_segment() . " "
-
-        if strlen(&l:statusline) + strlen(info) + strlen(key_info) > &columns
-          let key_info = " ? ... "
-        endif
-
-        let info .= key_info
       endif
 
       let &l:statusline .= info
@@ -2590,36 +2362,7 @@ function! <SID>make_filler()
   return fill
 endfunction
 
-function! <SID>compare_bufentries(a, b)
-  if t:ctrlspace_sort_order == 1
-    if s:single_tab_mode
-      if exists("t:ctrlspace_list[" . a:a.number . "]") && exists("t:ctrlspace_list[" . a:b.number . "]")
-        return t:ctrlspace_list[a:a.number] - t:ctrlspace_list[a:b.number]
-      endif
-    endif
-    return a:a.number - a:b.number
-  elseif t:ctrlspace_sort_order == 2
-    if a:a.raw < a:b.raw
-      return -1
-    elseif a:a.raw > a:b.raw
-      return 1
-    else
-      return 0
-    endif
-  endif
-endfunction
-
-function! <SID>compare_file_entries(a, b)
-  if a:a.raw < a:b.raw
-    return -1
-  elseif a:a.raw > a:b.raw
-    return 1
-  else
-    return 0
-  endif
-endfunction
-
-function! <SID>compare_workspace_names(a, b)
+function! <SID>compare_raw_names(a, b)
   if a:a.raw < a:b.raw
     return -1
   elseif a:a.raw > a:b.raw
@@ -2639,7 +2382,7 @@ function! <SID>compare_tab_names(a, b)
   endif
 endfunction
 
-function! <SID>compare_bufentries_with_search_noise(a, b)
+function! <SID>compare_raw_names_with_search_noise(a, b)
   if a:a.search_noise < a:b.search_noise
     return 1
   elseif a:a.search_noise > a:b.search_noise
@@ -2668,14 +2411,12 @@ function! <SID>display_list(displayedbufs, buflist)
     if s:file_mode && empty(s:search_letters)
       let buftext = s:all_files_buftext
     else
-      if s:workspace_mode
-        call sort(a:buflist, function(<SID>SID() . "compare_workspace_names"))
-      elseif s:tablist_mode
+      if s:tablist_mode
         call sort(a:buflist, function(<SID>SID() . "compare_tab_names"))
       elseif !empty(s:search_letters)
-        call sort(a:buflist, function(<SID>SID() . "compare_bufentries_with_search_noise"))
-      elseif exists("t:ctrlspace_sort_order")
-        call sort(a:buflist, function(<SID>SID() . "compare_bufentries"))
+        call sort(a:buflist, function(<SID>SID() . "compare_raw_names_with_search_noise"))
+      else
+        call sort(a:buflist, function(<SID>SID() . "compare_raw_names"))
       endif
 
       " trim the list in search mode
@@ -3176,19 +2917,6 @@ function! <SID>toggle_single_tab_mode()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
-function! <SID>toggle_order()
-  if exists("t:ctrlspace_sort_order")
-    if t:ctrlspace_sort_order == 1
-      let t:ctrlspace_sort_order = 2
-    else
-      let t:ctrlspace_sort_order = 1
-    endif
-
-    call <SID>kill(0, 0)
-    call <SID>ctrlspace_toggle(1)
-  endif
-endfunction
-
 function! <SID>refresh_files()
   let s:files = []
   call <SID>kill(0, 0)
@@ -3212,7 +2940,7 @@ function! <SID>update_file_list(path, new_path)
   endif
 
   let s:all_files_cached = map(copy(s:files), '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
-  call sort(s:all_files_cached, function(<SID>SID() . "compare_file_entries"))
+  call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
 
   let old_files_mode = s:file_mode
 

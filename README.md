@@ -1,6 +1,16 @@
 Vim-CtrlSpace
 =============
 
+Changes in version 4.0
+----------------------
+
+* Uses alphabetical ordering only (no more order change option and info)
+* Displays unnamed buffers only if changed or currently displayed
+* Changes `A` binding to `o` (as of _Open_). Introduce File List instead of File Mode
+* Changes `\` binding to `O` (but limits its usage)
+* Provide new symbols and new Tab List dynamic indicator
+* Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
+
 TL;DR
 -----
 
@@ -166,8 +176,8 @@ status line segments, provided by **Vim-CtrlSpace** API.
 </thead>
 <tbody>
 <tr>
-<td><code>▢</code></td>
-<td><code>CS</code></td>
+<td><code>♯</code></td>
+<td><code>#</code></td>
 <td>All</td>
 <td>Vim-CtrlSpace symbol</td>
 </tr>
@@ -184,10 +194,10 @@ status line segments, provided by **Vim-CtrlSpace** API.
 <td>All Tabs mode indicator</td>
 </tr>
 <tr>
-<td><code>○</code></td>
-<td><code>ADD</code></td>
-<td>Buffer List</td>
-<td>Add a File mode indicator</td>
+<td><code>◎</code></td>
+<td><code>OPEN</code></td>
+<td>File List</td>
+<td>(Open) File List indicator</td>
 </tr>
 <tr>
 <td><code>⌕</code></td>
@@ -202,20 +212,8 @@ status line segments, provided by **Vim-CtrlSpace** API.
 <td>Search mode or search order</td>
 </tr>
 <tr>
-<td><code>₁²₃</code></td>
-<td><code>123</code></td>
-<td>Buffer List</td>
-<td>Order buffers by numbers (in Single Tab and All Tabs modes)</td>
-</tr>
-<tr>
-<td><code>авс</code></td>
-<td><code>ABC</code></td>
-<td>Buffer List</td>
-<td>Order buffers alphabetically (in Single Tab and All Tabs modes)</td>
-</tr>
-<tr>
-<td><code>∘∘∘</code></td>
-<td><code>TABS</code></td>
+<td><code>○●○</code></td>
+<td><code>-+-</code></td>
 <td>Tab List</td>
 <td>Tab List indicator</td>
 </tr>
@@ -318,15 +316,14 @@ the `.cs_cache` file as serve as a known root later.
  
 ### Lists
 
-The plugin have 3 lists, and each of them can have additional modes. In a modal
+The plugin have 4 lists, and each of them can have additional modes. In a modal
 editor like Vim this should not fear you ;). I believe this division is clear
 to recognize and understand.
 
 #### Buffer List
 
 This is the basic list the plugin offers. Depending of its mode it can collect
-buffers from the current tab, buffers from all tabs, and even list of all
-project files (in the Add a File mode). 
+buffers from the current tab or buffers from all tab. 
 
 Items listed in the plugin window can have additional indicators 
 (following the item text):
@@ -396,12 +393,6 @@ full available keys:
 <tbody>
 
 <tr>
-<td>Help</td>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status bar)</td>
-</tr>
-
-<tr>
 <td rowspan="6">Opening</td>
 <td><code>Return</code></td>
 <td>Opens a selected buffer</td>
@@ -439,9 +430,9 @@ full available keys:
 </tr>
 
 <tr>
-<td><code>\</code></td>
-<td>Enters the Search mode in the Add a File mode immediately (a shortcut for
-<code>A/</code>)</td>
+<td><code>O</code></td>
+<td>Enters the Search mode in the File List (a shortcut for
+<code>o/</code>)</td>
 </tr>
 
 <tr>
@@ -453,11 +444,6 @@ full available keys:
 <td><code>Ctrl + n</code></td>
 <td>Brings the next searched text - just the opposite to <code>Ctrl
 + p</code></td>
-</tr>
-
-<tr>
-<td><code>o</code></td>
-<td>Toggles the sorting order (chronological vs alphanumeric)</td>
 </tr>
 
 <tr>
@@ -654,8 +640,8 @@ necessary)</td>
 </tr>
 
 <tr>
-<td><code>A</code></td>
-<td>Enters the Add a File mode</td>
+<td><code>o</code></td>
+<td>Enters the File List</td>
 </tr>
 
 <tr>
@@ -706,7 +692,7 @@ available buffers (from all tabs and unrelated ones too). Some of keys presented
 in the Single Tab mode are not available here. The missing ones are `f` and 
 `c` - as they are tightly coupled with the current tab.
 
-##### Add a File Mode
+##### Preview Mode
 
 <table>
 <thead>
@@ -717,38 +703,85 @@ in the Single Tab mode are not available here. The missing ones are `f` and
 </thead>
 <tbody>
 <tr>
-<td><code>○</code></td>
-<td><code>ADD</code></td>
+<td><code>⌕</code></td>
+<td><code>&#42;</code></td>
 </tr>
 </tbody>
 </table>
 
-It allows you to append a new file (as a buffer) to the current tab. In other
-words, it opens files from the project root directory. Notice, only the project
-root directory is considered here. This will prevent you from accidental loading
-root of i.e. your home directory, as it would be really time consuming (this
-mode starts file scanning) and rather pointless.
+This mode works in a conjunction with the Buffer List. You can invoke the
+Preview mode by hitting the `Tab` key. Hitting `Tab` does almost the same as
+`Space` - it shows you the selected buffer, but unlike `Space`, that change of
+the target window content is not permanent. When you quit the plugin window, the
+old (previous) content of the target window is restored.
 
-For the first time (or after some disk operations) the file list is populated
-with data. Sometimes, for a very large project this could be quite time
-consuming (I've noticed a lag for a project with over 2200 files). After that,
-the content of the project root directory is cached and available immediately.
-All time you can force plugin to refresh the list with the `r` key.
+Also the jumps history remains unchanged and the selected buffer won't be added
+to the tab buffer list. In that way, you can just preview a buffer before
+actually opening it (with `Space`, `Return`, etc). 
 
-###### Keys Reference
+Those previewed files are marked on the list with the star symbol and the
+original content is marked with an empty star too:
+
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Previewed buffer</td>
+<td><code>★</code></td>
+<td><code>&#42;</code></td>
+</tr>
+<tr>
+<td>Original buffer</td>
+<td><code>☆</code></td>
+<td><code>&#42;</code></td>
+</tr>
+</tbody>
+</table>
+
+#### File List
+
+<table>
+<thead>
+<tr>
+<th>Unicode Symbol</th>
+<th>ASCII Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>◎</code></td>
+<td><code>OPEN</code></td>
+</tr>
+</tbody>
+</table>
+
+This list shows you all files in the project and allows you to append a new file
+(as a buffer) to the current tab quickly. In other words, it lets you to open
+files from the project root directory. Notice, only the project root directory
+is considered here in order to prevent you from accidental loading root of i.e.
+your home directory, as it would be really time consuming (file scanning) and
+rather pointless.
+
+For the first time the file list is populated with data. Sometimes, for a very
+large project this could be quite time consuming (I've noticed a lag for
+a project with over 2200 files). Also, it depends on files stored for example in
+the SCM directory. In the end, the content of the project root directory is
+cached and available immediately.  All time you can force plugin to refresh the
+list with the `r` key.
+
+##### Keys Reference
 
 <table>
 
 <thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
-
-<tr>
-<td>Help</td>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
 
 <tr>
 <td rowspan="5">Opening</td>
@@ -841,7 +874,7 @@ found)</td>
 
 <tr>
 <td rowspan="3">Searching</td>
-<td><code>/</code> and <code>\</code></td>
+<td><code>/</code> and <code>O</code></td>
 <td>Enters the Search mode</td>
 </tr>
 
@@ -953,60 +986,8 @@ necessary)</td>
 
 </table>
 
-##### Preview Mode
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⌕</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
-
-This mode works in a conjunction with buffer-related modes: Single Tab and All
-Tabs. You can invoke the Preview mode by hitting the `Tab` key. Hitting `Tab`
-does almost the same as `Space` - it shows you the selected buffer, but unlike
-`Space`, that change of the target window content is not permanent. When you
-quit the plugin window, the old (previous) content of the target window is
-restored.
-
-Also the jumps history remains unchanged and the selected buffer won't be added
-to the tab buffer list. In that way, you can just preview a buffer before
-actually opening it (with `Space`, `Return`, etc). 
-
-Those previewed files are marked on the list with the star symbol and the
-original content is marked with an empty star too:
-
-<table>
-<thead>
-<tr>
-<th>Indicator</th>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Previewed buffer</td>
-<td><code>★</code></td>
-<td><code>&#42;</code></td>
-</tr>
-<tr>
-<td>Original buffer</td>
-<td><code>☆</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
-
-##### Search Mode
+#### Search Mode
 
 <table>
 <thead>
@@ -1027,19 +1008,13 @@ This mode is composed of two states or two phases. The first one is the
 _entering phase_. Technically, this is the extact Search mode. In the entering
 phase the following keys are available:
 
-###### Keys Reference (entering phase)
+##### Keys Reference (entering phase)
 
 <table>
 
 <thead><tr><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
 
 <tr>
 <td><code>Return</code></td>
@@ -1058,8 +1033,8 @@ character found.</td>
 </tr>
 
 <tr>
-<td><code>\</code></td>
-<td>Toggles the entering phase (only in the Add a File mode)</td>
+<td><code>O</code></td>
+<td>Toggles the entering phase (only in the File List)</td>
 </tr>
 
 <tr>
@@ -1079,7 +1054,7 @@ function. So it doesn't impact on other modes except it narrows the result set.
 It's worth to mention that in that mode the `Backspace` key removes the search
 query entirely.
 
-##### Nop Mode
+#### Nop Mode
 
 Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
 list), or you are trying to type a Search query, and there are no results at
@@ -1089,19 +1064,13 @@ have only not listed buffers available in the tab (like e.g. help window and
 some preview ones). As you will see, in such circumstances - outside the
 entering phase - there is a greater number of resque options available.
 
-###### Nop (Search entering phase)
+##### Nop (Search entering phase)
 
 <table>
 
 <thead><tr><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
 
 <tr>
 <td><code>Backspace</code></td>
@@ -1118,19 +1087,13 @@ character found.</td>
 
 </table>
 
-###### Nop (outside the entering phase)
+##### Nop (outside the entering phase)
 
 <table>
 
 <thead><tr><th>Key</th><th>Action</th></tr></thead>
 
 <tbody>
-
-<tr>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
 
 <tr>
 <td><code>Backspace</code></td>
@@ -1237,13 +1200,6 @@ startup and save it active workspace on Vim exit. See
 <tbody>
 
 <tr>
-<td>Help</td>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
-
-<tr>
 <td>Accepting</td>
 <td><code>Return</code></td>
 <td>Loads (or save) the selected workspace</td>
@@ -1258,6 +1214,11 @@ bar)</td>
 <tr>
 <td><code>l</code></td>
 <td>Goes to the Tab List</td>
+</tr>
+
+<tr>
+<td><code>o</code></td>
+<td>Goes to the File List</td>
 </tr>
 
 <tr>
@@ -1384,13 +1345,6 @@ entirely and stick to that list only via Vim's `showtabline` option.
 <tbody>
 
 <tr>
-<td>Help</td>
-<td><code>?</code></td>
-<td>Toggles info about available keys (depends on space left in the status
-bar)</td>
-</tr>
-
-<tr>
 <td rowspan="5">Opening and closing</td>
 <td><code>Return</code></td>
 <td>Opens a selected tab and enters the Buffer List view</td>
@@ -1425,6 +1379,11 @@ bar)</td>
 <tr>
 <td><code>w</code></td>
 <td>Goes to the Workspace List view</td>
+</tr>
+
+<tr>
+<td><code>o</code></td>
+<td>Goes to the File List view</td>
 </tr>
 
 <tr>
@@ -1563,14 +1522,6 @@ Sets the minimal height of the plugin window. Default value: `1`.
 Sets the maximum height of the plugin window. If `0` provided it uses 1/3 of the
 screen height. Default value: `0`.
 
-### `g:ctrlspace_show_unnamed`
-
-Adjusts the displaying of unnamed buffers. If you set `g:ctrlspace_show_unnamed
-= 1` then unnamed buffers will be shown on the list all the time. However, if
-you set this value to `2`, unnamed buffers will be displayed only if they are
-modified or just visible on the screen. Of course you can hide unnamed buffers
-permanently by setting `g:ctrlspace_show_unnamed = 0`. Default value: `2`.
-
 ### `g:ctrlspace_set_default_mapping`
 
 Turns on the default mapping. If you turn this option off (`0`) you will have to
@@ -1588,11 +1539,6 @@ Determines if the list should be cyclic or not. The cyclic list means you will
 jump to the last item if you continue to move up beyond the first one and
 vice-versa. You will jump to the first one if you continue to move down after
 you reach the bottom of the list. Default value: `1`.
-
-### `g:ctrlspace_default_sort_order`
-
-The default sort order. `0` turns off sorting, `1` - the default sorting is
-chronological, `2` - alphanumeric. Default value: `2`.
 
 ### `g:ctrlspace_use_ruby_bindings`
 
@@ -1663,30 +1609,28 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
 
     if g:ctrlspace_unicode_font
       let g:ctrlspace_symbols = {
-            \ "cs"      : "▢",
+            \ "cs"      : "♯",
             \ "tab"     : "⊙",
             \ "all"     : "∷",
-            \ "add"     : "○",
-            \ "tabs"    : "∘∘∘",
+            \ "open"    : "◎",
+            \ "tabs"    : "○",
+            \ "c_tab"   : "●",
             \ "load"    : "⋮ → ∙",
             \ "save"    : "∙ → ⋮",
-            \ "ord"     : "₁²₃",
-            \ "abc"     : "авс",
             \ "prv"     : "⌕",
             \ "s_left"  : "›",
             \ "s_right" : "‹"
             \ }
     else
       let g:ctrlspace_symbols = {
-            \ "cs"      : "CS",
+            \ "cs"      : "#",
             \ "tab"     : "TAB",
             \ "all"     : "ALL",
-            \ "add"     : "ADD",
-            \ "tabs"    : "TABS",
+            \ "open"    : "OPEN",
+            \ "tabs"    : "-",
+            \ "c_tab"   : "+",
             \ "load"    : "LOAD",
             \ "save"    : "SAVE",
-            \ "ord"     : "123",
-            \ "abc"     : "ABC",
             \ "prv"     : "*",
             \ "s_left"  : "[",
             \ "s_right" : "]"
@@ -1701,11 +1645,6 @@ anymore. Just provide one array here.
 The expression used to ignore some files during file collecting. It is used in
 addition to the `wildignore` option in Vim (see `:help wildignore`). Default
 value: `'\v(tmp|temp)[\/]'`
-
-### `g:ctrlspace_show_key_info`
-
-Should the _key info help_ (toggled by `?`) be visible (`1`) by default or not
-(`0`). Default value: `0`.
 
 ### `g:ctrlspace_show_tab_info`
 
@@ -1737,6 +1676,7 @@ this behavior completely by providing an empty array. Default value: `['.', '/',
 ### Colors
 
 The plugin allows you to define its colors entirely. By default it comes with
+
 pure black and white color set. You are supposed to tweak its colors on your own
 (in the `.vimrc` file). This can be done as shown below:
 
@@ -1800,13 +1740,6 @@ tabline integration, or just for more advanced interactions with other plugins.
 
 Returns a directory of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
-
-#### `ctrlspace#statusline_key_info_segment(...)`
-
-Returns the info about available keys for the current plugin mode (toggled by
-`?`). It can take an optional separator. It can be useful for a custom status
-line integration (i.e. in plugins like
-[LightLine](https://github.com/itchyny/lightline.vim))
 
 #### `ctrlspace#statusline_info_segment(...)`
 
