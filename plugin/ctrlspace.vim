@@ -228,10 +228,10 @@ function! ctrlspace#statusline()
   hi def link CtrlSpaceStatus StatusLine
   hi default link User1 CtrlSpaceStatus
 
-  let statusline = "%1*" . g:ctrlspace_symbols.cs . "\ \ %1*\ \ " . ctrlspace#statusline_info_segment("    ")
+  let statusline = "%1*" . g:ctrlspace_symbols.cs . "    " . ctrlspace#statusline_mode_segment("    ")
 
   if !&showtabline
-    let statusline .= "  %=%1*  " . ctrlspace#statusline_tab_info_segment()
+    let statusline .= " %=%1* " . ctrlspace#statusline_tab_segment()
   endif
 
   return statusline
@@ -263,9 +263,8 @@ function! ctrlspace#bufferlist(tabnr)
   return buffer_list
 endfunction
 
-function! ctrlspace#statusline_tab_info_segment(...)
+function! ctrlspace#statusline_tab_segment()
   let current_tab         = tabpagenr()
-  let separator           = (a:0 > 0) ? a:1 : " "
   let winnr               = tabpagewinnr(current_tab)
   let buflist             = tabpagebuflist(current_tab)
   let bufnr               = buflist[winnr - 1]
@@ -274,7 +273,7 @@ function! ctrlspace#statusline_tab_info_segment(...)
   let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
   let title               = <SID>tab_title(current_tab, bufnr, bufname)
 
-  let tabinfo             = separator . current_tab . bufs_number_to_show . " "
+  let tabinfo             = string(current_tab) . bufs_number_to_show . " "
 
   if <SID>tab_contains_modified_buffers(current_tab)
     let tabinfo .= "+ "
@@ -296,7 +295,7 @@ function! <SID>create_status_tabline()
   return line
 endfunction
 
-function! ctrlspace#statusline_info_segment(...)
+function! ctrlspace#statusline_mode_segment(...)
   let statusline_elements = []
 
   if s:file_mode

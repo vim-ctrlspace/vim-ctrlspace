@@ -1745,13 +1745,13 @@ tabline integration, or just for more advanced interactions with other plugins.
 Returns a directory of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
 
-#### `ctrlspace#statusline_info_segment(...)`
+#### `ctrlspace#statusline_mode_segment(...)`
 
 Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (i.e. in
 plugins like [LightLine](https://github.com/itchyny/lightline.vim))
 
-#### `ctrlspace#statusline_tab_info_segment(...)`
+#### `ctrlspace#statusline_tab_segment(...)`
 
 Returns the info about the current tab (tab number, label, etc.). It is useful
 if you don't use the custom tabline string (or perhaps you have set
