@@ -1,10 +1,7 @@
-<p align="center">
+<h1 align="center">
 <img alt="Vim-CtrlSpace" 
 src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
-</p>
-
-Vim-CtrlSpace
-=============
+</h1>
 
 Overview
 --------
