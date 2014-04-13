@@ -226,7 +226,7 @@ endif
 
 function! ctrlspace#statusline()
   hi def link CtrlSpaceStatus StatusLine
-  hi default link User1 CtrlSpaceStatus
+  hi def link User1 CtrlSpaceStatus
 
   let statusline = "%1*" . g:ctrlspace_symbols.cs . "    " . ctrlspace#statusline_mode_segment("    ")
 

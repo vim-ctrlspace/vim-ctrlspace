@@ -3,8 +3,7 @@
 src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
 </h1>
 
-Overview
---------
+## Overview
 
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim
 while working with buffers, tabs, windows, and so on. It is meant to organize
@@ -65,18 +64,20 @@ The Demo has been recorded with:
  Vitae](http://www.jamendo.com/pl/list/a109465/curriculum-vitae)
 
 
-Changes in version 4.0
-----------------------
+### Changes in version 4.0
 
 * Uses alphabetical ordering only (no more order change option)
-* Simplify status line
 * Displays unnamed buffers only if changed or currently displayed
-* Changes `A` binding to `o` (as of _Open_). Introduce File List instead of File Mode
-* Changes `\` binding to `O` (but limits its usage)
-* Remove cyclic list option. All lists are cyclic from now.
-* Provide new symbols and new Tab List dynamic indicator
-* Change CtrlSpace symbol from `▢` to `⌗` - to better visualize _controlled space_ ;)
+* Simplify status line
 * Allow custom statusline functions
+* Changes `A` binding to `o` (as of _Open_). 
+* Introduces File List (aka _Open List_) instead of _Append a File_ mode
+* Changes `\` binding to `O` (but limits its usage)
+* Removes cyclic list option. All lists are cyclic from now.
+* Provides new symbols and a new Tab List dynamic indicator
+* Change CtrlSpace logotype and symbol from `▢` to `⌗` - _VIEWDATA SQUARE
+  (U+2317)_ - to better visualize _controlled space_, where all things have
+  their own place ;)
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
@@ -88,9 +89,7 @@ commands:
 In case of Vundle, notice that Vundle will follow the changed branch later so you
 will receive updates easily.
 
-
-The Story
----------
+## The Story
 
 ### Origins
 
@@ -114,29 +113,31 @@ later, **Vim-CtrlSpace** has over 3K LOC and still uses some code of that
 Rob's plugin :). 
 
 Characteristic Vim usage, exhibited by many Vim power users, is to treat tabs as
-units of work on different topics. If, for example, I work on a web application
-with User management, I can have a tab containing a User model and test files,
-perhaps a User controller file, and some view files. If it would be possible
-(actually in **Vim-CtrlSpace** it is!) I could name that tab _Users_. Then, if
-I move to, let's say Posts I can have similar set of open files in the next tab.
-That way I can go back and forward between these two concerns. In the third tab
-I could have e.g. config files, etc.
+units of work on different topics. If, for example, I work with a project of
+a web application with User management, I can have a tab containing a User model
+and test files, perhaps a User controller file, and some view files. If it would
+be possible (actually in **Vim-CtrlSpace** it is!) I could name that tab
+_Users_. Then, if I move to, let's say Posts I can have similar set of open
+files in the next tab. That way I can go back and forward between these two
+separate application parts. In the third tab I could have e.g. config files, etc.
 
-This approach works, and works very well. In fact, you can never touch the real
+This approach works indeed very well. In fact, you can never touch the real
 buffer list down there. You can even disable so called *hidden* buffers to make
-sure you manage only what you see in tabs.
+sure you manage only what you see in tabs, which seems to be a default setting in
+Vim nowadays, perphaps because it is (or I believe it **was** thanks to
+*Vim-CtrlSplace* ;)) a bit tricky to manage raw buffers.
 
-I've been working that way for a long time. However, there are some subtle
-issues behind the scene. The first one is the screen size. With this approach
-you are limited to the screen size. At some point the code in split windows
-doesn't fit those windows at all, even if you have a full HD screen with Vim
-maximized. The second issue is a lot of distraction. Sometimes you might want
-just to focus on a one particular file. To address that I have developed a tool
-called [Vim-Maximizer](https://github.com/szw/vim-maximizer). *Vim-Maximizer*
-allows you to temporarily maximize one split window, just by pressing `F3` (by
-default). This can be seen in the demo movie above. That was cool, but still
-I needed something better, especially since I started working on 13-inch
-laptop...
+Anyway, I've been working that way for a long time. However, there are some
+subtle issues behind the scene. The first one is the screen size. With this
+approach you are limited to the screen size. At some point the code in split
+windows doesn't fit those windows at all, even if you have a full HD screen with
+Vim maximized. The second issue is a lot of distraction. Sometimes you might
+want just to focus on a one particular file. To address that I have developed
+a tool called [Vim-Maximizer](https://github.com/szw/vim-maximizer).
+*Vim-Maximizer* allows you to temporarily maximize one split window, just by
+pressing `F3` (by default). This can be seen in the demo movie above. That was
+cool, but still I needed something better, especially since I started working on
+13-inch laptop...
 
 And that was the moment when **Vim-CtrlSpace** came to play. 
 
@@ -162,24 +163,25 @@ possible to access the main buffer list (the list of all open buffers) - in that
 way, you can easily add new friends to the current tab. It's also perfectly
 valid to have a buffer shared among many tabs at the same time (it will be
 listed on many lists). Similarly, you can have a buffer that is not connected to
-any particular tab. It's just a hidden buffer (not displayed at the moment),
-visible only in the _all buffers_ list.
+any particular tab. It's just a plain old hidden buffer (not displayed at the
+moment), listed only in the _all buffers_ list.
 
 That was a breaking change. Next things are just consequences of that little
 invention. I've added a lot of buffer operations (opening, closing, renaming,
-etc), the ability of opening files (together with file operations too), fuzzy
-search through buffer lists and files, separate jump lists, search history, easy
+and more), the ability of opening files (together with file operations too), fuzzy
+search through buffer lists and files, separate and wise jump lists, search history, easy
 tab access (with full tab management and custom tab names), and last but not
 least, workspace management (saving to disk and loading). That means you can
-have plenty of named workspaces per project.
+have plenty of named workspaces per project - very useful if you for example
+utilize [Github workflow](https://guides.github.com/overviews/flow/). You can
+have e.g. a workspace per feature branch.
 
 All those improvements let me to start using **Vim-CtrlSpace** instead of
 *CtrlP* or even *NERDTree*. But, of course, nothing stops you to combine all
 those plugins together, especially if you used to work with them. There are no
 inteferences, just some functionality doubling.
 
-Installation
-------------
+## Installation and Initial Setup
 
 The plugin installation is really simple. You can use Vundle or Pathogen, or
 just clone the repository to your `.vim` directory. In case of Vundle, add:
@@ -192,11 +194,32 @@ If you want to increase plugin speed (e.g. fuzzy search), make sure you have
 decent Ruby bindings enabled in (compiled into) your Vim. The plugin will try 
 to use your Ruby by default.
 
-Usage
------
+### Colors
 
-**Vim-CtrlSpace** currently contains 3 different lists: _Buffer List_, _Tab List_,
-and _Workspace List_. Some of those have additional modes. 
+You should also improve default plugin colors to work well with your
+colorscheme. For example, I used to work in the terminal Vim with slightly
+modified [Seoul256](https://github.com/szw/seoul256.vim) colorscheme originally
+developed by [Junegunn Choi](https://github.com/junegunn/seoul256.vim).
+
+Therefore, I put following settings in my `.vimrc`:
+
+    hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
+    hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
+    hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+    hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+
+If you use a terminal Vim you can use [that
+chart](http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html) to
+discover best colors matching your colorscheme. To find out more about enabling
+256 colours in your terminal check e.g. Tom Ryder's blog
+- [Arabesque](http://blog.sanctum.geek.nz/256-colour-terminals/).
+
+Notice, it's worth to spent some time to adjust settings to someting
+eye-pleasant, because chances are, you will use (a thus see) the plugin a lot ;). 
+
+If you use a popular colorscheme and you would like to share your
+settings, I'd love to add them here! Please post a pull request, an issue or
+just [mail](mailto:szymon@wrozynski.com).
 
 ### Status Line
 
@@ -209,72 +232,17 @@ status line segments, provided by **Vim-CtrlSpace** API.
 
 #### Status Line Symbols
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-<th>List</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⌗</code></td>
-<td><code>#</code></td>
-<td>All</td>
-<td>Vim-CtrlSpace symbol</td>
-</tr>
-<tr>
-<td><code>⊙</code></td>
-<td><code>TAB</code></td>
-<td>Buffer List</td>
-<td>Single Tab mode indicator</td>
-</tr>
-<tr>
-<td><code>∷</code></td>
-<td><code>ALL</code></td>
-<td>Buffer List</td>
-<td>All Tabs mode indicator</td>
-</tr>
-<tr>
-<td><code>◎</code></td>
-<td><code>OPEN</code></td>
-<td>File List</td>
-<td>(Open) File List indicator</td>
-</tr>
-<tr>
-<td><code>⌕</code></td>
-<td><code>&#42;</code></td>
-<td>Buffer List</td>
-<td>Preview mode indicator</td>
-</tr>
-<tr>
-<td><code>›&#95;‹</code></td>
-<td><code>[&#95;]</code></td>
-<td>Buffer List</td>
-<td>Search mode or search order</td>
-</tr>
-<tr>
-<td><code>○●○</code></td>
-<td><code>-+-</code></td>
-<td>Tab List</td>
-<td>Tab List indicator</td>
-</tr>
-<tr>
-<td><code>⋮ → ∙</code></td>
-<td><code>LOAD</code></td>
-<td>Workspace List</td>
-<td>Workspace Load mode</td>
-</tr>
-<tr>
-<td><code>∙ → ⋮</code></td>
-<td><code>SAVE</code></td>
-<td>Workspace List</td>
-<td>Workspace Save mode</td>
-</tr>
-</tbody>
-</table>
+| Unicode Symbol | ASCII Symbol  | List        | Description                  |
+|:--------------:|:-------------:| ----------- | ---------------------------- |
+| `⌗`            | `#`           | All         | Vim-CtrlSpace symbol         |
+| `⊙`            | `TAB`         | Buffer      | Single Tab mode indicator    |
+| `∷`            | `ALL`         | Buffer      | All Tabs mode indicator      |
+| `◎`            | `OPEN`        | File        | (Open) File List indicator   |
+| `⌕`            | `*`           | Buffer      | Preview mode indicator       |
+| `›_‹`          | `[_]`         | Buffer/File | Search mode indicator        |
+| `○●○`          | `-+-`         | Tab         | Tab List indicator           |
+| `⋮ → ∙`        | `LOAD`        | Workspace   | Workspace Loading mode       |
+| `∙ → ⋮`        | `SAVE`        | Workspace   | Workspace Saving mode        |
 
 ### Tabline
 
@@ -283,42 +251,49 @@ status line segments, provided by **Vim-CtrlSpace** API.
 tabs in that tabline are displayed in the following way (the same format is used
 also in the Tab List):
 
-<table>
+| Format  | Tab number | Buffers | Modified | Buffer or tab name |
+| ------- |:----------:|:-------:|:--------:|:------------------:|
+| Unicode | `1`        | `²`     | `+`      | `[README.md]`      |
+| ASCII   | `1`        | `:2`    | `+`      | `[README.md]`      |
 
-<tr>
-<th>Unicode</th>
-<td><code>1</code></td>
-<td><code>²</code></td>
-<td><code>+</code></td>
-<td><code>[</code></td>
-<td><code>README.md</code></td>
-<td><code>]</code></td>
-</tr>
-
-<tr>
-<th>ASCII</th>
-<td><code>1</code></td>
-<td><code>:2</code></td>
-<td><code>+</code></td>
-<td><code>[</code></td>
-<td><code>README.md</code></td>
-<td><code>]</code></td>
-</tr>
-
-<tr>
-<th>Description</th>
-<td>Tab number</td>
-<td>Buffers count</td>
-<td>Modified indicator</td>
-<td>Opening bracket<br/>(only for buffer names)</td>
-<td>Buffer or tab name</td>
-<td>Closing bracket<br/>(only for buffer names)</td>
-</tr>
-
-</table>
 
 If GUI tabs are detected, this option will also set the proper function to
 `guitablabel`.
+
+Notice, that if you intensify your tabs usage, the Vim tabline feature could
+become less usable, because of increasing tab number, especially with long
+names. However, there is no need to worry. Moreover, its perfectly fine to even
+turn off tabline completely because plugin has a Tab List ready for you. If you
+feel brave or you are just curious try to add `set showtabline=0` to your
+`.vimrc` and check plugin Tab List instead (press `l` in the plugin window).
+
+### Project Root
+
+The plugin requires a project root to work properly. If you open the plugin
+window for the first time it will try to find out the possible root directory.
+First, it starts in the Vim's current working directory and check if there are
+so called _root markers_. The root markers are characteristic files or
+directories that are available in an exemplary project root directory, like e.g.
+`.git` or `.hg` directories. You can define them yourself in the
+`g:ctrlspace_project_root_markers` variable. If no markers were found the plugin
+will check if perhaps this directory is a known root. The known roots are those
+ones you provided (accepted) yourself when no markers were found. If the current
+directory cannot be proven as a project root, the algorithm will repeat the
+whole procedure in the parent one. 
+
+After checking all predecessors it will ask you to provide the root folder
+explicitly. After your acceptance that root folder will be stored pemanently in
+the `.cs_cache` file as serve as a known root later.
+
+## Usage
+
+### User Interface
+
+![Buffer List view](https://raw.github.com/szw/vim-ctrlspace/master/gfx/plugin_window.png)
+
+**Vim-CtrlSpace** contains 4 different lists: _Buffer List_, _File List_,  _Tab
+List_, and _Workspace List_. Some of those have additional modes.
+
 
 ### Tab Management
 
@@ -340,23 +315,6 @@ Of course, the split shown in that example might be a bit dummy but in
 a typical project there are a lot of natural splits, like for example, 
 backend and frontend layers.
 
-### Project Root
-
-The plugin requires a project root to work properly. If you open the plugin
-window for the first time it will try to find out the possible root directory.
-First, it starts in the Vim current working directory and check if there are so
-called root markers. The root markers are characteristic files or directories
-that are available in an exemplary project root directory, like e.g. `.git` or
-`.hg` directories. You can define them yourself in the
-`g:ctrlspace_project_root_markers` variable. If no markers found, the plugin
-will check if perhaps this directory is a known root. The known roots are those
-ones you provided (accepted) yourself when no markers were found. If the current
-directory cannot be proven as a project root, the algorithm will repeat the
-whole procedure in the parent one. 
-
-After checking all predecessors it will ask you to provide the root folder
-explicitly. After your acceptance that root folder will be stored pemanently in
-the `.cs_cache` file as serve as a known root later.
  
 ### Lists
 
