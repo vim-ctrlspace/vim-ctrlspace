@@ -5,8 +5,6 @@ src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
 
 ## Overview
 
-![Buffer List view](https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png)
-
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim
 while working with buffers, tabs, windows, and so on. It is meant to organize
 your Vim screen space and your workspace effectively. 
@@ -15,6 +13,12 @@ Its key features are lists. In fact, the whole plugin is a small window opened
 on demand, capable of displaying various lists: buffer list, file list, tab
 list, or workspace list. Sounds simple, but around that there are some
 additional details making this simple concept a unique approach. 
+
+<p align="center">
+<img alt="Vim-CtrlSpace" 
+src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
+<em>Pic. Sample plugin window</em>
+</p>
 
 First, the buffer list is limited to buffers related to the current tab. That's
 it, the plugin by default groups buffers by tabs they are used in. In that way
@@ -121,12 +125,13 @@ and test files, perhaps a User controller file, and some view files. If it would
 be possible (actually in **Vim-CtrlSpace** it is!) I could name that tab
 _Users_. Then, if I move to, let's say Posts I can have similar set of open
 files in the next tab. That way I can go back and forward between these two
-separate application parts. In the third tab I could have e.g. config files, etc.
+separate application parts. In the third tab I could have e.g. config files,
+etc.
 
 This approach works indeed very well. In fact, you can never touch the real
 buffer list down there. You can even disable so called *hidden* buffers to make
-sure you manage only what you see in tabs, which seems to be a default setting in
-Vim nowadays, perphaps because it is (or I believe it **was** thanks to
+sure you manage only what you see in tabs, which seems to be a default setting
+in Vim nowadays, perphaps because it is (or I believe it **was** thanks to
 *Vim-CtrlSplace* ;)) a bit tricky to manage raw buffers.
 
 Anyway, I've been working that way for a long time. However, there are some
@@ -170,13 +175,13 @@ moment), listed only in the _all buffers_ list.
 
 That was a breaking change. Next things are just consequences of that little
 invention. I've added a lot of buffer operations (opening, closing, renaming,
-and more), the ability of opening files (together with file operations too), fuzzy
-search through buffer lists and files, separate and wise jump lists, search history, easy
-tab access (with full tab management and custom tab names), and last but not
-least, workspace management (saving to disk and loading). That means you can
-have plenty of named workspaces per project - very useful if you for example
-utilize [Github workflow](https://guides.github.com/overviews/flow/). You can
-have e.g. a workspace per feature branch.
+and more), the ability of opening files (together with file operations too),
+fuzzy search through buffer lists and files, separate and wise jump lists,
+search history, easy tab access (with full tab management and custom tab names),
+and last but not least, workspace management (saving to disk and loading). That
+means you can have plenty of named workspaces per project - very useful if you
+for example utilize [Github workflow](https://guides.github.com/overviews/flow/). 
+You can have e.g. a one workspace per feature branch.
 
 All those improvements let me to start using **Vim-CtrlSpace** instead of
 *CtrlP* or even *NERDTree*. But, of course, nothing stops you to combine all
@@ -205,10 +210,12 @@ developed by [Junegunn Choi](https://github.com/junegunn/seoul256.vim).
 
 Therefore, I put following settings in my `.vimrc`:
 
-    hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
-    hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
-    hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
-    hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+```VimL
+hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
+hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
+hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+```
 
 If you use a terminal Vim you can use [that
 chart](http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html) to
