@@ -1,49 +1,53 @@
+![Vim-CtrlSpace](https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png)
+
 Vim-CtrlSpace
 =============
 
-Changes in version 4.0
-----------------------
-
-* Uses alphabetical ordering only (no more order change option and info)
-* Displays unnamed buffers only if changed or currently displayed
-* Changes `A` binding to `o` (as of _Open_). Introduce File List instead of File Mode
-* Changes `\` binding to `O` (but limits its usage)
-* Remove cyclic list option. All lists are cyclic from now.
-* Provide new symbols and new Tab List dynamic indicator
-* Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
-* Allow custom statusline functions
-
-If you want to try this new version please go to your plugin directory (assuming
-you have cloned it from Github, or Vundle did it for you) and enter following
-commands:
-
-    git fetch
-    git checkout -t origin/next
-
-In case of Vundle, notice that Vundle will follow the change branch later so you
-will receive updates easily.
-
-TL;DR
------
+Overview
+--------
 
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim
 while working with buffers, tabs, windows, and so on. It is meant to organize
-your Vim screen space and your workspace effectively. To accomplish that
-**Vim-CtrlSpace** introduces a concept of separated buffer lists per tab and
-provides a lot of power around that (buffer and file management, multiple
-workspaces stored on disk, fuzzy search, tab management, and more).
+your Vim screen space and your workspace effectively. 
 
-Its name follows the convention of naming similar plugins after their default
-mappings (like *Command-T* or *CtrlP*). Obviously, the plugin mapping is by
-default `Ctrl + Space`. 
+Its key features are lists. In fact, the whole plugin is a small window opened
+on demand, capable of displaying various lists: buffer list, file list, tab
+list, or workspace list. Sounds simple, but around that there are some
+additional details making this simple concept a unique approach. 
+
+First, the buffer list is limited to buffers related to the current tab. That's
+it, the plugin by default groups buffers by tabs they are used in. In that way
+you get separate sets of buffers per each tab. And that's really useful. Of
+course, the _all buffers_ mode is still available. 
+
+Another cool feature is that, you can name your tabs and you can save the whole
+set of tabs and buffers as a workspace in your project directory and reopen it
+later. And naturally, you can list and open any files available in you project,
+having your fuzzy search at hand. It's also worth to mention, the plugin tries
+to employ Ruby when possible to speed up things. Oh, and you can also perform
+a lot of operations on list contents. You can move, copy, rename, delete
+buffers, tabs, files, workspaces (sic, nothing stops you to have plenty
+workspaces per project). Some of those operations seems trivial (like tab
+moving), but some of them are not (buffer renaming). The plugin makes all of
+them pretty easy hiding the guts.
+
+The plugin name follows the convention of naming similar plugins after their
+default mappings (like *Command-T* or *CtrlP*). Obviously, the plugin mapping is
+by default `Ctrl + Space`. 
 
 If you like the plugin please don't forget to add a star (:star:)! This will
 help me to estimate the plugin popularity and that way I will proceed better its
 further development :).
 
+If you starred this repo already, thank you! Thanks to you it's my pet project
+now :). If you have a question, a feature request, or a new idea, don't hesitate
+to post new issues or pull requests. The collaboration is the most exciting thing
+in the open source community.
+
 ### Demo
 
-Here's a small demonstration. Viewing in HD advised!
+If you are still a bit unsure whether is it something you should try, here's
+a small demonstration. Viewing in HD advised!
 
 [![Demo](https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
 
@@ -60,17 +64,42 @@ The Demo has been recorded with:
 - music: [Professor Kliq - Curriculum
  Vitae](http://www.jamendo.com/pl/list/a109465/curriculum-vitae)
 
-About
------
 
-### The Story
+Changes in version 4.0
+----------------------
+
+* Uses alphabetical ordering only (no more order change option)
+* Simplify status line
+* Displays unnamed buffers only if changed or currently displayed
+* Changes `A` binding to `o` (as of _Open_). Introduce File List instead of File Mode
+* Changes `\` binding to `O` (but limits its usage)
+* Remove cyclic list option. All lists are cyclic from now.
+* Provide new symbols and new Tab List dynamic indicator
+* Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
+* Allow custom statusline functions
+
+If you want to try this new version please go to your plugin directory (assuming
+you have cloned it from Github, or Vundle did it for you) and enter following
+commands:
+
+    git fetch
+    git checkout -t origin/next
+
+In case of Vundle, notice that Vundle will follow the changed branch later so you
+will receive updates easily.
+
+
+The Story
+---------
+
+### Origins
 
 There are many ways of working with Vim. It's no so straight forward like in
 other editors. People often find their own methods of working with Vim and
 increasing their productivity. However, some settings and scenarios seem to be
 preffered rather than others. And that means also some common issues.
 
-The main attitude is to combine buffers, split windows, and tabs effectively. In
+The main attitude is to combine buffers, split windows, and tabs effectively. 
 Vim, unlike in other editors, tabs are not tabs really. They are just containers
 for split windows, sometimes referred as *viewports*. The tab list - considered
 as a list of open files - buffers, is called a *buffer list*. Usually, it's
@@ -80,8 +109,8 @@ Of course, there are many plugins allowing you to see, change, and manage
 buffers. In fact, **Vim-CtrlSpace** has been started as a set of improvements of
 a such existing plugin. It was named [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) by Rob Lillack. That
-was a neat and tiny plugin (270 LOC), but a bit abandoned. Now, about 7 months
-later, **Vim-CtrlSpace** has about 3K LOC and still uses some code of that
+was a neat and tiny plugin (270 LOC), but a bit abandoned. Now, about a year
+later, **Vim-CtrlSpace** has over 3K LOC and still uses some code of that
 Rob's plugin :). 
 
 Characteristic Vim usage, exhibited by many Vim power users, is to treat tabs as
@@ -111,13 +140,16 @@ laptop...
 
 And that was the moment when **Vim-CtrlSpace** came to play. 
 
-### Vim-CtrlSpace Idea
+### The Idea
 
-First, I wanted a cool buffer list. Something neat and easy. MinibufExplorer and
-friends have some issues with unnamed buffers. Also, I have troubles when I have
-too many buffers open. The list gets longer and longer. A tool like CtrlP was
-helpful to some point (usually when I was looking for a buffer), but it doesn't
-show you all buffers available. 
+First, I wanted a cool buffer list to address problems with screen size and
+allow me to use Vim like in a distraction free mode. Something neat and easy
+which let me to hide unnecessary windows and just shift buffers when needed.
+MinibufExplorer and friends have some issues with unnamed buffers. Also, I have
+troubles when I have too many buffers open. The list gets longer and longer.
+A tool like CtrlP was helpful to some point (usually when I was looking for
+a concrete buffer with a name I remembered), but it didn't list all available
+buffers. 
 
 I started playing with Rob Lillack's *VIM bufferlist* and finally I've created
 a solution. I've introduced a concept of many buffer lists tightly coupled with
