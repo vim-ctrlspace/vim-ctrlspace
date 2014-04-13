@@ -14,12 +14,6 @@ on demand, capable of displaying various lists: buffer list, file list, tab
 list, or workspace list. Sounds simple, but around that there are some
 additional details making this simple concept a unique approach. 
 
-<p align="center">
-<img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
-<em>Pic. Sample plugin window</em>
-</p>
-
 First, the buffer list is limited to buffers related to the current tab. That's
 it, the plugin by default groups buffers by tabs they are used in. In that way
 you get separate sets of buffers per each tab. And that's really useful. Of
@@ -296,76 +290,45 @@ the `.cs_cache` file as serve as a known root later.
 
 ## Usage
 
-### User Interface
-
-
 **Vim-CtrlSpace** contains 4 different lists: _Buffer List_, _File List_,  _Tab
-List_, and _Workspace List_. Some of those have additional modes.
+List_, and _Workspace List_. Some of those have additional modes. In a modal
+editor like Vim this should not fear you ;). I believe this division will seem
+clear to recognize and understand soon.
 
+You can jump between lists easily by pressing one of the following keys:
 
-### Tab Management
+* `o` - jump to _File List_ (aka _Open List_)
+* `l` - jump to _Tab List_
+* `w` - jump to _Workspace List_
 
-Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
-plugin lets you to perform many classic tab actions easily in the Buffer List
-view and of course in the Tab List view (turned on with letter `l`). 
-Those ones include e.g. switching (`[` and `]`), moving (`+` and `-`), 
-closing (uppercase `C`), or renaming (`=`). 
+Since the _Buffer List_ is the default one, in order to jump to it just press
+one of those keys again (or just hit `Backspace`).
 
-You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
-useful if you want to split your tab (your group of buffers) into smaller ones.
-Referring to the demo example, the tab `Users` (holding model files, controller
-files and views) could be split into something like `Users (models)` and 
-`Users (views)`. `Users (models)` could then have model and controller files 
-whereas `Users (views)` could be storing controller and view ones. With the 
-help of tab copying (`Y`) all you need is to copy the `Users` tab, close 
-superfluous buffers in each (lowercase `c`), and finally rename both (`=`). 
-Of course, the split shown in that example might be a bit dummy but in 
-a typical project there are a lot of natural splits, like for example, 
-backend and frontend layers.
-
- 
-### Lists
-
-The plugin have 4 lists, and each of them can have additional modes. In a modal
-editor like Vim this should not fear you ;). I believe this division is clear
-to recognize and understand.
-
-#### Buffer List
+### Buffer List
 
 This is the basic list the plugin offers. Depending of its mode it can collect
-buffers from the current tab or buffers from all tab. 
+buffers from the current tab or buffers from all tabs. 
+
+<p align="center">
+<img alt="Vim-CtrlSpace" 
+src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
+<em>Sample Buffer List</em>
+</p>
 
 Items listed in the plugin window can have additional indicators 
 (following the item text):
 
-<table>
+| Unicode | ASCII | Indicator                |
+|:-------:|:-----:| ------------------------ |
+| `+`     | `+`   | Item modified            |
+| `★`     | `*`   | Item visible (or active) |
 
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-<th>Indicator</th>
-</tr>
-
-<tr>
-<td><code>+</code></td>
-<td><code>+</code></td>
-<td>Item modified</td>
-</tr>
-
-<tr>
-<td><code>★</code></td>
-<td><code>&#42;</code></td>
-<td>Item visible (or active)</td>
-</tr>
-
-</table>
-
-##### Simplified Key Diagram
+#### Simplified Key Diagram
 
 This is a simplified diagram of key groups used in **Vim-CtrlSpace** Buffer
 List.
 
-![Key Groups](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.png)
+![Key Groups](https://raw.github.com/szw/vim-ctrlspace/next/gfx/cs_keys.png)
 
 *This file is licensed under GNU FDL license. It is derived from
 [Qwerty.svg](http://commons.wikimedia.org/wiki/File:Qwerty.svg) file by [Oona
@@ -373,7 +336,7 @@ Räisänen](http://en.wikipedia.org/wiki/User:Mysid) &copy; 2005. The source of
 the generated graphics you can find
 [here](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.svg).*
 
-##### Single Tab Mode
+#### Single Tab Mode
 
 <table>
 <thead>
@@ -753,6 +716,26 @@ original content is marked with an empty star too:
 </tr>
 </tbody>
 </table>
+
+### Tab Management
+
+Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
+plugin lets you to perform many classic tab actions easily in the Buffer List
+view and of course in the Tab List view (turned on with letter `l`). 
+Those ones include e.g. switching (`[` and `]`), moving (`+` and `-`), 
+closing (uppercase `C`), or renaming (`=`). 
+
+You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
+useful if you want to split your tab (your group of buffers) into smaller ones.
+Referring to the demo example, the tab `Users` (holding model files, controller
+files and views) could be split into something like `Users (models)` and 
+`Users (views)`. `Users (models)` could then have model and controller files 
+whereas `Users (views)` could be storing controller and view ones. With the 
+help of tab copying (`Y`) all you need is to copy the `Users` tab, close 
+superfluous buffers in each (lowercase `c`), and finally rename both (`=`). 
+Of course, the split shown in that example might be a bit dummy but in 
+a typical project there are a lot of natural splits, like for example, 
+backend and frontend layers.
 
 #### File List
 
