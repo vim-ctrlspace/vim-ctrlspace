@@ -1,4 +1,4 @@
-![Vim-CtrlSpace](https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png)
+![Vim-CtrlSpace](https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png)
 
 Vim-CtrlSpace
 =============
