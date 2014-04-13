@@ -75,7 +75,7 @@ Changes in version 4.0
 * Changes `\` binding to `O` (but limits its usage)
 * Remove cyclic list option. All lists are cyclic from now.
 * Provide new symbols and new Tab List dynamic indicator
-* Change CtrlSpace symbol from `▢` to `♯` - to better visualize _controlled space_ ;)
+* Change CtrlSpace symbol from `▢` to `⌗` - to better visualize _controlled space_ ;)
 * Allow custom statusline functions
 
 If you want to try this new version please go to your plugin directory (assuming
@@ -220,7 +220,7 @@ status line segments, provided by **Vim-CtrlSpace** API.
 </thead>
 <tbody>
 <tr>
-<td><code>♯</code></td>
+<td><code>⌗</code></td>
 <td><code>#</code></td>
 <td>All</td>
 <td>Vim-CtrlSpace symbol</td>
@@ -1646,7 +1646,7 @@ doesn't contain enough symbols or the glyphs are poorly rendered. Default value:
 
     if g:ctrlspace_unicode_font
       let g:ctrlspace_symbols = {
-            \ "cs"      : "♯",
+            \ "cs"      : "⌗",
             \ "tab"     : "⊙",
             \ "all"     : "∷",
             \ "open"    : "◎",
