@@ -1001,12 +1001,12 @@ function! <SID>find_lowest_search_noise(bufname)
           let matched_string = a:bufname[subseq[1][0]:subseq[1][-1]]
 
           if !empty(g:ctrlspace_search_resonators)
-            if (subseq[1][0] == 0) || (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][0] - 1]) == -1)
+            if (subseq[1][0] != 0) && (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][0] - 1]) == -1)
               let noise += 1
             endif
 
-            if (subseq[1][-1] == bufname_len - 1)
-                  \ || (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][-1] + 1]) == -1)
+            if (subseq[1][-1] != bufname_len - 1)
+                  \ && (index(g:ctrlspace_search_resonators, a:bufname[subseq[1][-1] + 1]) == -1)
               let noise += 1
             endif
           endif
