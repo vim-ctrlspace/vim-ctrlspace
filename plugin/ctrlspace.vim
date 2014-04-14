@@ -2955,7 +2955,7 @@ function! <SID>remove_file()
 
   call <SID>delete_buffer()
   call <SID>update_file_list(path, "")
-  call delete(path)
+  call delete(resolve(expand(path)))
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -2982,7 +2982,7 @@ function! <SID>move_file()
     let buffer_names[b] = fnamemodify(resolve(bufname(b)), ":.")
   endfor
 
-  call rename(path, new_file)
+  call rename(resolve(expand(path)), resolve(expand(new_file)))
 
   for [b, name] in items(buffer_names)
     if name == path

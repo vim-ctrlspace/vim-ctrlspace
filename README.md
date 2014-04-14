@@ -252,7 +252,7 @@ status line segments, provided by **Vim-CtrlSpace** API.
 
 **Vim-CtrlSpace** can set a custom tabline. If the proper option is enabled
 (`g:ctrlspace_use_tabline`), the plugin will set a custom tabline for you. The
-tabs in that tabline are displayed in the following way (the same format is used
+tabs in that tabline are displayed in the following way (similar format is used
 also in the Tab List):
 
 | Format  | Tab number | Buffers | Modified | Buffer or tab name |
@@ -307,7 +307,7 @@ one of those keys again (or just hit `Backspace`).
 
 ### Buffer List
 
-This is the basic list the plugin offers. Depending of its mode it can collect
+This is the basic list of the plugin. Depending of its mode it can collect
 buffers from the current tab or buffers from all tabs. 
 
 <p align="center">
