@@ -74,6 +74,7 @@ The Demo has been recorded with:
 * Introduces File List (aka _Open List_) instead of _Append a File_ mode
 * Changes `\` binding to `O` (but limits its usage)
 * Removes cyclic list option. All lists are cyclic from now.
+* Removes available keys info in status bar
 * Provides new symbols and a new Tab List dynamic indicator
 * Change CtrlSpace logotype and symbol from `▢` to `⌗` - _VIEWDATA SQUARE
   (U+2317)_ - to better visualize _controlled space_, where all things have
@@ -328,7 +329,10 @@ Items listed in the plugin window can have additional indicators
 This is a simplified diagram of key groups used in **Vim-CtrlSpace** Buffer
 List.
 
-![Key Groups](https://raw.github.com/szw/vim-ctrlspace/next/gfx/cs_keys.png)
+<p align="center">
+<img alt="Key Groups" 
+src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/cs_keys.png" />
+</p>
 
 *This file is licensed under GNU FDL license. It is derived from
 [Qwerty.svg](http://commons.wikimedia.org/wiki/File:Qwerty.svg) file by [Oona
@@ -338,210 +342,75 @@ the generated graphics you can find
 
 #### Single Tab Mode
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⊙</code></td>
-<td><code>TAB</code></td>
-</tr>
-</tbody>
-</table>
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `⊙`     | `TAB` |
 
 The first mode of Buffer List is the Single Tab one. In that mode, the plugin
 shows you only buffers related to the current tab. Here's the full listing of
-full available keys:
+all available keys:
 
-###### Keys Reference
+##### Keys Reference
 
-<table>
+###### Opening
 
-<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
+| Key      | Action                                                 |
+|:--------:| ------------------------------------------------------ |
+| `Return` | Opens a selected buffer                                |
+| `Space`  | Opens a selected buffer and stays in the plugin window |
+| `Tab`    | Enters the Preview mode for selected buffer            |
+| `v`      | Opens selected buffer in a new vertical split          |
+| `s`      | Opens selected buffer in a new horizontal split        |
+| `t`      | Opens selected buffer in a new tab                     |
 
-<tbody>
+###### Searching & Sorting
 
-<tr>
-<td rowspan="6">Opening</td>
-<td><code>Return</code></td>
-<td>Opens a selected buffer</td>
-</tr>
+| Key        | Action                                               |
+|:----------:| ---------------------------------------------------- |
+| `/`        | Enters the Search mode                               |
+| `O`        | Enters the Search mode in the File List              |
+| `Ctrl + p` | Brings back the previous searched text               |
+| `Ctrl + n` | Brings the next searched text                        |
 
-<tr>
-<td><code>Space</code></td>
-<td>Opens a selected buffer and stays in the <b>Vim-CtrlSpace</b> window</td>
-</tr>
+###### Tabs Operations
 
-<tr>
-<td><code>Tab</code></td>
-<td>Enters the Preview mode for selected buffer</td>
-</tr>
+| Key    | Action                                                    |
+|:------:| --------------------------------------------------------- |
+| `T`    | Creates a new tab and stays in the plugin window          |
+| `Y`    | Copies (yanks) the current tab into a new one             |
+| `0..9` | Jumps to the n-th tab (0 is for the 10th one)             |
+| `-`    | Moves the current tab to the left (decreases its number)  |
+| `+`    | Moves the current tab to the right (increases its number) |
+| `=`    | Changes the tab name                                      |
+| `_`    | Removes a custom tab name                                 |
+| `[`    | Goes to the previous (left) tab                           |
+| `]`    | Goes to the next (right) tab                              |
 
-<tr>
-<td><code>v</code></td>
-<td>Opens selected buffer in a new vertical split</td>
-</tr>
+###### Exiting
 
-<tr>
-<td><code>s</code></td>
-<td>Opens selected buffer in a new horizontal split</td>
-</tr>
+| Key            | Action                                            |
+|:--------------:| ------------------------------------------------- |
+| `Backspace`    | Goes back                                         |
+| `q`            | Closes the list                                   |
+| `Esc`          | Closes the list - depends on plugin settings      | 
+| `Ctrl + Space` | Closes the list - depends on plugin settings      |
+| `Q`            | Quits Vim with a prompt if unsaved changes found  |
 
-<tr>
-<td><code>t</code></td>
-<td>Opens selected buffer in a new tab</td>
-</tr>
+###### Moving
 
-<tr>
-<td rowspan="5">Searching & sorting</td>
-<td><code>/</code></td>
-<td>Enters the Search mode</td>
-</tr>
-
-<tr>
-<td><code>O</code></td>
-<td>Enters the Search mode in the File List (a shortcut for
-<code>o/</code>)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl
-+ p</code></td>
-</tr>
-
-<tr>
-<td rowspan="9">Tabs operations</td>
-<td><code>T</code></td>
-<td>Creates a new tab and stays in the plugin window</td>
-</tr>
-
-<tr>
-<td><code>Y</code></td>
-<td>Copies (yanks) the current tab into a new one</td>
-</tr>
-
-<tr>
-<td><code>0..9</code></td>
-<td>Jumps to the n-th tab (0 is for the 10th one)</td>
-</tr>
-
-<tr>
-<td><code>-</code></td>
-<td>Moves the current tab to the left (decreases its number)</td>
-</tr>
-
-<tr>
-<td><code>+</code></td>
-<td>Moves the current tab to the right (increases its number)</td>
-</tr>
-
-<tr>
-<td><code>=</code></td>
-<td>Changes the tab name</td>
-</tr>
-
-<tr>
-<td><code>&#95;</code></td>
-<td>Removes a custom tab name</td>
-</tr>
-
-<tr>
-<td><code>[</code></td>
-<td>Goes to the previous (left) tab</td>
-</tr>
-
-<tr>
-<td><code>]</code></td>
-<td>Goes to the next (right) tab</td>
-</tr>
-
-<tr>
-<td rowspan="3">Exiting</td>
-<td><code>Backspace</code></td>
-<td>Goes back (in this mode it will just close the plugin window)</td>
-</tr>
-
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin settings</td>
-</tr>
-
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
-
-<tr>
-<td rowspan="11">Moving</td>
-<td><code>j</code></td>
-<td>Moves the selection bar down</td>
-</tr>
-
-<tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
-</tr>
-
-<tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
-</tr>
-
-<tr>
-<td><code>K</code></td>
-<td>Moves the selection bar to the top of the list</td>
-</tr>
-
-<tr>
-<td><code>p</code></td>
-<td>Moves the selection bar to the <em>previous</em> opened buffer</td>
-</tr>
-
-<tr>
-<td><code>P</code></td>
-<td>Moves the selection bar to the <em>previous</em> opened buffer and opens it
-immediately</td>
-</tr>
-
-<tr>
-<td><code>n</code></td>
-<td>Moves the selection bar to the <em>next</em> opened buffer (just the reverse
-of <code>p</code>)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim
-behavior)</td>
-</tr>
+| Key        | Action                                                        |
+|:----------:| ------------------------------------------------------------- |
+| `j`        | Moves the selection bar down                                  |
+| `k`        | Moves the selection bar up                                    |
+| `J`        | Moves the selection bar to the bottom of the list             |        
+| `K`        | Moves the selection bar to the top of the list                |
+| `p`        | Moves the selection bar to the _previous_ buffer              |
+| `P`        | Moves the selection bar to the _previous_ buffer and opens it |
+| `n`        | Moves the selection bar to the _next_ opened buffer           |
+| `Ctrl + f` | Moves the selection bar one screen down                       |
+| `Ctrl + b` | Moves the selection bar one screen up                         |
+| `Ctrl + d` | Moves the selection bar a half screen down                    |
+| `Ctrl + u` | Moves the selection bar a half screen up                      |
 
 <tr>
 <td rowspan="6">Closing</td>
@@ -557,7 +426,7 @@ behavior)</td>
 <tr>
 <td><code>f</code></td>
 <td>Forgets the current buffer (make it a <em>foreign</em> (unrelated) to the
-current tab)</td>
+        current tab)</td>
 </tr>
 
 <tr>
@@ -575,73 +444,71 @@ Otherwise it will just forget it (detach from the current tab)</td>
 <tr>
 <td><code>C</code></td>
 <td>Closes the current tab, then performs <code>F</code> (closes forgotten
-buffers - probably these from that just closed tab) and <code>D</code> (closes
-empty nonames)</td>
-</tr>
+        buffers - probably these from that just closed tab) and <code>D</code> (closes
+            empty nonames)</td>
+        </tr>
 
-<tr>
-<td rowspan="5">Disk operations</td>
-<td><code>e</code></td>
-<td>Edits a sibling of the selected buffer (it will create a new one if
-necessary)</td>
-</tr>
+        <tr>
+        <td rowspan="5">Disk operations</td>
+        <td><code>e</code></td>
+        <td>Edits a sibling of the selected buffer (it will create a new one if
+                necessary)</td>
+        </tr>
 
-<tr>
-<td><code>E</code></td>
-<td>Explores a directory of the selected buffer</td>
-</tr>
+        <tr>
+        <td><code>E</code></td>
+        <td>Explores a directory of the selected buffer</td>
+        </tr>
 
-<tr>
-<td><code>R</code></td>
-<td>Removes the selected buffer (file) entirely (from the disk too)</td>
-</tr>
+        <tr>
+        <td><code>R</code></td>
+        <td>Removes the selected buffer (file) entirely (from the disk too)</td>
+        </tr>
 
-<tr>
-<td><code>m</code></td>
-<td>Moves or renames the selected buffer (together with its file)</td>
-</tr>
+        <tr>
+        <td><code>m</code></td>
+        <td>Moves or renames the selected buffer (together with its file)</td>
+        </tr>
 
-<tr>
-<td><code>y</code></td>
-<td>Copies selected file (won't work with buffers without files)</td>
-</tr>
+        <tr>
+        <td><code>y</code></td>
+        <td>Copies selected file (won't work with buffers without files)</td>
+        </tr>
 
-<tr>
-<td rowspan="2">Mode changing</td>
-<td><code>a</code></td>
-<td>Toggles between Single Tab and All Tabs modes</td>
-</tr>
+        <tr>
+        <td rowspan="2">Mode changing</td>
+        <td><code>a</code></td>
+        <td>Toggles between Single Tab and All Tabs modes</td>
+        </tr>
 
-<tr>
-<td><code>o</code></td>
-<td>Enters the File List</td>
-</tr>
+        <tr>
+        <td><code>o</code></td>
+        <td>Enters the File List</td>
+        </tr>
 
-<tr>
-<td rowspan="2">List changing</td>
-<td><code>l</code></td>
-<td>Toggles the Tab List view</td>
-</tr>
+        <tr>
+        <td rowspan="2">List changing</td>
+        <td><code>l</code></td>
+        <td>Toggles the Tab List view</td>
+        </tr>
 
-<tr>
-<td><code>w</code></td>
-<td>Toggles the Workspace List view</td>
-</tr>
+        <tr>
+        <td><code>w</code></td>
+        <td>Toggles the Workspace List view</td>
+        </tr>
 
-<tr>
-<td rowspan="2">Workspace shortcuts</td>
-<td><code>S</code></td>
-<td>Saves the workspace immediately (or creates a new one if none)</td>
-</tr>
+        <tr>
+        <td rowspan="2">Workspace shortcuts</td>
+        <td><code>S</code></td>
+        <td>Saves the workspace immediately (or creates a new one if none)</td>
+        </tr>
 
-<tr>
-<td><code>L</code></td>
-<td>Loads the last active workspace (if present)</td>
-</tr>
+        <tr>
+        <td><code>L</code></td>
+        <td>Loads the last active workspace (if present)</td>
+        </tr>
 
-</tbody>
 
-</table>
 
 ##### All Tabs Mode
 
