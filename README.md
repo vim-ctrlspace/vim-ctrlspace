@@ -3,6 +3,40 @@
 src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
 </h1>
 
+## Table of Contents
+
+* [Table of Contents](#table-of-contents)
+* [Overview](#overview)
+  * [Demo](#demo)
+  * [Changes in version 4.0](#changes-in-version-40)
+* [The Story](#the-story)
+  * [Origins](#origins)
+  * [The Idea](#the-idea)
+* [Installation and Initial Setup](#installation-and-initial-setup)
+  * [Colors](#colors)
+  * [Status Line](#status-line)
+  * [Tabline](#tabline)
+  * [Project Root](#project-root)
+* [User Interface](#user-interface)
+  * [Tab Management](#tab-management)
+* [Lists](#lists)
+  * [Buffer List](#buffer-list)
+    * [Single Tab Mode](#single-tab-mode)
+    * [All Tabs Mode](#all-tabs-mode)
+    * [Preview Mode](#preview-mode)
+  * [File List](#file-list)
+  * [Tab List](#tab-list)
+  * [Workspace List](#workspace-list)
+  * [Common Modes](#common-modes)
+    * [Search Mode](#search-mode)
+    * [Nop Mode](#nop-mode)
+* [Configuration](#configuration)
+  * [Colors](#colors)
+* [API ](#api)
+  * [Commands](#commands)
+  * [Functions](#functions)
+* [Authors and License](#authors-and-license)
+
 ## Overview
 
 **Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim
@@ -611,6 +645,78 @@ list with the `r` key.
 | `l` | Toggle the Tab List view                     |
 | `w` | Toggle the Workspace List view               |
 
+### Tab List
+
+| Unicode | ASCII  |
+|:-------:|:------:|
+| `○●○`   | `TABS` |
+
+Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
+than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
+Habits of Effective Text Editing_](http://www.youtube.com/watch?v=p6K4iIMlouI)
+stated that if you needed more than 10 tabs then probably you were doing
+something wrong. In **Vim-CtrlSpace** tab pages are great, labelled containers
+for buffers, and therefore their usage increases. All it means that sometimes
+the default tabline feature used in Vim to organize tab pages is not
+sufficient. For example, you might have more tabs (and with wider labels)
+which don't fit the tabline width, causing rendering problems.
+
+In the Tab List view you can list all tabs. You can even turn off your tabline 
+entirely and stick to that list only via Vim's `showtabline` option.
+
+#### Opening and closing
+
+| Key      | Action                                                     |
+|:--------:| ---------------------------------------------------------- |
+| `Return` | Open a selected tab and enter the Buffer List view         |
+| `Tab`    | Open a selected tab and close the plugin window            |
+| `Space`  | Open a selected tab but stay in the Tab List view          |
+| `0..9`   | Jump to the n-th tab (0 is for the 10th one)               |
+| `c`      | Close the selected tab, then forgotten buffers and nonames |
+
+#### Exiting
+
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Backspace`    | Go back                                         |
+| `l`            | Go back                                         |
+| `w`            | Go to the Workspace List view                   |
+| `o`            | Go to the File List view                        |
+| `O`            | Go to the File List view in the Search Mode     |
+| `q`            | Close the list                                  |
+| `Esc`          | Close the list - depending on plugin settings   |
+| `Ctrl + Space` | Close the list - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found |
+
+#### Tabs Operations
+
+| Key | Action                                              |
+|:---:| --------------------------------------------------- |
+| `-` | Move the current tab backward (decrease its number) |
+| `+` | Move the selected tab forward (increase its number) |
+| `=` | Change the selected tab name                        |
+| `_` | Remove the selected tab name                        |
+| `[` | Go to the previous tab                              |
+| `]` | Go to the next tab                                  |
+| `t` | Create a new tab nexto to the current one           |
+| `y` | Make a copy of the current tab                      |
+
+#### Moving
+
+| Key        | Action                                                        |
+|:----------:| ------------------------------------------------------------- |
+| `j`        | Move the selection bar down                                   |
+| `k`        | Move the selection bar up                                     |
+| `J`        | Move the selection bar to the bottom of the list              |
+| `K`        | Move the selection bar to the top of the list                 |
+| `p`        | Move the selection bar to the previous opened tab             |
+| `P`        | Move the selection bar to the previous opened tab and open it |
+| `n`        | Move the selection bar to the next opened tab                 |
+| `Ctrl + f` | Move the selection bar one screen down                        |
+| `Ctrl + b` | Move the selection bar one screen up                          |
+| `Ctrl + d` | Move the selection bar a half screen down                     |
+| `Ctrl + u` | Move the selection bar a half screen up                       |
+
 ### Workspace List
 
 | Unicode | ASCII  | Mode      |
@@ -691,78 +797,6 @@ startup and save it active workspace on Vim exit. See
 | `Ctrl + b` | Move the selection bar one screen up                |
 | `Ctrl + d` | Move the selection bar a half screen down           |
 | `Ctrl + u` | Move the selection bar a half screen up             |
-
-### Tab List
-
-| Unicode | ASCII  |
-|:-------:|:------:|
-| `○●○`   | `TABS` |
-
-Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
-than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
-Habits of Effective Text Editing_](http://www.youtube.com/watch?v=p6K4iIMlouI)
-stated that if you needed more than 10 tabs then probably you were doing
-something wrong. In **Vim-CtrlSpace** tab pages are great, labelled containers
-for buffers, and therefore their usage increases. All it means that sometimes
-the default tabline feature used in Vim to organize tab pages is not
-sufficient. For example, you might have more tabs (and with wider labels)
-which don't fit the tabline width, causing rendering problems.
-
-In the Tab List view you can list all tabs. You can even turn off your tabline 
-entirely and stick to that list only via Vim's `showtabline` option.
-
-#### Opening and closing
-
-| Key      | Action                                                     |
-|:--------:| ---------------------------------------------------------- |
-| `Return` | Open a selected tab and enter the Buffer List view         |
-| `Tab`    | Open a selected tab and close the plugin window            |
-| `Space`  | Open a selected tab but stay in the Tab List view          |
-| `0..9`   | Jump to the n-th tab (0 is for the 10th one)               |
-| `c`      | Close the selected tab, then forgotten buffers and nonames |
-
-#### Exiting
-
-| Key            | Action                                          |
-|:--------------:| ----------------------------------------------- |
-| `Backspace`    | Go back                                         |
-| `l`            | Go back                                         |
-| `w`            | Go to the Workspace List view                   |
-| `o`            | Go to the File List view                        |
-| `O`            | Go to the File List view in the Search Mode     |
-| `q`            | Close the list                                  |
-| `Esc`          | Close the list - depending on plugin settings   |
-| `Ctrl + Space` | Close the list - depending on plugin settings   |
-| `Q`            | Quit Vim with a prompt if unsaved changes found |
-
-#### Tabs Operations
-
-| Key | Action                                              |
-|:---:| --------------------------------------------------- |
-| `-` | Move the current tab backward (decrease its number) |
-| `+` | Move the selected tab forward (increase its number) |
-| `=` | Change the selected tab name                        |
-| `_` | Remove the selected tab name                        |
-| `[` | Go to the previous tab                              |
-| `]` | Go to the next tab                                  |
-| `t` | Create a new tab nexto to the current one           |
-| `y` | Make a copy of the current tab                      |
-
-#### Moving
-
-| Key        | Action                                                        |
-|:----------:| ------------------------------------------------------------- |
-| `j`        | Move the selection bar down                                   |
-| `k`        | Move the selection bar up                                     |
-| `J`        | Move the selection bar to the bottom of the list              |
-| `K`        | Move the selection bar to the top of the list                 |
-| `p`        | Move the selection bar to the previous opened tab             |
-| `P`        | Move the selection bar to the previous opened tab and open it |
-| `n`        | Move the selection bar to the next opened tab                 |
-| `Ctrl + f` | Move the selection bar one screen down                        |
-| `Ctrl + b` | Move the selection bar one screen up                          |
-| `Ctrl + d` | Move the selection bar a half screen down                     |
-| `Ctrl + u` | Move the selection bar a half screen up                       |
 
 ### Common Modes
 
