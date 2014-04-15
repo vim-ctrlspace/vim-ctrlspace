@@ -68,17 +68,19 @@ The Demo has been recorded with:
 
 * Uses alphabetical ordering only (no more order change option)
 * Displays unnamed buffers only if changed or currently displayed
-* Simplify status line
-* Allow custom statusline functions
+* Simplifies status line
+* Allows custom statusline functions
 * Changes `A` binding to `o` (as of _Open_). 
 * Introduces File List (aka _Open List_) instead of _Append a File_ mode
 * Changes `\` binding to `O` (but limits its usage)
-* Removes cyclic list option. All lists are cyclic from now.
+* Removes cyclic list option - all lists are cyclic from now
 * Removes available keys info in status bar
 * Provides new symbols and a new Tab List dynamic indicator
 * Change CtrlSpace logotype and symbol from `▢` to `⌗` - _VIEWDATA SQUARE
   (U+2317)_ - to better visualize _controlled space_, where all things have
   their own place ;)
+* Allows to rename unsaved/unnamed buffers
+* Allows to copy unsave/unnamed buffers
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
@@ -215,8 +217,8 @@ hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 If you use a terminal Vim you can use [that
 chart](http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html) to
 discover best colors matching your colorscheme. To find out more about enabling
-256 colours in your terminal check e.g. Tom Ryder's blog
-- [Arabesque](http://blog.sanctum.geek.nz/256-colour-terminals/).
+256 colours in your terminal check e.g. Tom Ryder's blog 
+\- [Arabesque](http://blog.sanctum.geek.nz/256-colour-terminals/).
 
 Notice, it's worth to spent some time to adjust settings to someting
 eye-pleasant, because chances are, you will use (a thus see) the plugin a lot ;). 
@@ -233,20 +235,6 @@ the status bar this might be a bit tricky. For example
 set: `let g:airline_exclude_preview = 1` option and
 [LightLine](https://github.com/itchyny/lightline.vim) will require to use custom
 status line segments, provided by **Vim-CtrlSpace** API.
-
-#### Status Line Symbols
-
-| Unicode Symbol | ASCII Symbol  | List        | Description                  |
-|:--------------:|:-------------:| ----------- | ---------------------------- |
-| `⌗`            | `#`           | All         | Vim-CtrlSpace symbol         |
-| `⊙`            | `TAB`         | Buffer      | Single Tab mode indicator    |
-| `∷`            | `ALL`         | Buffer      | All Tabs mode indicator      |
-| `◎`            | `OPEN`        | File        | (Open) File List indicator   |
-| `⌕`            | `*`           | Buffer      | Preview mode indicator       |
-| `›_‹`          | `[_]`         | Buffer/File | Search mode indicator        |
-| `○●○`          | `-+-`         | Tab         | Tab List indicator           |
-| `⋮ → ∙`        | `LOAD`        | Workspace   | Workspace Loading mode       |
-| `∙ → ⋮`        | `SAVE`        | Workspace   | Workspace Saving mode        |
 
 ### Tabline
 
@@ -289,26 +277,23 @@ After checking all predecessors it will ask you to provide the root folder
 explicitly. After your acceptance that root folder will be stored pemanently in
 the `.cs_cache` file as serve as a known root later.
 
-## Usage
+## User Interface
 
 **Vim-CtrlSpace** contains 4 different lists: _Buffer List_, _File List_,  _Tab
-List_, and _Workspace List_. Some of those have additional modes. In a modal
-editor like Vim this should not fear you ;). I believe this division will seem
-clear to recognize and understand soon.
+List_, and _Workspace List_. Some of those have additional modes. However, in
+a modal editor like Vim this should not fear you ;). 
 
 You can jump between lists easily by pressing one of the following keys:
 
-* `o` - jump to _File List_ (aka _Open List_)
-* `l` - jump to _Tab List_
-* `w` - jump to _Workspace List_
+| Key      | Action                                                 |
+|:--------:| ------------------------------------------------------ |
+| `o`      | Jump to File List (aka Open List)                      |
+| `O`      | Jump to File List (aka Open List) in Search Mode       | 
+| `l`      | Jump to Tab List                                       |
+| `w`      | Jump to Workspace List                                 |
 
-Since the _Buffer List_ is the default one, in order to jump to it just press
-one of those keys again (or just hit `Backspace`).
-
-### Buffer List
-
-This is the basic list of the plugin. Depending of its mode it can collect
-buffers from the current tab or buffers from all tabs. 
+Since the _Buffer List_ is the default one, in order to jump to it press
+one of those keys again (except `O`) or just hit `Backspace`.
 
 <p align="center">
 <img alt="Vim-CtrlSpace" 
@@ -316,17 +301,57 @@ src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br 
 <em>Sample Buffer List</em>
 </p>
 
-Items listed in the plugin window can have additional indicators 
-(following the item text):
+User interface of the plugin is a list window. Its status line contains 
+important symbolic information:
+
+| Unicode Symbol | ASCII Symbol  | List        | Description                |
+|:--------------:|:-------------:| ----------- | -------------------------- |
+| `⌗`            | `#`           | All         | Vim-CtrlSpace symbol       |
+| `⊙`            | `TAB`         | Buffer      | Single Tab Mode indicator  |
+| `∷`            | `ALL`         | Buffer      | All Tabs Mode indicator    |
+| `◎`            | `OPEN`        | File        | (Open) File List indicator |
+| `⌕`            | `*`           | Buffer      | Preview Mode indicator     |
+| `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
+| `○●○`          | `-+-`         | Tab         | Tab List indicator         |
+| `⋮ → ∙`        | `LOAD`        | Workspace   | Workspace Load Mode        |
+| `∙ → ⋮`        | `SAVE`        | Workspace   | Workspace Save Mode        |
+
+Items listed in the plugin window can have additional indicators (following the
+item text):
 
 | Unicode | ASCII | Indicator                |
 |:-------:|:-----:| ------------------------ |
 | `+`     | `+`   | Item modified            |
 | `★`     | `*`   | Item visible (or active) |
 
-#### Simplified Key Diagram
+### Tab Management
 
-This is a simplified diagram of key groups used in **Vim-CtrlSpace** Buffer
+Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
+plugin lets you to perform many classic tab actions easily in the Buffer List
+view and of course in the Tab List view (turned on with letter `l`). 
+Those ones include e.g. switching (`[` and `]`), moving (`+` and `-`), 
+closing (uppercase `C`), or renaming (`=`). 
+
+You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
+useful if you want to split your tab (your group of buffers) into smaller ones.
+Referring to the demo example, the tab `Users` (holding model files, controller
+files and views) could be split into something like `Users (models)` and 
+`Users (views)`. `Users (models)` could then have model and controller files 
+whereas `Users (views)` could be storing controller and view ones. With the 
+help of tab copying (`Y`) all you need is to copy the `Users` tab, close 
+superfluous buffers in each (lowercase `c`), and finally rename both (`=`). 
+Of course, the split shown in that example might be a bit dummy but in 
+a typical project there are a lot of natural splits, like for example, 
+backend and frontend layers.
+
+## Lists
+
+### Buffer List
+
+This is the basic list of the plugin. Depending of its mode it can collect
+buffers from the current tab or buffers from all tabs. 
+
+Here is a simplified diagram of key groups used in **Vim-CtrlSpace** Buffer
 List.
 
 <p align="center">
@@ -350,207 +375,123 @@ The first mode of Buffer List is the Single Tab one. In that mode, the plugin
 shows you only buffers related to the current tab. Here's the full listing of
 all available keys:
 
-##### Keys Reference
+##### Opening
 
-###### Opening
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `Return` | Open a selected buffer                               |
+| `Space`  | Open a selected buffer and stay in the plugin window |
+| `Tab`    | Enter the Preview Mode for selected buffer           |
+| `v`      | Open a selected buffer in a new vertical split       |
+| `s`      | Open a selected buffer in a new horizontal split     |
+| `t`      | Open a selected buffer in a new tab                  |
 
-| Key      | Action                                                 |
-|:--------:| ------------------------------------------------------ |
-| `Return` | Opens a selected buffer                                |
-| `Space`  | Opens a selected buffer and stays in the plugin window |
-| `Tab`    | Enters the Preview mode for selected buffer            |
-| `v`      | Opens selected buffer in a new vertical split          |
-| `s`      | Opens selected buffer in a new horizontal split        |
-| `t`      | Opens selected buffer in a new tab                     |
+##### Searching & Sorting
 
-###### Searching & Sorting
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `/`        | Enter the Search Mode                               |
+| `Ctrl + p` | Bring back the previous searched text               |
+| `Ctrl + n` | Bring the next searched text                        |
 
-| Key        | Action                                               |
-|:----------:| ---------------------------------------------------- |
-| `/`        | Enters the Search mode                               |
-| `O`        | Enters the Search mode in the File List              |
-| `Ctrl + p` | Brings back the previous searched text               |
-| `Ctrl + n` | Brings the next searched text                        |
+##### Tabs Operations
 
-###### Tabs Operations
+| Key    | Action                                                  |
+|:------:| ------------------------------------------------------- |
+| `T`    | Create a new tab and stay in the plugin window          |
+| `Y`    | Copy (yank) the current tab into a new one              |
+| `0..9` | Jump to the n-th tab (0 is for the 10th one)            |
+| `-`    | Move the current tab to the left (decrease its number)  |
+| `+`    | Move the current tab to the right (increase its number) |
+| `=`    | Change the tab name                                     |
+| `_`    | Remove a custom tab name                                |
+| `[`    | Go to the previous (left) tab                           |
+| `]`    | Go to the next (right) tab                              |
 
-| Key    | Action                                                    |
-|:------:| --------------------------------------------------------- |
-| `T`    | Creates a new tab and stays in the plugin window          |
-| `Y`    | Copies (yanks) the current tab into a new one             |
-| `0..9` | Jumps to the n-th tab (0 is for the 10th one)             |
-| `-`    | Moves the current tab to the left (decreases its number)  |
-| `+`    | Moves the current tab to the right (increases its number) |
-| `=`    | Changes the tab name                                      |
-| `_`    | Removes a custom tab name                                 |
-| `[`    | Goes to the previous (left) tab                           |
-| `]`    | Goes to the next (right) tab                              |
+##### Exiting
 
-###### Exiting
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Backspace`    | Go back                                         |
+| `q`            | Close the list                                  |
+| `Esc`          | Close the list - depending on plugin settings   | 
+| `Ctrl + Space` | Close the list - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found |
 
-| Key            | Action                                            |
-|:--------------:| ------------------------------------------------- |
-| `Backspace`    | Goes back                                         |
-| `q`            | Closes the list                                   |
-| `Esc`          | Closes the list - depends on plugin settings      | 
-| `Ctrl + Space` | Closes the list - depends on plugin settings      |
-| `Q`            | Quits Vim with a prompt if unsaved changes found  |
+##### Moving
 
-###### Moving
-
-| Key        | Action                                                        |
-|:----------:| ------------------------------------------------------------- |
-| `j`        | Moves the selection bar down                                  |
-| `k`        | Moves the selection bar up                                    |
-| `J`        | Moves the selection bar to the bottom of the list             |        
-| `K`        | Moves the selection bar to the top of the list                |
-| `p`        | Moves the selection bar to the _previous_ buffer              |
-| `P`        | Moves the selection bar to the _previous_ buffer and opens it |
-| `n`        | Moves the selection bar to the _next_ opened buffer           |
-| `Ctrl + f` | Moves the selection bar one screen down                       |
-| `Ctrl + b` | Moves the selection bar one screen up                         |
-| `Ctrl + d` | Moves the selection bar a half screen down                    |
-| `Ctrl + u` | Moves the selection bar a half screen up                      |
-
-<tr>
-<td rowspan="6">Closing</td>
-<td><code>d</code></td>
-<td>Deletes the selected buffer (closes it)</td>
-</tr>
-
-<tr>
-<td><code>D</code></td>
-<td>Closes all empty noname buffers</td>
-</tr>
-
-<tr>
-<td><code>f</code></td>
-<td>Forgets the current buffer (make it a <em>foreign</em> (unrelated) to the
-        current tab)</td>
-</tr>
-
-<tr>
-<td><code>F</code></td>
-<td>Deletes (closes) all forgotten buffers (unrelated to any tab)</td>
-</tr>
-
-<tr>
-<td><code>c</code></td>
-<td>Combines <code>c</code> and <code>d</code>. If the selected buffer is opened
-only in the current tab - <code>c</code> will <em>close</em> (delete) it.
-Otherwise it will just forget it (detach from the current tab)</td>
-</tr>
-
-<tr>
-<td><code>C</code></td>
-<td>Closes the current tab, then performs <code>F</code> (closes forgotten
-        buffers - probably these from that just closed tab) and <code>D</code> (closes
-            empty nonames)</td>
-        </tr>
-
-        <tr>
-        <td rowspan="5">Disk operations</td>
-        <td><code>e</code></td>
-        <td>Edits a sibling of the selected buffer (it will create a new one if
-                necessary)</td>
-        </tr>
-
-        <tr>
-        <td><code>E</code></td>
-        <td>Explores a directory of the selected buffer</td>
-        </tr>
-
-        <tr>
-        <td><code>R</code></td>
-        <td>Removes the selected buffer (file) entirely (from the disk too)</td>
-        </tr>
-
-        <tr>
-        <td><code>m</code></td>
-        <td>Moves or renames the selected buffer (together with its file)</td>
-        </tr>
-
-        <tr>
-        <td><code>y</code></td>
-        <td>Copies selected file (won't work with buffers without files)</td>
-        </tr>
-
-        <tr>
-        <td rowspan="2">Mode changing</td>
-        <td><code>a</code></td>
-        <td>Toggles between Single Tab and All Tabs modes</td>
-        </tr>
-
-        <tr>
-        <td><code>o</code></td>
-        <td>Enters the File List</td>
-        </tr>
-
-        <tr>
-        <td rowspan="2">List changing</td>
-        <td><code>l</code></td>
-        <td>Toggles the Tab List view</td>
-        </tr>
-
-        <tr>
-        <td><code>w</code></td>
-        <td>Toggles the Workspace List view</td>
-        </tr>
-
-        <tr>
-        <td rowspan="2">Workspace shortcuts</td>
-        <td><code>S</code></td>
-        <td>Saves the workspace immediately (or creates a new one if none)</td>
-        </tr>
-
-        <tr>
-        <td><code>L</code></td>
-        <td>Loads the last active workspace (if present)</td>
-        </tr>
+| Key        | Action                                                      |
+|:----------:| ----------------------------------------------------------- |
+| `j`        | Move the selection bar down                                 |
+| `k`        | Move the selection bar up                                   |
+| `J`        | Move the selection bar to the bottom of the list            |        
+| `K`        | Move the selection bar to the top of the list               |
+| `p`        | Move the selection bar to the _previous_ buffer             |
+| `P`        | Move the selection bar to the _previous_ buffer and open it |
+| `n`        | Move the selection bar to the _next_ opened buffer          |
+| `Ctrl + f` | Move the selection bar one screen down                      |
+| `Ctrl + b` | Move the selection bar one screen up                        |
+| `Ctrl + d` | Move the selection bar a half screen down                   |
+| `Ctrl + u` | Move the selection bar a half screen up                     |
 
 
+##### Closing
 
-##### All Tabs Mode
+| Key  | Action                                                              |
+|:----:| ------------------------------------------------------------------- |
+| `d`  | Delete the selected buffer (close it)                               |
+| `D`  | Close all empty noname buffers                                      |
+| `f`  | Forget the current buffer (make it a unrelated to the current tab)  |
+| `F`  | Delete (close) all forgotten buffers (unrelated to any tab)         |
+| `c`  | Try to close selected buffer (delete if possible, forget otherwise) |
+| `C`  | Close the current tab, then perform `F`, and then `D`               |
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>∷</code></td>
-<td><code>ALL</code></td>
-</tr>
-</tbody>
-</table>
+##### Disk Operations
 
-This mode is almost identical to the Single Tab mode, except it shows you all
+| Key  | Action                                                            |
+|:----:| ----------------------------------------------------------------- |
+| `e`  | Edit a sibling of the selected buffer                             |
+| `E`  | Explore a directory of the selected buffer                        |
+| `R`  | Remove the selected buffer (file) entirely (from the disk too)    |
+| `m`  | Move or rename the selected buffer (together with its file)       |
+| `y`  | Copy selected file                                                |
+
+##### Mode and List Changing
+
+| Key  | Action                                                             |
+|:----:| ------------------------------------------------------------------ |
+| `a`  | Toggle between Single Tab and All Tabs modes                       |
+| `o`  | Toggle the File List (Open List)                                   |
+| `O`  | Enter the Search Mode in the File List                             |
+| `l`  | Toggle the Tab List view                                           |
+| `w`  | Toggle the Workspace List view                                     |
+
+##### Workspace shortcuts
+
+| Key  | Action                                                              |
+|:----:| ------------------------------------------------------------------- |
+| `S`  | Save the workspace immediately (or creates a new one if none)       |
+| `L`  | Load the last active workspace (if present)                         |
+
+#### All Tabs Mode
+
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `∷`     | `ALL` |
+
+This mode is almost identical to the Single Tab Mode, except it shows you all
 available buffers (from all tabs and unrelated ones too). Some of keys presented
-in the Single Tab mode are not available here. The missing ones are `f` and 
-`c` - as they are tightly coupled with the current tab.
+in the Single Tab Mode are not available here. The missing ones are `f` and 
+`c` - as they are tightly bound to the current tab.
 
-##### Preview Mode
+#### Preview Mode
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⌕</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `⌕`     | `*`   |
 
 This mode works in a conjunction with the Buffer List. You can invoke the
-Preview mode by hitting the `Tab` key. Hitting `Tab` does almost the same as
+Preview Mode by hitting the `Tab` key. Hitting `Tab` does almost the same as
 `Space` - it shows you the selected buffer, but unlike `Space`, that change of
 the target window content is not permanent. When you quit the plugin window, the
 old (previous) content of the target window is restored.
@@ -562,68 +503,20 @@ actually opening it (with `Space`, `Return`, etc).
 Those previewed files are marked on the list with the star symbol and the
 original content is marked with an empty star too:
 
-<table>
-<thead>
-<tr>
-<th>Indicator</th>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Previewed buffer</td>
-<td><code>★</code></td>
-<td><code>&#42;</code></td>
-</tr>
-<tr>
-<td>Original buffer</td>
-<td><code>☆</code></td>
-<td><code>&#42;</code></td>
-</tr>
-</tbody>
-</table>
+| Indicator        | Unicode | ASCII |
+| ---------------- |:-------:|:-----:|
+| Previewed buffer | `★`     | `*`   |
+| Original buffer  | `☆`     | `*`   |
 
-### Tab Management
 
-Tabs in **Vim-CtrlSpace** (like in Vim) are groups of related buffers. The
-plugin lets you to perform many classic tab actions easily in the Buffer List
-view and of course in the Tab List view (turned on with letter `l`). 
-Those ones include e.g. switching (`[` and `]`), moving (`+` and `-`), 
-closing (uppercase `C`), or renaming (`=`). 
+### File List
 
-You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
-useful if you want to split your tab (your group of buffers) into smaller ones.
-Referring to the demo example, the tab `Users` (holding model files, controller
-files and views) could be split into something like `Users (models)` and 
-`Users (views)`. `Users (models)` could then have model and controller files 
-whereas `Users (views)` could be storing controller and view ones. With the 
-help of tab copying (`Y`) all you need is to copy the `Users` tab, close 
-superfluous buffers in each (lowercase `c`), and finally rename both (`=`). 
-Of course, the split shown in that example might be a bit dummy but in 
-a typical project there are a lot of natural splits, like for example, 
-backend and frontend layers.
+| Unicode | ASCII  |
+|:-------:|:------:|
+| `◎`     | `OPEN` |
 
-#### File List
-
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>◎</code></td>
-<td><code>OPEN</code></td>
-</tr>
-</tbody>
-</table>
-
-This list shows you all files in the project and allows you to append a new file
-(as a buffer) to the current tab quickly. In other words, it lets you to open
-files from the project root directory. Notice, only the project root directory
+This list shows you all files in the project and allows you to open a new file
+(as a buffer) in the current tab. Notice, only the project root directory
 is considered here in order to prevent you from accidental loading root of i.e.
 your home directory, as it would be really time consuming (file scanning) and
 rather pointless.
@@ -632,284 +525,117 @@ For the first time the file list is populated with data. Sometimes, for a very
 large project this could be quite time consuming (I've noticed a lag for
 a project with over 2200 files). Also, it depends on files stored for example in
 the SCM directory. In the end, the content of the project root directory is
-cached and available immediately.  All time you can force plugin to refresh the
+cached and available immediately. All time you can force plugin to refresh the
 list with the `r` key.
 
-##### Keys Reference
+#### Opening
 
-<table>
+| Key       | Action                                               |
+|:---------:| ---------------------------------------------------- |
+| `Return`  | Open a selected file                                 |
+|`Space`    | Open a selected file but stays in the plugin window  |
+| `v`       | Open a selected file in a new vertical split         |
+| `s`       | Open a selected file in a new horizontal split       |
+| `t`       | Open a selected file in a new tab                    |
 
-<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
+#### Exiting
 
-<tbody>
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Backspace`    | Go back to Buffer List                          |
+| `o`            | Go back to Buffer List                          |
+| `q`            | Close the list                                  |
+| `Esc`          | Close the list - depending on plugin settings   |
+| `Ctrl + Space` | Close the list - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found |
 
-<tr>
-<td rowspan="5">Opening</td>
-<td><code>Return</code></td>
-<td>Opens a selected file</td>
-</tr>
+#### Tabs operations
 
-<tr>
-<td><code>Space</code></td>
-<td>Opens a selected file but stays in the <b>Vim-CtrlSpace</b> window</td>
-</tr>
+| Key    | Action                                                  |
+|:------:| ------------------------------------------------------- |
+| `T`    | Create a new tab and stay in the plugin window          |
+| `Y`    | Copy (yank) the current tab into a new one              |
+| `0..9` | Jump to the n-th tab (0 is for 10th one)                |
+| `-`    | Move the current tab to the left (decrease its number)  |
+| `+`    | Move the current tab to the right (increase its number) |
+| `=`    | Change the tab name                                     |
+| `_`    | Remove a custom tab name                                |
+| `[`    | Go to the previous (left) tab                           |
+| `]`    | Go to the next (right) tab                              |
 
-<tr>
-<td><code>v</code></td>
-<td>Opens a selected file in a new vertical split</td>
-</tr>
 
-<tr>
-<td><code>s</code></td>
-<td>Opens a selected file in a new horizontal split</td>
-</tr>
+#### Searching
 
-<tr>
-<td><code>t</code></td>
-<td>Opens a selected file in a new tab</td>
-</tr>
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `/`        | Enter the Search Mode                               |
+| `O`        | Enter the Search Mode                               |
+| `Ctrl + p` | Bring back the previous searched text               |
+| `Ctrl + n` | Bring the next searched text                        |
 
-<tr>
-<td rowspan="3">Exiting</td>
-<td><code>Backspace</code>, <code>a</code>, and <code>A</code></td>
-<td>Goes back (here it will return to Single Tab or All Tabs mode)</td>
-</tr>
+#### Moving
 
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin settings</td>
-</tr>
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `j`        | Move the selection bar down                         |
+| `k`        | Move the selection bar up                           |
+| `J`        | Move the selection bar to the bottom of the list    |
+| `K`        | Move the selection bar to the top of the list       |
+| `Ctrl + f` | Move the selection bar one screen down              |
+| `Ctrl + b` | Move the selection bar one screen up                |
+| `Ctrl + d` | Move the selection bar a half screen down           |
+| `Ctrl + u` | Move the selection bar a half screen up             |
 
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
+#### Closing
 
-<tr>
-<td rowspan="9">Tabs operations</td>
-<td><code>T</code></td>
-<td>Creates a new tab and stays in the plugin window</td>
-</tr>
+| Key | Action                                                     |
+|:---:| ---------------------------------------------------------- |
+| `C` | Close the current tab (with forgotten buffers and nonames) |
 
-<tr>
-<td><code>Y</code></td>
-<td>Copies (yanks) the current tab into a new one</td>
-</tr>
+#### Disk operations
 
-<tr>
-<td><code>0..9</code></td>
-<td>Jumps to the n-th tab (0 is for 10th one)</td>
-</tr>
+| Key | Action                                       |
+|:---:| -------------------------------------------- |
+| `e` | Edit a sibling of the selected buffer        |
+| `E` | Explore a directory of the selected buffer   |
+| `r` | Refresh the file list (force reloading)      |
+| `R` | Remove the selected file entirely            |
+| `m` | Move or rename the selected file             |
+| `y` | Copy the selected file                       |
 
-<tr>
-<td><code>-</code></td>
-<td>Moves the current tab to the left (decreases its number)</td>
-</tr>
 
-<tr>
-<td><code>+</code></td>
-<td>Moves the current tab to the right (increases its number)</td>
-</tr>
+#### List changing
 
-<tr>
-<td><code>=</code></td>
-<td>Changes the tab name</td>
-</tr>
+| Key | Action                                       |
+|:---:| -------------------------------------------- |
+| `l` | Toggle the Tab List view                     |
+| `w` | Toggle the Workspace List view               |
 
-<tr>
-<td><code>&#95;</code></td>
-<td>Removes a custom tab name</td>
-</tr>
+### Common Modes
 
-<tr>
-<td><code>[</code></td>
-<td>Goes to the previous (left) tab</td>
-</tr>
-
-<tr>
-<td><code>]</code></td>
-<td>Goes to the next (right) tab</td>
-</tr>
-
-<tr>
-<td rowspan="3">Searching</td>
-<td><code>/</code> and <code>O</code></td>
-<td>Enters the Search mode</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl
-+ p</code></td>
-</tr>
-
-<tr>
-<td rowspan="8">Moving</td>
-<td><code>j</code></td>
-<td>Moves the selection bar down</td>
-</tr>
-
-<tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
-</tr>
-
-<tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
-</tr>
-
-<tr>
-<td><code>K</code></td>
-<td>Moves the selection bar to the top of the list</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td>Closing</td>
-<td><code>C</code></td>
-<td>Closes the current tab, then closes forgotten buffers and empty nonames</td>
-</tr>
-
-<tr>
-<td rowspan="6">Disk operations</td>
-<td><code>e</code></td>
-<td>Edits a sibling of the selected buffer (it will create a new one if
-necessary)</td>
-</tr>
-
-<tr>
-<td><code>E</code></td>
-<td>Explores a directory of the selected buffer</td>
-</tr>
-
-<tr>
-<td><code>r</code></td>
-<td>Refreshes the file list (forces reloading)</td>
-</tr>
-
-<tr>
-<td><code>R</code></td>
-<td>Removes the selected file entirely</td>
-</tr>
-
-<tr>
-<td><code>m</code></td>
-<td>Moves or renames the selected file</td>
-</tr>
-
-<tr>
-<td><code>y</code></td>
-<td>Copies the selected file</td>
-</tr>
-
-<tr>
-<td rowspan="2">List changing</td>
-<td><code>l</code></td>
-<td>Toggles the Tab List view</td>
-</tr>
-
-<tr>
-<td><code>w</code></td>
-<td>Toggles the Workspace List view</td>
-</tr>
-
-</tbody>
-
-</table>
-
+Common modes are available in more than one list.
 
 #### Search Mode
 
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>›&#95;‹</code></td>
-<td><code>[&#95;]</code></td>
-</tr>
-</tbody>
-</table>
+| Unicode | ASCII  |
+|:-------:|:------:|
+| `›_‹`   | `[_]`  |
 
 This mode is composed of two states or two phases. The first one is the
 _entering phase_. Technically, this is the extact Search mode. In the entering
 phase the following keys are available:
 
-##### Keys Reference (entering phase)
-
-<table>
-
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
-
-<tbody>
-
-<tr>
-<td><code>Return</code></td>
-<td>Closes the entering phase. Accepts the entered content.</td>
-</tr>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Removes the previouse entered character, or closes the entering phase if no
-character found.</td>
-</tr>
-
-<tr>
-<td><code>/</code></td>
-<td>Toggles the entering phase</td>
-</tr>
-
-<tr>
-<td><code>O</code></td>
-<td>Toggles the entering phase (only in the File List)</td>
-</tr>
-
-<tr>
-<td><code>a..z A..Z 0..9</code></td>
-<td>The charactes allowed in the entering phase</td>
-</tr>
-
-</tbody>
-
-</table>
+| Key              | Action                                                  |
+|:----------------:| ------------------------------------------------------- |
+| `Return`         | Close the entering phase and accept the entered content |
+| `Backspace`      | Remove the previouse entered character                  |
+| `/`              | Toggle the entering phase                               |
+| `a..z A..Z 0..9` | The charactes allowed in the entering phase             |
 
 Besides the entering phase there is also a second state possible. That is the
 state of having a search query entered. The successfully entered query behaves
 just like a kind of sorting. In fact, it is just a kind of sorting and filtering
-function. So it doesn't impact on other modes except it narrows the result set. 
+function. So it doesn't impact on lists except it narrows the contents.
 
 It's worth to mention that in that mode the `Backspace` key removes the search
 query entirely.
@@ -919,67 +645,47 @@ query entirely.
 Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
 list), or you are trying to type a Search query, and there are no results at
 all. That means the Nop can happen during the _entering phase_ of the Search
-mode or in some other cases. Those other cases can occur, for example, when you
-have only not listed buffers available in the tab (like e.g. help window and
+Mode or in some other cases. Those cases can occur, for example, when you
+have only unlisted buffers available in the tab (like e.g. help window and
 some preview ones). As you will see, in such circumstances - outside the
-entering phase - there is a greater number of resque options available.
+entering phase - there is a great number of resque options available.
 
 ##### Nop (Search entering phase)
 
-<table>
-
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
-
-<tbody>
-
-<tr>
-<td><code>Backspace</code></td>
-<td>Removes the previouse entered character, or closes the entering phase if no
-character found.</td>
-</tr>
-
-<tr>
-<td><code>Esc</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on settings</td>
-</tr>
-
-</tbody>
-
-</table>
+| Key         | Action                                                  |
+|:-----------:| ------------------------------------------------------- |
+| `Backspace` | Remove the previouse entered character or close         |
+| `Esc`       | Close the list - depending on settings                  |
 
 ##### Nop (outside the entering phase)
 
-<table>
+| Key         | Action                                                  |
+|:-----------:| ------------------------------------------------------- |
 
-<thead><tr><th>Key</th><th>Action</th></tr></thead>
 
-<tbody>
 
-<tr>
-<td><code>Backspace</code></td>
-<td>Deletes the search query</td>
-</tr>
 
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on settings</td>
-</tr>
 
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
 
-<tr>
-<td><code>a</code></td>
-<td>Toggles between Single Tab and All Tabs modes</td>
-</tr>
+<code>Backspace</code>
+Deletes the search query
 
-<tr>
-<td><code>A</code></td>
-<td>Enters the Add a File mode</td>
-</tr>
+
+<code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;
+Closes the list <br/>&#42; - depends on settings
+
+
+<code>Q</code>
+Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
+    found)
+
+
+<code>a</code>
+Toggles between Single Tab and All Tabs modes
+
+
+<code>o</code>
+Enters the Add a File mode
 
 <tr>
 <td><code>Ctrl + p</code></td>
@@ -991,10 +697,6 @@ found)</td>
 <td>Brings the next searched text - just the opposite to <code>Ctrl
 + p</code></td>
 </tr>
-
-</tbody>
-
-</table>
 
 #### Workspace List
 

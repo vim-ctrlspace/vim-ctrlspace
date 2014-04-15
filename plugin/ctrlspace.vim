@@ -1502,12 +1502,12 @@ endfunction
 
 function! <SID>getbufvar_with_default(nr, name, default)
   let value = getbufvar(a:nr, a:name)
-  return value == "" ? a:default : value
+  return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
 function! <SID>gettabvar_with_default(nr, name, default)
   let value = gettabvar(a:nr, a:name)
-  return value == "" ? a:default : value
+  return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
 function! <SID>find_activebufline(activebuf, buflist)
