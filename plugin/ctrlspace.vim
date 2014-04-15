@@ -2090,7 +2090,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "R"
       call <SID>remove_file()
     elseif a:key ==# "m"
-      call <SID>move_file()
+      call <SID>rename_file_or_buffer()
     elseif a:key ==# "y"
       call <SID>copy_file()
     elseif a:key ==# "w"
@@ -2218,7 +2218,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "R"
       call <SID>remove_file()
     elseif a:key ==# "m"
-      call <SID>move_file()
+      call <SID>rename_file_or_buffer()
     elseif a:key ==# "y"
       call <SID>copy_file()
     elseif a:key ==# "S"
@@ -2981,15 +2981,17 @@ function! <SID>remove_file()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
-function! <SID>move_file()
+function! <SID>rename_file_or_buffer()
   let nr   = <SID>get_selected_buffer()
   let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
 
-  if !filereadable(path) || isdirectory(path)
+  let buffer_only = !filereadable(path) && !s:file_mode
+
+  if !(filereadable(path) || buffer_only) || isdirectory(path)
     return
   endif
 
-  let new_file = <SID>get_input("Move file to: ", path, "file")
+  let new_file = <SID>get_input((buffer_only ? "New buffer name: " : "Move file to: "), path, "file")
 
   if empty(new_file)
     return
@@ -3002,15 +3004,21 @@ function! <SID>move_file()
     let buffer_names[b] = fnamemodify(resolve(bufname(b)), ":.")
   endfor
 
-  call rename(resolve(expand(path)), resolve(expand(new_file)))
+  if !buffer_only
+    call rename(resolve(expand(path)), resolve(expand(new_file)))
+  endif
 
   for [b, name] in items(buffer_names)
     if name == path
-      let commands = ["f " . new_file, "w!"]
+      let commands = ["f " . new_file]
+
+      if !buffer_only
+        call add(commands, "w!")
+      endif
+
       call <SID>preview_buffer(str2nr(b), commands)
     endif
   endfor
-
 
   call <SID>update_file_list(path, new_file)
 
