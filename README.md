@@ -14,6 +14,12 @@ on demand, capable of displaying various lists: buffer list, file list, tab
 list, or workspace list. Sounds simple, but around that there are some
 additional details making this simple concept a unique approach. 
 
+<p align="center">
+<img alt="Vim-CtrlSpace" 
+src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
+<em>Sample Plugin Window</em>
+</p>
+
 First, the buffer list is limited to buffers related to the current tab. That's
 it, the plugin by default groups buffers by tabs they are used in. In that way
 you get separate sets of buffers per each tab. And that's really useful. Of
@@ -294,12 +300,6 @@ You can jump between lists easily by pressing one of the following keys:
 
 Since the _Buffer List_ is the default one, in order to jump to it press
 one of those keys again (except `O`) or just hit `Backspace`.
-
-<p align="center">
-<img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
-<em>Sample Buffer List</em>
-</p>
 
 User interface of the plugin is a list window. Its status line contains 
 important symbolic information:
@@ -611,66 +611,6 @@ list with the `r` key.
 | `l` | Toggle the Tab List view                     |
 | `w` | Toggle the Workspace List view               |
 
-### Common Modes
-
-Common modes are available in more than one list.
-
-#### Search Mode
-
-| Unicode | ASCII  |
-|:-------:|:------:|
-| `›_‹`   | `[_]`  |
-
-This mode is composed of two states or two phases. The first one is the
-_entering phase_. Technically, this is the extact Search mode. In the entering
-phase the following keys are available:
-
-| Key              | Action                                                  |
-|:----------------:| ------------------------------------------------------- |
-| `Return`         | Close the entering phase and accept the entered content |
-| `Backspace`      | Remove the previouse entered character                  |
-| `/`              | Toggle the entering phase                               |
-| `a..z A..Z 0..9` | The charactes allowed in the entering phase             |
-
-Besides the entering phase there is also a second state possible. That is the
-state of having a search query entered. The successfully entered query behaves
-just like a kind of sorting. In fact, it is just a kind of sorting and filtering
-function. So it doesn't impact on lists except it narrows the contents.
-
-It's worth to mention that in that mode the `Backspace` key removes the search
-query entirely.
-
-#### Nop Mode
-
-Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
-list), or you are trying to type a Search query, and there are no results at
-all. That means the Nop can happen during the _entering phase_ of the Search
-Mode or in some other cases. Those cases can occur, for example, when you
-have only unlisted buffers available in the tab (like e.g. help window and
-some preview ones). As you will see, in such circumstances - outside the
-entering phase - there is a great number of resque options available.
-
-##### Nop (Search entering phase)
-
-| Key         | Action                                                  |
-|:-----------:| ------------------------------------------------------- |
-| `Backspace` | Remove the previouse entered character or close         |
-| `Esc`       | Close the list - depending on settings                  |
-
-##### Nop (outside the entering phase)
-
-| Key            | Action                                               |
-|:--------------:| ---------------------------------------------------- |
-| `Backspace`    | Delete the search query                              |
-| `q`            | Close the list                                       |
-| `Esc`          | Close the list - depending on settings               |
-| `Ctrl + Space` | Close the list - depending on settings               |
-| `Q`            | Quit Vim with a prompt if unsaved changes found      |
-| `a`            | Toggle between Single Tab and All Tabs modes         |
-| `o`            | Enters the File List (Open List)                     |
-| `Ctrl + p`     | Brings back the previous searched text               |
-| `Ctrl + n`     | Brings the next searched text                        |
-
 ### Workspace List
 
 | Unicode | ASCII  | Mode      |
@@ -823,6 +763,66 @@ entirely and stick to that list only via Vim's `showtabline` option.
 | `Ctrl + b` | Move the selection bar one screen up                          |
 | `Ctrl + d` | Move the selection bar a half screen down                     |
 | `Ctrl + u` | Move the selection bar a half screen up                       |
+
+### Common Modes
+
+Common modes are available in more than one list.
+
+#### Search Mode
+
+| Unicode | ASCII  |
+|:-------:|:------:|
+| `›_‹`   | `[_]`  |
+
+This mode is composed of two states or two phases. The first one is the
+_entering phase_. Technically, this is the extact Search mode. In the entering
+phase the following keys are available:
+
+| Key              | Action                                                  |
+|:----------------:| ------------------------------------------------------- |
+| `Return`         | Close the entering phase and accept the entered content |
+| `Backspace`      | Remove the previouse entered character                  |
+| `/`              | Toggle the entering phase                               |
+| `a..z A..Z 0..9` | The charactes allowed in the entering phase             |
+
+Besides the entering phase there is also a second state possible. That is the
+state of having a search query entered. The successfully entered query behaves
+just like a kind of sorting. In fact, it is just a kind of sorting and filtering
+function. So it doesn't impact on lists except it narrows the contents.
+
+It's worth to mention that in that mode the `Backspace` key removes the search
+query entirely.
+
+#### Nop Mode
+
+Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
+list), or you are trying to type a Search query, and there are no results at
+all. That means the Nop can happen during the _entering phase_ of the Search
+Mode or in some other cases. Those cases can occur, for example, when you
+have only unlisted buffers available in the tab (like e.g. help window and
+some preview ones). As you will see, in such circumstances - outside the
+entering phase - there is a great number of resque options available.
+
+##### Nop (Search entering phase)
+
+| Key         | Action                                                  |
+|:-----------:| ------------------------------------------------------- |
+| `Backspace` | Remove the previouse entered character or close         |
+| `Esc`       | Close the list - depending on settings                  |
+
+##### Nop (outside the entering phase)
+
+| Key            | Action                                               |
+|:--------------:| ---------------------------------------------------- |
+| `Backspace`    | Delete the search query                              |
+| `q`            | Close the list                                       |
+| `Esc`          | Close the list - depending on settings               |
+| `Ctrl + Space` | Close the list - depending on settings               |
+| `Q`            | Quit Vim with a prompt if unsaved changes found      |
+| `a`            | Toggle between Single Tab and All Tabs modes         |
+| `o`            | Enters the File List (Open List)                     |
+| `Ctrl + p`     | Brings back the previous searched text               |
+| `Ctrl + n`     | Brings the next searched text                        |
 
 ## Configuration
 
