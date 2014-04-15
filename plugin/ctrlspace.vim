@@ -1753,6 +1753,13 @@ function! <SID>keypressed(key)
       let s:workspace_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "O"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
+      call <SID>switch_search_mode(1)
     endif
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
@@ -1818,6 +1825,13 @@ function! <SID>keypressed(key)
       let s:workspace_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "O"
+      let s:last_browsed_workspace = line(".")
+      call <SID>kill(0, 0)
+      let s:workspace_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
+      call <SID>switch_search_mode(1)
     endif
   elseif s:tablist_mode
     if a:key ==# "Tab"
@@ -1974,6 +1988,12 @@ function! <SID>keypressed(key)
       let s:tablist_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "O"
+      call <SID>kill(0, 0)
+      let s:tablist_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
+      call <SID>switch_search_mode(1)
     endif
   elseif s:file_mode
     if a:key ==# "CR"
