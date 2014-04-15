@@ -1174,25 +1174,27 @@ function! <SID>prepare_buftext_to_display(buflist)
         let bufname = <SID>decorate_with_indicators(bufname, entry.number)
       elseif s:workspace_mode
         if entry.raw ==# s:active_workspace_name
-          let bufname .= g:ctrlspace_unicode_font ? " ★" : " *"
+          let bufname .= " "
 
           if s:active_workspace_digest !=# <SID>create_workspace_digest()
-            let bufname .= " +"
+            let bufname .= "+"
           endif
+
+          let bufname .= g:ctrlspace_unicode_font ? "★" : "*"
         endif
       elseif s:tablist_mode
-        let indicators = [""]
-
-        if entry.number == tabpagenr()
-          call add(indicators, g:ctrlspace_unicode_font ? "★" : "*")
-        endif
+        let indicators = ""
 
         if <SID>tab_contains_modified_buffers(entry.number)
-          call add(indicators, "+")
+          let indicators .= "+"
         endif
 
-        if len(indicators) > 1
-          let bufname .= join(indicators, " ")
+        if entry.number == tabpagenr()
+          let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+        endif
+
+        if !empty(indicators)
+          let bufname .= " " . indicators
         endif
       endif
 
@@ -1476,20 +1478,23 @@ function! <SID>switch_search_mode(switch)
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)
-  let indicators = [""]
-
-  if s:preview_mode && (s:preview_mode_original_buffer == a:bufnum)
-    call add(indicators, g:ctrlspace_unicode_font ? "☆" : "*")
-  elseif bufwinnr(a:bufnum) != -1
-    call add(indicators, g:ctrlspace_unicode_font ? "★" : "*")
-  endif
+  let indicators = ""
 
   if getbufvar(a:bufnum, "&modified")
-    call add(indicators, "+")
+    " since it's not a special unicode char it's safe to assume it's real
+    " width to be 1 character, and therefore characters won't overlap each
+    " other
+    let indicators .= "+"
   endif
 
-  if len(indicators) > 1
-    return a:name . join(indicators, " ")
+  if s:preview_mode && (s:preview_mode_original_buffer == a:bufnum)
+    let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
+  elseif bufwinnr(a:bufnum) != -1
+    let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+  endif
+
+  if !empty(indicators)
+    return a:name . " " . indicators
   else
     return a:name
   endif

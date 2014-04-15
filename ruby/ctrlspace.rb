@@ -84,7 +84,9 @@ module CtrlSpace
       end
 
       if !file_mode && !workspace_mode && !tablist_mode
-        indicators = [""]
+        indicators = ""
+
+        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
 
         if preview_mode && (VIM.evaluate("s:preview_mode_original_buffer") == entry["number"])
           indicators << (unicode_font ? "☆" : "*")
@@ -92,19 +94,18 @@ module CtrlSpace
           indicators << (unicode_font ? "★" : "*")
         end
 
-        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
-
-        bufname << indicators.join(" ") if indicators.length > 1
+        bufname << " #{indicators}" unless indicators.empty?
       elsif workspace_mode
         if entry["raw"] == active_workspace_name
-          bufname << (unicode_font ? " ★" : " *")
-          bufname << " +" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << " "
+          bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << (unicode_font ? "★" : "*")
         end
       elsif tablist_mode
-        indicators = [""]
-        indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
+        indicators = ""
         indicators << "+" if VIM.evaluate("<SID>tab_contains_modified_buffers(#{entry["number"]})") > 0
-        bufname << indicators.join(" ") if indicators.length > 1
+        indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
+        bufname << " #{indicators}" unless indicators.empty?
       end
 
       while bufname.length < columns
