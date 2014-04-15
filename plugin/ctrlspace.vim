@@ -2092,7 +2092,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "m"
       call <SID>rename_file_or_buffer()
     elseif a:key ==# "y"
-      call <SID>copy_file()
+      call <SID>copy_file_or_buffer()
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -2220,7 +2220,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "m"
       call <SID>rename_file_or_buffer()
     elseif a:key ==# "y"
-      call <SID>copy_file()
+      call <SID>copy_file_or_buffer()
     elseif a:key ==# "S"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -3060,31 +3060,40 @@ function! <SID>edit_file()
   silent! exe "e " . new_file
 endfunction
 
-function! <SID>copy_file()
+function! <SID>copy_file_or_buffer()
   let nr   = <SID>get_selected_buffer()
   let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.")
 
-  if !filereadable(path) || isdirectory(path)
+  let buffer_only = !filereadable(path) && !s:file_mode
+
+  if !(filereadable(path) || buffer_only) || isdirectory(path)
     return
   endif
 
-  let new_file = <SID>get_input("Copy file to: ", path, "file")
+  let new_file = <SID>get_input((buffer_only ? "Copy buffer as: " : "Copy file to: "), path, "file")
 
   if empty(new_file) || isdirectory(new_file)
     return
   endif
 
-  let new_file = fnamemodify(new_file, ":p")
-
-  let lines = readfile(path, "b")
-  call writefile(lines, new_file, "b")
-
-  call <SID>update_file_list("", new_file)
-
-  call <SID>kill(0, 1)
-
-  if !s:file_mode
+  if buffer_only
+    call <SID>preview_buffer(str2nr(nr), ['normal! G""ygg'])
+    call <SID>kill(0, 1)
     silent! exe "e " . new_file
+    silent! exe 'normal! ""pgg"_dd'
+  else
+    let new_file = fnamemodify(new_file, ":p")
+
+    let lines = readfile(path, "b")
+    call writefile(lines, new_file, "b")
+
+    call <SID>update_file_list("", new_file)
+
+    call <SID>kill(0, 1)
+
+    if !s:file_mode
+      silent! exe "e " . new_file
+    endif
   endif
 
   call <SID>ctrlspace_toggle(1)
