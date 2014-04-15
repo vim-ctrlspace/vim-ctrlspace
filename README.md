@@ -659,68 +659,24 @@ entering phase - there is a great number of resque options available.
 
 ##### Nop (outside the entering phase)
 
-| Key         | Action                                                  |
-|:-----------:| ------------------------------------------------------- |
+| Key            | Action                                               |
+|:--------------:| ---------------------------------------------------- |
+| `Backspace`    | Delete the search query                              |
+| `q`            | Close the list                                       |
+| `Esc`          | Close the list - depending on settings               |
+| `Ctrl + Space` | Close the list - depending on settings               |
+| `Q`            | Quit Vim with a prompt if unsaved changes found      |
+| `a`            | Toggle between Single Tab and All Tabs modes         |
+| `o`            | Enters the File List (Open List)                     |
+| `Ctrl + p`     | Brings back the previous searched text               |
+| `Ctrl + n`     | Brings the next searched text                        |
 
+### Workspace List
 
-
-
-
-
-<code>Backspace</code>
-Deletes the search query
-
-
-<code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;
-Closes the list <br/>&#42; - depends on settings
-
-
-<code>Q</code>
-Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-    found)
-
-
-<code>a</code>
-Toggles between Single Tab and All Tabs modes
-
-
-<code>o</code>
-Enters the Add a File mode
-
-<tr>
-<td><code>Ctrl + p</code></td>
-<td>Brings back the previous searched text</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + n</code></td>
-<td>Brings the next searched text - just the opposite to <code>Ctrl
-+ p</code></td>
-</tr>
-
-#### Workspace List
-
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-<th>Mode</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>⋮ → ∙</code></td>
-<td><code>LOAD</code></td>
-<td>Load mode</td>
-</tr>
-<tr>
-<td><code>∙ → ⋮</code></td>
-<td><code>SAVE</code></td>
-<td>Save mode</td>
-</tr>
-</tbody>
-</table>
+| Unicode | ASCII  | Mode      |
+|:-------:|:------:| --------- |
+| `⋮ → ∙` | `LOAD` | Load Mode |
+| `∙ → ⋮` | `SAVE` | Save mode |
 
 The plugin allows you to save and load so called _workspaces_. A workspace is
 a set of opened windows, tabs, their names, and buffers. In fact, the word
@@ -738,8 +694,8 @@ that workspace to you current or next ones, depending on your needs. That way
 you are able to group the common and repetative sets of files in just one place
 and reuse that group in many contexts.
 
-In the Workspace List **Vim-CtrlSpace** shows you available workspaces instead
-of buffers. By default this list is displayed in the Load mode. The second
+In the Workspace List **Vim-CtrlSpace** shows you available workspaces. 
+By default this list is displayed in the Load Mode. The second
 available mode is the Save one.
 
 Workspaces are saved in a file inside the project directory. Its name and path
@@ -753,323 +709,124 @@ startup and save it active workspace on Vim exit. See
 `g:ctrlspace_load_last_workspace_on_start` and
 `g:ctrlspace_save_workspace_on_exit` for more details.
 
-##### Keys Reference
+#### Accepting
 
-<table>
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Return`       | Load (or save) the selected workspace           |
 
-<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
+#### Exiting
 
-<tbody>
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Backspace`    | Go back to the Buffer List                      |
+| `w`            | Go to the Buffer List                           |
+| `o`            | Go to the File List                             |
+| `O`            | Go to the File List in the Search Mode          | 
+| `l`            | Go to the Tab List                              |
+| `q`            | Close the list                                  |
+| `Esc`          | Close the list - depending on plugin settings   |
+| `Ctrl + Space` | Close the list - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found |
 
-<tr>
-<td>Accepting</td>
-<td><code>Return</code></td>
-<td>Loads (or save) the selected workspace</td>
-</tr>
+#### Workspace Operations
 
-<tr>
-<td rowspan="4">Exiting</td>
-<td><code>Backspace</code>, <code>w</code></td>
-<td>Goes back (here it will return to the Buffer List)</td>
-</tr>
+| Key  | Action                                          |
+|:----:| ----------------------------------------------- |
+| `a`  | Append a selected workspace to the current one  |
+| `s`  | Toggle the mode from Load or Save (or backward) |
+| `S`  | Save the workspace immediately                  |
+| `L`  | Load the last active workspace (if present)     |
+| `d`  | Delete the selected workspace                   |
 
-<tr>
-<td><code>l</code></td>
-<td>Goes to the Tab List</td>
-</tr>
+#### Moving
 
-<tr>
-<td><code>o</code></td>
-<td>Goes to the File List</td>
-</tr>
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `j`        | Move the selection bar down                         |
+| `k`        | Move the selection bar up                           |
+| `J`        | Move the selection bar to the bottom of the list    |
+| `K`        | Move the selection bar to the top of the list       |
+| `Ctrl + f` | Move the selection bar one screen down              |
+| `Ctrl + b` | Move the selection bar one screen up                |
+| `Ctrl + d` | Move the selection bar a half screen down           |
+| `Ctrl + u` | Move the selection bar a half screen up             |
 
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on settings</td>
-</tr>
+### Tab List
 
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
-
-<tr>
-<td rowspan="5">Workspace operations</td>
-<td><code>a</code></td>
-<td>Appends a selected workspace to the current one</td>
-</tr>
-
-<tr>
-<td><code>s</code></td>
-<td>Toggles the mode from Load or Save (or backward)</td>
-</tr>
-
-<tr>
-<td><code>S</code></td>
-<td>Saves the workspace immediately</td>
-</tr>
-
-<tr>
-<td><code>L</code></td>
-<td>Loads the last active workspace (if present)</td>
-</tr>
-
-<tr>
-<td><code>d</code></td>
-<td>Deletes the selected workspace</td>
-</tr>
-
-<tr>
-<td rowspan="8">Moving</td>
-<td><code>j</code></td>
-<td>Moves the selection bar down</td>
-</tr>
-
-<tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
-</tr>
-
-<tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
-</tr>
-
-<tr>
-<td><code>K</code></td>
-<td>Moves the selection bar to the top of the list</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim
-behavior)</td>
-</tr>
-
-</tbody>
-
-</table>
-
-#### Tab List
-
-<table>
-<thead>
-<tr>
-<th>Unicode Symbol</th>
-<th>ASCII Symbol</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>∘∘∘</code></td>
-<td><code>TABS</code></td>
-</tr>
-</tbody>
-</table>
+| Unicode | ASCII  |
+|:-------:|:------:|
+| `○●○`   | `TABS` |
 
 Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
 than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
 Habits of Effective Text Editing_](http://www.youtube.com/watch?v=p6K4iIMlouI)
-stated that if you needed more than 10 tabs then probably you were doing something
-wrong. In **Vim-CtrlSpace** tab pages are great, labelled containers for buffers,
-and therefore their usage increases. All it means that the default tabline
-feature used in Vim to organize tab pages is not sufficient sometimes. For
-example, you might have more tabs (and with wider labels) which don't fit the
-tabline width, causing rendering problems.
+stated that if you needed more than 10 tabs then probably you were doing
+something wrong. In **Vim-CtrlSpace** tab pages are great, labelled containers
+for buffers, and therefore their usage increases. All it means that sometimes
+the default tabline feature used in Vim to organize tab pages is not
+sufficient. For example, you might have more tabs (and with wider labels)
+which don't fit the tabline width, causing rendering problems.
 
 In the Tab List view you can list all tabs. You can even turn off your tabline 
 entirely and stick to that list only via Vim's `showtabline` option.
 
-##### Keys Reference
+#### Opening and closing
 
-<table>
+| Key      | Action                                                     |
+|:--------:| ---------------------------------------------------------- |
+| `Return` | Open a selected tab and enter the Buffer List view         |
+| `Tab`    | Open a selected tab and close the plugin window            |
+| `Space`  | Open a selected tab but stay in the Tab List view          |
+| `0..9`   | Jump to the n-th tab (0 is for the 10th one)               |
+| `c`      | Close the selected tab, then forgotten buffers and nonames |
 
-<thead><tr><th>Group</th><th>Key</th><th>Action</th></tr></thead>
+#### Exiting
 
-<tbody>
+| Key            | Action                                          |
+|:--------------:| ----------------------------------------------- |
+| `Backspace`    | Go back                                         |
+| `l`            | Go back                                         |
+| `w`            | Go to the Workspace List view                   |
+| `o`            | Go to the File List view                        |
+| `O`            | Go to the File List view in the Search Mode     |
+| `q`            | Close the list                                  |
+| `Esc`          | Close the list - depending on plugin settings   |
+| `Ctrl + Space` | Close the list - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found |
 
-<tr>
-<td rowspan="5">Opening and closing</td>
-<td><code>Return</code></td>
-<td>Opens a selected tab and enters the Buffer List view</td>
-</tr>
+#### Tabs Operations
 
-<tr>
-<td><code>Tab</code></td>
-<td>Opens a selected tab and closes the plugin window</td>
-</tr>
+| Key | Action                                              |
+|:---:| --------------------------------------------------- |
+| `-` | Move the current tab backward (decrease its number) |
+| `+` | Move the selected tab forward (increase its number) |
+| `=` | Change the selected tab name                        |
+| `_` | Remove the selected tab name                        |
+| `[` | Go to the previous tab                              |
+| `]` | Go to the next tab                                  |
+| `t` | Create a new tab nexto to the current one           |
+| `y` | Make a copy of the current tab                      |
 
-<tr>
-<td><code>Space</code></td>
-<td>Opens a selected tab but stays in the Tab List view</td>
-</tr>
+#### Moving
 
-<tr>
-<td><code>0..9</code></td>
-<td>Jumps to the n-th tab (0 is for the 10th one)</td>
-</tr>
+| Key        | Action                                                        |
+|:----------:| ------------------------------------------------------------- |
+| `j`        | Move the selection bar down                                   |
+| `k`        | Move the selection bar up                                     |
+| `J`        | Move the selection bar to the bottom of the list              |
+| `K`        | Move the selection bar to the top of the list                 |
+| `p`        | Move the selection bar to the previous opened tab             |
+| `P`        | Move the selection bar to the previous opened tab and open it |
+| `n`        | Move the selection bar to the next opened tab                 |
+| `Ctrl + f` | Move the selection bar one screen down                        |
+| `Ctrl + b` | Move the selection bar one screen up                          |
+| `Ctrl + d` | Move the selection bar a half screen down                     |
+| `Ctrl + u` | Move the selection bar a half screen up                       |
 
-<tr>
-<td><code>c</code></td>
-<td>Closes the selected tab, then closes forgotten buffers and empty nonames</td>
-</tr>
+## Configuration
 
-<tr>
-<td rowspan="4">Exiting</td>
-<td><code>Backspace</code>, <code>l</code></td>
-<td>Goes back (here it will return to the Buffer List view)</td>
-</tr>
-
-<tr>
-<td><code>w</code></td>
-<td>Goes to the Workspace List view</td>
-</tr>
-
-<tr>
-<td><code>o</code></td>
-<td>Goes to the File List view</td>
-</tr>
-
-<tr>
-<td><code>q</code>, <code>Esc</code>&#42;, and <code>Ctrl + Space</code>&#42;</td>
-<td>Closes the list <br/>&#42; - depends on plugin settings</td>
-</tr>
-
-<tr>
-<td><code>Q</code></td>
-<td>Quits Vim (but with a prompt if unsaved workspaces or tab buffers were
-found)</td>
-</tr>
-
-<tr>
-<td rowspan="8">Tabs operations</td>
-<td><code>-</code></td>
-<td>Moves the current tab backward (decreases its number)</td>
-</tr>
-
-<tr>
-<td><code>+</code></td>
-<td>Moves the selected forward (increases its number)</td>
-</tr>
-
-<tr>
-<td><code>=</code></td>
-<td>Changes the selected tab name</td>
-</tr>
-
-<tr>
-<td><code>&#95;</code></td>
-<td>Removes the selected tab name</td>
-</tr>
-
-<tr>
-<td><code>[</code></td>
-<td>Goes to the previous tab</td>
-</tr>
-
-<tr>
-<td><code>]</code></td>
-<td>Goes to the next tab</td>
-</tr>
-
-<tr>
-<td><code>t</code></td>
-<td>Creates a new tab nexto to the current one</td>
-</tr>
-
-<tr>
-<td><code>y</code></td>
-<td>Creates a copy of the current tab</td>
-</tr>
-
-<tr>
-<td rowspan="8">Moving</td>
-<td><code>j</code></td>
-<td>Moves the selection bar down</td>
-</tr>
-
-<tr>
-<td><code>k</code></td>
-<td>Moves the selection bar up</td>
-</tr>
-
-<tr>
-<td><code>J</code></td>
-<td>Moves the selection bar to the bottom of the list</td>
-</tr>
-
-<tr>
-<td><code>K</code></td>
-<td>Moves the selection bar to the top of the list</td>
-</tr>
-
-<tr>
-<td><code>p</code></td>
-<td>Moves the selection bar to the <em>previous</em> opened tab</td>
-</tr>
-
-<tr>
-<td><code>P</code></td>
-<td>Moves the selection bar to the <em>previous</em> opened tab and opens it
-immediately</td>
-</tr>
-
-<tr>
-<td><code>n</code></td>
-<td>Moves the selection bar to the <em>next</em> opened tab (just the reverse
-of <code>p</code>)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + f</code></td>
-<td>Moves the selection bar one screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + b</code></td>
-<td>Moves the selection bar one screen up (just like standard Vim behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + d</code></td>
-<td>Moves the selection bar a half screen down (just like standard Vim
-behavior)</td>
-</tr>
-
-<tr>
-<td><code>Ctrl + u</code></td>
-<td>Moves the selection bar a half screen up (just like standard Vim
-behavior)</td>
-</tr>
-
-</tbody>
-
-</table>
-
-
-Configuration
--------------
-
-Vim-CtrlSpace has following configuration options. Almost all of them are
+**Vim-CtrlSpace** has following configuration options. Almost all of them are
 declared as global variables and should be defined in your `.vimrc` file in the
 similar form:
 
@@ -1230,28 +987,21 @@ this behavior completely by providing an empty array. Default value: `['.', '/',
 ### Colors
 
 The plugin allows you to define its colors entirely. By default it comes with
-
 pure black and white color set. You are supposed to tweak its colors on your own
 (in the `.vimrc` file). This can be done as shown below:
 
     hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
     hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
     hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+    hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 
 The colors defined above can be seen in the demo movie. They fit well the
-[Seoul256](https://github.com/junegunn/seoul256.vim) color scheme. Another
-useful example can be found here:
-
-    hi CtrlSpaceSelected term=reverse ctermfg=white ctermbg=black cterm=bold
-    hi CtrlSpaceNormal   term=NONE    ctermfg=black ctermbg=228   cterm=NONE
-    hi CtrlSpaceFound    ctermfg=125  ctermbg=NONE  cterm=bold
-
-If you use a console Vim [that
+[Seoul256](https://github.com/junegunn/seoul256.vim) color scheme. If you use
+a console Vim [that
 chart](http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html) might be
 helpful.
 
-API 
----
+## API 
 
 ### Commands
 
@@ -1319,8 +1069,7 @@ Provides the custom tabline string.
 
 Provides the custom label for GVim's tabs.
 
-Authors and License
--------------------
+## Authors and License
 
 Copyright &copy; 2013-2014 [Szymon Wrozynski and
 Contributors](https://github.com/szw/vim-ctrlspace/commits/master). Licensed
