@@ -2941,8 +2941,7 @@ function! <SID>refresh_files()
 endfunction
 
 function! <SID>update_file_list(path, new_path)
-  let files_length = len(s:files)
-  let new_path     = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
+  let new_path = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
 
   if !empty(a:path)
     let index = index(s:files, a:path)
@@ -3025,7 +3024,9 @@ function! <SID>rename_file_or_buffer()
     endif
   endfor
 
-  call <SID>update_file_list(path, new_file)
+  if !buffer_only
+    call <SID>update_file_list(path, new_file)
+  endif
 
   call <SID>kill(0, 1)
   call <SID>ctrlspace_toggle(1)
