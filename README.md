@@ -61,7 +61,7 @@ course, the _all buffers_ mode is still available.
 
 Another cool feature is that, you can name your tabs and you can save the whole
 set of tabs and buffers as a workspace in your project directory and reopen it
-later. And naturally, you can list and open any files available in you project,
+later. And naturally, you can list and open any files available in your project,
 having your fuzzy search at hand. It's also worth to mention, the plugin tries
 to employ Ruby when possible to speed up things. Oh, and you can also perform
 a lot of operations on list contents. You can move, copy, rename, delete
@@ -71,17 +71,17 @@ moving), but some of them are not (buffer renaming). The plugin makes all of
 them pretty easy hiding the guts.
 
 The plugin name follows the convention of naming similar plugins after their
-default mappings (like *Command-T* or *CtrlP*). Obviously, the plugin mapping is
+default mappings (like _Command-T_ or _CtrlP_). Obviously, the plugin mapping is
 by default `Ctrl + Space`. 
 
 If you like the plugin please don't forget to add a star (:star:)! This will
 help me to estimate the plugin popularity and that way I will proceed better its
 further development :).
 
-If you starred this repo already, thank you! Thanks to you it's my pet project
-now :). If you have a question, a feature request, or a new idea, don't hesitate
-to post new issues or pull requests. The collaboration is the most exciting thing
-in the open source community.
+If you have starred this repo already, thank you! Thanks to you it's my pet
+project now :). If you have a question, a feature request, or a new idea, don't
+hesitate to post new issues or pull requests. The collaboration is the most
+exciting thing in the open source community.
 
 ### Demo
 

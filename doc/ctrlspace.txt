@@ -21,37 +21,37 @@ Copyright (c) 2013-2014 Szymon Wrozynski and Contributors
 
 Table of Contents                                  *ctrlspace-table-of-contents*
 
-  1. Table of Contents.............................|ctrlspace-table-of-contents|
-  2. Overview...............................................|ctrlspace-overview|
-    2.1 Demo....................................................|ctrlspace-demo|
-    2.2 Changes in version 4.0.................|ctrlspace-changes-in-version-40|
-  3. The Story.............................................|ctrlspace-the-story|
-    3.1 Origins..............................................|ctrlspace-origins|
-    3.2 The Idea............................................|ctrlspace-the-idea|
-  4. Installation and Initial Setup...|ctrlspace-installation-and-initial-setup|
-    4.1 Colors................................................|ctrlspace-colors|
-    4.2 Status Line......................................|ctrlspace-status-line|
-    4.3 Tabline..............................................|ctrlspace-tabline|
-    4.4 Project Root....................................|ctrlspace-project-root|
-  5. User Interface...................................|ctrlspace-user-interface|
-    5.1 Tab Management................................|ctrlspace-tab-management|
-  6. Lists.....................................................|ctrlspace-lists|
-    6.1 Buffer List......................................|ctrlspace-buffer-list|
-      6.1.1 Single Tab Mode..........................|ctrlspace-single-tab-mode|
-      6.1.2 All Tabs Mode..............................|ctrlspace-all-tabs-mode|
-      6.1.3 Preview Mode................................|ctrlspace-preview-mode|
-    6.2 File List..........................................|ctrlspace-file-list|
-    6.3 Tab List............................................|ctrlspace-tab-list|
-    6.4 Workspace List................................|ctrlspace-workspace-list|
-  7. Common Modes.......................................|ctrlspace-common-modes|
-    7.1 Search Mode......................................|ctrlspace-search-mode|
-    7.2 Nop Mode............................................|ctrlspace-nop-mode|
-  8. Configuration.....................................|ctrlspace-configuration|
-    8.1 Colors................................................|ctrlspace-colors|
-  9. API.........................................................|ctrlspace-api|
-    9.1 Commands............................................|ctrlspace-commands|
-    9.2 Functions..........................................|ctrlspace-functions|
-  10. Authors and License........................|ctrlspace-authors-and-license|
+  1. Table of Contents                             |ctrlspace-table-of-contents|
+  2. Overview                                               |ctrlspace-overview|
+    2.1 Demo                                                    |ctrlspace-demo|
+    2.2 Changes in version 4.0                 |ctrlspace-changes-in-version-40|
+  3. The Story                                             |ctrlspace-the-story|
+    3.1 Origins                                              |ctrlspace-origins|
+    3.2 The Idea                                            |ctrlspace-the-idea|
+  4. Installation and Initial Setup   |ctrlspace-installation-and-initial-setup|
+    4.1 Colors                                                |ctrlspace-colors|
+    4.2 Status Line                                      |ctrlspace-status-line|
+    4.3 Tabline                                              |ctrlspace-tabline|
+    4.4 Project Root                                    |ctrlspace-project-root|
+  5. User Interface                                   |ctrlspace-user-interface|
+    5.1 Tab Management                                |ctrlspace-tab-management|
+  6. Lists                                                     |ctrlspace-lists|
+    6.1 Buffer List                                      |ctrlspace-buffer-list|
+      6.1.1 Single Tab Mode                          |ctrlspace-single-tab-mode|
+      6.1.2 All Tabs Mode                              |ctrlspace-all-tabs-mode|
+      6.1.3 Preview Mode                                |ctrlspace-preview-mode|
+    6.2 File List                                          |ctrlspace-file-list|
+    6.3 Tab List                                            |ctrlspace-tab-list|
+    6.4 Workspace List                                |ctrlspace-workspace-list|
+  7. Common Modes                                       |ctrlspace-common-modes|
+    7.1 Search Mode                                      |ctrlspace-search-mode|
+    7.2 Nop Mode                                            |ctrlspace-nop-mode|
+  8. Configuration                                     |ctrlspace-configuration|
+    8.1 Colors                                                |ctrlspace-colors|
+  9. API                                                         |ctrlspace-api|
+    9.1 Commands                                            |ctrlspace-commands|
+    9.2 Functions                                          |ctrlspace-functions|
+  10. Authors and License                        |ctrlspace-authors-and-license|
 
 ------------------------------------------------------------------------------
 2. Overview                                                 *ctrlspace-overview*
@@ -65,41 +65,43 @@ on demand, capable of displaying various lists: buffer list, file list, tab
 list, or workspace list. Sounds simple, but around that there are some
 additional details making this simple concept a unique approach.
 
-First, the buffer list is limited to buffers related to the current tab. That's
-it, the plugin by default groups buffers by tabs they are used in. In that way
-you get separate sets of buffers per each tab. And that's really useful. Of
-course, the "all buffers" mode is still available.
+First, the buffer list is limited to buffers related to the current tab.
+That's it, the plugin by default groups buffers by tabs they are used in. In
+that way you get separate sets of buffers per each tab. And that's really
+useful. Of course, the "all buffers" mode is still available.
 
-Another cool feature is that, you can name your tabs and you can save the whole
-set of tabs and buffers as a workspace in your project directory and reopen it
-later. And naturally, you can list and open any files available in you project,
-having your fuzzy search at hand. It's also worth to mention, the plugin tries
-to employ Ruby when possible to speed up things. Oh, and you can also perform
-a lot of operations on list contents. You can move, copy, rename, delete
-buffers, tabs, files, workspaces (sic, nothing stops you to have plenty
-workspaces per project). Some of those operations seems trivial (like tab
-moving), but some of them are not (buffer renaming). The plugin makes all of
-them pretty easy hiding the guts.
+Another cool feature is that, you can name your tabs and you can save the
+whole set of tabs and buffers as a workspace in your project directory and
+reopen it later. And naturally, you can list and open any files available in
+your project, having your fuzzy search at hand. It's also worth to mention,
+the plugin tries to employ Ruby when possible to speed up things. Oh, and you
+can also perform a lot of operations on list contents. You can move, copy,
+rename, delete buffers, tabs, files, workspaces (sic, nothing stops you to
+have plenty workspaces per project). Some of those operations seems trivial
+(like tab moving), but some of them are not (buffer renaming). The plugin
+makes all of them pretty easy hiding the guts.
 
 The plugin name follows the convention of naming similar plugins after their
-default mappings (like *Command-T* or *CtrlP*). Obviously, the plugin mapping is
-by default `Ctrl + Space`.
+default mappings (like Command-T or CtrlP). Obviously, the plugin mapping is
+by default <C-Space>.
 
-If you like the plugin please don't forget to add a star (:star:)! This will
-help me to estimate the plugin popularity and that way I will proceed better its
-further development :).
+If you like the plugin please don't forget to add a star for the Github repo
+(https://github.com/szw/vim-ctrlspace)! This will help me to estimate the
+plugin popularity and that way I will proceed better its further development
+:).
 
-If you starred this repo already, thank you! Thanks to you it's my pet project
-now :). If you have a question, a feature request, or a new idea, don't hesitate
-to post new issues or pull requests. The collaboration is the most exciting thing
-in the open source community.
+If you have starred this repo already, thank you! Thanks to you it's my pet
+project now :). If you have a question, a feature request, or a new idea,
+don't hesitate to post new issues or pull requests. The collaboration is the
+most exciting thing in the open source community.
 
-### Demo
+
+2.1 Demo                                                        *ctrlspace-demo*
 
 If you are still a bit unsure whether is it something you should try, here's
 a small demonstration. Viewing in HD advised!
 
-[![Demo](https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
+https://www.youtube.com/watch?v=09l92uwKupI
 
 The Demo has been recorded with:
 
@@ -115,7 +117,7 @@ The Demo has been recorded with:
  Vitae](http://www.jamendo.com/pl/list/a109465/curriculum-vitae)
 
 
-### Changes in version 4.0
+2.2 Changes in version 4.0                     *ctrlspace-changes-in-version-40*
 
 * Uses alphabetical ordering only (no more order change option)
 * Displays unnamed buffers only if changed or currently displayed
@@ -127,25 +129,25 @@ The Demo has been recorded with:
 * Removes cyclic list option - all lists are cyclic from now
 * Removes available keys info in status bar
 * Provides new symbols and a new Tab List dynamic indicator
-* Change CtrlSpace logotype and symbol from `▢` to `⌗` - _VIEWDATA SQUARE
-  (U+2317)_ - to better visualize _controlled space_, where all things have
-  their own place ;)
+* Change CtrlSpace logotype and symbol from `▢` to `⌗` - VIEWDATA SQUARE (U+2317)
+  - to better visualize controlled space, where all things have their own place
 * Allows to rename unsaved/unnamed buffers
 * Allows to copy unsave/unnamed buffers
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
-commands:
+commands: >
 
     git fetch
     git checkout -t origin/next
-
+<
 In case of Vundle, notice that Vundle will follow the changed branch later so you
 will receive updates easily.
 
-## The Story
+------------------------------------------------------------------------------
+3. The Story                                               *ctrlspace-the-story*
 
-### Origins
+3.1 Origins                                                  *ctrlspace-origins*
 
 There are many ways of working with Vim. It's no so straight forward like in
 other editors. People often find their own methods of working with Vim and
@@ -154,8 +156,8 @@ preffered rather than others. And that means also some common issues.
 
 The main attitude is to combine buffers, split windows, and tabs effectively.
 Vim, unlike in other editors, tabs are not tabs really. They are just containers
-for split windows, sometimes referred as *viewports*. The tab list - considered
-as a list of open files - buffers, is called a *buffer list*. Usually, it's
+for split windows, sometimes referred as "viewports". The tab list - considered
+as a list of open files - buffers, is called a "buffer list". Usually, it's
 not immediately visible but you can issue a command `:ls` to see it yourself.
 
 Of course, there are many plugins allowing you to see, change, and manage
@@ -196,7 +198,8 @@ cool, but still I needed something better, especially since I started working on
 
 And that was the moment when Vim-CtrlSpace came to play.
 
-### The Idea
+3.2 The Idea                                                *ctrlspace-the-idea*
+
 
 First, I wanted a cool buffer list to address problems with screen size and
 allow me to use Vim like in a distraction free mode. Something neat and easy
