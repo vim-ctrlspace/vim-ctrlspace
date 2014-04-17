@@ -454,19 +454,19 @@ all available keys:
 
 ##### Moving
 
-| Key        | Action                                                      |
-|:----------:| ----------------------------------------------------------- |
-| `j`        | Move the selection bar down                                 |
-| `k`        | Move the selection bar up                                   |
-| `J`        | Move the selection bar to the bottom of the list            |        
-| `K`        | Move the selection bar to the top of the list               |
-| `p`        | Move the selection bar to the _previous_ buffer             |
-| `P`        | Move the selection bar to the _previous_ buffer and open it |
-| `n`        | Move the selection bar to the _next_ opened buffer          |
-| `Ctrl + f` | Move the selection bar one screen down                      |
-| `Ctrl + b` | Move the selection bar one screen up                        |
-| `Ctrl + d` | Move the selection bar a half screen down                   |
-| `Ctrl + u` | Move the selection bar a half screen up                     |
+| Key        | Action                                                    |
+|:----------:| --------------------------------------------------------- |
+| `j`        | Move the selection bar down                               |
+| `k`        | Move the selection bar up                                 |
+| `J`        | Move the selection bar to the bottom of the list          |        
+| `K`        | Move the selection bar to the top of the list             |
+| `p`        | Move the selection bar to the previous buffer             |
+| `P`        | Move the selection bar to the previous buffer and open it |
+| `n`        | Move the selection bar to the next opened buffer          |
+| `Ctrl + f` | Move the selection bar one screen down                    |
+| `Ctrl + b` | Move the selection bar one screen up                      |
+| `Ctrl + d` | Move the selection bar a half screen down                 |
+| `Ctrl + u` | Move the selection bar a half screen up                   |
 
 
 ##### Closing
