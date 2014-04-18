@@ -1228,16 +1228,18 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
-    let s:single_tab_mode        = 1
-    let s:nop_mode               = 0
-    let s:new_search_performed   = 0
-    let s:search_mode            = 0
-    let s:file_mode              = 0
-    let s:workspace_mode         = 0
-    let s:tablist_mode           = 0
-    let s:last_browsed_workspace = 0
-    let s:restored_search_mode   = 0
-    let s:search_letters         = []
+    let s:single_tab_mode                = 1
+    let s:nop_mode                       = 0
+    let s:new_search_performed           = 0
+    let s:search_mode                    = 0
+    let s:file_mode                      = 0
+    let s:workspace_mode                 = 0
+    let s:tablist_mode                   = 0
+    let s:last_browsed_workspace         = 0
+    let s:restored_search_mode           = 0
+    let s:search_letters                 = []
+    let t:ctrlspace_search_history_index = -1
+    let s:search_history_index           = -1
 
     if !<SID>project_root_found()
       return
