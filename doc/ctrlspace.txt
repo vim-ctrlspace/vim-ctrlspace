@@ -29,7 +29,7 @@ Table of Contents                                  *ctrlspace-table-of-contents*
     3.1 Origins                                              |ctrlspace-origins|
     3.2 The Idea                                            |ctrlspace-the-idea|
   4. Installation and Initial Setup   |ctrlspace-installation-and-initial-setup|
-    4.1 Colors                                                |ctrlspace-colors|
+    4.1 Colors                                          |ctrlspace-setup-colors|
     4.2 Status Line                                      |ctrlspace-status-line|
     4.3 Tabline                                              |ctrlspace-tabline|
     4.4 Project Root                                    |ctrlspace-project-root|
@@ -278,7 +278,7 @@ decent Ruby bindings enabled in (compiled into) your Vim. The plugin will try
 to use your Ruby by default.
 
 
-4.1 Colors                                                    *ctrlspace-colors*
+4.1 Colors                                              *ctrlspace-setup-colors*
 
 You should also improve default plugin colors to work well with your
 colorscheme. For example, I used to work in the terminal Vim with slightly
