@@ -169,7 +169,7 @@ This approach works indeed very well. In fact, you can never touch the real
 buffer list down there. You can even disable so called *hidden* buffers to make
 sure you manage only what you see in tabs, which seems to be a default setting
 in Vim nowadays, perphaps because it is (or I believe it **was** thanks to
-*Vim-CtrlSplace* ;)) a bit tricky to manage raw buffers.
+**Vim-CtrlSpace** ;)) a bit tricky to manage raw buffers.
 
 Anyway, I've been working that way for a long time. However, there are some
 subtle issues behind the scene. The first one is the screen size. With this
