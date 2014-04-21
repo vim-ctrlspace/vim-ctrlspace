@@ -27,9 +27,9 @@ src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
   * [File List](#file-list)
   * [Tab List](#tab-list)
   * [Workspace List](#workspace-list)
-  * [Common Modes](#common-modes)
-    * [Search Mode](#search-mode)
-    * [Nop Mode](#nop-mode)
+* [Common Modes](#common-modes)
+  * [Search Mode](#search-mode)
+  * [Nop Mode](#nop-mode)
 * [Configuration](#configuration)
   * [Colors](#colors)
 * [API ](#api)
@@ -265,7 +265,7 @@ eye-pleasant, because chances are, you will use (a thus see) the plugin a lot ;)
 
 If you use a popular colorscheme and you would like to share your
 settings, I'd love to add them here! Please post a pull request, an issue or
-just [mail](mailto:szymon@wrozynski.com).
+just an [email](mailto:szymon@wrozynski.com).
 
 ### Status Line
 
@@ -567,7 +567,7 @@ list with the `r` key.
 | Key       | Action                                               |
 |:---------:| ---------------------------------------------------- |
 | `Return`  | Open a selected file                                 |
-|`Space`    | Open a selected file but stays in the plugin window  |
+| `Space`   | Open a selected file but stays in the plugin window  |
 | `v`       | Open a selected file in a new vertical split         |
 | `s`       | Open a selected file in a new horizontal split       |
 | `t`       | Open a selected file in a new tab                    |
@@ -583,7 +583,7 @@ list with the `r` key.
 | `Ctrl + Space` | Close the list - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
 
-#### Tabs operations
+#### Tabs Operations
 
 | Key    | Action                                                  |
 |:------:| ------------------------------------------------------- |
@@ -626,7 +626,7 @@ list with the `r` key.
 |:---:| ---------------------------------------------------------- |
 | `C` | Close the current tab (with forgotten buffers and nonames) |
 
-#### Disk operations
+#### Disk Operations
 
 | Key | Action                                       |
 |:---:| -------------------------------------------- |
@@ -638,7 +638,7 @@ list with the `r` key.
 | `y` | Copy the selected file                       |
 
 
-#### List changing
+#### List Changing
 
 | Key | Action                                       |
 |:---:| -------------------------------------------- |
@@ -798,11 +798,11 @@ startup and save it active workspace on Vim exit. See
 | `Ctrl + d` | Move the selection bar a half screen down           |
 | `Ctrl + u` | Move the selection bar a half screen up             |
 
-### Common Modes
+## Common Modes
 
 Common modes are available in more than one list.
 
-#### Search Mode
+### Search Mode
 
 | Unicode | ASCII  |
 |:-------:|:------:|
@@ -827,7 +827,7 @@ function. So it doesn't impact on lists except it narrows the contents.
 It's worth to mention that in that mode the `Backspace` key removes the search
 query entirely.
 
-#### Nop Mode
+### Nop Mode
 
 Nop (Non-Operational) mode happens when i.e. there are no items to show (empty
 list), or you are trying to type a Search query, and there are no results at
@@ -837,14 +837,14 @@ have only unlisted buffers available in the tab (like e.g. help window and
 some preview ones). As you will see, in such circumstances - outside the
 entering phase - there is a great number of resque options available.
 
-##### Nop (Search entering phase)
+#### Nop (Search entering phase)
 
 | Key         | Action                                                  |
 |:-----------:| ------------------------------------------------------- |
 | `Backspace` | Remove the previouse entered character or close         |
 | `Esc`       | Close the list - depending on settings                  |
 
-##### Nop (outside the entering phase)
+#### Nop (outside the entering phase)
 
 | Key            | Action                                               |
 |:--------------:| ---------------------------------------------------- |
@@ -1039,8 +1039,9 @@ helpful.
 
 ### Commands
 
-At the moment **Vim-CtrlSpace** provides you 4 commands: `:CtrlSpace` and
-`:CtrlSpaceTabLabel`, `:CtrlSpaceSaveWorkspace`, and `:CtrlSpaceLoadWorkspace`.
+At the moment **Vim-CtrlSpace** provides you 5 commands: `:CtrlSpace`,
+`:CtrlSpaceTabLabel`, `:CtrlSpaceClearTabLabel`, `:CtrlSpaceSaveWorkspace`, and
+`:CtrlSpaceLoadWorkspace`.
 
 #### `:CtrlSpace`
 
@@ -1111,6 +1112,6 @@ under [MIT
 License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
 conditions. **Vim-CtrlSpace** is based on Robert Lillack plugin [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005 Robert
-Lillack. Moreover some concepts of and inspiration has been taken from
+Lillack. Moreover some concepts and inspiration has been taken from
 [Vim-Tabber](https://github.com/fweep/vim-tabber) by Jim Steward and
 [Tabline](https://github.com/mkitt/tabline.vim) by Matthew Kitt.
