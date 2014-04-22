@@ -2828,9 +2828,7 @@ function! <SID>keep_buffers_for_keys(dict)
 
   for b in range(1, bufnr('$'))
     if buflisted(b) && !has_key(a:dict, b) && !getbufvar(b, '&modified')
-      " use wipeout for nonames
-      let cmd = empty(getbufvar(b, "&buftype")) && !filereadable(bufname(b)) ? "bwipeout" : "bdelete"
-      exe cmd b
+      exe "bwipeout" b
       call add(removed, b)
     endif
   endfor
