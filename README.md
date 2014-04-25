@@ -441,6 +441,10 @@ all available keys:
 | `_`    | Remove a custom tab name                                |
 | `[`    | Go to the previous (left) tab                           |
 | `]`    | Go to the next (right) tab                              |
+| `{`    | Move the selected buffer to to the previous (left) tab  |
+| `}`    | Move the selected buffer to the next (right) tab        |
+| `<`    | Copy the selected buffer to to the previous (left) tab  |
+| `>`    | Copy the selected buffer to the next (right) tab        |
 
 ##### Exiting
 
@@ -515,8 +519,8 @@ all available keys:
 
 This mode is almost identical to the Single Tab Mode, except it shows you all
 available buffers (from all tabs and unrelated ones too). Some of keys presented
-in the Single Tab Mode are not available here. The missing ones are `f` and 
-`c` - as they are tightly bound to the current tab.
+in the Single Tab Mode are not available here. The missing ones are `f`, `c`,
+`{`, `}`, `<`, `>` - as they are connected with current tab.
 
 #### Preview Mode
 

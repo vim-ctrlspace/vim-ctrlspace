@@ -2164,6 +2164,18 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "]"
       call <SID>tab_command(a:key)
+    elseif (a:key ==# "{" || a:key ==# "<") && s:single_tab_mode
+      let current_tab = tabpagenr()
+
+      if current_tab > 1
+        call <SID>copy_or_move_selected_buffer_into_tab(current_tab - 1, a:key ==# "{")
+      endif
+    elseif (a:key ==# "}" || a:key ==# ">") && s:single_tab_mode
+      let current_tab = tabpagenr()
+
+      if current_tab < tabpagenr("$")
+        call <SID>copy_or_move_selected_buffer_into_tab(current_tab + 1, a:key ==# "}")
+      endif
     elseif (a:key ==# "q") || (a:key ==# "Esc")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
@@ -2259,6 +2271,40 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     endif
   endif
+endfunction
+
+function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
+  let nr = <SID>get_selected_buffer()
+
+  if !getbufvar(str2nr(nr), '&modifiable') || !getbufvar(str2nr(nr), '&buflisted') || empty(bufname(str2nr(nr)))
+    return
+  endif
+
+  let map = gettabvar(a:tab, "ctrlspace_list")
+
+  if a:move
+    call <SID>detach_buffer()
+  endif
+
+  if empty(map)
+    settabvar(a:tab, "ctrlspace_list", { nr: 1 })
+  elseif !exists("map[nr]")
+    let map[nr] = len(map) + 1
+  endif
+
+  call <SID>kill(0, 1)
+
+  silent! exe "normal! " . a:tab . "gt"
+
+  call <SID>ctrlspace_toggle(0)
+
+  for i in range(0, len(b:buflist))
+    if b:buflist[i].raw == bufname(str2nr(nr))
+      call <SID>move(i + 1)
+      call <SID>load_many_buffers()
+      break
+    endif
+  endfor
 endfunction
 
 function! <SID>find_project_root()
