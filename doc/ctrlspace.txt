@@ -154,6 +154,7 @@ The Demo has been recorded with:
   - to better visualize controlled space, where all things have their own place
 * Allows to rename unsaved/unnamed buffers
 * Allows to copy unsave/unnamed buffers
+* Allows to move/copy buffers between tabs
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
