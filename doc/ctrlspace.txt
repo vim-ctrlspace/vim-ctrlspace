@@ -361,6 +361,19 @@ explicitly. After your acceptance that root folder will be stored pemanently in
 the `.cs_cache` file as serve as a known root later.
 
 
+4.4.1 Autochdir Issues~
+
+It's worth to mention that Vim-CtrlSpace makes assumptions about the current
+working directory and it does not work well when `autochdir` option is set.
+The possible workaround is to use the following snippet instead (thnx dxc!): >
+
+    autocmd BufEnter,BufNewFile * silent! lcd %:p:h
+
+<
+If it doesn't work for you, or you need `autochdir` decisively please let me
+know (perhaps via Github issues), and I'll investigate that case thoroughly.
+
+
 ------------------------------------------------------------------------------
 5. User Interface                                     *ctrlspace-user-interface*
 

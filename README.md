@@ -318,6 +318,17 @@ After checking all predecessors it will ask you to provide the root folder
 explicitly. After your acceptance that root folder will be stored pemanently in
 the `.cs_cache` file as serve as a known root later.
 
+#### Autochdir Issues
+
+It's worth to mention that **Vim-CtrlSpace** makes assumptions about the current
+working directory and it does not work well when `autochdir` option is set. The
+possible workaround is to use the following snippet instead (thnx dxc!):
+
+    autocmd BufEnter, BufNewFile * silent! lcd %:p:h
+
+If it doesn't work for you, or you need `autochdir` decisively please let me
+know (perhaps via Github issues), and I'll investigate that issue thoroughly.
+
 ## User Interface
 
 **Vim-CtrlSpace** contains 4 different lists: _Buffer List_, _File List_,  _Tab
