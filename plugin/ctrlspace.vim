@@ -3108,10 +3108,12 @@ function! <SID>edit_file()
 
   let directory = fnamemodify(new_file, ":.:h")
 
-  if !isdirectory(directory) && <SID>confirmed("The new directory '" . directory . "' will be created. Continue?")
+  if !isdirectory(directory)
+    if !<SID>confirmed("The new directory '" . directory . "' will be created. Continue?")
+      return
+    endif
+
     call mkdir(fnamemodify(directory, ":p"), "p")
-  else
-    return
   endif
 
   let new_file = fnamemodify(new_file, ":p")
