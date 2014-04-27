@@ -3109,7 +3109,7 @@ function! <SID>edit_file()
   let directory = fnamemodify(new_file, ":.:h")
 
   if !isdirectory(directory)
-    if !<SID>confirmed("The new directory '" . directory . "' will be created. Continue?")
+    if !<SID>confirmed("Directory '" . directory . "' will be created. Continue?")
       return
     endif
 
