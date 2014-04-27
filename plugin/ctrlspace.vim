@@ -3106,6 +3106,14 @@ function! <SID>edit_file()
     return
   endif
 
+  let directory = fnamemodify(new_file, ":.:h")
+
+  if !isdirectory(directory) && <SID>confirmed("The new directory '" . directory . "' will be created. Continue?")
+    call mkdir(fnamemodify(directory, ":p"), "p")
+  else
+    return
+  endif
+
   let new_file = fnamemodify(new_file, ":p")
 
   call <SID>kill(0, 1)
