@@ -39,13 +39,14 @@ src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
 
 ## Overview
 
-**Vim-CtrlSpace** is a great plugin that helps you to get more power from Vim
-while working with buffers, tabs, windows, and so on. It is meant to organize
-your Vim screen space and your workspace effectively. 
+**Vim-CtrlSpace** is a great plugin meant to organize your Vim screen space and
+your workspace effectively. It helps you to increase usage of core Vim features 
+like multiple buffers, tabs, and windows. It also introduces some new ideas,
+i.e. workspaces or named tabs containing separate buffer lists. 
 
-Its key features are lists. In fact, the whole plugin is a small window opened
-on demand, capable of displaying various lists: buffer list, file list, tab
-list, or workspace list. Sounds simple, but around that there are some
+Actually, key plugin features are lists. The whole plugin looks like a small
+window opened on demand, capable of displaying various lists: buffer list, file
+list, tab list, or workspace list. Sounds simple, but around that there are some
 additional details making this simple concept a unique approach. 
 
 <p align="center">
