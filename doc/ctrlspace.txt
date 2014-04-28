@@ -1198,39 +1198,59 @@ Vim-CtrlSpace provides you a couple of functions defined in the common
 tabline integration, or just for more advanced interactions with other plugins.
 
 
-9.2.1 *ctrlspace#bufferlist(tabnr)*
+9.2.1 `ctrlspace#bufferlist(tabnr)`                         *ctrlspace#bufferlist*
 
-Returns a directory of buffer number and name pairs for given tab. This is the
+Returns a dictionary of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
 
 
-9.2.2 *ctrlspace#statusline_mode_segment(...)*
+9.2.2 `ctrlspace#statusline_mode_segment(...)` *ctrlspace#statusline_mode_segment*
 
 Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (e.g. in
 plugins like LightLine (https://github.com/itchyny/lightline.vim))
 
 
-9.2.3 *ctrlspace#statusline_tab_segment(...)*
+9.2.3 `ctrlspace#statusline_tab_segment(...)`   *ctrlspace#statusline_tab_segment*
 
 Returns the info about the current tab (tab number, label, etc.). It is useful
 if you don't use the custom tabline string (or perhaps you have set
 |showtabline| to `0` (see `:help` `showtabline` for more info)).
 
 
-9.2.4 *ctrlspace#statusline()*
+9.2.4 `ctrlspace#statusline()`                              *ctrlspace#statusline*
 
 Provides the custom statusline string.
 
 
-9.2.5 *ctrlspace#tabline()*
+9.2.5 `ctrlspace#tabline()`                                    *ctrlspace#tabline*
 
 Provides the custom tabline string.
 
 
-9.2.6 *ctrlspace#guitablabel()*
+9.2.6 `ctrlspace#guitablabel()`                            *ctrlspace#guitablabel*
 
 Provides the custom label for GVim's tabs.
+
+
+9.2.7 `ctrlspace#tab_buffers_number(tabnr)`         *ctrlspace#tab_buffers_number*
+
+Returns formatted number of buffers belonging to given tab. Formats the output
+as small Unicode characters (upper indexes), or with help of a colon (depending
+on Vim-CtrlSpace unicode settings). It is helper function useful if you provide
+your custom tabline function implementation.
+
+
+9.2.8 `ctrlspace#tab_title(tabnr,` `bufnr,` `bufname)`           *ctrlspace#tab_title*
+
+A helper function returning a consistent title for given tab. If the tab does
+not have a custom title, then the title based on passed buffer number
+and buffer name is returned instead.
+
+
+9.2.9 `ctrlspace#tab_modified(tabnr)`                     *ctrlspace#tab_modified*
+
+Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
 
 ------------------------------------------------------------------------------

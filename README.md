@@ -1094,7 +1094,7 @@ tabline integration, or just for more advanced interactions with other plugins.
 
 #### `ctrlspace#bufferlist(tabnr)`
 
-Returns a directory of buffer number and name pairs for given tab. This is the
+Returns a dictionary of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
 
 #### `ctrlspace#statusline_mode_segment(...)`
@@ -1120,6 +1120,23 @@ Provides the custom tabline string.
 #### `ctrlspace#guitablabel()`
 
 Provides the custom label for GVim's tabs.
+
+#### `ctrlspace#tab_buffers_number(tabnr)`
+
+Returns formatted number of buffers belonging to given tab. Formats the output
+as small Unicode characters (upper indexes), or with help of a colon (depending
+on Vim-CtrlSpace unicode settings). It is helper function useful if you provide
+your custom tabline function implementation.
+
+#### `ctrlspace#tab_title(tabnr, bufnr, bufname)`
+
+A helper function returning a consistent title for given tab. If the tab does
+not have a custom title, then the title based on passed buffer number
+and buffer name is returned instead.
+
+#### `ctrlspace#tab_modified(tabnr)`
+
+Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
 ## Authors and License
 

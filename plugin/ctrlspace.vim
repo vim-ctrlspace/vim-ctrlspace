@@ -264,18 +264,17 @@ function! ctrlspace#bufferlist(tabnr)
 endfunction
 
 function! ctrlspace#statusline_tab_segment()
-  let current_tab         = tabpagenr()
-  let winnr               = tabpagewinnr(current_tab)
-  let buflist             = tabpagebuflist(current_tab)
-  let bufnr               = buflist[winnr - 1]
-  let bufname             = bufname(bufnr)
-  let bufs_number         = len(ctrlspace#bufferlist(current_tab))
-  let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
-  let title               = <SID>tab_title(current_tab, bufnr, bufname)
+  let current_tab = tabpagenr()
+  let winnr       = tabpagewinnr(current_tab)
+  let buflist     = tabpagebuflist(current_tab)
+  let bufnr       = buflist[winnr - 1]
+  let bufname     = bufname(bufnr)
+  let bufs_number = ctrlspace#tab_buffers_number(current_tab)
+  let title       = ctrlspace#tab_title(current_tab, bufnr, bufname)
 
-  let tabinfo             = string(current_tab) . bufs_number_to_show . " "
+  let tabinfo     = string(current_tab) . bufs_number . " "
 
-  if <SID>tab_contains_modified_buffers(current_tab)
+  if ctrlspace#tab_modified(current_tab)
     let tabinfo .= "+ "
   endif
 
@@ -334,26 +333,27 @@ function! ctrlspace#statusline_mode_segment(...)
   return join(statusline_elements, separator)
 endfunction
 
-function! <SID>tab_bufs_number_to_show(bufs_number)
-  let bufs_number_to_show = ""
+function! ctrlspace#tab_buffers_number(tabnr)
+  let buffers_number = len(ctrlspace#bufferlist(a:tabnr))
+  let number_to_show = ""
 
-  if a:bufs_number > 1
+  if buffers_number > 1
     if g:ctrlspace_unicode_font
       let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
-      let number_str    = string(a:bufs_number)
+      let number_str    = string(buffers_number)
 
       for i in range(0, len(number_str) - 1)
-        let bufs_number_to_show .= small_numbers[str2nr(number_str[i])]
+        let number_to_show .= small_numbers[str2nr(number_str[i])]
       endfor
     else
-      let bufs_number_to_show = ":" . a:bufs_number
+      let number_to_show = ":" . buffers_number
     endif
   endif
 
-  return bufs_number_to_show
+  return number_to_show
 endfunction
 
-function! <SID>tab_title(tabnr, bufnr, bufname)
+function! ctrlspace#tab_title(tabnr, bufnr, bufname)
   let bufname = a:bufname
   let bufnr   = a:bufnr
   let title   = gettabvar(a:tabnr, "ctrlspace_label")
@@ -380,17 +380,16 @@ function! <SID>tab_title(tabnr, bufnr, bufname)
 endfunction
 
 function! ctrlspace#guitablabel()
-  let winnr               = tabpagewinnr(v:lnum)
-  let buflist             = tabpagebuflist(v:lnum)
-  let bufnr               = buflist[winnr - 1]
-  let bufname             = bufname(bufnr)
-  let bufs_number         = len(ctrlspace#bufferlist(v:lnum))
-  let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
-  let title               = <SID>tab_title(v:lnum, bufnr, bufname)
+  let winnr       = tabpagewinnr(v:lnum)
+  let buflist     = tabpagebuflist(v:lnum)
+  let bufnr       = buflist[winnr - 1]
+  let bufname     = bufname(bufnr)
+  let bufs_number = ctrlspace#tab_buffers_number(v:lnum)
+  let title       = ctrlspace#tab_title(v:lnum, bufnr, bufname)
 
-  let label = '' . v:lnum . bufs_number_to_show . ' '
+  let label = '' . v:lnum . bufs_number . ' '
 
-  if <SID>tab_contains_modified_buffers(v:lnum)
+  if ctrlspace#tab_modified(v:lnum)
     let label .= '+ '
   endif
 
@@ -405,19 +404,18 @@ function! ctrlspace#tabline()
   let tabline     = ''
 
   for t in range(1, last_tab)
-    let winnr               = tabpagewinnr(t)
-    let buflist             = tabpagebuflist(t)
-    let bufnr               = buflist[winnr - 1]
-    let bufname             = bufname(bufnr)
-    let bufs_number         = len(ctrlspace#bufferlist(t))
-    let bufs_number_to_show = <SID>tab_bufs_number_to_show(bufs_number)
-    let title               = <SID>tab_title(t, bufnr, bufname)
+    let winnr       = tabpagewinnr(t)
+    let buflist     = tabpagebuflist(t)
+    let bufnr       = buflist[winnr - 1]
+    let bufname     = bufname(bufnr)
+    let bufs_number = ctrlspace#tab_buffers_number(t)
+    let title       = ctrlspace#tab_title(t, bufnr, bufname)
 
     let tabline .= '%' . t . 'T'
     let tabline .= (t == current_tab ? '%#TabLineSel#' : '%#TabLine#')
-    let tabline .= ' ' . t . bufs_number_to_show . ' '
+    let tabline .= ' ' . t . bufs_number . ' '
 
-    if <SID>tab_contains_modified_buffers(t)
+    if ctrlspace#tab_modified(t)
       let tabline .= '+ '
     endif
 
@@ -450,7 +448,7 @@ function! <SID>remove_tab_label(tabnr)
   endif
 endfunction
 
-function! <SID>tab_contains_modified_buffers(tabnr)
+function! ctrlspace#tab_modified(tabnr)
   for b in map(keys(ctrlspace#bufferlist(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
@@ -938,7 +936,7 @@ function! <SID>quit_vim()
 
   " check for modified buffers
   for t in range(1, tabpagenr("$"))
-    if <SID>tab_contains_modified_buffers(t)
+    if ctrlspace#tab_modified(t)
       if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
         return
       else
@@ -1185,7 +1183,7 @@ function! <SID>prepare_buftext_to_display(buflist)
       elseif s:tablist_mode
         let indicators = ""
 
-        if <SID>tab_contains_modified_buffers(entry.number)
+        if ctrlspace#tab_modified(entry.number)
           let indicators .= "+"
         endif
 
@@ -1327,15 +1325,14 @@ function! <SID>ctrlspace_toggle(internal)
       elseif s:workspace_mode
         let bufname = s:workspace_names[i - 1]
       elseif s:tablist_mode
-        let tab_winnr               = tabpagewinnr(i)
-        let tab_buflist             = tabpagebuflist(i)
-        let tab_bufnr               = tab_buflist[tab_winnr - 1]
-        let tab_bufname             = bufname(tab_bufnr)
-        let tab_bufs_number         = len(ctrlspace#bufferlist(i))
-        let tab_bufs_number_to_show = <SID>tab_bufs_number_to_show(tab_bufs_number)
-        let tab_title               = <SID>tab_title(i, tab_bufnr, tab_bufname)
+        let tab_winnr       = tabpagewinnr(i)
+        let tab_buflist     = tabpagebuflist(i)
+        let tab_bufnr       = tab_buflist[tab_winnr - 1]
+        let tab_bufname     = bufname(tab_bufnr)
+        let tab_bufs_number = ctrlspace#tab_buffers_number(i)
+        let tab_title       = ctrlspace#tab_title(i, tab_bufnr, tab_bufname)
 
-        let bufname                 = string(i) . tab_bufs_number_to_show . " " . tab_title
+        let bufname         = string(i) . tab_bufs_number . " " . tab_title
       else
         if s:single_tab_mode && !exists('t:ctrlspace_list[' . i . ']')
           continue
