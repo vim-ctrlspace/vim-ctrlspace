@@ -156,6 +156,7 @@ The Demo has been recorded with:
 * Allows to rename unsaved/unnamed buffers
 * Allows to copy unsave/unnamed buffers
 * Allows to move/copy buffers between tabs
+* Provides more API functions for custom tablines
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
