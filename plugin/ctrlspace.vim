@@ -2984,6 +2984,10 @@ function! <SID>refresh_files()
 endfunction
 
 function! <SID>update_file_list(path, new_path)
+  if !exists("s:all_files_buftext") " exit if files haven't been collected yet
+    return
+  endif
+
   let new_path = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
 
   if !empty(a:path)
