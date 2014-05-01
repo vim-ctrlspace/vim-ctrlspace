@@ -945,9 +945,11 @@ entering phase - there is a great number of resque options available.
 | `Ctrl` `+` `Space` | Close the list - depending on settings               |
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
 | `a`            | Toggle between Single and All modes                  |
-| `o`            | Enters the File List (Open List)                     |
-| `Ctrl` `+` `p`     | Brings back the previous searched text               |
-| `Ctrl` `+` `n`     | Brings the next searched text                        |
+| `o`            | Enter the File List (Open List)                      |
+| `l`            | Toggle the Tab List view                             |
+| `w`            | Toggle the Workspace List view                       |
+| `Ctrl` `+` `p`     | Bring back the previous searched text                |
+| `Ctrl` `+` `n`     | Bring the next searched text                         |
 
 
 ------------------------------------------------------------------------------

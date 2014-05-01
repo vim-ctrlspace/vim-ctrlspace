@@ -1551,6 +1551,12 @@ function! <SID>kill(buflistnr, final)
     return
   endif
 
+  " workaround for strange Vim behavior when, when kill starts with some delay
+  " (in a wrong buffer)
+  if !a:buflistnr && bufname("%") != "__CS__"
+    return
+  endif
+
   let s:killing_now = 1
 
   if exists("b:old_updatetime")
@@ -1650,6 +1656,23 @@ function! <SID>keypressed(key)
         endif
       elseif a:key ==# "o"
         call <SID>toggle_file_mode()
+      elseif a:key ==# "w"
+        if empty(<SID>get_workspace_names())
+          call <SID>save_first_workspace()
+        else
+          call <SID>kill(0, 0)
+          let s:file_mode      = 0
+          let s:tablist_mode   = 0
+          let s:workspace_mode = 1
+          call <SID>ctrlspace_toggle(1)
+        endif
+      elseif a:key ==# "l"
+        call <SID>kill(0, 0)
+        let s:file_mode      = 0
+        let s:tablist_mode   = 1
+        let s:workspace_mode = 0
+        call <SID>ctrlspace_toggle(1)
+      elseif a:key ==# "w"
       elseif (a:key ==# "q") || (a:key ==# "Esc")
         call <SID>kill(0, 1)
       elseif a:key ==# "Q"
