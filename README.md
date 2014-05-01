@@ -21,8 +21,8 @@ src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
   * [Tab Management](#tab-management)
 * [Lists](#lists)
   * [Buffer List](#buffer-list)
-    * [Single Tab Mode](#single-tab-mode)
-    * [All Tabs Mode](#all-tabs-mode)
+    * [Single Mode](#single-mode)
+    * [All Mode](#all-mode)
     * [Preview Mode](#preview-mode)
   * [File List](#file-list)
   * [Tab List](#tab-list)
@@ -124,6 +124,7 @@ The Demo has been recorded with:
 * Allows to copy unsave/unnamed buffers
 * Allows to move/copy buffers between tabs
 * Provides more API functions for custom tablines
+* Adds `g` and `G` for quick going to next/previous tab with selected file/buffer
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
@@ -355,8 +356,8 @@ important symbolic information:
 | Unicode Symbol | ASCII Symbol  | List        | Description                |
 |:--------------:|:-------------:| ----------- | -------------------------- |
 | `⌗`            | `#`           | All         | Vim-CtrlSpace symbol       |
-| `⊙`            | `TAB`         | Buffer      | Single Tab Mode indicator  |
-| `∷`            | `ALL`         | Buffer      | All Tabs Mode indicator    |
+| `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
+| `∷`            | `ALL`         | Buffer      | All Mode indicator         |
 | `◎`            | `OPEN`        | File        | (Open) File List indicator |
 | `⌕`            | `*`           | Buffer      | Preview Mode indicator     |
 | `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
@@ -413,13 +414,13 @@ Räisänen](http://en.wikipedia.org/wiki/User:Mysid) &copy; 2005. The source of
 the generated graphics you can find
 [here](https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.svg).*
 
-#### Single Tab Mode
+#### Single Mode
 
 | Unicode | ASCII |
 |:-------:|:-----:|
 | `⊙`     | `TAB` |
 
-The first mode of Buffer List is the Single Tab one. In that mode, the plugin
+The first mode of Buffer List is the Single one. In that mode, the plugin
 shows you only buffers related to the current tab. Here's the full listing of
 all available keys:
 
@@ -449,6 +450,8 @@ all available keys:
 | `T`    | Create a new tab and stay in the plugin window          |
 | `Y`    | Copy (yank) the current tab into a new one              |
 | `0..9` | Jump to the n-th tab (0 is for the 10th one)            |
+| `g`    | Jump to a next tab containing the selected buffer       |
+| `G`    | Jump to a previous tab containing the selected buffer   |
 | `-`    | Move the current tab to the left (decrease its number)  |
 | `+`    | Move the current tab to the right (increase its number) |
 | `=`    | Change the tab name                                     |
@@ -512,7 +515,7 @@ all available keys:
 
 | Key  | Action                                                             |
 |:----:| ------------------------------------------------------------------ |
-| `a`  | Toggle between Single Tab and All Tabs modes                       |
+| `a`  | Toggle between Single and All modes                                |
 | `o`  | Toggle the File List (Open List)                                   |
 | `O`  | Enter the Search Mode in the File List                             |
 | `l`  | Toggle the Tab List view                                           |
@@ -525,15 +528,15 @@ all available keys:
 | `S`  | Save the workspace immediately (or creates a new one if none)       |
 | `L`  | Load the last active workspace (if present)                         |
 
-#### All Tabs Mode
+#### All Mode
 
 | Unicode | ASCII |
 |:-------:|:-----:|
 | `∷`     | `ALL` |
 
-This mode is almost identical to the Single Tab Mode, except it shows you all
+This mode is almost identical to the Single Mode, except it shows you all
 available buffers (from all tabs and unrelated ones too). Some of keys presented
-in the Single Tab Mode are not available here. The missing ones are `f`, `c`,
+in the Single Mode are not available here. The missing ones are `f`, `c`,
 `{`, `}`, `<`, `>` - as they are connected with current tab.
 
 #### Preview Mode
@@ -608,6 +611,8 @@ list with the `r` key.
 | `T`    | Create a new tab and stay in the plugin window          |
 | `Y`    | Copy (yank) the current tab into a new one              |
 | `0..9` | Jump to the n-th tab (0 is for 10th one)                |
+| `g`    | Jump to a next tab containing the selected file         |
+| `G`    | Jump to a previous tab containing the selected file     |
 | `-`    | Move the current tab to the left (decrease its number)  |
 | `+`    | Move the current tab to the right (increase its number) |
 | `=`    | Change the tab name                                     |
@@ -871,7 +876,7 @@ entering phase - there is a great number of resque options available.
 | `Esc`          | Close the list - depending on settings               |
 | `Ctrl + Space` | Close the list - depending on settings               |
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
-| `a`            | Toggle between Single Tab and All Tabs modes         |
+| `a`            | Toggle between Single and All modes                  |
 | `o`            | Enters the File List (Open List)                     |
 | `Ctrl + p`     | Brings back the previous searched text               |
 | `Ctrl + n`     | Brings the next searched text                        |

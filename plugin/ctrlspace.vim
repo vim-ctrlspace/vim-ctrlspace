@@ -305,7 +305,7 @@ function! ctrlspace#statusline_mode_segment(...)
     call add(statusline_elements, g:ctrlspace_symbols.save)
   elseif s:tablist_mode
     call add(statusline_elements, <SID>create_status_tabline())
-  elseif s:single_tab_mode
+  elseif s:single_mode
     call add(statusline_elements, g:ctrlspace_symbols.tab)
   else
     call add(statusline_elements, g:ctrlspace_symbols.all)
@@ -1084,7 +1084,7 @@ function! <SID>restore_search_letters(direction)
   endif
 
   if !s:file_mode
-    let tab_range = s:single_tab_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
+    let tab_range = s:single_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
 
     for t in tab_range
       let tab_store = <SID>gettabvar_with_default(t, "ctrlspace_search_history", {})
@@ -1226,7 +1226,7 @@ endfunction
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
-    let s:single_tab_mode                = 1
+    let s:single_mode                    = 1
     let s:nop_mode                       = 0
     let s:new_search_performed           = 0
     let s:search_mode                    = 0
@@ -1334,7 +1334,7 @@ function! <SID>ctrlspace_toggle(internal)
 
         let bufname         = string(i) . tab_bufs_number . " " . tab_title
       else
-        if s:single_tab_mode && !exists('t:ctrlspace_list[' . i . ']')
+        if s:single_mode && !exists('t:ctrlspace_list[' . i . ']')
           continue
         endif
 
@@ -1646,7 +1646,7 @@ function! <SID>keypressed(key)
         if s:file_mode
           call <SID>toggle_file_mode()
         else
-          call <SID>toggle_single_tab_mode()
+          call <SID>toggle_single_mode()
         endif
       elseif a:key ==# "o"
         call <SID>toggle_file_mode()
@@ -2111,6 +2111,10 @@ function! <SID>keypressed(key)
       let s:file_mode = !s:file_mode
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "g"
+      call <SID>goto_buffer_or_file("next")
+    elseif a:key ==# "G"
+      call <SID>goto_buffer_or_file("previous")
     endif
   else
     if a:key ==# "CR"
@@ -2122,8 +2126,8 @@ function! <SID>keypressed(key)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
-      elseif !s:single_tab_mode
-        call <SID>toggle_single_tab_mode()
+      elseif !s:single_mode
+        call <SID>toggle_single_mode()
       else
         call <SID>kill(0, 1)
       endif
@@ -2161,13 +2165,13 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "]"
       call <SID>tab_command(a:key)
-    elseif (a:key ==# "{" || a:key ==# "<") && s:single_tab_mode
+    elseif (a:key ==# "{" || a:key ==# "<") && s:single_mode
       let current_tab = tabpagenr()
 
       if current_tab > 1
         call <SID>copy_or_move_selected_buffer_into_tab(current_tab - 1, a:key ==# "{")
       endif
-    elseif (a:key ==# "}" || a:key ==# ">") && s:single_tab_mode
+    elseif (a:key ==# "}" || a:key ==# ">") && s:single_mode
       let current_tab = tabpagenr()
 
       if current_tab < tabpagenr("$")
@@ -2218,12 +2222,12 @@ function! <SID>keypressed(key)
     elseif a:key ==# "C-u"
       call <SID>move("half_pgup")
     elseif a:key ==# "a"
-      call <SID>toggle_single_tab_mode()
-    elseif a:key ==# "f" && s:single_tab_mode
+      call <SID>toggle_single_mode()
+    elseif a:key ==# "f" && s:single_mode
       call <SID>detach_buffer()
     elseif a:key ==# "F"
       call <SID>delete_foreign_buffers(0)
-    elseif a:key ==# "c" && s:single_tab_mode
+    elseif a:key ==# "c" && s:single_mode
       call <SID>close_buffer()
     elseif a:key ==# "C"
       call <SID>close_tab()
@@ -2266,6 +2270,10 @@ function! <SID>keypressed(key)
     elseif a:key ==# "O"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
+      elseif a:key ==# "g"
+        call <SID>goto_buffer_or_file("next")
+      elseif a:key ==# "G"
+        call <SID>goto_buffer_or_file("previous")
     endif
   endif
 endfunction
@@ -2702,6 +2710,73 @@ function! <SID>jump(direction)
   call <SID>move(string(b:jumplines[b:jumppos]["line"]))
 endfunction
 
+function! <SID>goto_buffer_or_file(direction)
+  let nr          = <SID>get_selected_buffer()
+  let current_tab = tabpagenr()
+  let last_tab    = tabpagenr("$")
+
+  let target_tab    = 0
+  let target_buffer = 0
+
+  if last_tab == 1
+    let tabs_to_check = [1]
+  elseif current_tab == 1
+    if a:direction == "next"
+      let tabs_to_check = range(2, last_tab) + [1]
+    else
+      let tabs_to_check = range(last_tab, current_tab, -1)
+    endif
+  elseif current_tab == last_tab
+    if a:direction == "next"
+      let tabs_to_check = range(1, last_tab)
+    else
+      let tabs_to_check = range(last_tab - 1, 1, -1) + [last_tab]
+    endif
+  else
+    if a:direction == "next"
+      let tabs_to_check = range(current_tab + 1, last_tab) + range(1, current_tab - 1) + [current_tab]
+    else
+      let tabs_to_check = range(current_tab - 1, 1, -1) + range(last_tab, current_tab + 1, -1) + [current_tab]
+    endif
+  endif
+
+  if s:file_mode
+    let file = fnamemodify(s:files[nr - 1], ":p")
+  endif
+
+  for t in tabs_to_check
+    let buffer_list = ctrlspace#bufferlist(t)
+
+    for [bufnr, name] in items(buffer_list)
+      if (s:file_mode && fnamemodify(name, ":p") != file) || (str2nr(bufnr) != nr)
+        continue
+      endif
+
+      let target_tab    = t
+      let target_buffer = str2nr(bufnr)
+      break
+    endfor
+
+    if target_tab > 0
+      break
+    endif
+  endfor
+
+  if (target_tab > 0) && (target_buffer > 0)
+    call <SID>kill(0, 1)
+    silent! exe "normal! " . target_tab . "gt"
+    call <SID>ctrlspace_toggle(0)
+    for i in range(0, len(b:buflist) -1)
+      if b:buflist[i].number == target_buffer
+        call <SID>move(i + 1)
+        break
+      endif
+    endfor
+  else
+    echo g:ctrlspace_symbols.cs . "  Cannot find the selected file/buffer in any tab"
+  endif
+endfunction
+
 function! <SID>load_many_buffers()
   let nr = <SID>get_selected_buffer()
   let current_line = line(".")
@@ -2966,8 +3041,8 @@ function! <SID>add_jump()
   endif
 endfunction
 
-function! <SID>toggle_single_tab_mode()
-  let s:single_tab_mode = !s:single_tab_mode
+function! <SID>toggle_single_mode()
+  let s:single_mode = !s:single_mode
 
   if !empty(s:search_letters)
     let s:new_search_performed = 1
