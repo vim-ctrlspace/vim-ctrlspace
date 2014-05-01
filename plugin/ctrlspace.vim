@@ -2773,7 +2773,7 @@ function! <SID>goto_buffer_or_file(direction)
       endif
     endfor
   else
-    echo g:ctrlspace_symbols.cs . "  Cannot find a tab containing selected file/buffer"
+    echo g:ctrlspace_symbols.cs . "  Cannot find a tab containing selected " . (s:file_mode ? "file" : "buffer")
   endif
 endfunction
 
