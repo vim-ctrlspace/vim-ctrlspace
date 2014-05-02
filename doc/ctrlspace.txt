@@ -277,6 +277,10 @@ just clone the repository to your `.vim` directory. In case of Vundle, add: >
 
 <to your `.vimrc`.
 
+To improve your overall experience please enable the `hidden` option too: >
+
+    set hidden
+<
 If you want to increase plugin speed (e.g. fuzzy search), make sure you have
 decent Ruby bindings enabled in (compiled into) your Vim. The plugin will try
 to use your Ruby by default.
