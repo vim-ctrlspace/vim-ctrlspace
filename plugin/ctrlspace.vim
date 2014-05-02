@@ -1547,13 +1547,9 @@ function! <SID>go_to_start_window()
 endfunction
 
 function! <SID>kill(buflistnr, final)
-  if exists("s:killing_now") && s:killing_now
-    return
-  endif
-
-  " workaround for strange Vim behavior when, when kill starts with some delay
-  " (in a wrong buffer)
-  if !a:buflistnr && bufname("%") != "__CS__"
+  " added workaround for strange Vim behavior when, when kill starts with some delay
+  " (in a wrong buffer). This happens in some Nop modes (in a File List view).
+  if (exists("s:killing_now") && s:killing_now) || (!a:buflistnr && bufname("%") != "__CS__")
     return
   endif
 
