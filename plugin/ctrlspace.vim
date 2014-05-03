@@ -2764,10 +2764,12 @@ function! <SID>goto_buffer_or_file(direction)
   endif
 
   for t in tabs_to_check
-    let buffer_list = ctrlspace#bufferlist(t)
-
-    for [bufnr, name] in items(buffer_list)
-      if (s:file_mode && fnamemodify(name, ":p") != file) || (str2nr(bufnr) != nr)
+    for [bufnr, name] in items(ctrlspace#bufferlist(t))
+      if s:file_mode
+        if fnamemodify(name, ":p") != file
+          continue
+        endif
+      elseif str2nr(bufnr) != nr
         continue
       endif
 
