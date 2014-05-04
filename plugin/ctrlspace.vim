@@ -2806,6 +2806,7 @@ function! <SID>load_many_buffers()
   call <SID>go_to_start_window()
 
   exec ":b " . nr
+  normal! zb
 
   call <SID>ctrlspace_toggle(1)
   call <SID>move(current_line)
@@ -2831,6 +2832,7 @@ function! <SID>load_many_files()
   call <SID>go_to_start_window()
 
   exec ":e " . file
+  normal! zb
 
   call <SID>ctrlspace_toggle(1)
   call <SID>move(current_line)
