@@ -89,21 +89,28 @@ exciting thing in the open source community.
 If you are still a bit unsure whether is it something you should try, here's
 a small demonstration. Viewing in HD advised!
 
-[![Demo](https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png)](https://www.youtube.com/watch?v=09l92uwKupI)
+<p align="center">
+<a href="https://www.youtube.com/watch?v=QUUjwI8V-Rk">
+<img alt="Vim-CtrlSpace 4.0 Demo" 
+src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/screen_small.png" />
+</a>
+</p>
+
+There is also an [older version available](https://www.youtube.com/watch?v=09l92uwKupI),
+a bit more verbose.
 
 The Demo has been recorded with: 
 
-- a console Vim 7.4 (Menslo font)
+- a console Vim 7.4 (Monaco font)
 - a bit modified [Seoul256 color scheme](https://github.com/szw/seoul256.vim)
 - following Vim-CtrlSpace settings in .vimrc:
 
         hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
         hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
         hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+        hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 
-- music: [Professor Kliq - Curriculum
- Vitae](http://www.jamendo.com/pl/list/a109465/curriculum-vitae)
-
+- music: [Alex F](http://www.jamendo.com/pl/artist/419764/alex-f) - CC BY 3.0
 
 ### Changes in version 4.0
 
