@@ -1,6 +1,6 @@
 <h1 align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/logo.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 </h1>
 
 ## Table of Contents
@@ -51,7 +51,7 @@ additional details making this simple concept a unique approach.
 
 <p align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/plugin_window.png" /><br />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/plugin_window.png" /><br />
 <em>Sample Plugin Window</em>
 </p>
 
@@ -92,7 +92,7 @@ a small demonstration. Viewing in HD advised!
 <p align="center">
 <a href="https://www.youtube.com/watch?v=U1hbGJm3J0g">
 <img alt="Vim-CtrlSpace 4.0 Demo" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/screen_small.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png" />
 </a>
 </p>
 
@@ -134,16 +134,6 @@ The Demo has been recorded with:
 * Adds `g` and `G` for quick going to next/previous tab with selected file/buffer
 * Adds `:CtrlSpaceGoNext` and `:CtrlSpaceGoPrevious` commands for quick jumping
   to next/previous buffers without opening the plugin window
-
-If you want to try this new version please go to your plugin directory (assuming
-you have cloned it from Github, or Vundle did it for you) and enter following
-commands:
-
-    git fetch
-    git checkout -t origin/next
-
-In case of Vundle, notice that Vundle will follow the changed branch later so you
-will receive updates easily.
 
 ## The Story
 
@@ -418,7 +408,7 @@ List.
 
 <p align="center">
 <img alt="Key Groups" 
-src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/cs_keys.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs_keys.png" />
 </p>
 
 *This file is licensed under GNU FDL license. It is derived from

@@ -165,16 +165,6 @@ The Demo has been recorded with:
 * Adds `:CtrlSpaceGoNext` and `:CtrlSpaceGoPrevious` commands for quick jumping
   to next/previous buffers without opening the plugin window
 
-If you want to try this new version please go to your plugin directory (assuming
-you have cloned it from Github, or Vundle did it for you) and enter following
-commands: >
-
-    git fetch
-    git checkout -t origin/next
-<
-In case of Vundle, notice that Vundle will follow the changed branch later so you
-will receive updates easily.
-
 
 ------------------------------------------------------------------------------
 3. The Story                                               *ctrlspace-the-story*
