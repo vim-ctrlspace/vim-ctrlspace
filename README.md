@@ -132,6 +132,8 @@ The Demo has been recorded with:
 * Allows to move/copy buffers between tabs
 * Provides more API functions for custom tablines
 * Adds `g` and `G` for quick going to next/previous tab with selected file/buffer
+* Adds `:CtrlSpaceGoNext` and `:CtrlSpaceGoPrevious` commands for quick jumping
+  to next/previous buffers without opening the plugin window.
 
 If you want to try this new version please go to your plugin directory (assuming
 you have cloned it from Github, or Vundle did it for you) and enter following
