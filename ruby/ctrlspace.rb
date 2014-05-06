@@ -47,8 +47,8 @@ module CtrlSpace
           matched_string = bufname[subseq[1][0]..subseq[1][-1]]
 
           unless search_resonators.empty?
-            noise += 1 if (subseq[1][0] == 0) || !search_resonators.include?(bufname[subseq[1][0] - 1])
-            noise += 1 if (subseq[1][-1] == bufname_len - 1) || !search_resonators.include?(bufname[subseq[1][-1] + 1])
+            noise += 1 if (subseq[1][0] != 0) && !search_resonators.include?(bufname[subseq[1][0] - 1])
+            noise += 1 if (subseq[1][-1] != bufname_len - 1) && !search_resonators.include?(bufname[subseq[1][-1] + 1])
           end
         else
           offset += 1
@@ -64,16 +64,16 @@ module CtrlSpace
   end
 
   def self.prepare_buftext_to_display(buflist)
-    columns                      = VIM.evaluate("&columns")
-    unicode_font                 = VIM.evaluate("g:ctrlspace_unicode_font") > 0
-    file_mode                    = VIM.evaluate("s:file_mode") > 0
-    workspace_mode               = VIM.evaluate("s:workspace_mode") > 0
-    tablist_mode                 = VIM.evaluate("s:tablist_mode") > 0
-    preview_mode                 = VIM.evaluate("s:preview_mode") > 0
-    active_workspace_name        = VIM.evaluate("s:active_workspace_name")
-    active_workspace_digest      = VIM.evaluate("s:active_workspace_digest")
+    columns                 = VIM.evaluate("&columns")
+    unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0
+    file_mode               = VIM.evaluate("s:file_mode") > 0
+    workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
+    tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
+    preview_mode            = VIM.evaluate("s:preview_mode") > 0
+    active_workspace_name   = VIM.evaluate("s:active_workspace_name")
+    active_workspace_digest = VIM.evaluate("s:active_workspace_digest")
 
-    buftext                      = ""
+    buftext                 = ""
 
     buflist.each do |entry|
       bufname = (RUBY_VERSION.to_f < 1.9) ? entry["raw"].to_s : entry["raw"].to_s.force_encoding("UTF-8")
@@ -84,7 +84,9 @@ module CtrlSpace
       end
 
       if !file_mode && !workspace_mode && !tablist_mode
-        indicators = [""]
+        indicators = ""
+
+        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
 
         if preview_mode && (VIM.evaluate("s:preview_mode_original_buffer") == entry["number"])
           indicators << (unicode_font ? "☆" : "*")
@@ -92,19 +94,18 @@ module CtrlSpace
           indicators << (unicode_font ? "★" : "*")
         end
 
-        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
-
-        bufname << indicators.join(" ") if indicators.length > 1
+        bufname << " #{indicators}" unless indicators.empty?
       elsif workspace_mode
         if entry["raw"] == active_workspace_name
-          bufname << (unicode_font ? " ★" : " *")
-          bufname << " +" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << " "
+          bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << (unicode_font ? "★" : "*")
         end
       elsif tablist_mode
-        indicators = [""]
+        indicators = ""
+        indicators << "+" if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
         indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
-        indicators << "+" if VIM.evaluate("<SID>tab_contains_modified_buffers(#{entry["number"]})") > 0
-        bufname << indicators.join(" ") if indicators.length > 1
+        bufname << " #{indicators}" unless indicators.empty?
       end
 
       while bufname.length < columns
