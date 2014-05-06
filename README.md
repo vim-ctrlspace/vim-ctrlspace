@@ -90,7 +90,7 @@ If you are still a bit unsure whether is it something you should try, here's
 a small demonstration. Viewing in HD advised!
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=JJq6odHU0fk">
+<a href="https://www.youtube.com/watch?v=59z319K8qPM">
 <img alt="Vim-CtrlSpace 4.0 Demo" 
 src="https://raw.github.com/szw/vim-ctrlspace/next/gfx/screen_small.png" />
 </a>
