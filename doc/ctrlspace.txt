@@ -1182,24 +1182,36 @@ Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration.
 
 
-9.1.2 *:CtrlSpaceTabLabel*
+9.1.2 *:CtrlSpaceGoNext*
+
+Opens the next buffer from the current Single Mode buffer list (without opening
+the plugin window).
+
+
+9.1.3 *:CtrlSpaceGoPrevious*
+
+Opens the previous buffer from the current Single Mode buffer list (without opening
+the plugin window).
+
+
+9.1.4 *:CtrlSpaceTabLabel*
 
 Allows you to define a custom mapping (outside Vim-CtrlSpace) to change (or
 add/remove) a custom tab name.
 
 
-9.1.3 *:CtrlSpaceClearTabLabel*
+9.1.5 *:CtrlSpaceClearTabLabel*
 
 Removes a custom tab label.
 
 
-9.1.4 *:CtrlSpaceSaveWorkspace*
+9.1.6 *:CtrlSpaceSaveWorkspace*
 
 Saves the workspace with the given name. If no name is given then it saves the
 active workspace (if present).
 
 
-9.1.5 *:CtrlSpaceLoadWorkspace*
+9.1.7 *:CtrlSpaceLoadWorkspace*
 
 Loads the workspace with the given name. It has also a banged version
 (`:CtrlSpaceLoadWorkspace! my workspace`) which performs appending instead of

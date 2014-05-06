@@ -108,6 +108,8 @@ call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
 command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
+command! -nargs=0 -range CtrlSpaceGoNext :call <SID>go_outside_list("next")
+command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previous")
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
 command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
@@ -235,6 +237,65 @@ function! ctrlspace#statusline()
   endif
 
   return statusline
+endfunction
+
+function! <SID>go_outside_list(direction)
+  let buffer_list     = []
+  let tabnr           = tabpagenr()
+  let single_list     = gettabvar(tabnr, "ctrlspace_list")
+  let visible_buffers = tabpagebuflist(tabnr)
+
+  if type(single_list) != 4
+    return
+  endif
+
+  let current_buffer = bufnr("%")
+
+  for i in keys(single_list)
+    let i = str2nr(i)
+
+    let bufname = bufname(i)
+
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+      let bufname = '[' . i . '*No Name]'
+    endif
+
+    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+      call add(buffer_list, { "number": i, "raw": bufname })
+    endif
+  endfor
+
+  call sort(buffer_list, function(<SID>SID() . "compare_raw_names"))
+
+  let current_index   = -1
+  let buffer_list_len = len(buffer_list)
+
+  for index in range(0, buffer_list_len - 1)
+    if buffer_list[index]["number"] == current_buffer
+      let current_index = index
+      break
+    endif
+  endfor
+
+  if current_index == -1
+    return
+  endif
+
+  if a:direction == "next"
+    let target_index = current_index + 1
+
+    if target_index == buffer_list_len
+      let target_index = 0
+    endif
+  else
+    let target_index = current_index - 1
+
+    if target_index < 0
+      let target_index = buffer_list_len - 1
+    endif
+  endif
+
+  silent! exe ":b " . buffer_list[target_index]["number"]
 endfunction
 
 function! ctrlspace#bufferlist(tabnr)

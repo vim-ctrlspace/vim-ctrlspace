@@ -1084,6 +1084,16 @@ At the moment **Vim-CtrlSpace** provides you 5 commands: `:CtrlSpace`,
 Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration.
 
+#### `:CtrlSpaceGoNext`
+
+Opens the next buffer from the current Single Mode buffer list (without opening
+the plugin window).
+
+#### `:CtrlSpaceGoPrevious`
+
+Opens the previous buffer from the current Single Mode buffer list (without opening
+the plugin window).
+
 #### `:CtrlSpaceTabLabel`
 
 Allows you to define a custom mapping (outside **Vim-CtrlSpace**) to change (or
