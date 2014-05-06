@@ -110,7 +110,9 @@ The Demo has been recorded with:
         hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
         hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 
-- music: [Alex F](http://www.jamendo.com/pl/artist/419764/alex-f) - CC BY 3.0
+- music licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
+  1. Kate Orange - Oops - http://www.jamendo.com/pl/track/474843/oops
+  2. Alex F - Rain - http://www.jamendo.com/pl/track/975564/rain
 
 ### Changes in version 4.0
 
