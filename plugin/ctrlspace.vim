@@ -2491,8 +2491,13 @@ function! <SID>set_up_buffer()
     syn match CtrlSpaceNormal /  .*/
     syn match CtrlSpaceSelected /> .*/hs=s+1
 
-    hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
-    hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
+    if &background == "dark"
+      hi def CtrlSpaceNormal ctermfg=white ctermbg=black guifg=white guibg=black
+      hi def CtrlSpaceSelected ctermfg=black ctermbg=white cterm=bold guifg=black guibg=white gui=bold
+    else
+      hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
+      hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
+    endif
   endif
 
   call clearmatches()
