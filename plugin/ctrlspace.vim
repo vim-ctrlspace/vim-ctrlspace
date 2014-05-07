@@ -115,6 +115,16 @@ command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
+if &background == "dark"
+  hi def CtrlSpaceNormal ctermfg=white ctermbg=black guifg=white guibg=black
+  hi def CtrlSpaceSelected ctermfg=black ctermbg=white cterm=bold guifg=black guibg=white gui=bold
+else
+  hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
+  hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
+endif
+
+hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
+
 function! <SID>set_default_mapping(key, action)
   let s:default_key = a:key
   if !empty(s:default_key)
@@ -2490,18 +2500,9 @@ function! <SID>set_up_buffer()
     syn clear
     syn match CtrlSpaceNormal /  .*/
     syn match CtrlSpaceSelected /> .*/hs=s+1
-
-    if &background == "dark"
-      hi def CtrlSpaceNormal ctermfg=white ctermbg=black guifg=white guibg=black
-      hi def CtrlSpaceSelected ctermfg=black ctermbg=white cterm=bold guifg=black guibg=white gui=bold
-    else
-      hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
-      hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
-    endif
   endif
 
   call clearmatches()
-  hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
 
   if !g:ctrlspace_use_mouse_and_arrows
     " Block unnecessary escape sequences!
