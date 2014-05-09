@@ -116,8 +116,8 @@ command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_extern
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
 hi def link CtrlSpaceNormal Normal
-hi def CtrlSpaceSelected ctermfg=bg ctermbg=fg cterm=bold guifg=bg guibg=fg gui=bold
-hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
+hi def link CtrlSpaceSelected Visual
+hi def link CtrlSpaceFound IncSearch
 hi def link CtrlSpaceStatus StatusLine
 
 function! <SID>set_default_mapping(key, action)
