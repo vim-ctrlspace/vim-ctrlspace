@@ -117,7 +117,7 @@ command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_
 
 hi def link CtrlSpaceNormal Normal
 hi def link CtrlSpaceSelected Visual
-hi def link CtrlSpaceFound IncSearch
+hi def link CtrlSpaceSearch IncSearch
 hi def link CtrlSpaceStatus StatusLine
 
 function! <SID>set_default_mapping(key, action)
@@ -1090,7 +1090,7 @@ endfunction
 function! <SID>display_search_patterns()
   for pattern in keys(b:search_patterns)
     " escape ~ sign because of E874: (NFA) Could not pop the stack !
-    call matchadd("CtrlSpaceFound", "\\c" .substitute(pattern, '\~', '\\~', "g"))
+    call matchadd("CtrlSpaceSearch", "\\c" .substitute(pattern, '\~', '\\~', "g"))
   endfor
 endfunction
 

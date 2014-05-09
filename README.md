@@ -12,6 +12,7 @@ src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 * [The Story](#the-story)
   * [Origins](#origins)
   * [The Idea](#the-idea)
+  * [Workflow Tips](#workflow-tips)
 * [Installation and Initial Setup](#installation-and-initial-setup)
   * [Colors](#colors)
   * [Status Line](#status-line)
@@ -107,7 +108,7 @@ The Demo has been recorded with:
 
         hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
         hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
-        hi CtrlSpaceFound    ctermfg=220  ctermbg=NONE cterm=bold
+        hi CtrlSpaceSearch    ctermfg=220  ctermbg=NONE cterm=bold
         hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 
 - music licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
@@ -230,6 +231,47 @@ All those improvements let me to start using **Vim-CtrlSpace** instead of
 those plugins together, especially if you used to work with them. There are no
 inteferences, just some functionality doubling.
 
+### Workflow Tips
+
+Chances are Vim-CtrlSpace would become your basic Vim plugin that help you
+open and manage files. Here, I'd like to share with you some tips I found
+useful during daily usage with the plugin.
+
+As Vim is my main programming editor, usually I open one instance per project.
+Also, I used to create one workspace per feature branch. In some projects,
+I created also a workspace with some common tabs (like _configuration_, _test
+setup_, _migrations_) named _Config_. Then I was able to append that _Config_ to
+other workspaces (`a`). However it is not necessary, because you can save
+a new workspace basing on the previous one (it works like the classic _Save As_
+feature).
+
+When I work with files I usually create a lot of tabs, each containg at most
+a few buffers. I would suggest verbose and meaningful names for that like
+_refactoring after xxx_, _rebasing with master_, etc.
+
+If I start to work on something new and not related with the current tab,
+usually I create a new handy tab with buffers related to the new topic. If
+I had started to opening files those ones can be easily moved to the new more
+specyfic tab (`{`, `}`). Sometimes, I even copy the entire tab (`l`, `y` or just
+`Y`), rename it (`=`), and remove superfluous files in both: source and target
+ones (`c`).
+
+If, besides the normal navigation through tabs and buffers (`l`, `j`, `j`,
+`Return`), I need to jump to a particular file in a particular tab, I usually
+press `O` to open the File List in Search Mode (or `a` to see all files). Then
+I type the filename letters, accept the text, select the file, and press `g` on
+that file. That takes me to the right tab. Next I can press `l` and `p` to jump
+back to the previous tab. Of course, if I need to jump more often between two
+files belonging to two seperate tabs, I would either open one file inside one of
+those tabs, or create a handy new one containing just those two files. 
+
+It's very easy to create such _helper_ tabs (`l`, `t`, or `T`). It's also easy
+to copy (`<`, `>`) or move (`{`, `}`) buffers between them so I use them very
+often. Inside the helper tab I can switch between files easily with `p`, `n`,
+and `P`. Of course, in case of strict simultaneous working on a couple of files,
+I can open them as split windows (`s` or `v`). After the task is done the helper
+tab can be closed (`l`, `c`, or just `C`). 
+
 ## Installation and Initial Setup
 
 The plugin installation is really simple. You can use Vundle or Pathogen, or
@@ -259,7 +301,7 @@ Therefore, I put following settings in my `.vimrc`:
 ```VimL
 hi CtrlSpaceSelected term=reverse ctermfg=187   guifg=#d7d7af ctermbg=23    guibg=#005f5f cterm=bold gui=bold
 hi CtrlSpaceNormal   term=NONE    ctermfg=244   guifg=#808080 ctermbg=232   guibg=#080808 cterm=NONE gui=NONE
-hi CtrlSpaceFound    ctermfg=220  guifg=#ffd700 ctermbg=NONE  guibg=NONE    cterm=bold    gui=bold
+hi CtrlSpaceSearch   ctermfg=220  guifg=#ffd700 ctermbg=NONE  guibg=NONE    cterm=bold    gui=bold
 hi CtrlSpaceStatus   ctermfg=230  guifg=#ffffd7 ctermbg=234   guibg=#1c1c1c cterm=NONE    gui=NONE
 ```
 
@@ -1051,13 +1093,22 @@ this behavior completely by providing an empty array. Default value: `['.', '/',
 ### Colors
 
 The plugin allows you to define its colors entirely. By default it comes with
-pure black and white color set. You are supposed to tweak its colors on your own
+following highlight links:
+
+```VimL
+hi def link CtrlSpaceNormal Normal
+hi def link CtrlSpaceSelected Visual
+hi def link CtrlSpaceSearch IncSearch
+hi def link CtrlSpaceStatus StatusLine
+```
+
+You are supposed to tweak its colors (especially CtrlSpaceSearch) on your own,
 (in the `.vimrc` file). This can be done as shown below:
 
 ```VimL
 hi CtrlSpaceSelected term=reverse ctermfg=187   guifg=#d7d7af ctermbg=23    guibg=#005f5f cterm=bold gui=bold
 hi CtrlSpaceNormal   term=NONE    ctermfg=244   guifg=#808080 ctermbg=232   guibg=#080808 cterm=NONE gui=NONE
-hi CtrlSpaceFound    ctermfg=220  guifg=#ffd700 ctermbg=NONE  guibg=NONE    cterm=bold    gui=bold
+hi CtrlSpaceSearch   ctermfg=220  guifg=#ffd700 ctermbg=NONE  guibg=NONE    cterm=bold    gui=bold
 hi CtrlSpaceStatus   ctermfg=230  guifg=#ffffd7 ctermbg=234   guibg=#1c1c1c cterm=NONE    gui=NONE
 ```
 
