@@ -115,15 +115,16 @@ command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
-if &background == "dark"
-  hi def CtrlSpaceNormal ctermfg=white ctermbg=black guifg=white guibg=black
-  hi def CtrlSpaceSelected ctermfg=black ctermbg=white cterm=bold guifg=black guibg=white gui=bold
-else
+if &background == "light"
   hi def CtrlSpaceNormal ctermfg=black ctermbg=white guifg=black guibg=white
   hi def CtrlSpaceSelected ctermfg=white ctermbg=black cterm=bold guifg=white guibg=black gui=bold
+else
+  hi def CtrlSpaceNormal ctermfg=white ctermbg=black guifg=white guibg=black
+  hi def CtrlSpaceSelected ctermfg=black ctermbg=white cterm=bold guifg=black guibg=white gui=bold
 endif
 
 hi def CtrlSpaceFound ctermfg=NONE ctermbg=NONE cterm=underline guifg=NONE guibg=NONE gui=underline
+hi def link CtrlSpaceStatus StatusLine
 
 function! <SID>set_default_mapping(key, action)
   let s:default_key = a:key
@@ -237,7 +238,6 @@ if g:ctrlspace_load_last_workspace_on_start
 endif
 
 function! ctrlspace#statusline()
-  hi def link CtrlSpaceStatus StatusLine
   hi def link User1 CtrlSpaceStatus
 
   let statusline = "%1*" . g:ctrlspace_symbols.cs . "    " . ctrlspace#statusline_mode_segment("    ")
