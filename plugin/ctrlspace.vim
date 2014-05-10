@@ -3224,6 +3224,8 @@ function! <SID>rename_file_or_buffer()
 
       if !buffer_only
         call add(commands, "w!")
+      elseif !getbufvar(b, "&modified")
+        call add(commands, "e") "reload filetype and syntax
       endif
 
       call <SID>preview_buffer(str2nr(b), commands)
