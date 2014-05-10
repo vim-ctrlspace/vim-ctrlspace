@@ -3203,7 +3203,7 @@ function! <SID>rename_file_or_buffer()
 
   let new_file = <SID>get_input((buffer_only ? "New buffer name: " : "Move file to: "), path, "file")
 
-  if empty(new_file)
+  if empty(new_file) || !<SID>ensure_path(new_file)
     return
   endif
 
@@ -3252,6 +3252,20 @@ function! <SID>explore_directory()
   silent! exe "e " . path
 endfunction
 
+function! <SID>ensure_path(file)
+  let directory = fnamemodify(a:file, ":.:h")
+
+  if !isdirectory(directory)
+    if !<SID>confirmed("Directory '" . directory . "' will be created. Continue?")
+      return 0
+    endif
+
+    call mkdir(fnamemodify(directory, ":p"), "p")
+  endif
+
+  return 1
+endfunction
+
 function! <SID>edit_file()
   let nr   = <SID>get_selected_buffer()
   let path = fnamemodify(s:file_mode ? s:files[nr - 1] : resolve(bufname(nr)), ":.:h")
@@ -3262,18 +3276,8 @@ function! <SID>edit_file()
 
   let new_file = <SID>get_input("Edit a new file: ", path . '/', "file")
 
-  if empty(new_file) || isdirectory(new_file)
+  if empty(new_file) || isdirectory(new_file) || !<SID>ensure_path(new_file)
     return
-  endif
-
-  let directory = fnamemodify(new_file, ":.:h")
-
-  if !isdirectory(directory)
-    if !<SID>confirmed("Directory '" . directory . "' will be created. Continue?")
-      return
-    endif
-
-    call mkdir(fnamemodify(directory, ":p"), "p")
   endif
 
   let new_file = fnamemodify(new_file, ":p")
@@ -3294,7 +3298,7 @@ function! <SID>copy_file_or_buffer()
 
   let new_file = <SID>get_input((buffer_only ? "Copy buffer as: " : "Copy file to: "), path, "file")
 
-  if empty(new_file) || isdirectory(new_file)
+  if empty(new_file) || isdirectory(new_file) || !<SID>ensure_path(new_file)
     return
   endif
 
