@@ -115,10 +115,10 @@ command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
-hi def link CtrlSpaceNormal Normal
+hi def link CtrlSpaceNormal   Normal
 hi def link CtrlSpaceSelected Visual
-hi def link CtrlSpaceSearch IncSearch
-hi def link CtrlSpaceStatus StatusLine
+hi def link CtrlSpaceSearch   IncSearch
+hi def link CtrlSpaceStatus   StatusLine
 
 function! <SID>set_default_mapping(key, action)
   let s:default_key = a:key

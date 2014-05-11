@@ -108,7 +108,7 @@ The Demo has been recorded with:
 
         hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
         hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
-        hi CtrlSpaceSearch    ctermfg=220  ctermbg=NONE cterm=bold
+        hi CtrlSpaceSearch   ctermfg=220  ctermbg=NONE cterm=bold
         hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
 
 - music licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
@@ -1096,10 +1096,10 @@ The plugin allows you to define its colors entirely. By default it comes with
 following highlight links:
 
 ```VimL
-hi def link CtrlSpaceNormal Normal
+hi def link CtrlSpaceNormal   Normal
 hi def link CtrlSpaceSelected Visual
-hi def link CtrlSpaceSearch IncSearch
-hi def link CtrlSpaceStatus StatusLine
+hi def link CtrlSpaceSearch   IncSearch
+hi def link CtrlSpaceStatus   StatusLine
 ```
 
 You are supposed to tweak its colors (especially CtrlSpaceSearch) on your own,
