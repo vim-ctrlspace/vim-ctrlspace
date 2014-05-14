@@ -948,7 +948,7 @@ function! <SID>load_workspace_externally(bang, name)
     endif
 
     for fname in readable_files
-      call add(commands, "e " . fname)
+      call add(commands, "e " . fnameescape(fname))
       " jump to the last edited line
       call add(commands, "if line(\"'\\\"\") > 0 | " .
             \ "if line(\"'\\\"\") <= line('$') | " .
@@ -958,7 +958,7 @@ function! <SID>load_workspace_externally(bang, name)
     endfor
 
     if !empty(visible_files)
-      call add(commands, "e " . visible_files[0])
+      call add(commands, "e " . fnameescape(visible_files[0]))
 
       for visible_fname in visible_files[1:-1]
         call add(commands, window_split_command . visible_fname)
@@ -1214,7 +1214,7 @@ endfunction
 
 function! <SID>prepare_buftext_to_display(buflist)
   if has("ruby") && g:ctrlspace_use_ruby_bindings
-    ruby VIM.command("return '#{CtrlSpace.prepare_buftext_to_display(VIM.evaluate('a:buflist'))}'")
+    ruby VIM.command(%Q(return "#{CtrlSpace.prepare_buftext_to_display(VIM.evaluate('a:buflist'))}"))
   else
     let buftext = ""
 
@@ -2892,7 +2892,7 @@ function! <SID>load_many_files()
   call <SID>kill(0, 0)
   call <SID>go_to_start_window()
 
-  exec ":e " . file
+  exec ":e " . fnameescape(file)
   normal! zb
 
   call <SID>ctrlspace_toggle(1)
@@ -2909,7 +2909,7 @@ function! <SID>load_file(...)
     exec ":" . a:1
   endif
 
-  exec ":e " . file
+  exec ":e " . fnameescape(file)
 endfunction
 
 function! <SID>preview_buffer(nr, ...)
@@ -3220,7 +3220,7 @@ function! <SID>rename_file_or_buffer()
 
   for [b, name] in items(buffer_names)
     if name == path
-      let commands = ["f " . new_file]
+      let commands = ["f " . fnameescape(new_file)]
 
       if !buffer_only
         call add(commands, "w!")
@@ -3251,7 +3251,7 @@ function! <SID>explore_directory()
   let path = fnamemodify(path, ":p")
 
   call <SID>kill(0, 1)
-  silent! exe "e " . path
+  silent! exe "e " . fnameescape(path)
 endfunction
 
 function! <SID>ensure_path(file)
@@ -3285,7 +3285,7 @@ function! <SID>edit_file()
   let new_file = fnamemodify(new_file, ":p")
 
   call <SID>kill(0, 1)
-  silent! exe "e " . new_file
+  silent! exe "e " . fnameescape(new_file)
 endfunction
 
 function! <SID>copy_file_or_buffer()
@@ -3307,7 +3307,7 @@ function! <SID>copy_file_or_buffer()
   if buffer_only
     call <SID>preview_buffer(str2nr(nr), ['normal! G""ygg'])
     call <SID>kill(0, 1)
-    silent! exe "e " . new_file
+    silent! exe "e " . fnameescape(new_file)
     silent! exe 'normal! ""pgg"_dd'
   else
     let new_file = fnamemodify(new_file, ":p")
@@ -3320,7 +3320,7 @@ function! <SID>copy_file_or_buffer()
     call <SID>kill(0, 1)
 
     if !s:file_mode
-      silent! exe "e " . new_file
+      silent! exe "e " . fnameescape(new_file)
     endif
   endif
 
