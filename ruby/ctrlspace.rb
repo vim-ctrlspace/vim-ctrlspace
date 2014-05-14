@@ -115,6 +115,7 @@ module CtrlSpace
       buftext << "  #{bufname}\n"
     end
 
-    buftext.gsub('"', '\"')
+    buftext.gsub!('"', '\"')
+    buftext
   end
 end
