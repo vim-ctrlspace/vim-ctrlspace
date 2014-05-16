@@ -994,6 +994,20 @@ directory. Default value:
     [".git/cs_workspaces", ".svn/cs_workspaces", ".hg/cs_workspaces", 
     \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 
+### `g:ctrlspace_files_cache`
+
+This entry provides an array of strings with default names of files cache file.
+If a name is preceded with a directory, and that directory is found in the
+project root, that entry will be used. Otherwise that would be the last one. In
+that way you can hide the cache file, for example, in the repository
+directory. Default value: 
+
+    [".git/cs_files", ".svn/cs_files", ".hg/cs_files", 
+    \ ".bzr/cs_files", "CVS/cs_files", ".cs_files"]
+
+If you want to disable file caching, set this variable to an empty value (like
+`0`).
+
 ### `g:ctrlspace_save_workspace_on_exit`
 
 Saves the active workspace (if present) on Vim quit. If this option is set, the

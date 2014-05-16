@@ -85,6 +85,7 @@ call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
 call <SID>define_config_variable("use_horizontal_splits", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
+
 call <SID>define_config_variable("workspace_file",
       \ [
       \   ".git/cs_workspaces",
@@ -94,6 +95,17 @@ call <SID>define_config_variable("workspace_file",
       \   "CVS/cs_workspaces",
       \   ".cs_workspaces"
       \ ])
+
+call <SID>define_config_variable("files_cache",
+      \ [
+      \   ".git/cs_files",
+      \   ".svn/cs_files",
+      \   ".hg/cs_files",
+      \   ".bzr/cs_files",
+      \   "CVS/cs_files",
+      \   ".cs_files"
+      \ ])
+
 call <SID>define_config_variable("save_workspace_on_exit", 0)
 call <SID>define_config_variable("load_last_workspace_on_start", 0)
 call <SID>define_config_variable("cache_dir", expand($HOME))
@@ -530,14 +542,22 @@ function! <SID>max_height()
   endif
 endfunction
 
-function! <SID>workspace_file()
-  for candidate in g:ctrlspace_workspace_file
+function! <SID>find_file_candidate(candidates)
+  for candidate in a:candidates
     if isdirectory(fnamemodify(candidate, ":h:t"))
       return candidate
     endif
   endfor
 
-  return g:ctrlspace_workspace_file[-1]
+  return a:candidates[-1]
+endfunction
+
+function! <SID>workspace_file()
+  return <SID>find_file_candidate(g:ctrlspace_workspace_file)
+endfunction
+
+function! <SID>files_cache()
+  return empty(g:ctrlspace_files_cache) ? "" : <SID>find_file_candidate(g:ctrlspace_files_cache)
 endfunction
 
 function! <SID>save_first_workspace()
@@ -1288,6 +1308,26 @@ function! <SID>project_root_found()
   return 1
 endfunction
 
+function! <SID>save_files_in_cache()
+  let filename = <SID>files_cache()
+
+  if empty(filename)
+    return
+  endif
+
+  call writefile(s:files, filename)
+endfunction
+
+function! <SID>load_files_from_cache()
+  let filename = <SID>files_cache()
+
+  if empty(filename) || !filereadable(filename)
+    return
+  endif
+
+  let s:files = readfile(filename)
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
@@ -1343,30 +1383,48 @@ function! <SID>ctrlspace_toggle(internal)
 
   if s:file_mode
     if empty(s:files)
-      echo g:ctrlspace_symbols.cs . "  Collecting files..."
 
       let s:all_files_cached = []
 
       let i = 1
 
-      for fname in split(globpath('.', '**'), '\n')
-        let fname_modified = fnamemodify(fname, ":.")
+      " try to pick up files from cache
+      call <SID>load_files_from_cache()
 
-        if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)
-          continue
-        endif
+      if empty(s:files)
+        let action = "Collecting files..."
+        echo g:ctrlspace_symbols.cs . "  " . action
 
-        call add(s:files, fname_modified)
-        call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
+        for fname in split(globpath('.', '**'), '\n')
+          let fname_modified = fnamemodify(fname, ":.")
 
-        let i += 1
-      endfor
+          if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)
+            continue
+          endif
+
+          call add(s:files, fname_modified)
+          call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
+
+          let i += 1
+        endfor
+
+        call <SID>save_files_in_cache()
+      else
+        let action = "Loading files..."
+        echo g:ctrlspace_symbols.cs . "  " . action
+
+        for fname in s:files
+          let fname_modified = fnamemodify(fname, ":.")
+          call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
+          let i += 1
+        endfor
+      endif
 
       call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
-      echo g:ctrlspace_symbols.cs . "  Collecting files... Done (" . len(s:files) . ")."
+      echo g:ctrlspace_symbols.cs . "  " . action . " Done (" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
@@ -3138,6 +3196,7 @@ endfunction
 
 function! <SID>refresh_files()
   let s:files = []
+  call <SID>save_files_in_cache()
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
 endfunction
@@ -3169,6 +3228,8 @@ function! <SID>update_file_list(path, new_path)
   let s:file_mode = 1
   let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
   let s:file_mode = old_files_mode
+
+  call <SID>save_files_in_cache()
 endfunction
 
 function! <SID>remove_file()

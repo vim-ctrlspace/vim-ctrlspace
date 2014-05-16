@@ -57,18 +57,19 @@ Table of Contents                                  *ctrlspace-table-of-contents*
     8.7 g:ctrlspace_use_mouse_and_arrows      |g:ctrlspace_use_mouse_and_arrows|
     8.8 g:ctrlspace_use_horizontal_splits    |g:ctrlspace_use_horizontal_splits|
     8.9 g:ctrlspace_workspace_file                  |g:ctrlspace_workspace_file|
-    8.10 g:ctrlspace_save_workspace_on_exit |g:ctrlspace_save_workspace_on_exit|
-    8.11 g:ctrlspace_load_last_workspace_on_start
+    8.10 g:ctrlspace_files_cache                       |g:ctrlspace_files_cache|
+    8.11 g:ctrlspace_save_workspace_on_exit |g:ctrlspace_save_workspace_on_exit|
+    8.12 g:ctrlspace_load_last_workspace_on_start
                                       |g:ctrlspace_load_last_workspace_on_start|
-    8.12 g:ctrlspace_cache_dir                           |g:ctrlspace_cache_dir|
-    8.13 g:ctrlspace_project_root_markers     |g:ctrlspace_project_root_markers|
-    8.14 g:ctrlspace_unicode_font                     |g:ctrlspace_unicode_font|
-    8.15 g:ctrlspace_symbols                               |g:ctrlspace_symbols|
-    8.16 g:ctrlspace_ignored_files                   |g:ctrlspace_ignored_files|
-    8.17 g:ctrlspace_statusline_function       |g:ctrlspace_statusline_function|
-    8.18 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
-    8.19 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
-    8.20 Colors                                               |ctrlspace-colors|
+    8.13 g:ctrlspace_cache_dir                           |g:ctrlspace_cache_dir|
+    8.14 g:ctrlspace_project_root_markers     |g:ctrlspace_project_root_markers|
+    8.15 g:ctrlspace_unicode_font                     |g:ctrlspace_unicode_font|
+    8.16 g:ctrlspace_symbols                               |g:ctrlspace_symbols|
+    8.17 g:ctrlspace_ignored_files                   |g:ctrlspace_ignored_files|
+    8.18 g:ctrlspace_statusline_function       |g:ctrlspace_statusline_function|
+    8.19 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
+    8.20 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
+    8.21 Colors                                               |ctrlspace-colors|
   9. API                                                         |ctrlspace-api|
     9.1 Commands                                            |ctrlspace-commands|
     9.2 Functions                                          |ctrlspace-functions|
@@ -1075,25 +1076,40 @@ directory. Default value: >
     \ ".bzr/cs_workspaces", "CVS/cs_workspaces", ".cs_workspaces"]
 <
 
-8.10 *g:ctrlspace_save_workspace_on_exit*
+8.10 *g:ctrlspace_files_cache*
+
+This entry provides an array of strings with default names of files cache file.
+If a name is preceded with a directory, and that directory is found in the
+project root, that entry will be used. Otherwise that would be the last one. In
+that way you can hide the cache file, for example, in the repository
+directory. Default value: >
+
+    [".git/cs_files", ".svn/cs_files", ".hg/cs_files",
+    \ ".bzr/cs_files", "CVS/cs_files", ".cs_files"]
+<
+If you want to disable file caching, set this variable to an empty value (like
+`0`).
+
+
+8.11 *g:ctrlspace_save_workspace_on_exit*
 
 Saves the active workspace (if present) on Vim quit. If this option is set,
 the Vim quit (`Q`) action from the plugin modes does not check for workspace
 changes. Default value: `0`.
 
 
-8.11 *g:ctrlspace_load_last_workspace_on_start*
+8.12 *g:ctrlspace_load_last_workspace_on_start*
 
 Loads the last active workspace (if found) on Vim startup. Default value: `0`.
 
 
-8.12 *g:ctrlspace_cache_dir*
+8.13 *g:ctrlspace_cache_dir*
 
 A directory for the Vim-CtrlSpace cache file (`.cs_cache`). By default your
 `$HOME` directory will be used.
 
 
-8.13 *g:ctrlspace_project_root_markers*
+8.14 *g:ctrlspace_project_root_markers*
 
 An array of directory names which presence indicates the project root. If no
 marker is found, you will be asked to confirm the project root basing on the
@@ -1103,12 +1119,12 @@ Default value: >
     [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 
 <
-8.14 *g:ctrlspace_unicode_font*
+8.15 *g:ctrlspace_unicode_font*
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise. Default value: `1`.
 
 
-8.15 *g:ctrlspace_symbols*
+8.16 *g:ctrlspace_symbols*
 
 Enables you to provide your own symbols. It's useful if for example your font
 doesn't contain enough symbols or the glyphs are poorly rendered. Default value: >
@@ -1147,20 +1163,20 @@ Of course, you don't have to mind the |g:ctrlspace_unicode_font| settings
 anymore. Just provide one array here.
 
 
-8.16 *g:ctrlspace_ignored_files*
+8.17 *g:ctrlspace_ignored_files*
 
 The expression used to ignore some files during file collecting. It is used in
 addition to the `wildignore` option in Vim (see `:help wildignore`). Default
 value: `'\v(tmp|temp)[\/]'`
 
 
-8.17 *g:ctrlspace_statusline_function*
+8.18 *g:ctrlspace_statusline_function*
 
 Allows to provide custom statusline function used by the CtrlSpace window.
 Default value: `"ctrlspace#statusline()"`
 
 
-8.18 *g:ctrlspace_search_timing*
+8.19 *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -1170,7 +1186,7 @@ delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50,` `500]`
 
 
-8.19 *g:ctrlspace_search_resonators*
+8.20 *g:ctrlspace_search_resonators*
 
 Allows you to set characters which will be used to increase search accurancy. If
 such "resonator" is found next to the searched sequence, it increases the search
@@ -1184,7 +1200,7 @@ this behavior completely by providing an empty array. Default value: >
     `['.', '/', '\', '_', '-']`
 
 <
-8.20 Colors                                                   *ctrlspace-colors*
+8.21 Colors                                                   *ctrlspace-colors*
 
 The plugin allows you to define its colors entirely. By default it comes with
 following highlight links: >
