@@ -1400,8 +1400,6 @@ function! <SID>ctrlspace_toggle(internal)
 
       let s:all_files_cached = []
 
-      let i = 1
-
       " try to pick up files from cache
       call <SID>load_files_from_cache()
 
@@ -1417,21 +1415,16 @@ function! <SID>ctrlspace_toggle(internal)
           endif
 
           call add(s:files, fname_modified)
-
-          if g:ctrlspace_max_files && (i < g:ctrlspace_max_files)
-            call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
-          endif
-
-          let i += 1
         endfor
 
         call <SID>save_files_in_cache()
       else
         let action = "Loading files..."
         echo g:ctrlspace_symbols.cs . "  " . action
-        let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
-              \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
       endif
+
+      let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
+            \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
 
       call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
