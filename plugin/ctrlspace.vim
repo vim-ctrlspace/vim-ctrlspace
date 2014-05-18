@@ -1485,7 +1485,7 @@ function! <SID>ctrlspace_toggle(internal)
         if search_noise == -1
           continue
         elseif !empty(s:search_letters)
-          if max_results == 0
+          if !max_results
             let displayedbufs += 1
             call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
             call add(patterns, b:last_search_pattern)
