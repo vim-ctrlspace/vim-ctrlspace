@@ -1083,6 +1083,22 @@ value: `'\v(tmp|temp)[\/]'`
 Allows to provide custom statusline function used by the CtrlSpace window. 
 Default value: `"ctrlspace#statusline()"`
 
+### `g:ctrlspace_max_files`
+
+This value specifies how many files will be shown in the plugin window. By
+default the limit is set to `500`. Usually there is no reason to show more,
+since browsing such big list is rather unconvenient. However, if you want to
+disable this feature, set this variable to `0`. Default value: `500`.
+
+### `g:ctrlspace_max_search_results`
+
+Limits the search results. Usually, and especially in large projects, showing
+all results is meaningless. It leads to higher time/memory consumption whereas
+the distant results are rather less relevant. By default the results list is
+limited to the max plugin window height (value `-1`). You can also provide
+a fixed value here, or turn off this feature by providing `0`. Default value:
+`-1`.
+
 ### `g:ctrlspace_search_timing`
 
 Allows you to adjust search smoothness. Contains an array of two integer values.

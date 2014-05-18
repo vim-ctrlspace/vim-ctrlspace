@@ -27,9 +27,7 @@ module CtrlSpace
     noise             = -1
     matched_string    = ""
 
-    if search_letters.count == 0
-      return 0
-    elsif search_letters.count == 1
+    if search_letters.count == 1
       noise          = bufname.index(/#{search_letters[0]}/i) || -1
       matched_string = search_letters[0]
     else
@@ -57,7 +55,7 @@ module CtrlSpace
     end
 
     if noise > -1 && !matched_string.empty?
-      VIM.command("let b:search_patterns['#{matched_string}'] = 1")
+      VIM.command("let b:last_search_pattern = '#{matched_string}'")
     end
 
     noise

@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3      Last change: 2014-04-17
+*ctrlspace.txt*                 For Vim version 7.3      Last change: 2014-05-18
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.0.0~
+                               Vim-CtrlSpace 4.0.1~
 
                             Vim Workspace Controller
 
@@ -67,9 +67,11 @@ Table of Contents                                  *ctrlspace-table-of-contents*
     8.16 g:ctrlspace_symbols                               |g:ctrlspace_symbols|
     8.17 g:ctrlspace_ignored_files                   |g:ctrlspace_ignored_files|
     8.18 g:ctrlspace_statusline_function       |g:ctrlspace_statusline_function|
-    8.19 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
-    8.20 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
-    8.21 Colors                                               |ctrlspace-colors|
+    8.19 g:ctrlspace_max_files                           |g:ctrlspace_max_files|
+    8.20 g:ctrlspace_max_search_results         |g:ctrlspace_max_search_results|
+    8.21 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
+    8.22 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
+    8.23 Colors                                               |ctrlspace-colors|
   9. API                                                         |ctrlspace-api|
     9.1 Commands                                            |ctrlspace-commands|
     9.2 Functions                                          |ctrlspace-functions|
@@ -1176,7 +1178,24 @@ Allows to provide custom statusline function used by the CtrlSpace window.
 Default value: `"ctrlspace#statusline()"`
 
 
-8.19 *g:ctrlspace_search_timing*
+8.19 *g:ctrlspace_max_files*
+
+This value specifies how many files will be shown in the plugin window. By
+default the limit is set to `500`. Usually there is no reason to show more,
+since browsing such big list is rather unconvenient. However, if you want to
+disable this feature, set this variable to `0`. Default value: `500`.
+
+
+8.20 *g:ctrlspace_max_search_results*
+
+Limits the search results. Usually, and especially in large projects, showing
+all results is meaningless. It leads to higher time/memory consumption whereas
+the distant results are rather less relevant. By default the results list is
+limited to the max plugin window height (value `-1`). You can also provide
+a fixed value here, or turn off this feature by providing `0`. Default value: `-1`.
+
+
+8.21 *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -1186,7 +1205,7 @@ delay will equal the list size. That way the plugin ensures smooth search
 input behavior. Default value: `[50,` `500]`
 
 
-8.20 *g:ctrlspace_search_resonators*
+8.22 *g:ctrlspace_search_resonators*
 
 Allows you to set characters which will be used to increase search accurancy. If
 such "resonator" is found next to the searched sequence, it increases the search
@@ -1200,7 +1219,7 @@ this behavior completely by providing an empty array. Default value: >
     `['.', '/', '\', '_', '-']`
 
 <
-8.21 Colors                                                   *ctrlspace-colors*
+8.23 Colors                                                   *ctrlspace-colors*
 
 The plugin allows you to define its colors entirely. By default it comes with
 following highlight links: >
