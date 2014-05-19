@@ -1531,12 +1531,14 @@ function! <SID>ctrlspace_toggle(internal)
   endif
 
   " adjust search timing
-  if displayedbufs < g:ctrlspace_search_timing[0]
+  let search_timing_reference = s:file_mode ? len(s:files) : len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
+
+  if search_timing_reference < g:ctrlspace_search_timing[0]
     let search_timing = g:ctrlspace_search_timing[0]
-  elseif displayedbufs > g:ctrlspace_search_timing[1]
+  elseif search_timing_reference > g:ctrlspace_search_timing[1]
     let search_timing = g:ctrlspace_search_timing[1]
   else
-    let search_timing = displayedbufs
+    let search_timing = search_timing_reference
   endif
 
   silent! exe "set updatetime=" . search_timing
