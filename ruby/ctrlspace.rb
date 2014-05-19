@@ -61,6 +61,50 @@ module CtrlSpace
     noise
   end
 
+  def self.get_file_search_results(max_results)
+    results        = []
+    patterns       = []
+    noises         = []
+    found          = 0
+
+    files          = VIM.evaluate("s:files")
+    search_letters = VIM.evaluate("s:search_letters")
+
+    files.each.with_index do |name, index|
+      bufname = (RUBY_VERSION.to_f < 1.9) ? name.to_s : name.to_s.force_encoding("UTF-8")
+      search_noise = search_letters.empty? ? 0 : find_lowest_search_noise(bufname)
+      i = index + 1
+
+      if search_noise == -1
+        next
+      elsif max_results.zero?
+        found += 1
+        results  << "{ 'number': #{i}, 'raw': '#{bufname}', 'search_noise': #{search_noise} }"
+        patterns << VIM.evaluate("b:last_search_pattern")
+      elsif found < max_results
+        found += 1
+        results  << "{ 'number': #{i}, 'raw': '#{bufname}', 'search_noise': #{search_noise} }"
+        patterns << VIM.evaluate("b:last_search_pattern")
+        noises   << search_noise
+      else
+        max_index = noises.index(noises.max)
+        if noises[max_index] > search_noise
+          results[max_index]  = "{ 'number': #{i}, 'raw': '#{bufname}', 'search_noise': #{search_noise} }"
+          patterns[max_index] = VIM.evaluate("b:last_search_pattern")
+          noises[max_index]   = search_noise
+        end
+      end
+    end
+
+    if results.size > 0
+      VIM.command("let b:file_search_results = [#{results.join(",")}]")
+      VIM.command("let b:file_search_patterns = ['#{patterns.join("','")}']")
+    else
+      VIM.command("let b:file_search_results = []")
+      VIM.command("let b:file_search_patterns = []")
+    end
+  end
+
   def self.prepare_buftext_to_display(buflist)
     columns                 = VIM.evaluate("&columns")
     unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0

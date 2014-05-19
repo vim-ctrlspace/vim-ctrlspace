@@ -1444,8 +1444,16 @@ function! <SID>ctrlspace_toggle(internal)
     let bufcount = tabpagenr("$")
   endif
 
-  if s:file_mode && empty(s:search_letters)
-    let buflist = s:all_files_cached
+  if (s:file_mode && empty(s:search_letters)) || (s:file_mode && g:ctrlspace_use_ruby_bindings && has("ruby"))
+    if empty(s:search_letters)
+      let buflist = s:all_files_cached
+    else
+      ruby CtrlSpace.get_file_search_results(VIM.evaluate("max_results"))
+
+      let buflist = b:file_search_results
+      let patterns = b:file_search_patterns
+    endif
+
     let displayedbufs = len(buflist)
   else
     for i in range(1, bufcount)
