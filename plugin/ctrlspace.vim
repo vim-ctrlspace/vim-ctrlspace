@@ -117,7 +117,7 @@ call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
 call <SID>define_config_variable("max_files", 500)
-call <SID>define_config_variable("max_search_results", -1)
+call <SID>define_config_variable("max_search_results", 200)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 

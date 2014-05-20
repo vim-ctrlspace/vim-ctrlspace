@@ -1094,10 +1094,10 @@ disable this feature, set this variable to `0`. Default value: `500`.
 
 Limits the search results. Usually, and especially in large projects, showing
 all results is meaningless. It leads to higher time/memory consumption whereas
-the distant results are rather less relevant. By default the results list is
-limited to the max plugin window height (value `-1`). You can also provide
-a fixed value here, or turn off this feature by providing `0`. Default value:
-`-1`.
+the far distant results are rather less relevant. By default the results list is
+limited to `200` items. You can also limit results to the max plugin window
+height by providing value `-1` or you can disable this feature completely by
+setting it to `0`. Default value: `200`.
 
 ### `g:ctrlspace_search_timing`
 
