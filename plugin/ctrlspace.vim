@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.0
+" Version:      4.0.1
 "
 " The MIT License (MIT)
 
@@ -116,6 +116,8 @@ call <SID>define_config_variable("project_root_markers", [".git", ".hg", ".svn",
 call <SID>define_config_variable("unicode_font", 1)
 call <SID>define_config_variable("symbols", <SID>define_symbols())
 call <SID>define_config_variable("ignored_files", '\v(tmp|temp)[\/]') " in addition to 'wildignore' option
+call <SID>define_config_variable("max_files", 500)
+call <SID>define_config_variable("max_search_results", 200)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
@@ -1064,9 +1066,7 @@ function! <SID>find_lowest_search_noise(bufname)
     let noise                = -1
     let matched_string       = ""
 
-    if search_letters_count == 0
-      return 0
-    elseif search_letters_count == 1
+    if search_letters_count == 1
       let noise          = match(a:bufname, "\\m\\c" . s:search_letters[0])
       let matched_string = s:search_letters[0]
     else
@@ -1100,17 +1100,22 @@ function! <SID>find_lowest_search_noise(bufname)
     endif
 
     if (noise > -1) && !empty(matched_string)
-      let b:search_patterns[matched_string] = 1
+      let b:last_search_pattern = matched_string
     endif
 
     return noise
   endif
 endfunction
 
-function! <SID>display_search_patterns()
-  for pattern in keys(b:search_patterns)
-    " escape ~ sign because of E874: (NFA) Could not pop the stack !
-    call matchadd("CtrlSpaceSearch", "\\c" .substitute(pattern, '\~', '\\~', "g"))
+function! <SID>display_search_patterns(patterns)
+  let set_patterns = {}
+
+  for pattern in a:patterns
+    if !get(set_patterns, pattern)
+      " escape ~ sign because of E874: (NFA) Could not pop the stack !
+      call matchadd("CtrlSpaceSearch", "\\c" .substitute(pattern, '\~', '\\~', "g"))
+      let set_patterns[pattern] = 1
+    endif
   endfor
 endfunction
 
@@ -1374,6 +1379,12 @@ function! <SID>ctrlspace_toggle(internal)
   let activebuf     = bufnr('')
   let buflist       = []
 
+  let max_results   = g:ctrlspace_max_search_results
+
+  if max_results == -1
+    let max_results = <SID>max_height()
+  endif
+
   " create the buffer first & set it up
   silent! exe "noautocmd botright pedit __CS__"
   silent! exe "noautocmd wincmd P"
@@ -1381,12 +1392,13 @@ function! <SID>ctrlspace_toggle(internal)
 
   call <SID>set_up_buffer()
 
+  let noises   = []
+  let patterns = []
+
   if s:file_mode
     if empty(s:files)
 
       let s:all_files_cached = []
-
-      let i = 1
 
       " try to pick up files from cache
       call <SID>load_files_from_cache()
@@ -1403,28 +1415,22 @@ function! <SID>ctrlspace_toggle(internal)
           endif
 
           call add(s:files, fname_modified)
-          call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
-
-          let i += 1
         endfor
 
         call <SID>save_files_in_cache()
       else
         let action = "Loading files..."
         echo g:ctrlspace_symbols.cs . "  " . action
-
-        for fname in s:files
-          let fname_modified = fnamemodify(fname, ":.")
-          call add(s:all_files_cached, { "number": i, "raw": fname_modified, "search_noise": 0 })
-          let i += 1
-        endfor
       endif
+
+      let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
+            \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
 
       call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
-      echo g:ctrlspace_symbols.cs . "  " . action . " Done (" . len(s:files) . ")."
+      echo g:ctrlspace_symbols.cs . "  " . action . " Done (" . len(s:all_files_cached). "/" . len(s:files) . ")."
     endif
 
     let bufcount = len(s:files)
@@ -1438,8 +1444,16 @@ function! <SID>ctrlspace_toggle(internal)
     let bufcount = tabpagenr("$")
   endif
 
-  if s:file_mode && empty(s:search_letters)
-    let buflist = s:all_files_cached
+  if (s:file_mode && empty(s:search_letters)) || (s:file_mode && g:ctrlspace_use_ruby_bindings && has("ruby"))
+    if empty(s:search_letters)
+      let buflist = s:all_files_cached
+    else
+      ruby CtrlSpace.get_file_search_results(VIM.evaluate("max_results"))
+
+      let buflist = b:file_search_results
+      let patterns = b:file_search_patterns
+    endif
+
     let displayedbufs = len(buflist)
   else
     for i in range(1, bufcount)
@@ -1470,16 +1484,39 @@ function! <SID>ctrlspace_toggle(internal)
 
       if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode ||
             \ (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-        let search_noise = (s:workspace_mode || s:tablist_mode) ? 0 : <SID>find_lowest_search_noise(bufname)
+        if s:workspace_mode || s:tablist_mode || empty(s:search_letters)
+          let search_noise = 0
+        else
+          let search_noise = <SID>find_lowest_search_noise(bufname)
+        endif
 
         if search_noise == -1
           continue
+        elseif !empty(s:search_letters)
+          if !max_results
+            let displayedbufs += 1
+            call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
+            call add(patterns, b:last_search_pattern)
+          elseif displayedbufs < max_results
+            let displayedbufs += 1
+            call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
+            call add(noises, search_noise)
+            call add(patterns, b:last_search_pattern)
+          else
+            let max_index = index(noises, max(noises))
+            if noises[max_index] > search_noise
+              call remove(noises, max_index)
+              call insert(noises, search_noise, max_index)
+              call remove(patterns, max_index)
+              call insert(patterns, b:last_search_pattern, max_index)
+              call remove(buflist, max_index)
+              call insert(buflist, { "number": i, "raw": bufname, "search_noise": search_noise }, max_index)
+            endif
+          endif
+        else
+          let displayedbufs += 1
+          call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
         endif
-
-        " count displayed buffers
-        let displayedbufs += 1
-
-        call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
       endif
     endfor
   endif
@@ -1494,12 +1531,14 @@ function! <SID>ctrlspace_toggle(internal)
   endif
 
   " adjust search timing
-  if displayedbufs < g:ctrlspace_search_timing[0]
+  let search_timing_reference = s:file_mode ? len(s:files) : len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
+
+  if search_timing_reference < g:ctrlspace_search_timing[0]
     let search_timing = g:ctrlspace_search_timing[0]
-  elseif displayedbufs > g:ctrlspace_search_timing[1]
+  elseif search_timing_reference > g:ctrlspace_search_timing[1]
     let search_timing = g:ctrlspace_search_timing[1]
   else
-    let search_timing = displayedbufs
+    let search_timing = search_timing_reference
   endif
 
   silent! exe "set updatetime=" . search_timing
@@ -1508,7 +1547,7 @@ function! <SID>ctrlspace_toggle(internal)
   call <SID>set_statusline()
 
   if !empty(s:search_letters)
-    call <SID>display_search_patterns()
+    call <SID>display_search_patterns(patterns)
   endif
 
   if s:workspace_mode
@@ -2637,7 +2676,6 @@ function! <SID>display_list(displayedbufs, buflist)
 
       " trim the list in search mode
       let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
-
       let buftext = <SID>prepare_buftext_to_display(buflist)
     endif
 
@@ -3220,7 +3258,8 @@ function! <SID>update_file_list(path, new_path)
     call add(s:files, new_path)
   endif
 
-  let s:all_files_cached = map(copy(s:files), '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
+  let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
+        \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
   call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
 
   let old_files_mode = s:file_mode
