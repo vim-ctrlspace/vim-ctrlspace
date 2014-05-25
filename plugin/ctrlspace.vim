@@ -1725,6 +1725,11 @@ function! <SID>kill(buflistnr, final)
     silent! exe "set timeoutlen=" . b:old_timeoutlen
   endif
 
+  " shellslash support for win32
+  if exists("b:old_nossl") && b:old_nossl
+    set nossl
+  endif
+
   if a:buflistnr
     silent! exe ':' . a:buflistnr . 'bwipeout'
   else
@@ -2575,6 +2580,12 @@ function! <SID>set_up_buffer()
   endif
 
   let b:old_updatetime = &updatetime
+
+  " shellslash support for win32
+  if has("win32") && !&ssl
+    let b:old_nossl = 1
+    set ssl
+  endif
 
   augroup CtrlSpaceUpdateSearch
     au!
