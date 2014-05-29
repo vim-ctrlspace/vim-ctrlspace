@@ -820,14 +820,16 @@ entirely and stick to that list only via Vim's `showtabline` option.
 
 | Key | Action                                              |
 | --- | --------------------------------------------------- |
-| `-` | Move the current tab backward (decrease its number) |
-| `+` | Move the selected tab forward (increase its number) |
-| `=` | Change the selected tab name                        |
-| `_` | Remove the selected tab name                        |
-| `[` | Go to the previous tab                              |
-| `]` | Go to the next tab                                  |
-| `t` | Create a new tab nexto to the current one           |
-| `y` | Make a copy of the current tab                      |
+| `-`   | Move the current tab backward (decrease its number) |
+| `+`   | Move the selected tab forward (increase its number) |
+| `{`   | Same as `-`                                           |
+| `}`   | Same as `+`                                           |
+| `=`   | Change the selected tab name                        |
+| `_`   | Remove the selected tab name                        |
+| `[`   | Go to the previous tab                              |
+| `]`   | Go to the next tab                                  |
+| `t`   | Create a new tab nexto to the current one           |
+| `y`   | Make a copy of the current tab                      |
 
 
 6.3.4 Moving~

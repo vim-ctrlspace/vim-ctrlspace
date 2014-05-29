@@ -764,6 +764,8 @@ entirely and stick to that list only via Vim's `showtabline` option.
 |:---:| --------------------------------------------------- |
 | `-` | Move the current tab backward (decrease its number) |
 | `+` | Move the selected tab forward (increase its number) |
+| `{` | Same as `-`                                         |
+| `}` | Same as `+`                                         |
 | `=` | Change the selected tab name                        |
 | `_` | Remove the selected tab name                        |
 | `[` | Go to the previous tab                              |

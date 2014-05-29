@@ -2109,7 +2109,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       call <SID>ctrlspace_toggle(1)
       redraw!
-    elseif a:key ==# "+"
+    elseif (a:key ==# "+") || (a:key ==# "}")
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
@@ -2118,7 +2118,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
-    elseif a:key ==# "-"
+    elseif (a:key ==# "-") || (a:key ==# "{")
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
