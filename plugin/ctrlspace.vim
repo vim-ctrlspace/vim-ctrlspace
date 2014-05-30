@@ -576,6 +576,12 @@ function! <SID>save_first_workspace()
 endfunction
 
 function! <SID>create_workspace_digest()
+  let use_nossl = exists("b:old_nossl") && b:old_nossl
+
+  if use_nossl
+    set nossl
+  endif
+
   let lines = []
 
   for t in range(1, tabpagenr("$"))
@@ -591,9 +597,14 @@ function! <SID>create_workspace_digest()
 
       call add(bufs, bufname)
     endfor
+
     call add(line, join(bufs, "|"))
     call add(lines, join(line, ","))
   endfor
+
+  if use_nossl
+    set ssl
+  endif
 
   return join(lines, "&&&")
 endfunction
