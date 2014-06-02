@@ -849,11 +849,7 @@ function! <SID>load_last_active_workspace()
 endfunction
 
 function! <SID>new_workspace()
-  let initial_msg = empty(s:active_workspace_name)
-        \ ? "Do you want to close all buffers and tabs and create a fresh workspace?"
-        \ : "Do you want to close the currently opened workspace and create a fresh one?"
-
-  if !<SID>confirmed(initial_msg)
+  if !<SID>confirmed("Create a new workspace?")
     return
   endif
 
