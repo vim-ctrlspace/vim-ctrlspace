@@ -855,6 +855,7 @@ startup and save it active workspace on Vim exit. See
 | `s`  | Toggle the mode from Load or Save (or backward) |
 | `S`  | Save the workspace immediately                  |
 | `L`  | Load the last active workspace (if present)     |
+| `n`  | Makes a new workspace (closes all buffers)      |
 | `d`  | Delete the selected workspace                   |
 
 #### Moving
@@ -1154,9 +1155,10 @@ helpful.
 
 ### Commands
 
-At the moment **Vim-CtrlSpace** provides you 5 commands: `:CtrlSpace`,
-`:CtrlSpaceTabLabel`, `:CtrlSpaceClearTabLabel`, `:CtrlSpaceSaveWorkspace`, and
-`:CtrlSpaceLoadWorkspace`.
+At the moment Vim-CtrlSpace provides you 8 commands: `:CtrlSpace`,
+`:CtrlSpaceGoNext`, `:CtrlSpaceGoPrevious`, `:CtrlSpaceTabLabel`,
+`:CtrlSpaceClearTabLabel`, `:CtrlSpaceSaveWorkspace`, `:CtrlSpaceLoadWorkspace`,
+`:CtrlSpaceNewWorkspace`.
 
 #### `:CtrlSpace`
 
@@ -1193,6 +1195,12 @@ Loads the workspace with the given name. It has also a banged version
 (`:CtrlSpaceLoadWorkspace! my workspace`) which performs appending instead of
 loading. If no name is give then it loads (or appends) the active workspace (if
 present).
+
+#### `:CtrlSpaceNewWorkspace`
+
+Closes all opened buffers and eventually opened workspace and leaves only one
+tab and one buffer, as in a fresh Vim instance. This is useful if you want to
+start creating a workspace from the very beginning.
 
 ### Functions
 

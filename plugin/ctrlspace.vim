@@ -127,6 +127,7 @@ command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previou
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
 command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
+command! -nargs=0 -range CtrlSpaceNewWorkspace :call <SID>new_workspace_externally()
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
 
 hi def link CtrlSpaceNormal   Normal
@@ -845,6 +846,36 @@ function! <SID>load_last_active_workspace()
   if !empty(last_active_workspace)
     call <SID>load_workspace(0, last_active_workspace)
   endif
+endfunction
+
+function! <SID>new_workspace()
+  if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
+        \ && !<SID>confirmed("Current workspace not saved. Proceed anyway?")
+    return
+  endif
+
+  " check for modified buffers
+  for t in range(1, tabpagenr("$"))
+    if ctrlspace#tab_modified(t)
+      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
+        return
+      else
+        break
+      endif
+    endif
+  endfor
+
+  call <SID>kill(0, 1)
+  call <SID>new_workspace_externally()
+endfunction
+
+function! <SID>new_workspace_externally()
+  tabe
+  tabo!
+  call <SID>delete_hidden_noname_buffers(1)
+  call <SID>delete_foreign_buffers(1)
+  let s:active_workspace_name   = ""
+  let s:active_workspace_digest = ""
 endfunction
 
 function! <SID>load_workspace(bang, name)
@@ -1897,6 +1928,8 @@ function! <SID>keypressed(key)
       call <SID>quit_vim()
     elseif a:key ==# "a"
       call <SID>load_workspace(1, <SID>get_selected_workspace_name())
+    elseif a:key ==# "n"
+      call <SID>new_workspace()
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -1969,6 +2002,8 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
+    elseif a:key ==# "n"
+      call <SID>new_workspace()
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
