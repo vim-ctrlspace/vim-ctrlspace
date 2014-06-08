@@ -221,7 +221,9 @@ function! <SID>init_key_names()
 
   if exists("s:default_key")
     for i in range(0, len(s:key_names) - 1)
-      if ("<" . s:key_names[i] . ">") ==# s:default_key
+      let full_key_name = (strlen(s:key_names[i]) > 1) ? ("<" . s:key_names[i] . ">") : s:key_names[i]
+
+      if full_key_name ==# s:default_key
         call remove(s:key_names, i)
         break
       endif
