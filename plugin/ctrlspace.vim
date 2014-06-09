@@ -138,7 +138,7 @@ hi def link CtrlSpaceStatus   StatusLine
 function! <SID>set_default_mapping(key, action)
   let s:default_key = a:key
   if !empty(s:default_key)
-    if s:default_key ==? "<C-Space>" && !has("gui_running")
+    if s:default_key ==? "<C-Space>" && !has("gui_running") && !has("win32")
       let s:default_key = "<Nul>"
     endif
 
