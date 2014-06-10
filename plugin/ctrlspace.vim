@@ -2461,6 +2461,11 @@ function! <SID>keypressed(key)
       call <SID>move("half_pgup")
     elseif a:key ==# "a"
       call <SID>toggle_single_mode()
+    elseif a:key ==# "A"
+      if s:single_mode
+        call <SID>toggle_single_mode()
+      endif
+      call <SID>switch_search_mode(1)
     elseif a:key ==# "f" && s:single_mode
       call <SID>detach_buffer()
     elseif a:key ==# "F"
@@ -2508,10 +2513,10 @@ function! <SID>keypressed(key)
     elseif a:key ==# "O"
       call <SID>toggle_file_mode()
       call <SID>switch_search_mode(1)
-      elseif a:key ==# "g"
-        call <SID>goto_buffer_or_file("next")
-      elseif a:key ==# "G"
-        call <SID>goto_buffer_or_file("previous")
+    elseif a:key ==# "g"
+      call <SID>goto_buffer_or_file("next")
+    elseif a:key ==# "G"
+      call <SID>goto_buffer_or_file("previous")
     endif
   endif
 endfunction

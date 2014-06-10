@@ -563,6 +563,7 @@ all available keys:
 | Key  | Action                                                             |
 |:----:| ------------------------------------------------------------------ |
 | `a`  | Toggle between Single and All modes                                |
+| `A`  | Enter the Search Mode combined with the All mode                   |
 | `o`  | Toggle the File List (Open List)                                   |
 | `O`  | Enter the Search Mode in the File List                             |
 | `l`  | Toggle the Tab List view                                           |
