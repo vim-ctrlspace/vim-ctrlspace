@@ -241,7 +241,7 @@ au BufEnter * call <SID>add_jump()
 au TabEnter * let s:jump_counter += 1 | let t:ctrlspace_tablist_jump_counter = s:jump_counter
 
 if g:ctrlspace_save_workspace_on_exit
-  au VimLeavePre * CtrlSpaceSaveWorkspace
+  au VimLeavePre * if !empty(s:active_workspace_name) | call <SID>save_workspace_externally("") | endif
 endif
 
 if g:ctrlspace_load_last_workspace_on_start
