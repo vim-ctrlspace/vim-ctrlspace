@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.1
+" Version:      4.0.2
 "
 " The MIT License (MIT)
 
@@ -1413,6 +1413,7 @@ function! <SID>ctrlspace_toggle(internal)
       if !a:internal
         let t:ctrlspace_start_window = winnr()
         let t:ctrlspace_winrestcmd = winrestcmd()
+        let t:ctrlspace_activebuf = bufnr("")
       endif
     endif
   elseif !a:internal
@@ -1420,11 +1421,11 @@ function! <SID>ctrlspace_toggle(internal)
     silent! exe "pclose"
     let t:ctrlspace_start_window = winnr()
     let t:ctrlspace_winrestcmd = winrestcmd()
+    let t:ctrlspace_activebuf = bufnr("")
   endif
 
-  let bufcount      = bufnr('$')
+  let bufcount      = bufnr("$")
   let displayedbufs = 0
-  let activebuf     = bufnr('')
   let buflist       = []
 
   let max_results   = g:ctrlspace_max_search_results
@@ -1620,7 +1621,7 @@ function! <SID>ctrlspace_toggle(internal)
   elseif s:tablist_mode
     let activebufline = tabpagenr()
   else
-    let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(activebuf, buflist)
+    let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(t:ctrlspace_activebuf, buflist)
   endif
 
   " make the buffer count & the buffer numbers available
