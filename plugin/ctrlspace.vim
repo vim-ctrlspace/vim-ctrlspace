@@ -1294,16 +1294,9 @@ function! <SID>prepare_buftext_to_display(buflist)
     for entry in a:buflist
       let bufname = entry.raw
 
-      if strlen(bufname) + 7 > &columns
-        if g:ctrlspace_unicode_font
-          let dots_symbol = "…"
-          let dots_symbol_size = 1
-        else
-          let dots_symbol = "..."
-          let dots_symbol_size = 3
-        endif
-
-        let bufname = dots_symbol . strpart(bufname, strlen(bufname) - &columns + 7 + dots_symbol_size)
+      if strwidth(bufname) + 7 > &columns
+        let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
+        let bufname = dots_symbol . strpart(bufname, strwidth(bufname) - &columns + 7 + strwidth(dots_symbol))
       endif
 
       if !s:file_mode && !s:workspace_mode && !s:tablist_mode
@@ -1334,14 +1327,9 @@ function! <SID>prepare_buftext_to_display(buflist)
         endif
       endif
 
-      while strlen(bufname) < &columns
+      while strwidth(bufname) < &columns
         let bufname .= " "
       endwhile
-
-      " handle wrong strlen for unicode dots symbol
-      if g:ctrlspace_unicode_font && bufname =~ "…"
-        let bufname .= "  "
-      endif
 
       let buftext .= "  " . bufname . "\n"
     endfor
@@ -2760,26 +2748,14 @@ function! <SID>display_list(displayedbufs, buflist)
   else
     let empty_list_message = "  List empty"
 
-    if &columns < (strlen(empty_list_message) + 2)
-      if g:ctrlspace_unicode_font
-        let dots_symbol = "…"
-        let dots_symbol_size = 1
-      else
-        let dots_symbol = "..."
-        let dots_symbol_size = 3
-      endif
-
-      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - dots_symbol_size) . dots_symbol
+    if &columns < (strwidth(empty_list_message) + 2)
+      let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
+      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - strwidth(dots_symbol)) . dots_symbol
     endif
 
-    while strlen(empty_list_message) < &columns
+    while strwidth(empty_list_message) < &columns
       let empty_list_message .= ' '
     endwhile
-
-    " handle wrong strlen for unicode dots symbol
-    if g:ctrlspace_unicode_font && empty_list_message =~ "…"
-      let empty_list_message .= "  "
-    endif
 
     silent! put! =empty_list_message
     normal! GkJ
