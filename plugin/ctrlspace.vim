@@ -1529,7 +1529,7 @@ function! <SID>ctrlspace_toggle(internal)
 
         if search_noise == -1
           continue
-        elseif !empty(s:search_letters)
+        elseif !empty(s:search_letters) && !s:workspace_mode && !s:tablist_mode
           if !max_results
             let displayedbufs += 1
             call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
