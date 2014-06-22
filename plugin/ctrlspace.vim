@@ -215,7 +215,7 @@ function! <SID>init_key_names()
     let special_chars .= " Esc"
   endif
 
-  let special_chars .= has("gui_running") ? " C-Space" : " Nul"
+  let special_chars .= (has("gui_running") || has("win32")) ? " C-Space" : " Nul"
 
   let s:key_names = split(join([lowercase_letters, uppercase_letters, control_letters, numbers, special_chars], " "), " ")
 
@@ -1872,8 +1872,7 @@ function! <SID>keypressed(key)
         let s:tablist_mode   = 1
         let s:workspace_mode = 0
         call <SID>ctrlspace_toggle(1)
-      elseif a:key ==# "w"
-      elseif (a:key ==# "q") || (a:key ==# "Esc")
+      elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
         call <SID>kill(0, 1)
       elseif a:key ==# "Q"
         call <SID>quit_vim()
@@ -1894,7 +1893,7 @@ function! <SID>keypressed(key)
       elseif !empty(s:search_letters)
         call <SID>clear_search_mode()
       endif
-    elseif a:key ==# "Esc"
+    elseif (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     endif
     return
@@ -1911,13 +1910,13 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(0)
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
-    elseif a:key ==# "Esc"
+    elseif (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     endif
   elseif s:workspace_mode == 1
     if a:key ==# "CR"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
-    elseif (a:key ==# "q") || (a:key ==# "Esc")
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -1993,7 +1992,7 @@ function! <SID>keypressed(key)
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif (a:key ==# "q") || (a:key ==# "Esc")
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -2172,7 +2171,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
       call <SID>ctrlspace_toggle(1)
-    elseif (a:key ==# "q") || (a:key ==# "Esc")
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -2273,7 +2272,7 @@ function! <SID>keypressed(key)
       call <SID>tab_command(a:key)
     elseif a:key ==# "r"
       call <SID>refresh_files()
-    elseif (a:key ==# "q") || (a:key ==# "Esc")
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
@@ -2404,7 +2403,7 @@ function! <SID>keypressed(key)
       if current_tab < tabpagenr("$")
         call <SID>copy_or_move_selected_buffer_into_tab(current_tab + 1, a:key ==# "}")
       endif
-    elseif (a:key ==# "q") || (a:key ==# "Esc")
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()

@@ -558,6 +558,7 @@ all available keys:
 | ------------ | ----------------------------------------------- |
 | `Backspace`    | Go back                                         |
 | `q`            | Close the list                                  |
+| `Ctrl` `+` `c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on plugin settings   |
 | `Ctrl` `+` `Space` | Close the list - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
@@ -698,6 +699,7 @@ list with the `r` key.
 | `Backspace`    | Go back to Buffer List                          |
 | `o`            | Go back to Buffer List                          |
 | `q`            | Close the list                                  |
+| `Ctrl` `+` `c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on plugin settings   |
 | `Ctrl` `+` `Space` | Close the list - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
@@ -812,6 +814,7 @@ entirely and stick to that list only via Vim's `showtabline` option.
 | `o`            | Go to the File List view                        |
 | `O`            | Go to the File List view in the Search Mode     |
 | `q`            | Close the list                                  |
+| `Ctrl` `+` `c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on plugin settings   |
 | `Ctrl` `+` `Space` | Close the list - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
@@ -906,6 +909,7 @@ startup and save it active workspace on Vim exit. See
 | `O`            | Go to the File List in the Search Mode          |
 | `l`            | Go to the Tab List                              |
 | `q`            | Close the list                                  |
+| `Ctrl` `+` `c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on plugin settings   |
 | `Ctrl` `+` `Space` | Close the list - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
@@ -985,6 +989,7 @@ entering phase - there is a great number of resque options available.
 | Key       | Action                                                  |
 | --------- | ------------------------------------------------------- |
 | `Backspace` | Remove the previouse entered character or close         |
+| `Ctrl` `+` `c`  | Close the list                                  |
 | `Esc`       | Close the list - depending on settings                  |
 
 7.2.2 Nop (outside the entering phase)
@@ -993,6 +998,7 @@ entering phase - there is a great number of resque options available.
 | ------------ | ---------------------------------------------------- |
 | `Backspace`    | Delete the search query                              |
 | `q`            | Close the list                                       |
+| `Ctrl` `+` `c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on settings               |
 | `Ctrl` `+` `Space` | Close the list - depending on settings               |
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
