@@ -376,6 +376,30 @@ possible workaround is to use the following snippet instead (thnx dxc!):
 
     autocmd BufEnter, BufNewFile * silent! lcd %:p:h
 
+Another possibility is to use the following snippet (found in the documentation 
+of CtrlP.vim), that automatically switches to the project's root of the current 
+buffer, or to the parent directory of the current file if a root can't be found:
+
+    function! s:setcwd()
+      let cph = expand('%:p:h', 1)
+      if cph =~ '^.\+://' | retu | en
+      for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
+        let wd = call('find'.(mkr =~ '/$' ? 'dir' : 'file'), [mkr, cph.';'])
+        if wd != '' | let &acd = 0 | brea | en
+      endfo
+      exe 'lc!' fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '.', ''))
+    endfunction
+
+    autocmd BufEnter * call s:setcwd()
+
+This works better than the previous snippet when reloading workspaces in 
+CtrlSpace: With the previous snippet, the paths of the reloaded files partially
+double. That is, if the workspace contains `~/root/subdir/foo.c`, then with the
+above snippet, CtrlSpace erroneously reloads `~/root/subdir/subdir/foo.c`. With 
+this snippet, this only occurs if the CtrlSpace project root was set by the 
+user, that is, there are no VCS markers in the CtrlSpace project root (such 
+as a `.git` subdirectory).
+
 If it doesn't work for you, or you need `autochdir` decisively please let me
 know (perhaps via Github issues), and I'll investigate that issue thoroughly.
 
