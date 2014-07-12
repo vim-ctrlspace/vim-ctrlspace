@@ -1671,8 +1671,7 @@ function! <SID>switch_search_mode(switch)
   let s:search_mode = a:switch
   let s:update_search_results = 1
 
-  call <SID>set_statusline()
-  redraws
+  call <SID>update_search_results()
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)
