@@ -321,14 +321,14 @@ endfunction
 
 function! ctrlspace#bufferlist(tabnr)
   let buffer_list     = {}
-  let ctrlspace       = gettabvar(a:tabnr, "ctrlspace_list")
+  let ctrlspace_list  = gettabvar(a:tabnr, "ctrlspace_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
 
-  if type(ctrlspace) != 4
+  if type(ctrlspace_list) != 4
     return buffer_list
   endif
 
-  for i in keys(ctrlspace)
+  for i in keys(ctrlspace_list)
     let i = str2nr(i)
 
     let bufname = bufname(i)
@@ -628,6 +628,8 @@ function <SID>save_workspace_externally(name)
     return
   endif
 
+  call <SID>handle_autochdir("start")
+
   let old_cwd = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
 
@@ -712,6 +714,8 @@ function <SID>save_workspace_externally(name)
   let s:workspace_names         = []
 
   silent! exe "cd " . old_cwd
+
+  call <SID>handle_autochdir("stop")
 
   echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been saved."
 endfunction
@@ -920,6 +924,8 @@ function! <SID>load_workspace_externally(bang, name)
     return
   endif
 
+  call <SID>handle_autochdir("start")
+
   let old_cwd = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
 
@@ -1060,6 +1066,8 @@ function! <SID>load_workspace_externally(bang, name)
   endif
 
   silent! exe "cd " . old_cwd
+
+  call <SID>handle_autochdir("stop")
 endfunction
 
 function! <SID>quit_vim()
@@ -1392,6 +1400,7 @@ function! <SID>ctrlspace_toggle(internal)
 
   " if we get called and the list is open --> close it
   let buflistnr = bufnr("__CS__")
+
   if bufexists(buflistnr)
     if bufwinnr(buflistnr) != -1
       call <SID>kill(buflistnr, 1)
@@ -1402,6 +1411,7 @@ function! <SID>ctrlspace_toggle(internal)
         let t:ctrlspace_start_window = winnr()
         let t:ctrlspace_winrestcmd = winrestcmd()
         let t:ctrlspace_activebuf = bufnr("")
+        call <SID>handle_autochdir("start")
       endif
     endif
   elseif !a:internal
@@ -1410,6 +1420,7 @@ function! <SID>ctrlspace_toggle(internal)
     let t:ctrlspace_start_window = winnr()
     let t:ctrlspace_winrestcmd = winrestcmd()
     let t:ctrlspace_activebuf = bufnr("")
+    call <SID>handle_autochdir("start")
   endif
 
   let bufcount      = bufnr("$")
@@ -1773,6 +1784,8 @@ function! <SID>kill(buflistnr, final)
   endif
 
   if a:final
+    call <SID>handle_autochdir("stop")
+
     if s:restored_search_mode
       call <SID>append_to_search_history()
     endif
@@ -2584,6 +2597,16 @@ function! <SID>find_project_root()
   endif
 
   return project_root
+endfunction
+
+function! <SID>handle_autochdir(switch)
+  if (a:switch == "start") && &acd
+    let s:acd_was_on = 1
+    set noacd
+  elseif (a:switch == "stop") && exists("s:acd_was_on")
+    set acd
+    unlet s:acd_was_on
+  endif
 endfunction
 
 function! <SID>toggle_file_mode()
