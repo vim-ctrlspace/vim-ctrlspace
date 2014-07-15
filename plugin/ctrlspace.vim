@@ -121,7 +121,7 @@ call <SID>define_config_variable("max_search_results", 200)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
-command! -nargs=0 -range CtrlSpace :call <SID>ctrlspace_toggle(0)
+command! -nargs=* -range CtrlSpace :call <SID>start_ctrlspace_and_feedkeys(<q-args>)
 command! -nargs=0 -range CtrlSpaceGoNext :call <SID>go_outside_list("next")
 command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previous")
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
@@ -1375,6 +1375,14 @@ function! <SID>load_files_from_cache()
   endif
 
   let s:files = readfile(filename)
+endfunction
+
+function! <SID>start_ctrlspace_and_feedkeys(keys)
+  call <SID>ctrlspace_toggle(0)
+
+  if !empty(a:keys)
+    call feedkeys(a:keys)
+  endif
 endfunction
 
 " toggled the buffer list on/off

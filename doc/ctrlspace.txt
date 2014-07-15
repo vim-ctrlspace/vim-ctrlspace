@@ -1254,10 +1254,11 @@ At the moment Vim-CtrlSpace provides you 8 commands: `:CtrlSpace`,
 `:CtrlSpaceNewWorkspace`.
 
 
-9.1.1 *:CtrlSpace*
+9.1.1 *:CtrlSpace* `[keys]`
 
 Shows the plugin window. It is meant to be used in custom mappings or more
-sophisticated plugin integration.
+sophisticated plugin integration. You can pass keys that will be "pressed" in the
+plugin window.
 
 
 9.1.2 *:CtrlSpaceGoNext*

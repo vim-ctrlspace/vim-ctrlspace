@@ -1156,10 +1156,11 @@ At the moment Vim-CtrlSpace provides you 8 commands: `:CtrlSpace`,
 `:CtrlSpaceClearTabLabel`, `:CtrlSpaceSaveWorkspace`, `:CtrlSpaceLoadWorkspace`,
 `:CtrlSpaceNewWorkspace`.
 
-#### `:CtrlSpace`
+#### `:CtrlSpace [keys]`
 
 Shows the plugin window. It is meant to be used in custom mappings or more
-sophisticated plugin integration.
+sophisticated plugin integration. You can pass keys that will be "pressed" in the
+plugin window.
 
 #### `:CtrlSpaceGoNext`
 
