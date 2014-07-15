@@ -1054,7 +1054,7 @@ function! <SID>load_workspace_externally(bang, name)
   call add(commands, "redraw!")
 
   for c in commands
-    silent! exe c
+    silent exe c
   endfor
 
   if !a:bang
