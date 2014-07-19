@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.2
+" Version:      4.0.3
 "
 " The MIT License (MIT)
 
@@ -1401,9 +1401,7 @@ function! <SID>ctrlspace_toggle(internal)
     let t:ctrlspace_search_history_index = -1
     let s:search_history_index           = -1
 
-    if !<SID>project_root_found()
-      return
-    endif
+    call <SID>handle_autochdir("start")
   endif
 
   " if we get called and the list is open --> close it
@@ -1419,7 +1417,6 @@ function! <SID>ctrlspace_toggle(internal)
         let t:ctrlspace_start_window = winnr()
         let t:ctrlspace_winrestcmd = winrestcmd()
         let t:ctrlspace_activebuf = bufnr("")
-        call <SID>handle_autochdir("start")
       endif
     endif
   elseif !a:internal
@@ -1428,7 +1425,6 @@ function! <SID>ctrlspace_toggle(internal)
     let t:ctrlspace_start_window = winnr()
     let t:ctrlspace_winrestcmd = winrestcmd()
     let t:ctrlspace_activebuf = bufnr("")
-    call <SID>handle_autochdir("start")
   endif
 
   let bufcount      = bufnr("$")
@@ -2618,6 +2614,10 @@ function! <SID>handle_autochdir(switch)
 endfunction
 
 function! <SID>toggle_file_mode()
+  if !<SID>project_root_found()
+    return
+  endif
+
   let s:file_mode = !s:file_mode
 
   call <SID>kill(0, 0)
