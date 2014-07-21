@@ -172,7 +172,7 @@ function! <SID>init_project_roots_and_favs()
 
       if line =~# "CS_FAVORITE: "
         let parts = split(line[13:], "|CS_###_CS|")
-        call add(s:favorites, { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0] })
+        call add(s:favorites, { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0], "jump_counter": 0 })
       endif
     endfor
   endif
@@ -219,7 +219,7 @@ function! <SID>add_to_favorites(directory, name)
     endif
   endfor
 
-  let favorite = { "name": a:name, "directory": directory }
+  let favorite = { "name": a:name, "directory": directory, "jump_counter": 0 }
 
   call add(s:favorites, favorite)
 
@@ -2509,6 +2509,16 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:favorites_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "p"
+      call <SID>jump("previous")
+    elseif a:key ==# "P"
+      call <SID>jump("previous")
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      call <SID>change_active_favorite(fav_nr)
+      call <SID>ctrlspace_toggle(0)
+    elseif a:key ==# "n"
+      call <SID>jump("next")
     elseif (a:key ==# "BS") || (a:key ==# "h")
       call <SID>kill(0, 0)
       let s:favorites_mode = 0
@@ -2912,6 +2922,8 @@ function! <SID>find_active_favorite()
 
   for favorite in s:favorites
     if favorite.directory == project_root
+      let s:jump_counter += 1
+      let favorite.jump_counter = s:jump_counter
       return favorite
     endif
   endfor
@@ -3274,6 +3286,16 @@ function! <SID>create_tab_jumps()
   endfor
 endfunction
 
+function! <SID>create_fav_jumps()
+  let b:jumplines = []
+  let b:jumplines_len = len(b:buflist)
+
+  for l in range(1, b:jumplines_len)
+    let counter = s:favorites[b:buflist[l - 1].number - 1].jump_counter
+    call add(b:jumplines, { "line": l, "counter": counter })
+  endfor
+endfunction
+
 function! <SID>create_buffer_jumps()
   let b:jumplines = []
   let b:jumplines_len = len(b:buflist)
@@ -3288,6 +3310,8 @@ function! <SID>jump(direction)
   if !exists("b:jumplines")
     if s:tablist_mode
       call <SID>create_tab_jumps()
+    elseif s:favorites_mode
+      call <SID>create_fav_jumps()
     else
       call <SID>create_buffer_jumps()
     endif
