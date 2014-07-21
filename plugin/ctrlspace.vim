@@ -55,7 +55,8 @@ function! <SID>define_symbols()
           \ "save"    : "∙ → ⋮",
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
-          \ "s_right" : "‹"
+          \ "s_right" : "‹",
+          \ "favs"    : "♡"
           \ }
   else
     let symbols = {
@@ -69,7 +70,8 @@ function! <SID>define_symbols()
           \ "save"    : "SAVE",
           \ "prv"     : "*",
           \ "s_left"  : "[",
-          \ "s_right" : "]"
+          \ "s_right" : "]",
+          \ "favs"    : "FAVS"
           \ }
   endif
 
@@ -156,25 +158,38 @@ let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
 let s:update_search_results   = 0
-let s:project_root            = ""
 
-function! <SID>init_project_roots()
-  let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
+function! <SID>init_project_roots_and_favs()
+  let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
   let s:project_roots = []
+  let s:favorites     = []
 
   if filereadable(cache_file)
     for line in readfile(cache_file)
       if line =~# "CS_PROJECT_ROOT: "
         call add(s:project_roots, line[17:])
       endif
+
+      if line =~# "CS_FAVORITE: "
+        let parts = split(line[13:], "|CS_###_CS|")
+        call add(s:favorites, { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0] })
+      endif
     endfor
   endif
 endfunction
 
-call <SID>init_project_roots()
+call <SID>init_project_roots_and_favs()
 
 function! <SID>add_project_root(directory)
-  call add(s:project_roots, a:directory)
+  let directory = <SID>normalize_directory(a:directory)
+
+  for root in s:project_roots
+    if root == directory
+      return
+    endif
+  endfor
+
+  call add(s:project_roots, directory)
 
   let lines      = []
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -192,6 +207,40 @@ function! <SID>add_project_root(directory)
   endfor
 
   call writefile(lines, cache_file)
+endfunction
+
+function! <SID>add_to_favorites(directory, name)
+  let directory = <SID>normalize_directory(a:directory)
+
+  for i in range(0, len(s:favorites) - 1)
+    if s:favorites[i].directory == directory
+      call remove(s:favorites, i)
+      break
+    endif
+  endfor
+
+  let favorite = { "name": a:name, "directory": directory }
+
+  call add(s:favorites, favorite)
+
+  let lines      = []
+  let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
+
+  if filereadable(cache_file)
+    for old_line in readfile(cache_file)
+      if old_line !~# "CS_FAVORITE: "
+        call add(lines, old_line)
+      endif
+    endfor
+  endif
+
+  for root in s:favorites
+    call add(lines, "CS_FAVORITE: " . root.directory . "|CS_###_CS|" . root.name)
+  endfor
+
+  call writefile(lines, cache_file)
+
+  return favorite
 endfunction
 
 function! <SID>init_key_names()
@@ -387,13 +436,15 @@ function! ctrlspace#statusline_mode_segment(...)
     call add(statusline_elements, g:ctrlspace_symbols.save)
   elseif s:tablist_mode
     call add(statusline_elements, <SID>create_status_tabline())
+  elseif s:favorites_mode
+    call add(statusline_elements, g:ctrlspace_symbols.favs)
   elseif s:single_mode
     call add(statusline_elements, g:ctrlspace_symbols.tab)
   else
     call add(statusline_elements, g:ctrlspace_symbols.all)
   endif
 
-  if !s:workspace_mode && !s:tablist_mode
+  if !s:workspace_mode && !s:tablist_mode && !s:favorites_mode
     if !empty(s:search_letters) || s:search_mode
       let search_element = g:ctrlspace_symbols.s_left . join(s:search_letters, "")
 
@@ -1307,7 +1358,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         let bufname = dots_symbol . strpart(bufname, strwidth(bufname) - &columns + 7 + strwidth(dots_symbol))
       endif
 
-      if !s:file_mode && !s:workspace_mode && !s:tablist_mode
+      if !s:file_mode && !s:workspace_mode && !s:tablist_mode && !s:favorites_mode
         let bufname = <SID>decorate_with_indicators(bufname, entry.number)
       elseif s:workspace_mode
         if entry.raw ==# s:active_workspace_name
@@ -1333,6 +1384,16 @@ function! <SID>prepare_buftext_to_display(buflist)
         if !empty(indicators)
           let bufname .= " " . indicators
         endif
+      elseif s:favorites_mode
+        let indicators = ""
+
+        if !empty(s:active_favorite) && (s:favorites[entry.number - 1].directory == s:active_favorite.directory)
+          let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+        endif
+
+        if !empty(indicators)
+          let bufname .= " " . indicators
+        endif
       endif
 
       while strwidth(bufname) < &columns
@@ -1346,12 +1407,117 @@ function! <SID>prepare_buftext_to_display(buflist)
   endif
 endfunction
 
+function! <SID>add_first_favorite()
+  if !<SID>project_root_found()
+    return 0
+  endif
+
+  for favorite in s:favorites
+    if favorite.directory == s:project_root
+      return 1
+    endif
+  endfor
+
+  let name = <SID>get_input("Add directory '" . s:project_root . "' to favorites as: ", fnamemodify(s:project_root, ":t"))
+
+  if empty(name)
+    return 0
+  endif
+
+  let s:active_favorite = <SID>add_to_favorites(s:project_root, name)
+  return 1
+endfunction
+
+function! <SID>normalize_directory(directory)
+  let directory = a:directory
+
+  while directory[strlen(directory) - 1] == "/" || directory[strlen(directory) - 1] == "\\"
+    let directory = directory[0:-2]
+  endwhile
+
+  return directory
+endfunction
+
+function! <SID>add_new_favorite()
+  let directory = <SID>get_input("New favorite directory: ", s:project_root, "dir")
+
+  if empty(directory)
+    return
+  endif
+
+  if !isdirectory(directory)
+    echo g:ctrlspace_symbols.cs . "  Incorrect directory"
+    return
+  endif
+
+  for favorite in s:favorites
+    if favorite.directory == directory
+      echo "This favorite already exists under name '" . favorite.name . "'"
+      return
+    endif
+  endfor
+
+  let name = <SID>get_input("New favorite name: ", fnamemodify(<SID>normalize_directory(directory), ":t"))
+
+  if empty(name)
+    return
+  endif
+
+  let s:active_favorite = <SID>add_to_favorites(directory, name)
+  call <SID>add_project_root(directory)
+endfunction
+
+function! <SID>change_active_favorite(fav_nr)
+  let s:active_favorite = s:favorites[a:fav_nr - 1]
+  let s:files = []
+  silent! exe "cd " . s:active_favorite.directory
+endfunction
+
+function! <SID>change_favorite_name(fav_nr)
+  let favorite  = s:favorites[a:fav_nr - 1]
+  let new_name = <SID>get_input("New favorite name: ", favorite.name)
+
+  if !empty(new_name)
+    call <SID>add_to_favorites(favorite.directory, new_name)
+  endif
+endfunction
+
+function! <SID>remove_favorite(fav_nr)
+  if !<SID>confirmed("Delete from favorites entry '" . s:favorites[a:fav_nr - 1].name . "'?")
+    return
+  endif
+
+  call remove(s:favorites, a:fav_nr - 1)
+
+  let lines      = []
+  let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
+
+  if filereadable(cache_file)
+    for old_line in readfile(cache_file)
+      if old_line !~# "CS_FAVORITE: "
+        call add(lines, old_line)
+      endif
+    endfor
+  endif
+
+  for root in s:favorites
+    call add(lines, "CS_FAVORITE: " . root.directory . "|CS_###_CS|" . root.name)
+  endfor
+
+  call writefile(lines, cache_file)
+endfunction
+
 function! <SID>project_root_found()
   if empty(s:project_root)
     let s:project_root = <SID>find_project_root()
     if empty(s:project_root)
-      echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
-      return 0
+      let project_root = <SID>get_input("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
+      if !empty(project_root) && isdirectory(project_root)
+        call <SID>add_project_root(project_root)
+      else
+        echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
+        return 0
+      endif
     endif
   endif
   return 1
@@ -1395,11 +1561,14 @@ function! <SID>ctrlspace_toggle(internal)
     let s:file_mode                      = 0
     let s:workspace_mode                 = 0
     let s:tablist_mode                   = 0
+    let s:favorites_mode                 = 0
     let s:last_browsed_workspace         = 0
     let s:restored_search_mode           = 0
     let s:search_letters                 = []
     let t:ctrlspace_search_history_index = -1
     let s:search_history_index           = -1
+    let s:project_root                   = <SID>find_project_root()
+    let s:active_favorite                = <SID>find_active_favorite()
 
     call <SID>handle_autochdir("start")
   endif
@@ -1494,6 +1663,8 @@ function! <SID>ctrlspace_toggle(internal)
     let bufcount = len(s:workspace_names)
   elseif s:tablist_mode
     let bufcount = tabpagenr("$")
+  elseif s:favorites_mode
+    let bufcount = len(s:favorites)
   endif
 
   if (s:file_mode && empty(s:search_letters)) || (s:file_mode && g:ctrlspace_use_ruby_bindings && has("ruby"))
@@ -1522,6 +1693,8 @@ function! <SID>ctrlspace_toggle(internal)
         let tab_title       = ctrlspace#tab_title(i, tab_bufnr, tab_bufname)
 
         let bufname         = string(i) . tab_bufs_number . " " . tab_title
+      elseif s:favorites_mode
+        let bufname = s:favorites[i - 1].name
       else
         if s:single_mode && !exists('t:ctrlspace_list[' . i . ']')
           continue
@@ -1534,9 +1707,9 @@ function! <SID>ctrlspace_toggle(internal)
         endif
       endif
 
-      if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode ||
+      if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode || s:favorites_mode ||
             \ (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-        if s:workspace_mode || s:tablist_mode || empty(s:search_letters)
+        if s:workspace_mode || s:tablist_mode || s:favorites_mode || empty(s:search_letters)
           let search_noise = 0
         else
           let search_noise = <SID>find_lowest_search_noise(bufname)
@@ -1544,7 +1717,7 @@ function! <SID>ctrlspace_toggle(internal)
 
         if search_noise == -1
           continue
-        elseif !empty(s:search_letters) && !s:workspace_mode && !s:tablist_mode
+        elseif !empty(s:search_letters) && !s:workspace_mode && !s:tablist_mode && !s:favorites_mode
           if !max_results
             let displayedbufs += 1
             call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
@@ -1623,6 +1796,21 @@ function! <SID>ctrlspace_toggle(internal)
     endif
   elseif s:tablist_mode
     let activebufline = tabpagenr()
+  elseif s:favorites_mode
+    let activebufline = 1
+
+    if !empty(s:active_favorite)
+      let active_favorite_line = 0
+
+      for fav_name in buflist
+        let active_favorite_line += 1
+
+        if s:active_favorite.name ==# fav_name.raw
+          let activebufline = active_favorite_line
+          break
+        endif
+      endfor
+    endif
   else
     let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(t:ctrlspace_activebuf, buflist)
   endif
@@ -1879,6 +2067,7 @@ function! <SID>keypressed(key)
           call <SID>kill(0, 0)
           let s:file_mode      = 0
           let s:tablist_mode   = 0
+          let s:favorites_mode   = 0
           let s:workspace_mode = 1
           call <SID>ctrlspace_toggle(1)
         endif
@@ -1886,8 +2075,20 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode      = 0
         let s:tablist_mode   = 1
+        let s:favorites_mode   = 0
         let s:workspace_mode = 0
         call <SID>ctrlspace_toggle(1)
+      elseif a:key ==# "h"
+        if empty(s:favorites)
+          call <SID>add_first_favorite()
+        else
+          call <SID>kill(0, 0)
+          let s:file_mode      = 0
+          let s:tablist_mode   = 0
+          let s:favorites_mode   = 1
+          let s:workspace_mode = 0
+          call <SID>ctrlspace_toggle(1)
+        endif
       elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
         call <SID>kill(0, 1)
       elseif a:key ==# "Q"
@@ -1991,6 +2192,16 @@ function! <SID>keypressed(key)
       let s:workspace_mode = 0
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "h"
+      if empty(s:favorites)
+        call <SID>add_first_favorite()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "o"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -2065,6 +2276,16 @@ function! <SID>keypressed(key)
       let s:workspace_mode = 0
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "h"
+      if empty(s:favorites)
+        call <SID>add_first_favorite()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "o"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -2229,6 +2450,15 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "h"
+      if empty(s:favorites)
+        call <SID>add_first_favorite()
+      else
+        call <SID>kill(0, 0)
+        let s:tablist_mode = 0
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "o"
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
@@ -2237,6 +2467,107 @@ function! <SID>keypressed(key)
     elseif a:key ==# "O"
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
+      call <SID>switch_search_mode(1)
+    endif
+  elseif s:favorites_mode
+    if a:key ==# "Tab"
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      call <SID>change_active_favorite(fav_nr)
+    elseif a:key ==# "CR"
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      call <SID>change_active_favorite(fav_nr)
+      call <SID>ctrlspace_toggle(0)
+    elseif a:key ==# "Space"
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>kill(0, 1)
+      call <SID>change_active_favorite(fav_nr)
+      call <SID>ctrlspace_toggle(0)
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "="
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>change_favorite_name(fav_nr)
+      call <SID>kill(0, 0)
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "a"
+      call <SID>add_new_favorite()
+      call <SID>kill(0, 1)
+      call <SID>ctrlspace_toggle(0)
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "d"
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>remove_favorite(fav_nr)
+      call <SID>kill(0, 1)
+      call <SID>ctrlspace_toggle(0)
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif (a:key ==# "BS") || (a:key ==# "h")
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 0
+      call <SID>ctrlspace_toggle(1)
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
+      call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
+    elseif a:key ==# "j"
+      call <SID>move("down")
+    elseif a:key ==# "k"
+      call <SID>move("up")
+    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+      call <SID>move("up")
+    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+      call <SID>move("down")
+    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+      call <SID>move("mouse")
+    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+      call <SID>move("mouse")
+      call <SID>save_workspace(<SID>get_selected_workspace_name())
+    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+      call feedkeys("j")
+    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+      call feedkeys("k")
+    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+      call <SID>move(1)
+    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+      call <SID>move(line("$"))
+    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+      call <SID>move("pgdown")
+    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+      call <SID>move("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move("half_pgup")
+    elseif a:key ==# "w"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:favorites_mode = 0
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
+    elseif a:key ==# "l"
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 0
+      let s:tablist_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "o"
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 0
+      let s:file_mode = 1
+      call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "O"
+      call <SID>kill(0, 0)
+      let s:favorites_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
       call <SID>switch_search_mode(1)
@@ -2353,6 +2684,15 @@ function! <SID>keypressed(key)
       let s:file_mode = !s:file_mode
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "h"
+      if empty(s:favorites)
+        call <SID>add_first_favorite()
+      else
+        call <SID>kill(0, 0)
+        let s:file_mode = !s:file_mode
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "g"
       call <SID>goto_buffer_or_file("next")
     elseif a:key ==# "G"
@@ -2508,6 +2848,14 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "h"
+      if empty(s:favorites)
+        call <SID>add_first_favorite()
+      else
+        call <SID>kill(0, 0)
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "o"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
@@ -2559,6 +2907,18 @@ function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
   endfor
 endfunction
 
+function! <SID>find_active_favorite()
+  let project_root = fnamemodify(".", ":p:h")
+
+  for favorite in s:favorites
+    if favorite.directory == project_root
+      return favorite
+    endif
+  endfor
+
+  return {}
+endfunction
+
 function! <SID>find_project_root()
   let project_root = fnamemodify(".", ":p:h")
 
@@ -2590,14 +2950,7 @@ function! <SID>find_project_root()
       let candidate = fnamemodify(candidate, ":p:h:h")
     endwhile
 
-    if !root_found
-      let project_root = <SID>get_input("No project root found. Set the project root: ", project_root, "dir")
-      if !empty(project_root) && isdirectory(project_root)
-        call <SID>add_project_root(project_root)
-      else
-        let project_root = ""
-      endif
-    endif
+    return root_found ? project_root : ""
   endif
 
   return project_root
@@ -2646,7 +2999,9 @@ function! <SID>set_up_buffer()
   setlocal nolist
   setlocal cc=
 
-  silent! exe "lcd " . s:project_root
+  if !empty(s:project_root)
+    silent! exe "lcd " . s:project_root
+  endif
 
   let b:search_patterns = {}
 
