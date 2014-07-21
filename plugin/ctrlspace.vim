@@ -161,18 +161,20 @@ let s:update_search_results   = 0
 
 function! <SID>init_project_roots_and_favs()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
-  let s:project_roots = []
+  let s:project_roots = {}
   let s:favorites     = []
 
   if filereadable(cache_file)
     for line in readfile(cache_file)
       if line =~# "CS_PROJECT_ROOT: "
-        call add(s:project_roots, line[17:])
+        let s:project_roots[line[17:]] = 1
       endif
 
       if line =~# "CS_FAVORITE: "
         let parts = split(line[13:], "|CS_###_CS|")
-        call add(s:favorites, { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0], "jump_counter": 0 })
+        let favorite = { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0], "jump_counter": 0 }
+        call add(s:favorites, favorite)
+        let s:project_roots[favorite.directory] = 1
       endif
     endfor
   endif
@@ -182,17 +184,15 @@ call <SID>init_project_roots_and_favs()
 
 function! <SID>add_project_root(directory)
   let directory = <SID>normalize_directory(a:directory)
-
-  for root in s:project_roots
-    if root == directory
-      return
-    endif
-  endfor
-
-  call add(s:project_roots, directory)
+  let s:project_roots[directory] = 1
 
   let lines      = []
+  let fav_roots  = {}
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
+
+  for favorite in s:favorites
+    let fav_roots[favorite.directory] = 1
+  endfor
 
   if filereadable(cache_file)
     for old_line in readfile(cache_file)
@@ -202,8 +202,10 @@ function! <SID>add_project_root(directory)
     endfor
   endif
 
-  for root in s:project_roots
-    call add(lines, "CS_PROJECT_ROOT: " . root)
+  for root in keys(s:project_roots)
+    if !exists("fav_roots[root]")
+      call add(lines, "CS_PROJECT_ROOT: " . root)
+    endif
   endfor
 
   call writefile(lines, cache_file)
@@ -212,33 +214,46 @@ endfunction
 function! <SID>add_to_favorites(directory, name)
   let directory = <SID>normalize_directory(a:directory)
 
+  let jump_counter = 0
+
   for i in range(0, len(s:favorites) - 1)
     if s:favorites[i].directory == directory
+      let jump_counter = s:favorites[i].jump_counter
       call remove(s:favorites, i)
       break
     endif
   endfor
 
-  let favorite = { "name": a:name, "directory": directory, "jump_counter": 0 }
+  let favorite = { "name": a:name, "directory": directory, "jump_counter": jump_counter }
 
   call add(s:favorites, favorite)
 
   let lines      = []
+  let fav_roots  = {}
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
 
   if filereadable(cache_file)
     for old_line in readfile(cache_file)
-      if old_line !~# "CS_FAVORITE: "
+      if (old_line !~# "CS_FAVORITE: ") && (old_line !~# "CS_PROJECT_ROOT: ")
         call add(lines, old_line)
       endif
     endfor
   endif
 
-  for root in s:favorites
-    call add(lines, "CS_FAVORITE: " . root.directory . "|CS_###_CS|" . root.name)
+  for fav in s:favorites
+    call add(lines, "CS_FAVORITE: " . fav.directory . "|CS_###_CS|" . fav.name)
+    let fav_roots[fav.directory] = 1
+  endfor
+
+  for root in keys(s:project_roots)
+    if !exists("fav_roots[root]")
+      call add(lines, "CS_PROJECT_ROOT: " . root)
+    endif
   endfor
 
   call writefile(lines, cache_file)
+
+  let s:project_roots[favorite.directory] = 1
 
   return favorite
 endfunction
@@ -1464,7 +1479,6 @@ function! <SID>add_new_favorite()
   endif
 
   let s:active_favorite = <SID>add_to_favorites(directory, name)
-  call <SID>add_project_root(directory)
 endfunction
 
 function! <SID>change_active_favorite(fav_nr)
@@ -1513,6 +1527,7 @@ function! <SID>project_root_found()
     if empty(s:project_root)
       let project_root = <SID>get_input("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
       if !empty(project_root) && isdirectory(project_root)
+        let s:files = [] " clear current files - force reload
         call <SID>add_project_root(project_root)
       else
         echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
@@ -2950,7 +2965,7 @@ function! <SID>find_project_root()
       endfor
 
       if !root_found
-        let root_found = index(s:project_roots, candidate) != -1
+        let root_found = exists("s:project_roots[candidate]")
       endif
 
       if root_found
