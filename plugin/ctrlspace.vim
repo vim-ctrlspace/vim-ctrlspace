@@ -1472,7 +1472,8 @@ endfunction
 
 function! <SID>change_active_favorite(fav_nr)
   let s:active_favorite = s:favorites[a:fav_nr - 1]
-  let s:files = []
+  let s:files           = []
+  let s:workspace_names = []
   silent! exe "cd " . s:active_favorite.directory
 endfunction
 
@@ -1517,6 +1518,7 @@ function! <SID>project_root_found()
       let project_root = <SID>get_input("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
       if !empty(project_root) && isdirectory(project_root)
         let s:files = [] " clear current files - force reload
+        let s:workspace_names = [] " force reload
         call <SID>add_project_root(project_root)
       else
         echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
