@@ -1473,7 +1473,7 @@ endfunction
 function! <SID>change_active_favorite(fav_nr)
   let new_favorite = s:favorites[a:fav_nr - 1]
 
-  if !empty(s:active_favorite).directory == new_favorite.directory
+  if !empty(s:active_favorite) && s:active_favorite.directory == new_favorite.directory
     return
   endif
 
