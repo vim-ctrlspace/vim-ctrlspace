@@ -1471,10 +1471,19 @@ function! <SID>add_new_favorite()
 endfunction
 
 function! <SID>change_active_favorite(fav_nr)
-  let s:active_favorite = s:favorites[a:fav_nr - 1]
-  let s:files           = []
-  let s:workspace_names = []
-  silent! exe "cd " . s:active_favorite.directory
+  let new_favorite = s:favorites[a:fav_nr - 1]
+
+  if !empty(s:active_favorite).directory == new_favorite.directory
+    return
+  endif
+
+  let s:files                   = []
+  let s:workspace_names         = []
+  let s:active_workspace_name   = ""
+  let s:active_workspace_digest = ""
+  let s:active_favorite         = new_favorite
+
+  silent! exe "cd " . s:new_favorite.directory
 endfunction
 
 function! <SID>change_favorite_name(fav_nr)
