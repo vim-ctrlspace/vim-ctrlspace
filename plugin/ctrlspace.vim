@@ -1483,7 +1483,7 @@ function! <SID>change_active_favorite(fav_nr)
   let s:active_workspace_digest = ""
   let s:active_favorite         = new_favorite
 
-  silent! exe "cd " . s:new_favorite.directory
+  silent! exe "cd " . new_favorite.directory
 endfunction
 
 function! <SID>change_favorite_name(fav_nr)
