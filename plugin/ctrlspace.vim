@@ -123,6 +123,8 @@ call <SID>define_config_variable("max_search_results", 200)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
+call <SID>define_config_variable("event_change_active_favorite", "")
+
 command! -nargs=* -range CtrlSpace :call <SID>start_ctrlspace_and_feedkeys(<q-args>)
 command! -nargs=0 -range CtrlSpaceGoNext :call <SID>go_outside_list("next")
 command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previous")
@@ -181,6 +183,14 @@ function! <SID>init_project_roots_and_favs()
 endfunction
 
 call <SID>init_project_roots_and_favs()
+
+function! <SID>fire_event(name)
+  if !exists("g:ctrlspace_event_" . a:name) || empty(g:{"ctrlspace_event_" . a:name})
+    return
+  endif
+
+  silent! exe g:{"ctrlspace_event_" . a:name}
+endfunction
 
 function! <SID>add_project_root(directory)
   let directory = <SID>normalize_directory(a:directory)
@@ -1484,6 +1494,8 @@ function! <SID>change_active_favorite(fav_nr)
   let s:active_favorite         = new_favorite
 
   silent! exe "cd " . new_favorite.directory
+
+  call <SID>fire_event("change_active_favorite")
 endfunction
 
 function! <SID>change_favorite_name(fav_nr)
