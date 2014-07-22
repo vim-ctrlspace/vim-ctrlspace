@@ -1422,6 +1422,15 @@ function! <SID>prepare_buftext_to_display(buflist)
   endif
 endfunction
 
+function! <SID>add_first_favorite()
+  call <SID>add_new_favorite()
+  call <SID>kill(0, 1)
+  call <SID>ctrlspace_toggle(0)
+  call <SID>kill(0, 0)
+  let s:favorites_mode = 1
+  call <SID>ctrlspace_toggle(1)
+endfunction
+
 function! <SID>normalize_directory(directory)
   let directory = a:directory
 
@@ -2062,7 +2071,7 @@ function! <SID>keypressed(key)
           call <SID>kill(0, 0)
           let s:file_mode      = 0
           let s:tablist_mode   = 0
-          let s:favorites_mode   = 0
+          let s:favorites_mode = 0
           let s:workspace_mode = 1
           call <SID>ctrlspace_toggle(1)
         endif
@@ -2070,17 +2079,17 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode      = 0
         let s:tablist_mode   = 1
-        let s:favorites_mode   = 0
+        let s:favorites_mode = 0
         let s:workspace_mode = 0
         call <SID>ctrlspace_toggle(1)
       elseif a:key ==# "h"
         if empty(s:favorites)
-          call <SID>add_new_favorite()
+          call <SID>add_first_favorite()
         else
           call <SID>kill(0, 0)
           let s:file_mode      = 0
           let s:tablist_mode   = 0
-          let s:favorites_mode   = 1
+          let s:favorites_mode = 1
           let s:workspace_mode = 0
           call <SID>ctrlspace_toggle(1)
         endif
@@ -2189,7 +2198,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_new_favorite()
+        call <SID>add_first_favorite()
       else
         let s:last_browsed_workspace = line(".")
         call <SID>kill(0, 0)
@@ -2273,7 +2282,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_new_favorite()
+        call <SID>add_first_favorite()
       else
         let s:last_browsed_workspace = line(".")
         call <SID>kill(0, 0)
@@ -2447,7 +2456,7 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_new_favorite()
+        call <SID>add_first_favorite()
       else
         call <SID>kill(0, 0)
         let s:tablist_mode = 0
@@ -2691,7 +2700,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_new_favorite()
+        call <SID>add_first_favorite()
       else
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
@@ -2855,7 +2864,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_new_favorite()
+        call <SID>add_first_favorite()
       else
         call <SID>kill(0, 0)
         let s:favorites_mode = 1
