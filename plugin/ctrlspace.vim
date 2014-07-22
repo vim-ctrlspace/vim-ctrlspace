@@ -1422,27 +1422,6 @@ function! <SID>prepare_buftext_to_display(buflist)
   endif
 endfunction
 
-function! <SID>add_first_favorite()
-  if !<SID>project_root_found()
-    return 0
-  endif
-
-  for favorite in s:favorites
-    if favorite.directory == s:project_root
-      return 1
-    endif
-  endfor
-
-  let name = <SID>get_input("Add directory '" . s:project_root . "' to favorites as: ", fnamemodify(s:project_root, ":t"))
-
-  if empty(name)
-    return 0
-  endif
-
-  let s:active_favorite = <SID>add_to_favorites(s:project_root, name)
-  return 1
-endfunction
-
 function! <SID>normalize_directory(directory)
   let directory = a:directory
 
@@ -1454,7 +1433,8 @@ function! <SID>normalize_directory(directory)
 endfunction
 
 function! <SID>add_new_favorite()
-  let directory = <SID>get_input("New favorite directory: ", s:project_root, "dir")
+  let current   = empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root
+  let directory = <SID>get_input("New favorite directory: ", current, "dir")
 
   if empty(directory)
     return
@@ -1478,7 +1458,7 @@ function! <SID>add_new_favorite()
     return
   endif
 
-  let s:active_favorite = <SID>add_to_favorites(directory, name)
+  call <SID>add_to_favorites(directory, name)
 endfunction
 
 function! <SID>change_active_favorite(fav_nr)
@@ -2095,7 +2075,7 @@ function! <SID>keypressed(key)
         call <SID>ctrlspace_toggle(1)
       elseif a:key ==# "h"
         if empty(s:favorites)
-          call <SID>add_first_favorite()
+          call <SID>add_new_favorite()
         else
           call <SID>kill(0, 0)
           let s:file_mode      = 0
@@ -2209,7 +2189,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_first_favorite()
+        call <SID>add_new_favorite()
       else
         let s:last_browsed_workspace = line(".")
         call <SID>kill(0, 0)
@@ -2293,7 +2273,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_first_favorite()
+        call <SID>add_new_favorite()
       else
         let s:last_browsed_workspace = line(".")
         call <SID>kill(0, 0)
@@ -2467,7 +2447,7 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_first_favorite()
+        call <SID>add_new_favorite()
       else
         call <SID>kill(0, 0)
         let s:tablist_mode = 0
@@ -2711,7 +2691,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_first_favorite()
+        call <SID>add_new_favorite()
       else
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
@@ -2875,7 +2855,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "h"
       if empty(s:favorites)
-        call <SID>add_first_favorite()
+        call <SID>add_new_favorite()
       else
         call <SID>kill(0, 0)
         let s:favorites_mode = 1
