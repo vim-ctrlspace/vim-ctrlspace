@@ -1116,7 +1116,7 @@ function! <SID>load_workspace_externally(bang, name)
     endif
   endfor
 
-  call add(commands, "exe 'normal! ' . ctrlspace_workspace_current_tab . 'gt'")
+  call add(commands, "silent! exe 'normal! ' . ctrlspace_workspace_current_tab . 'gt'")
   call add(commands, "redraw!")
 
   for c in commands
@@ -2922,7 +2922,7 @@ function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
 endfunction
 
 function! <SID>find_active_favorite()
-  let project_root = fnamemodify(".", ":p:h")
+  let project_root = empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root
 
   for favorite in s:favorites
     if favorite.directory == project_root
