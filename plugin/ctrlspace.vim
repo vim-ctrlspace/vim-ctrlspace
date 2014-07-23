@@ -1464,6 +1464,8 @@ function! <SID>add_new_favorite(fav_nr)
     return
   endif
 
+  let directory = <SID>normalize_directory(directory)
+
   if !isdirectory(directory)
     echo g:ctrlspace_symbols.cs . "  Incorrect directory"
     return
@@ -1476,7 +1478,7 @@ function! <SID>add_new_favorite(fav_nr)
     endif
   endfor
 
-  let name = <SID>get_input("New favorite name: ", fnamemodify(<SID>normalize_directory(directory), ":t"))
+  let name = <SID>get_input("New favorite name: ", fnamemodify(directory, ":t"))
 
   if empty(name)
     return
