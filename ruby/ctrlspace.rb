@@ -111,11 +111,11 @@ module CtrlSpace
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
-    favorites_mode          = VIM.evaluate("s:favorites_mode") > 0
+    bookmark_mode          = VIM.evaluate("s:bookmark_mode") > 0
     preview_mode            = VIM.evaluate("s:preview_mode") > 0
     active_workspace_name   = VIM.evaluate("s:active_workspace_name")
     active_workspace_digest = VIM.evaluate("s:active_workspace_digest")
-    active_favorite         = VIM.evaluate("s:active_favorite")
+    active_bookmark         = VIM.evaluate("s:active_bookmark")
 
     buftext                 = ""
 
@@ -127,7 +127,7 @@ module CtrlSpace
         bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + 7 + dots_symbol.length)..-1]}"
       end
 
-      if !file_mode && !workspace_mode && !tablist_mode && !favorites_mode
+      if !file_mode && !workspace_mode && !tablist_mode && !bookmark_mode
         indicators = ""
 
         indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
@@ -150,12 +150,12 @@ module CtrlSpace
         indicators << "+" if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
         indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
         bufname << " #{indicators}" unless indicators.empty?
-      elsif favorites_mode
+      elsif bookmark_mode
         indicators = ""
 
-        unless active_favorite.empty?
-          favorites = VIM.evaluate("s:favorites")
-          indicators << (unicode_font ? "★" : "*") if favorites[entry["number"] - 1]["directory"] == active_favorite["directory"]
+        unless active_bookmark.empty?
+          bookmarks = VIM.evaluate("s:bookmarks")
+          indicators << (unicode_font ? "★" : "*") if bookmarks[entry["number"] - 1]["directory"] == active_bookmark["directory"]
         end
 
         bufname << " #{indicators}" unless indicators.empty?
