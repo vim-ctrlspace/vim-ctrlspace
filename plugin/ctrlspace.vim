@@ -1433,7 +1433,7 @@ function! <SID>prepare_buftext_to_display(buflist)
 endfunction
 
 function! <SID>add_first_favorite()
-  call <SID>add_new_favorite()
+  call <SID>add_new_favorite(0)
   call <SID>kill(0, 1)
   call <SID>ctrlspace_toggle(0)
   call <SID>kill(0, 0)
@@ -1451,8 +1451,13 @@ function! <SID>normalize_directory(directory)
   return directory
 endfunction
 
-function! <SID>add_new_favorite()
-  let current   = empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root
+function! <SID>add_new_favorite(fav_nr)
+  if a:fav_nr
+    let current = s:favorites[a:fav_nr - 1].directory
+  else
+    let current = empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root
+  endif
+
   let directory = <SID>get_input("New favorite directory: ", current, "dir")
 
   if empty(directory)
@@ -2522,7 +2527,8 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "a"
-      call <SID>add_new_favorite()
+      let fav_nr = <SID>get_selected_buffer()
+      call <SID>add_new_favorite(fav_nr)
       call <SID>kill(0, 1)
       call <SID>ctrlspace_toggle(0)
       call <SID>kill(0, 0)
