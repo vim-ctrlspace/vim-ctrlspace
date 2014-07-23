@@ -1433,12 +1433,13 @@ function! <SID>prepare_buftext_to_display(buflist)
 endfunction
 
 function! <SID>add_first_favorite()
-  call <SID>add_new_favorite(0)
-  call <SID>kill(0, 1)
-  call <SID>ctrlspace_toggle(0)
-  call <SID>kill(0, 0)
-  let s:favorites_mode = 1
-  call <SID>ctrlspace_toggle(1)
+  if <SID>add_new_favorite(0)
+    call <SID>kill(0, 1)
+    call <SID>ctrlspace_toggle(0)
+    call <SID>kill(0, 0)
+    let s:favorites_mode = 1
+    call <SID>ctrlspace_toggle(1)
+  endif
 endfunction
 
 function! <SID>normalize_directory(directory)
@@ -1461,30 +1462,31 @@ function! <SID>add_new_favorite(fav_nr)
   let directory = <SID>get_input("New favorite directory: ", current, "dir")
 
   if empty(directory)
-    return
+    return 0
   endif
 
   let directory = <SID>normalize_directory(directory)
 
   if !isdirectory(directory)
     echo g:ctrlspace_symbols.cs . "  Incorrect directory"
-    return
+    return 0
   endif
 
   for favorite in s:favorites
     if favorite.directory == directory
       echo "This favorite already exists under name '" . favorite.name . "'"
-      return
+      return 0
     endif
   endfor
 
   let name = <SID>get_input("New favorite name: ", fnamemodify(directory, ":t"))
 
   if empty(name)
-    return
+    return 0
   endif
 
   call <SID>add_to_favorites(directory, name)
+  return 1
 endfunction
 
 function! <SID>change_active_favorite(fav_nr)
@@ -2530,12 +2532,13 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "a"
       let fav_nr = <SID>get_selected_buffer()
-      call <SID>add_new_favorite(fav_nr)
-      call <SID>kill(0, 1)
-      call <SID>ctrlspace_toggle(0)
-      call <SID>kill(0, 0)
-      let s:favorites_mode = 1
-      call <SID>ctrlspace_toggle(1)
+      if <SID>add_new_favorite(fav_nr)
+        call <SID>kill(0, 1)
+        call <SID>ctrlspace_toggle(0)
+        call <SID>kill(0, 0)
+        let s:favorites_mode = 1
+        call <SID>ctrlspace_toggle(1)
+      endif
     elseif a:key ==# "d"
       let fav_nr = <SID>get_selected_buffer()
       call <SID>remove_favorite(fav_nr)
