@@ -1101,19 +1101,22 @@ function! <SID>load_workspace_externally(bang, name)
 
     for fname in readable_files
       call add(commands, "e " . fnameescape(fname))
-      " jump to the last edited line
       call add(commands, "if line(\"'\\\"\") > 0 | " .
             \ "if line(\"'\\\"\") <= line('$') | " .
             \ "exe(\"norm '\\\"\") | else | exe 'norm $' | " .
             \ "endif | endif")
-      call add(commands, "normal! zbze")
     endfor
 
     if !empty(visible_files)
       call add(commands, "e " . fnameescape(visible_files[0]))
+      call add(commands, "normal! zbze")
 
       for visible_fname in visible_files[1:-1]
         call add(commands, window_split_command . visible_fname)
+        call add(commands, "normal! zbze")
+        call add(commands, "wincmd p")
+        call add(commands, "normal! zbze")
+        call add(commands, "wincmd p")
       endfor
     endif
 
