@@ -931,7 +931,7 @@ function! <SID>load_last_active_workspace()
 endfunction
 
 function! <SID>new_workspace()
-  if !<SID>confirmed("Create a new workspace?")
+  if !<SID>confirmed("Create a new blank workspace?")
     return
   endif
 
@@ -2887,6 +2887,8 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "L"
       call <SID>load_last_active_workspace()
+    elseif a:key ==# "N"
+      call <SID>new_workspace()
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
