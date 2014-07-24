@@ -123,8 +123,6 @@ call <SID>define_config_variable("max_search_results", 200)
 call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
-call <SID>define_config_variable("event_goto_bookmark", "")
-
 command! -nargs=* -range CtrlSpace :call <SID>start_ctrlspace_and_feedkeys(<q-args>)
 command! -nargs=0 -range CtrlSpaceGoNext :call <SID>go_outside_list("next")
 command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previous")
@@ -183,14 +181,6 @@ function! <SID>init_project_roots_and_bookmarks()
 endfunction
 
 call <SID>init_project_roots_and_bookmarks()
-
-function! <SID>fire_event(name)
-  if !exists("g:ctrlspace_event_" . a:name) || empty(g:{"ctrlspace_event_" . a:name})
-    return
-  endif
-
-  silent! exe g:{"ctrlspace_event_" . a:name}
-endfunction
 
 function! <SID>add_project_root(directory)
   let directory = <SID>normalize_directory(a:directory)
@@ -1506,8 +1496,6 @@ function! <SID>goto_bookmark(bm_nr)
   let s:active_bookmark         = new_bookmark
 
   silent! exe "cd " . new_bookmark.directory
-
-  call <SID>fire_event("goto_bookmark")
 endfunction
 
 function! <SID>change_bookmark_name(bm_nr)
