@@ -87,27 +87,7 @@ call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows", 0)
 call <SID>define_config_variable("use_horizontal_splits", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
-
-call <SID>define_config_variable("workspace_file",
-      \ [
-      \   ".git/cs_workspaces",
-      \   ".svn/cs_workspaces",
-      \   ".hg/cs_workspaces",
-      \   ".bzr/cs_workspaces",
-      \   "CVS/cs_workspaces",
-      \   ".cs_workspaces"
-      \ ])
-
-call <SID>define_config_variable("files_cache",
-      \ [
-      \   ".git/cs_files",
-      \   ".svn/cs_files",
-      \   ".hg/cs_files",
-      \   ".bzr/cs_files",
-      \   "CVS/cs_files",
-      \   ".cs_files"
-      \ ])
-
+call <SID>define_config_variable("cache_files", 1)
 call <SID>define_config_variable("save_workspace_on_exit", 0)
 call <SID>define_config_variable("load_last_workspace_on_start", 0)
 call <SID>define_config_variable("cache_dir", expand($HOME))
@@ -613,22 +593,24 @@ function! <SID>max_height()
   endif
 endfunction
 
-function! <SID>find_file_candidate(candidates)
-  for candidate in a:candidates
-    if isdirectory(fnamemodify(candidate, ":h:t"))
-      return candidate
-    endif
-  endfor
+function! <SID>internal_file_path(name)
+  if !empty(g:ctrlspace_project_root_markers)
+    for candidate in g:ctrlspace_project_root_markers
+      if isdirectory(candidate)
+        return candidate . "/" . a:name
+      endif
+    endfor
+  endif
 
-  return a:candidates[-1]
+  return "." . a:name
 endfunction
 
 function! <SID>workspace_file()
-  return <SID>find_file_candidate(g:ctrlspace_workspace_file)
+  return <SID>internal_file_path("cs_workspaces")
 endfunction
 
 function! <SID>files_cache()
-  return empty(g:ctrlspace_files_cache) ? "" : <SID>find_file_candidate(g:ctrlspace_files_cache)
+  return empty(g:ctrlspace_cache_files) ? "" : <SID>internal_file_path("cs_files")
 endfunction
 
 function! <SID>save_first_workspace()
