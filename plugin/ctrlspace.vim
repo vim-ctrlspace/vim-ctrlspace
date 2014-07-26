@@ -593,6 +593,7 @@ function! <SID>delayed_msg(...)
   if !empty(a:000)
     let s:delayed_message = a:1
   elseif exists("s:delayed_message") && !empty(s:delayed_message)
+    redraw
     call <SID>msg(s:delayed_message)
     unlet s:delayed_message
   endif
