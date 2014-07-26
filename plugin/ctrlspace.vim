@@ -585,6 +585,10 @@ function! ctrlspace#tab_modified(tabnr)
   return 0
 endfunction
 
+function! <SID>msg(message)
+  echo g:ctrlspace_symbols.cs . "  " . a:message
+endfunction
+
 function! <SID>max_height()
   if g:ctrlspace_max_height
     return g:ctrlspace_max_height
@@ -869,10 +873,6 @@ endfunction
 
 function! <SID>get_selected_workspace_name()
   return s:workspace_names[<SID>get_selected_buffer() - 1]
-endfunction
-
-function! <SID>msg(a:msg)
-  echo g:ctrlspace_symbols.cs . "  " . a:msg
 endfunction
 
 function! <SID>get_input(msg, ...)
