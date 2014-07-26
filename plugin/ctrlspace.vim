@@ -589,6 +589,15 @@ function! <SID>msg(message)
   echo g:ctrlspace_symbols.cs . "  " . a:message
 endfunction
 
+function! <SID>delayed_msg(...)
+  if !empty(a:000)
+    let s:delayed_message = a:1
+  elseif exists("s:delayed_message") && !empty(s:delayed_message)
+    call <SID>msg(s:delayed_message)
+    unlet s:delayed_message
+  endif
+endfunction
+
 function! <SID>max_height()
   if g:ctrlspace_max_height
     return g:ctrlspace_max_height
@@ -1464,7 +1473,7 @@ function! <SID>add_new_bookmark(bm_nr)
   endif
 
   call <SID>add_to_bookmarks(directory, name)
-  call <SID>msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
+  call <SID>delayed_msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
   return 1
 endfunction
 
@@ -1482,7 +1491,7 @@ function! <SID>goto_bookmark(bm_nr)
   let s:active_bookmark         = new_bookmark
 
   silent! exe "cd " . new_bookmark.directory
-  call <SID>msg("CWD changed to '" . new_bookmark.directory . "'.")
+  call <SID>delayed_msg("CWD changed to '" . new_bookmark.directory . "'.")
 endfunction
 
 function! <SID>change_bookmark_name(bm_nr)
@@ -1519,7 +1528,7 @@ function! <SID>remove_bookmark(bm_nr)
   endfor
 
   call writefile(lines, cache_file)
-  call <SID>msg("Bookmark '" . name . "' has been deleted.")
+  call <SID>delayed_msg("Bookmark '" . name . "' has been deleted.")
 endfunction
 
 function! <SID>project_root_found()
@@ -2493,11 +2502,13 @@ function! <SID>keypressed(key)
       let bm_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       call <SID>goto_bookmark(bm_nr)
+      call <SID>delayed_msg()
     elseif a:key ==# "CR"
       let bm_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       call <SID>goto_bookmark(bm_nr)
       call <SID>ctrlspace_toggle(0)
+      call <SID>delayed_msg()
     elseif a:key ==# "Space"
       let bm_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
@@ -2506,6 +2517,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:bookmark_mode = 1
       call <SID>ctrlspace_toggle(1)
+      call <SID>delayed_msg()
     elseif a:key ==# "="
       let bm_nr = <SID>get_selected_buffer()
       call <SID>change_bookmark_name(bm_nr)
@@ -2519,6 +2531,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
+        call <SID>delayed_msg()
       endif
     elseif a:key ==# "d"
       let bm_nr = <SID>get_selected_buffer()
@@ -2528,6 +2541,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:bookmark_mode = 1
       call <SID>ctrlspace_toggle(1)
+      call <SID>delayed_msg()
     elseif a:key ==# "p"
       call <SID>jump("previous")
     elseif a:key ==# "P"
