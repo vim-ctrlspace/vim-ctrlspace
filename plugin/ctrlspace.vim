@@ -764,8 +764,7 @@ function <SID>save_workspace_externally(name)
   silent! exe "cd " . old_cwd
 
   call <SID>handle_autochdir("stop")
-
-  echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been saved."
+  call <SID>msg("The workspace '" . name . "' has been saved.")
 endfunction
 
 function! <SID>delete_workspace(name)
@@ -805,7 +804,7 @@ function! <SID>delete_workspace(name)
     let s:active_workspace_digest = ""
   endif
 
-  echo g:ctrlspace_symbols.cs . "  The workspace '" . a:name . "' has been deleted."
+  call <SID>msg("The workspace '" . a:name . "' has been deleted.")
 
   let s:workspace_names = []
 
@@ -870,6 +869,10 @@ endfunction
 
 function! <SID>get_selected_workspace_name()
   return s:workspace_names[<SID>get_selected_buffer() - 1]
+endfunction
+
+function! <SID>msg(a:msg)
+  echo g:ctrlspace_symbols.cs . "  " . a:msg
 endfunction
 
 function! <SID>get_input(msg, ...)
@@ -1012,7 +1015,7 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if empty(lines)
-    echo g:ctrlspace_symbols.cs . "  Workspace '" . name . "' not found in file '" . filename . "'."
+    call <SID>msg("Workspace '" . name . "' not found in file '" . filename . "'.")
     let s:workspace_names = []
     silent! exe "cd " . old_cwd
     return
@@ -1023,7 +1026,7 @@ function! <SID>load_workspace_externally(bang, name)
   let commands = []
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . "  Loading workspace '" . name . "'..."
+    call <SID>msg("Loading workspace '" . name . "'...")
     call add(commands, "tabe")
     call add(commands, "tabo!")
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
@@ -1032,7 +1035,7 @@ function! <SID>load_workspace_externally(bang, name)
     let create_first_tab        = 0
     call <SID>set_active_workspace_name(name)
   else
-    echo g:ctrlspace_symbols.cs . "  Appending workspace '" . name . "'..."
+    call <SID>msg("Appending workspace '" . name . "'...")
     let create_first_tab = 1
   endif
 
@@ -1109,11 +1112,11 @@ function! <SID>load_workspace_externally(bang, name)
   endfor
 
   if !a:bang
-    echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been loaded."
+    call <SID>msg("The workspace '" . name . "' has been loaded.")
     let s:active_workspace_digest = <SID>create_workspace_digest()
   else
     let s:active_workspace_digest = ""
-    echo g:ctrlspace_symbols.cs . "  The workspace '" . name . "' has been appended."
+    call <SID>msg("The workspace '" . name . "' has been appended.")
   endif
 
   silent! exe "cd " . old_cwd
@@ -1443,13 +1446,13 @@ function! <SID>add_new_bookmark(bm_nr)
   let directory = <SID>normalize_directory(directory)
 
   if !isdirectory(directory)
-    echo g:ctrlspace_symbols.cs . "  Directory incorrect."
+    call <SID>msg("Directory incorrect.")
     return 0
   endif
 
   for bookmark in s:bookmarks
     if bookmark.directory == directory
-      echo "This directory has been already bookmarked under name '" . bookmark.name . "'"
+      call <SID>msg("This directory has been already bookmarked under name '" . bookmark.name . "'.")
       return 0
     endif
   endfor
@@ -1461,6 +1464,7 @@ function! <SID>add_new_bookmark(bm_nr)
   endif
 
   call <SID>add_to_bookmarks(directory, name)
+  call <SID>msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
   return 1
 endfunction
 
@@ -1478,6 +1482,7 @@ function! <SID>goto_bookmark(bm_nr)
   let s:active_bookmark         = new_bookmark
 
   silent! exe "cd " . new_bookmark.directory
+  call <SID>msg("CWD changed to '" . new_bookmark.directory . "'.")
 endfunction
 
 function! <SID>change_bookmark_name(bm_nr)
@@ -1490,7 +1495,9 @@ function! <SID>change_bookmark_name(bm_nr)
 endfunction
 
 function! <SID>remove_bookmark(bm_nr)
-  if !<SID>confirmed("Delete bookmark '" . s:bookmarks[a:bm_nr - 1].name . "'?")
+  let name = s:bookmarks[a:bm_nr - 1].name
+
+  if !<SID>confirmed("Delete bookmark '" . name . "'?")
     return
   endif
 
@@ -1507,11 +1514,12 @@ function! <SID>remove_bookmark(bm_nr)
     endfor
   endif
 
-  for root in s:bookmarks
-    call add(lines, "CS_BOOKMARK: " . root.directory . "|CS_###_CS|" . root.name)
+  for bm in s:bookmarks
+    call add(lines, "CS_BOOKMARK: " . bm.directory . "|CS_###_CS|" . bm.name)
   endfor
 
   call writefile(lines, cache_file)
+  call <SID>msg("Bookmark '" . name . "' has been deleted.")
 endfunction
 
 function! <SID>project_root_found()
@@ -1524,7 +1532,7 @@ function! <SID>project_root_found()
         let s:workspace_names = [] " force reload
         call <SID>add_project_root(project_root)
       else
-        echo g:ctrlspace_symbols.cs . "  Cannot continue with the project root not set."
+        call <SID>msg("Cannot continue with the project root not set.")
         return 0
       endif
     endif
@@ -1635,7 +1643,7 @@ function! <SID>ctrlspace_toggle(internal)
 
       if empty(s:files)
         let action = "Collecting files..."
-        echo g:ctrlspace_symbols.cs . "  " . action
+        call <SID>msg(action)
 
         for fname in split(globpath('.', '**'), '\n')
           let fname_modified = fnamemodify(fname, ":.")
@@ -1650,7 +1658,7 @@ function! <SID>ctrlspace_toggle(internal)
         call <SID>save_files_in_cache()
       else
         let action = "Loading files..."
-        echo g:ctrlspace_symbols.cs . "  " . action
+        call <SID>msg(action)
       endif
 
       let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
@@ -1660,7 +1668,7 @@ function! <SID>ctrlspace_toggle(internal)
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
-      echo g:ctrlspace_symbols.cs . "  " . action . " Done (" . len(s:all_files_cached). "/" . len(s:files) . ")."
+      call <SID>msg(action . " Done (" . len(s:all_files_cached). "/" . len(s:files) . ").")
     endif
 
     let bufcount = len(s:files)
@@ -3418,7 +3426,7 @@ function! <SID>goto_buffer_or_file(direction)
       endif
     endfor
   else
-    echo g:ctrlspace_symbols.cs . "  Cannot find a tab containing selected " . (s:file_mode ? "file" : "buffer")
+    call <SID>msg("Cannot find a tab containing selected " . (s:file_mode ? "file" : "buffer"))
   endif
 endfunction
 
