@@ -84,7 +84,7 @@ call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
-call <SID>define_config_variable("use_mouse_and_arrows", 0)
+call <SID>define_config_variable("use_mouse_and_arrows_in_term", 0)
 call <SID>define_config_variable("use_horizontal_splits", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
 call <SID>define_config_variable("cache_files", 1)
@@ -255,7 +255,7 @@ function! <SID>init_key_names()
                     \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
                     \ "Down Up Home End Left Right PageUp PageDown"
 
-  if !g:ctrlspace_use_mouse_and_arrows
+  if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
     let special_chars .= " Esc"
   endif
 
@@ -2188,26 +2188,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -2272,26 +2272,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -2443,26 +2443,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -2565,26 +2565,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>save_workspace(<SID>get_selected_workspace_name())
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -2671,26 +2671,26 @@ function! <SID>keypressed(key)
       call <SID>move("down")
     elseif a:key ==# "k"
       call <SID>move("up")
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>load_file()
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -2822,26 +2822,26 @@ function! <SID>keypressed(key)
       call <SID>delete_buffer()
     elseif a:key ==# "D"
       call <SID>delete_hidden_noname_buffers(0)
-    elseif (a:key ==# "MouseDown") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("up")
-    elseif (a:key ==# "MouseUp") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("down")
-    elseif (a:key ==# "LeftRelease") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
-    elseif (a:key ==# "2-LeftMouse") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move("mouse")
       call <SID>load_buffer()
-    elseif (a:key ==# "Down") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
-    elseif (a:key ==# "Up") && g:ctrlspace_use_mouse_and_arrows
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
-    elseif ((a:key ==# "Home") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "K")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
       call <SID>move(1)
-    elseif ((a:key ==# "End") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "J")
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
       call <SID>move(line("$"))
-    elseif ((a:key ==# "PageDown") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-f")
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
       call <SID>move("pgdown")
-    elseif ((a:key ==# "PageUp") && g:ctrlspace_use_mouse_and_arrows) || (a:key ==# "C-b")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
       call <SID>move("pgup")
     elseif a:key ==# "C-d"
       call <SID>move("half_pgdown")
@@ -3085,7 +3085,7 @@ function! <SID>set_up_buffer()
 
   call clearmatches()
 
-  if !g:ctrlspace_use_mouse_and_arrows
+  if !g:ctrlspace_use_mouse_and_arrows_in_term && !has("gui_running")
     " Block unnecessary escape sequences!
     noremap <silent><buffer><esc>[ <Nop>
   endif
