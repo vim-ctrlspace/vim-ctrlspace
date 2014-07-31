@@ -1485,12 +1485,6 @@ function! <SID>goto_bookmark(bm_nr)
     return
   endif
 
-  let s:files                   = []
-  let s:workspace_names         = []
-  let s:active_workspace_name   = ""
-  let s:active_workspace_digest = ""
-  let s:active_bookmark         = new_bookmark
-
   silent! exe "cd " . new_bookmark.directory
   call <SID>delayed_msg("CWD changed to '" . new_bookmark.directory . "'.")
 endfunction
@@ -1578,6 +1572,16 @@ function! <SID>start_ctrlspace_and_feedkeys(keys)
   endif
 endfunction
 
+function! <SID>handle_project_root_change()
+  if !exists("s:last_project_root") || (s:last_project_root != s:project_root)
+    let s:files                   = []
+    let s:workspace_names         = []
+    let s:active_workspace_name   = ""
+    let s:active_workspace_digest = ""
+    let s:last_project_root       = s:project_root
+  endif
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
@@ -1588,7 +1592,7 @@ function! <SID>ctrlspace_toggle(internal)
     let s:file_mode                      = 0
     let s:workspace_mode                 = 0
     let s:tablist_mode                   = 0
-    let s:bookmark_mode                 = 0
+    let s:bookmark_mode                  = 0
     let s:last_browsed_workspace         = 0
     let s:restored_search_mode           = 0
     let s:search_letters                 = []
@@ -1597,6 +1601,7 @@ function! <SID>ctrlspace_toggle(internal)
     let s:project_root                   = <SID>find_project_root()
     let s:active_bookmark                = <SID>find_active_bookmark()
 
+    call <SID>handle_project_root_change()
     call <SID>handle_autochdir("start")
   endif
 
