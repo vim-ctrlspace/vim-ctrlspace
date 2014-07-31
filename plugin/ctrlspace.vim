@@ -138,6 +138,7 @@ let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
 let s:update_search_results   = 0
+let s:last_project_root       = ""
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -1572,16 +1573,6 @@ function! <SID>start_ctrlspace_and_feedkeys(keys)
   endif
 endfunction
 
-function! <SID>handle_project_root_change()
-  if !exists("s:last_project_root") || (s:last_project_root != s:project_root)
-    let s:files                   = []
-    let s:workspace_names         = []
-    let s:active_workspace_name   = ""
-    let s:active_workspace_digest = ""
-    let s:last_project_root       = s:project_root
-  endif
-endfunction
-
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
@@ -1601,7 +1592,14 @@ function! <SID>ctrlspace_toggle(internal)
     let s:project_root                   = <SID>find_project_root()
     let s:active_bookmark                = <SID>find_active_bookmark()
 
-    call <SID>handle_project_root_change()
+    if s:last_project_root != s:project_root
+      let s:files                   = []
+      let s:workspace_names         = []
+      let s:active_workspace_name   = ""
+      let s:active_workspace_digest = ""
+      let s:last_project_root       = s:project_root
+    endif
+
     call <SID>handle_autochdir("start")
   endif
 
