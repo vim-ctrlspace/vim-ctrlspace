@@ -10,30 +10,23 @@ src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 * [Overview](#overview)
   * [What's so special?](#whats-so-special)
   * [Demo](#demo)
-* [The Story](#the-story)
-  * [Origins](#origins)
-  * [The Idea](#the-idea)
-  * [Workflow Tips](#workflow-tips)
-* [Installation and Initial Setup](#installation-and-initial-setup)
+* [Getting Started](#getting-started)
   * [Colors](#colors)
   * [Status Line](#status-line)
   * [Tabline](#tabline)
   * [Project Root](#project-root)
-* [User Interface](#user-interface)
+  * [User Interface](#user-interface)
   * [Tab Management](#tab-management)
 * [Lists](#lists)
   * [Buffer List](#buffer-list)
-    * [Single Mode](#single-mode)
-    * [All Mode](#all-mode)
-    * [Preview Mode](#preview-mode)
   * [File List](#file-list)
   * [Tab List](#tab-list)
   * [Workspace List](#workspace-list)
+  * [Bookmark List](#bookmark-list)
 * [Common Modes](#common-modes)
   * [Search Mode](#search-mode)
   * [Nop Mode](#nop-mode)
 * [Configuration](#configuration)
-  * [Colors](#colors)
 * [API ](#api)
   * [Commands](#commands)
   * [Functions](#functions)
@@ -973,10 +966,10 @@ Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
 `1`.
 
 
-## `g:ctrlspace_use_mouse_and_arrows`
+## `g:ctrlspace_use_mouse_and_arrows_in_term`
 
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
-keys. Disables the `Esc` key if turned on. 
+keys in a terminal Vim. Disables the `Esc` key if turned on. 
 
 Default value: `0`.
 
