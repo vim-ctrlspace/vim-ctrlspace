@@ -67,9 +67,9 @@ and so on.
 Buffer and file lists are rather obvious ones. You can look for buffers/files
 with fuzzy search algorithm. Each tab page contains its own buffer list with
 buffers related to that tab only. _Related_ means the given buffer has been
-shown in that tab at least once. In that way you get separate sets of buffers
-per each tab. And that's really useful. Of course, the _all buffers_ mode is
-still available. 
+shown in the given tab at least once. In that way you get separate sets of
+buffers per each tab. And that's really useful. Of course, the _all buffers_
+mode is still available. 
 
 The workspace list is something very unique. You can name your tabs and you can
 save the whole set of tabs and buffers as a workspace in your project directory
@@ -248,7 +248,7 @@ automatically.
 
 ## User Interface
 
-**Vim-CtrlSpace** contains 5 different lists: _Buffer List_, _File List_,  _Tab
+**Vim-CtrlSpace** contains 5 different lists: _Buffer List_, _File List_, _Tab
 List_, _Workspace List_, and _Bookmark List_. Some of those have additional
 modes. However, in a modal editor like Vim this should not fear you ;). 
 
@@ -599,9 +599,9 @@ list with the `r` key.
 
 ## Tab List
 
-| Unicode | ASCII  |
-|:-------:|:------:|
-| `○●○`   | `TABS` |
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `○●○`   | `-+-` |
 
 Tabs in **Vim-CtrlSpace**, due to this plugin nature, are used more extensively
 than their normal Vim usage. Vim author, Bram Moolenaar in his great talk [_7
@@ -919,7 +919,7 @@ similar form:
 
 Sets the minimal height of the plugin window. 
 
-Default value: `1`.
+Default value: `1`
 
 
 ## `g:ctrlspace_max_height`
@@ -927,7 +927,7 @@ Default value: `1`.
 Sets the maximum height of the plugin window. If `0` provided it uses 1/3 of the
 screen height. 
 
-Default value: `0`.
+Default value: `0`
 
 
 ## `g:ctrlspace_set_default_mapping`
@@ -935,7 +935,7 @@ Default value: `0`.
 Turns on the default mapping. If you turn this option off (`0`) you will have to
 provide your own mapping to the `CtrlSpace` yourself. 
 
-Default value: `1`.
+Default value: `1`
 
 
 ## `g:ctrlspace_default_mapping_key`
@@ -944,7 +944,7 @@ By default, **Vim-CtrlSpace** maps itself to `Ctrl + Space`. If you want to
 change the default mapping provide it here as a string with valid Vim keystroke
 notation. 
 
-Default value: `"<C-Space>"`.
+Default value: `"<C-Space>"`
 
 
 ## `g:ctrlspace_use_ruby_bindings`
@@ -957,13 +957,14 @@ operations are much faster in Ruby than in VimScript).
 > and see if there is a `+ruby` entry. Or just try the following one: `:ruby
 > puts RUBY_VERSION` - you should get the Ruby version or just an error.
 
-Default value: `1`. 
+Default value: `1`
 
 
 ## `g:ctrlspace_use_tabline`
 
-Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
-`1`.
+Should **Vim-CtrlSpace** change your default tabline to its own? 
+
+Default value: `1`
 
 
 ## `g:ctrlspace_use_mouse_and_arrows_in_term`
@@ -971,7 +972,7 @@ Should **Vim-CtrlSpace** change your default tabline to its own? Default value:
 Should the plugin use mouse, arrows and `Home`, `End`, `PageUp`, `PageDown`
 keys in a terminal Vim. Disables the `Esc` key if turned on. 
 
-Default value: `0`.
+Default value: `0`
 
 
 ## `g:ctrlspace_use_horizontal_splits`
@@ -979,7 +980,7 @@ Default value: `0`.
 Determines whether the plugin use vertical (`0`) or horizontal (`1`) splits if
 necessary while loading a workspace. 
 
-Default value: `0`.
+Default value: `0`
 
 
 ## `g:ctrlspace_save_workspace_on_exit`
@@ -988,14 +989,14 @@ Saves the active workspace (if present) on Vim quit. If this option is set, the
 Vim quit (`Q`) action from the plugin modes does not check for workspace
 changes. 
 
-Default value: `0`.
+Default value: `0`
 
 
 ## `g:ctrlspace_load_last_workspace_on_start`
 
 Loads the last active workspace (if found) on Vim startup. 
 
-Default value: `0`.
+Default value: `0`
 
 
 ## `g:ctrlspace_cache_dir`
@@ -1013,14 +1014,14 @@ current working directory. Make this array empty to disable this functionality.
 These markes will be also used as a storage for `cs_workspaces` (workspaces of
 the current project) and `cs_files` (cached files of the current project).
 
-Default value: `[".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]`.
+Default value: `[".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]`
 
 
 ## `g:ctrlspace_unicode_font`
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise. 
 
-Default value: `1`.
+Default value: `1`
 
 
 ## `g:ctrlspace_symbols`
@@ -1064,10 +1065,6 @@ else
 endif
 ```
 
-Of course, you don't have to mind the `g:ctrlspace_unicode_font` settings
-anymore. Just provide one array here.
-
-
 ## `g:ctrlspace_ignored_files`
 
 The expression used to ignore some files during file collecting. It is used in
@@ -1090,7 +1087,7 @@ default the limit is set to `500`. Usually there is no reason to show more,
 since browsing such big list is rather unconvenient. However, if you want to
 disable this feature, set this variable to `0`. 
 
-Default value: `500`.
+Default value: `500`
 
 
 ## `g:ctrlspace_max_search_results`
@@ -1102,7 +1099,7 @@ limited to `200` items. You can also limit results to the max plugin window
 height by providing value `-1` or you can disable this feature completely by
 setting it to `0`. 
 
-Default value: `200`.
+Default value: `200`
 
 
 ## `g:ctrlspace_search_timing`
