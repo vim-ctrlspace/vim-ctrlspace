@@ -922,7 +922,7 @@ function! <SID>new_workspace()
   endif
 
   if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
-        \ && !<SID>confirmed("Current workspace not saved. Proceed anyway?")
+        \ && !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
     return
   endif
 
@@ -958,7 +958,7 @@ function! <SID>load_workspace(bang, name)
       let msg = "Reload current workspace: '" . a:name . "'?"
     elseif !empty(s:active_workspace_name)
       if s:active_workspace_digest !=# <SID>create_workspace_digest()
-        let msg = "Current workspace not saved. Proceed anyway?"
+        let msg = "Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?"
       endif
     endif
 
@@ -1138,7 +1138,7 @@ endfunction
 function! <SID>quit_vim()
   if !g:ctrlspace_save_workspace_on_exit && !empty(s:active_workspace_name)
         \ && (s:active_workspace_digest !=# <SID>create_workspace_digest())
-        \ && !<SID>confirmed("Current workspace not saved. Proceed anyway?")
+        \ && !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
     return
   endif
 
@@ -1593,11 +1593,9 @@ function! <SID>ctrlspace_toggle(internal)
     let s:active_bookmark                = <SID>find_active_bookmark()
 
     if s:last_project_root != s:project_root
-      let s:files                   = []
-      let s:workspace_names         = []
-      let s:active_workspace_name   = ""
-      let s:active_workspace_digest = ""
-      let s:last_project_root       = s:project_root
+      let s:files             = []
+      let s:workspace_names   = []
+      let s:last_project_root = s:project_root
     endif
 
     call <SID>handle_autochdir("start")
