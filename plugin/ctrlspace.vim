@@ -3742,6 +3742,15 @@ function! <SID>update_file_list(path, new_path)
     return
   endif
 
+  if empty(s:files)
+    call <SID>load_files_from_cache()
+
+    if empty(s:files)
+      unlet s:all_files_buftext
+      return
+    endif
+  endif
+
   let new_path = empty(a:new_path) ? "" : fnamemodify(a:new_path, ":.")
 
   if !empty(a:path)
