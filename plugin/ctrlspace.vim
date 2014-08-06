@@ -139,6 +139,7 @@ let s:active_workspace_digest = ""
 let s:workspace_names         = []
 let s:update_search_results   = 0
 let s:last_project_root       = ""
+let s:project_root            = ""
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
