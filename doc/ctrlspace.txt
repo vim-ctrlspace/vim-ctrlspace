@@ -51,21 +51,20 @@ Table of Contents                                  *ctrlspace-table-of-contents*
     8.6 g:ctrlspace_use_tabline                        |g:ctrlspace_use_tabline|
     8.7 g:ctrlspace_use_mouse_and_arrows_in_term
                                       |g:ctrlspace_use_mouse_and_arrows_in_term|
-    8.8 g:ctrlspace_use_horizontal_splits    |g:ctrlspace_use_horizontal_splits|
-    8.11 g:ctrlspace_save_workspace_on_exit |g:ctrlspace_save_workspace_on_exit|
-    8.12 g:ctrlspace_load_last_workspace_on_start
+    8.8 g:ctrlspace_save_workspace_on_exit  |g:ctrlspace_save_workspace_on_exit|
+    8.9 g:ctrlspace_load_last_workspace_on_start
                                       |g:ctrlspace_load_last_workspace_on_start|
-    8.13 g:ctrlspace_cache_dir                           |g:ctrlspace_cache_dir|
-    8.14 g:ctrlspace_project_root_markers     |g:ctrlspace_project_root_markers|
-    8.15 g:ctrlspace_unicode_font                     |g:ctrlspace_unicode_font|
-    8.16 g:ctrlspace_symbols                               |g:ctrlspace_symbols|
-    8.17 g:ctrlspace_ignored_files                   |g:ctrlspace_ignored_files|
-    8.18 g:ctrlspace_statusline_function       |g:ctrlspace_statusline_function|
-    8.19 g:ctrlspace_max_files                           |g:ctrlspace_max_files|
-    8.20 g:ctrlspace_max_search_results         |g:ctrlspace_max_search_results|
-    8.21 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
-    8.22 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
-    8.23 Colors                                               |ctrlspace-colors|
+    8.10 g:ctrlspace_cache_dir                           |g:ctrlspace_cache_dir|
+    8.11 g:ctrlspace_project_root_markers     |g:ctrlspace_project_root_markers|
+    8.12 g:ctrlspace_unicode_font                     |g:ctrlspace_unicode_font|
+    8.13 g:ctrlspace_symbols                               |g:ctrlspace_symbols|
+    8.14 g:ctrlspace_ignored_files                   |g:ctrlspace_ignored_files|
+    8.15 g:ctrlspace_statusline_function       |g:ctrlspace_statusline_function|
+    8.16 g:ctrlspace_max_files                           |g:ctrlspace_max_files|
+    8.17 g:ctrlspace_max_search_results         |g:ctrlspace_max_search_results|
+    8.18 g:ctrlspace_search_timing                   |g:ctrlspace_search_timing|
+    8.19 g:ctrlspace_search_resonators           |g:ctrlspace_search_resonators|
+    8.20 Colors                                               |ctrlspace-colors|
   9. API                                                         |ctrlspace-api|
     9.1 Commands                                            |ctrlspace-commands|
     9.2 Functions                                          |ctrlspace-functions|
@@ -1010,15 +1009,7 @@ keys in a terminal Vim. Disables the `Esc` key if turned on.
 Default value: `0`.
 
 
-6.8 *g:ctrlspace_use_horizontal_splits*
-
-Determines whether the plugin use vertical (`0`) or horizontal (`1`) splits if
-necessary while loading a workspace.
-
-Default value: `0`
-
-
-6.9 *g:ctrlspace_save_workspace_on_exit*
+6.8 *g:ctrlspace_save_workspace_on_exit*
 
 Saves the active workspace (if present) on Vim quit. If this option is set,
 the Vim quit (`Q`) action from the plugin modes does not check for workspace
@@ -1027,20 +1018,20 @@ changes.
 Default value: `0`
 
 
-6.10 *g:ctrlspace_load_last_workspace_on_start*
+6.9 *g:ctrlspace_load_last_workspace_on_start*
 
 Loads the last active workspace (if found) on Vim startup.
 
 Default value: `0`
 
 
-6.11 *g:ctrlspace_cache_dir*
+6.10 *g:ctrlspace_cache_dir*
 
 A directory for the Vim-CtrlSpace cache file (`.cs_cache`). By default your
 `$HOME` directory will be used.
 
 
-6.12 *g:ctrlspace_project_root_markers*
+6.11 *g:ctrlspace_project_root_markers*
 
 An array of directory names which presence indicates the project root. If no
 marker is found, you will be asked to confirm the project root basing on the
@@ -1052,14 +1043,14 @@ the current project) and `cs_files` (cached files of the current project).
 Default value: `[".git",` `".hg",` `".svn",` `".bzr",` `"_darcs",` `"CVS"]`
 
 
-6.13 *g:ctrlspace_unicode_font*
+6.12 *g:ctrlspace_unicode_font*
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise.
 
 Default value: `1`
 
 
-6.14 *g:ctrlspace_symbols*
+6.13 *g:ctrlspace_symbols*
 
 Enables you to provide your own symbols. It's useful if for example your font
 doesn't contain enough symbols or the glyphs are poorly rendered.
@@ -1097,7 +1088,7 @@ Default value: >
     endif
 <
 
-6.15 *g:ctrlspace_ignored_files*
+6.14 *g:ctrlspace_ignored_files*
 
 The expression used to ignore some files during file collecting. It is used in
 addition to the `wildignore` option in Vim (see |wildignore|).
@@ -1105,14 +1096,14 @@ addition to the `wildignore` option in Vim (see |wildignore|).
 Default value: `'\v(tmp|temp)[\/]'`
 
 
-6.16 *g:ctrlspace_statusline_function*
+6.15 *g:ctrlspace_statusline_function*
 
 Allows to provide custom statusline function used by the CtrlSpace window.
 
 Default value: `"ctrlspace#statusline()"`
 
 
-6.17 *g:ctrlspace_max_files*
+6.16 *g:ctrlspace_max_files*
 
 This value specifies how many files will be shown in the plugin window. By
 default the limit is set to `500`. Usually there is no reason to show more,
@@ -1122,7 +1113,7 @@ disable this feature, set this variable to `0`.
 Default value: `500`
 
 
-6.18 *g:ctrlspace_max_search_results*
+6.17 *g:ctrlspace_max_search_results*
 
 Limits the search results. Usually, and especially in large projects, showing
 all results is meaningless. It leads to higher time/memory consumption whereas
@@ -1134,7 +1125,7 @@ setting it to `0`.
 Default value: `200`
 
 
-6.19 *g:ctrlspace_search_timing*
+6.18 *g:ctrlspace_search_timing*
 
 Allows you to adjust search smoothness. Contains an array of two integer values.
 If the size of the list is lower than the first value, that value will be used
@@ -1146,7 +1137,7 @@ input behavior.
 Default value: `[50,` `500]`
 
 
-6.20 *g:ctrlspace_search_resonators*
+6.19 *g:ctrlspace_search_resonators*
 
 Allows you to set characters which will be used to increase search accurancy. If
 such "resonator" is found next to the searched sequence, it increases the search
@@ -1160,7 +1151,7 @@ this behavior completely by providing an empty array.
 Default value: `['.',` `'/',` `'\',` `'_',` `'-']`
 
 
-6.21 Colors                                                   *ctrlspace-colors*
+6.20 Colors                                                   *ctrlspace-colors*
 
 The plugin allows you to define its colors entirely. By default it comes with
 following highlight links: >

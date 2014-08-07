@@ -975,14 +975,6 @@ keys in a terminal Vim. Disables the `Esc` key if turned on.
 Default value: `0`
 
 
-## `g:ctrlspace_use_horizontal_splits`
-
-Determines whether the plugin use vertical (`0`) or horizontal (`1`) splits if
-necessary while loading a workspace. 
-
-Default value: `0`
-
-
 ## `g:ctrlspace_save_workspace_on_exit`
 
 Saves the active workspace (if present) on Vim quit. If this option is set, the

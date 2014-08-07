@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.3
+" Version:      4.0.4
 "
 " The MIT License (MIT)
 
@@ -85,7 +85,6 @@ call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("use_ruby_bindings", 1)
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows_in_term", 0)
-call <SID>define_config_variable("use_horizontal_splits", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
 call <SID>define_config_variable("cache_files", 1)
 call <SID>define_config_variable("save_workspace_on_exit", 0)
@@ -140,6 +139,7 @@ let s:workspace_names         = []
 let s:update_search_results   = 0
 let s:last_project_root       = ""
 let s:project_root            = ""
+let s:CS_SEP                  = "|CS_###_CS|"
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -153,7 +153,7 @@ function! <SID>init_project_roots_and_bookmarks()
       endif
 
       if line =~# "CS_BOOKMARK: "
-        let parts = split(line[13:], "|CS_###_CS|")
+        let parts = split(line[13:], s:CS_SEP)
         let bookmark = { "name": ((len(parts) > 1) ? parts[1] : parts[0]), "directory": parts[0], "jump_counter": 0 }
         call add(s:bookmarks, bookmark)
         let s:project_roots[bookmark.directory] = 1
@@ -223,7 +223,7 @@ function! <SID>add_to_bookmarks(directory, name)
   endif
 
   for bm in s:bookmarks
-    call add(lines, "CS_BOOKMARK: " . bm.directory . "|CS_###_CS|" . bm.name)
+    call add(lines, "CS_BOOKMARK: " . bm.directory . s:CS_SEP . bm.name)
     let bm_roots[bm.directory] = 1
   endfor
 
@@ -643,7 +643,7 @@ function! <SID>save_first_workspace()
 endfunction
 
 function! <SID>create_workspace_digest()
-  let use_nossl = exists("b:old_nossl") && b:old_nossl
+  let use_nossl = exists("b:nossl_save") && b:nossl_save
 
   if use_nossl
     set nossl
@@ -694,14 +694,14 @@ function <SID>save_workspace_externally(name)
 
   call <SID>handle_autochdir("start")
 
-  let old_cwd = fnamemodify(".", ":p:h")
+  let cwd_save = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
 
   if empty(a:name)
     if !empty(s:active_workspace_name)
       let name = s:active_workspace_name
     else
-      silent! exe "cd " . old_cwd
+      silent! exe "cd " . cwd_save
       return
     endif
   else
@@ -735,49 +735,76 @@ function <SID>save_workspace_externally(name)
 
   call add(lines, workspace_start_marker)
 
+  let ssop_save = &ssop
+  set ssop=winsize,tabpages,buffers
+
+  let tab_data = []
+
   for t in range(1, last_tab)
-    let line = [t, gettabvar(t, "ctrlspace_label"), tabpagenr() == t]
+    let data = { "label": gettabvar(t, "ctrlspace_label"), "current": tabpagenr() == t }
 
     let ctrlspace_list = ctrlspace#bufferlist(t)
 
-    let bufs     = []
-    let visibles = []
-
-    let visible_buffers = tabpagebuflist(t)
-
-    let ctrlspace_list_index = -1
+    let bufs = []
 
     for [nr, bname] in items(ctrlspace_list)
-      let ctrlspace_list_index += 1
       let bufname = fnamemodify(bname, ":.")
-      let nr = str2nr(nr)
 
       if !filereadable(bufname)
         continue
       endif
 
-      if index(visible_buffers, nr) != -1
-        call add(visibles, ctrlspace_list_index)
-      endif
-
       call add(bufs, bufname)
     endfor
 
-    call add(line, join(bufs, "|"))
-    call add(line, join(visibles, "|"))
-    call add(lines, join(line, ","))
+    let data.bufs = bufs
+    call add(tab_data, data)
+  endfor
+
+  mksession! CS_SESSION
+
+  let tab_index = 0
+
+  for cmd in readfile("CS_SESSION")
+    if ((cmd =~# "^edit") && (tab_index == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+      let data = tab_data[tab_index]
+
+      if tab_index > 0
+        call add(lines, cmd)
+      endif
+
+      for b in data.bufs
+        call add(lines, "edit " . b)
+      endfor
+
+      if !empty(data.label)
+        call add(lines, "let t:ctrlspace_label = '" . data.label . "'")
+      endif
+
+      if tab_index == 0
+        call add(lines, cmd)
+      elseif cmd =~# "tabedit"
+        call add(lines, cmd[3:]) "make edit from tabedit
+      endif
+
+      let tab_index += 1
+    else
+      call add(lines, cmd)
+    endif
   endfor
 
   call add(lines, workspace_end_marker)
 
   call writefile(lines, filename)
+  call delete("CS_SESSION")
 
   call <SID>set_active_workspace_name(name)
 
   let s:active_workspace_digest = <SID>create_workspace_digest()
   let s:workspace_names         = []
 
-  silent! exe "cd " . old_cwd
+  silent! exe "cd " . cwd_save
+  silent! exe "set ssop=" . ssop_save
 
   call <SID>handle_autochdir("stop")
   call <SID>msg("The workspace '" . name . "' has been saved.")
@@ -989,13 +1016,13 @@ function! <SID>load_workspace_externally(bang, name)
 
   call <SID>handle_autochdir("start")
 
-  let old_cwd = fnamemodify(".", ":p:h")
+  let cwd_save = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
 
   let filename = <SID>workspace_file()
 
   if !filereadable(filename)
-    silent! exe "cd " . old_cwd
+    silent! exe "cd " . cwd_save
     return
   endif
 
@@ -1003,7 +1030,7 @@ function! <SID>load_workspace_externally(bang, name)
     let name = <SID>get_last_active_workspace_name()
 
     if empty(name)
-      silent! exe "cd " . old_cwd
+      silent! exe "cd " . cwd_save
       return
     endif
   else
@@ -1013,7 +1040,7 @@ function! <SID>load_workspace_externally(bang, name)
   let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . name
   let workspace_end_marker   = "CS_WORKSPACE_END: " . name
 
-  let lines      = []
+  let lines        = []
   let in_workspace = 0
 
   for old_line in readfile(filename)
@@ -1029,11 +1056,9 @@ function! <SID>load_workspace_externally(bang, name)
   if empty(lines)
     call <SID>msg("Workspace '" . name . "' not found in file '" . filename . "'.")
     let s:workspace_names = []
-    silent! exe "cd " . old_cwd
+    silent! exe "cd " . cwd_save
     return
   endif
-
-  let window_split_command = g:ctrlspace_use_horizontal_splits ? "sp " : "vs "
 
   let commands = []
 
@@ -1044,84 +1069,22 @@ function! <SID>load_workspace_externally(bang, name)
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
-    let create_first_tab        = 0
     call <SID>set_active_workspace_name(name)
   else
     call <SID>msg("Appending workspace '" . name . "'...")
-    let create_first_tab = 1
+    call add(commands, "tabe")
   endif
 
-  for line in lines
-    let tab_data   = split(line, ",")
-    let tabnr      = tab_data[0]
-    let tab_label  = tab_data[1]
-    let is_current = str2nr(tab_data[2])
-    let files      = split(tab_data[3], "|")
-    let visibles   = (len(tab_data) > 4) ? split(tab_data[4], "|") : []
+  call writefile(lines, "CS_SESSION")
 
-    let readable_files = []
-    let visible_files  = []
-
-    let index = 0
-
-    for fname in files
-      if filereadable(fname)
-        call add(readable_files, fname)
-
-        if index(visibles, string(index)) > -1
-          call add(visible_files, fname)
-        endif
-      endif
-
-      let index += 1
-    endfor
-
-    if empty(readable_files)
-      continue
-    endif
-
-    if create_first_tab
-      call add(commands, "tabe")
-    else
-      let create_first_tab = 1 " we want omit only first tab creation if a:bang == 0 (append mode)
-    endif
-
-    for fname in readable_files
-      call add(commands, "e " . fnameescape(fname))
-      call add(commands, "if line(\"'\\\"\") > 0 | " .
-            \ "if line(\"'\\\"\") <= line('$') | " .
-            \ "exe(\"norm '\\\"\") | else | exe 'norm $' | " .
-            \ "endif | endif")
-    endfor
-
-    if !empty(visible_files)
-      call add(commands, "e " . fnameescape(visible_files[0]))
-      call add(commands, "normal! zbze")
-
-      for visible_fname in visible_files[1:-1]
-        call add(commands, window_split_command . visible_fname)
-        call add(commands, "normal! zbze")
-        call add(commands, "wincmd p")
-        call add(commands, "normal! zbze")
-        call add(commands, "wincmd p")
-      endfor
-    endif
-
-    if is_current
-      call add(commands, "let ctrlspace_workspace_current_tab = tabpagenr()")
-    endif
-
-    if !empty(tab_label)
-      call add(commands, "let t:ctrlspace_label = \"" . escape(tab_label, '"') . "\"")
-    endif
-  endfor
-
-  call add(commands, "silent! exe 'normal! ' . ctrlspace_workspace_current_tab . 'gt'")
+  call add(commands, "source CS_SESSION")
   call add(commands, "redraw!")
 
   for c in commands
     silent exe c
   endfor
+
+  call delete("CS_SESSION")
 
   if !a:bang
     call <SID>msg("The workspace '" . name . "' has been loaded.")
@@ -1131,7 +1094,7 @@ function! <SID>load_workspace_externally(bang, name)
     call <SID>msg("The workspace '" . name . "' has been appended.")
   endif
 
-  silent! exe "cd " . old_cwd
+  silent! exe "cd " . cwd_save
 
   call <SID>handle_autochdir("stop")
 endfunction
@@ -1521,7 +1484,7 @@ function! <SID>remove_bookmark(bm_nr)
   endif
 
   for bm in s:bookmarks
-    call add(lines, "CS_BOOKMARK: " . bm.directory . "|CS_###_CS|" . bm.name)
+    call add(lines, "CS_BOOKMARK: " . bm.directory . s:CS_SEP . bm.name)
   endfor
 
   call writefile(lines, cache_file)
@@ -1985,16 +1948,16 @@ function! <SID>kill(buflistnr, final)
 
   let s:killing_now = 1
 
-  if exists("b:old_updatetime")
-    silent! exe "set updatetime=" . b:old_updatetime
+  if exists("b:updatetime_save")
+    silent! exe "set updatetime=" . b:updatetime_save
   endif
 
-  if exists("b:old_timeoutlen")
-    silent! exe "set timeoutlen=" . b:old_timeoutlen
+  if exists("b:timeoutlen_save")
+    silent! exe "set timeoutlen=" . b:timeoutlen_save
   endif
 
   " shellslash support for win32
-  if exists("b:old_nossl") && b:old_nossl
+  if exists("b:nossl_save") && b:nossl_save
     set nossl
   endif
 
@@ -3063,15 +3026,15 @@ function! <SID>set_up_buffer()
   let b:search_patterns = {}
 
   if &timeout
-    let b:old_timeoutlen = &timeoutlen
+    let b:timeoutlen_save = &timeoutlen
     set timeoutlen=10
   endif
 
-  let b:old_updatetime = &updatetime
+  let b:updatetime_save = &updatetime
 
   " shellslash support for win32
   if has("win32") && !&ssl
-    let b:old_nossl = 1
+    let b:nossl_save = 1
     set ssl
   endif
 
