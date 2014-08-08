@@ -741,7 +741,7 @@ function <SID>save_workspace_externally(name)
   let tab_data = []
 
   for t in range(1, last_tab)
-    let data = { "label": gettabvar(t, "ctrlspace_label"), "current": tabpagenr() == t }
+    let data = { "label": gettabvar(t, "ctrlspace_label") }
 
     let ctrlspace_list = ctrlspace#bufferlist(t)
 
@@ -778,12 +778,12 @@ function <SID>save_workspace_externally(name)
       endfor
 
       if !empty(data.label)
-        call add(lines, "let t:ctrlspace_label = '" . data.label . "'")
+        call add(lines, "let t:ctrlspace_label = '" . substitute(data.label, "'", "''","g") . "'")
       endif
 
       if tab_index == 0
         call add(lines, cmd)
-      elseif cmd =~# "tabedit"
+      elseif cmd =~# "^tabedit"
         call add(lines, cmd[3:]) "make edit from tabedit
       endif
 
