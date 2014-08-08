@@ -736,7 +736,7 @@ function <SID>save_workspace_externally(name)
   call add(lines, workspace_start_marker)
 
   let ssop_save = &ssop
-  set ssop=winsize,tabpages,buffers
+  set ssop=winsize,tabpages,buffers,sesdir
 
   let tab_data = []
 
