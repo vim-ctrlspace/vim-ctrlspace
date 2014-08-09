@@ -1,6 +1,6 @@
 <div align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 </div>
 
 
@@ -65,7 +65,7 @@ preview window similarly to [CtrlP](https://github.com/kien/ctrlp.vim).
 
 <p align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/plugin_window.png" /><br />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/plugin_window.png" /><br />
 <em>Sample Plugin Window</em>
 </p>
 
@@ -336,7 +336,7 @@ Here's the graphic illustration of those relations.
 
 <p align="center">
 <img alt="Vim-CtrlSpace Lists" 
-src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/lists.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/lists.png" />
 </p>
 
 
