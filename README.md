@@ -1,7 +1,7 @@
-<h1 align="center">
+<div align="center">
 <img alt="Vim-CtrlSpace" 
 src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
-</h1>
+</div>
 
 
 # Table of Contents
