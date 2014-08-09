@@ -351,6 +351,15 @@ backend and frontend layers.
 ------------------------------------------------------------------------------
 3. Lists                                                       *ctrlspace-lists*
 
+The most inner list is the Buffer List. It stores buffers for the given tab. The
+File List is a special case here containing buffers and not opened yet files.
+Similarly, the All Mode includes all listed buffers. The Tab List encloses many
+Buffer Lists. Workspace List encloses many Tab Lists, and finally the Bookmark
+List encloses many Workspace Lists (one per project root).
+
+Here's the graphic illustration of those relations:
+https://raw.github.com/szw/vim-ctrlspace/master/gfx/lists.png
+
 
 3.1 Buffer List                                          *ctrlspace-buffer-list*
 

@@ -336,7 +336,7 @@ Here's the graphic illustration of those relations.
 
 <p align="center">
 <img alt="Vim-CtrlSpace Lists" 
-src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/lists2.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/lists.png" />
 </p>
 
 
