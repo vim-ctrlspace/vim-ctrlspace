@@ -34,9 +34,9 @@ src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
 
 # Overview
 
-**Vim-CtrlSpace** is a Vim plugin allowing to create and manage lists of
+**Vim-CtrlSpace** is a Vim plugin for creating and managing lists of
 buffers, files, tabs, workspaces (sessions), and finally bookmarks (projects).
-Its approach is somewhat unique, but certainly you will feel at home soon,
+Its approach is somewhat unique, but certainly you will feel at home quickly,
 especially if you used intensively split windows, tabs, buffers, etc.
 
 You can think of it as a buffer/file/tab explorer mixed with a fuzzy finder
