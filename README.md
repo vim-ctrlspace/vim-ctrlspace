@@ -4,9 +4,8 @@ src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
 </div>
 
 
-# Table of Contents
+### Table of Contents
 
-* [Table of Contents](#table-of-contents)
 * [Overview](#overview)
   * [What's so special?](#whats-so-special)
   * [Demo](#demo)
