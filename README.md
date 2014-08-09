@@ -1,6 +1,6 @@
 <h1 align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
+src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
 </h1>
 
 
