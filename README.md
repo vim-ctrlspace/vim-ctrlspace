@@ -326,6 +326,10 @@ backend and frontend layers.
 
 # Lists
 
+<p align="center">
+<img alt="Vim-CtrlSpace Lists" 
+src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/lists.png" />
+</p>
 
 ## Buffer List
 
