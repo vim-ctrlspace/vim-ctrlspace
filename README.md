@@ -4,7 +4,7 @@ src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
 </div>
 
 
-### Table of Contents
+#### Table of Contents
 
 * [Overview](#overview)
   * [What's so special?](#whats-so-special)
@@ -34,22 +34,34 @@ src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/logo.png" />
 
 # Overview
 
-**Vim-CtrlSpace** is a cool companion plugin which helps you manage your Vim
-workspace. It helps you to utilize core Vim features like multiple buffers,
-tabs, and windows in a great degree. Besides that, it introduces some new
-ideas, like workspaces, named tabs, or separate buffer lists. 
+**Vim-CtrlSpace** is a Vim plugin allowing to create and manage lists of
+buffers, files, tabs, workspaces (sessions), and finally bookmarks (projects).
+Its approach is somewhat unique, but certainly you will feel at home soon,
+especially if you used intensively split windows, tabs, buffers, etc.
 
-It is worth to say, both for me and other plugin users, Vim-CtrlSpace became
-a most important tool while working with Vim or a strong complement to their
-existing workflow.
+You can think of it as a buffer/file/tab explorer mixed with a fuzzy finder
+like [CtrlP](https://github.com/kien/ctrlp.vim), and a session and project
+explorer. Pretty wide area, isn't it?
+
+But this idea seems to work quite well and the plugin may become your coolest
+companion. It can help you to manage your Vim workspace and increase your usage
+of core Vim features like multiple buffers, tabs, and windows in a great degree.
+The plugin can also provide you with some new concepts, like workspaces, named
+tabs, or separate buffer lists. 
+
+It is worth to say, both for me and other plugin users, Vim-CtrlSpace became the
+most important tool in the Vim toolbox or a strong complement to their existing
+workflow.
 
 
 ## What's so special?
 
-Visually, Vim-CtrlSpace is a window displayed on demand at the screen bottom
-that contains a bunch of lists from which you can select items. Sounds pretty
-simple, but around that there are some additional details making this concept
-a unique approach. 
+Visually, Vim-CtrlSpace is just a temporary window that sticks to the bottom of
+screen and contains a list from which you can select items. Although it acts as
+a [_split
+explorer_](http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/),
+it doesn't show up in the split window itself. Rather, it creates a temporary
+preview window similarly to [CtrlP](https://github.com/kien/ctrlp.vim).
 
 <p align="center">
 <img alt="Vim-CtrlSpace" 
@@ -57,34 +69,36 @@ src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/plugin_window.pn
 <em>Sample Plugin Window</em>
 </p>
 
-The plugin window can display various lists: a list of open tab pages, a buffer
-list (for current tab only or for all open buffers), a file list, a workspace
-list, and last but not least, a bookmark list. Within those lists you can both
+The plugin window can display various lists: a list of open tab pages, a Buffer
+List (for current tab only or for all open buffers), a File List, a Workspace
+List, and last but not least, a Bookmark List. Within those lists you can both
 navigate to selected items and manage them as well - rename, add, delete, move,
-and so on.
+copy, and so on.
 
-Buffer and file lists are rather obvious ones. You can look for buffers/files
-with fuzzy search algorithm. Each tab page contains its own buffer list with
-buffers related to that tab only. _Related_ means the given buffer has been
-shown in the given tab at least once. In that way you get separate sets of
-buffers per each tab. And that's really useful. Of course, the _all buffers_
-mode is still available. 
+Buffer and File Lists are rather obvious ones. You can look for buffers/files
+with fuzzy search algorithm. But the special part here is this: each tab page
+contains its own Buffer List with buffers related to that tab only. _Related_
+means the given buffer has been shown in the given tab at least once. In that
+way you have separate sets of buffers for each tab. And that's really useful. Of
+course, the _all buffers_ mode is still available. 
 
-The workspace list is something very unique. You can name your tabs and you can
-save the whole set of tabs and buffers as a workspace in your project directory
-and reopen it later. The tab list is something comparable to Vim's tabline.
-However the Vim's tabline has several limitations, like tab count or tabline
-length. Therefore, a tab list has been introduced, as a convenient replacement
-of Vim tabline feature. Needless to say, you can perform all moving, copying,
-renaming and deleting operations on tab items too.
+The Workspace List is also something very unique. You can name your tabs and you
+can save the whole set of tabs and buffers as a workspace in your project
+directory and reopen it later. The Tab List is something comparable to Vim's
+tabline. However the Vim's tabline has several limitations, like tab count or
+tabline length. The Tab List was introduced as a convenient replacement of Vim
+tabline. Needless to say, you can perform moving, copying, renaming, and
+deleting operations on tab items too.
 
-The last list available in Vim-CtrlSpace is the bookmark list. Vim-CtrlSpace
+The last list available in Vim-CtrlSpace is the Bookmark list. Vim-CtrlSpace
 tries to handle files and buffers relative to the current working directory. It
-can also try to guess the project root. You can change/navigate to various
-directories even through `:cd` command. Bookmarks can save you some time here,
-because they are just locations of your favorite projects/directories with
-friendly names. In that way you can literally jump between various projects,
-manage (add) files (workspaces) between them, etc. 
+can also try to guess the project root. But of course you are not limited to one
+project root only. You can change/navigate to various working directories even
+through the `:cd` command. Bookmarks are just shortcuts to your favorite
+directories (projects). You can save some time here by jumping to different
+locations with friendly names. In that way you can literally jump between
+various projects, manage (or interchange) files/buffers/workspaces between them,
+etc. 
 
 The plugin name follows the convention of naming similar plugins after their
 default mappings (like _Command-T_ or _CtrlP_). Obviously, the plugin mapping is
