@@ -291,7 +291,7 @@ if g:ctrlspace_save_workspace_on_exit
 endif
 
 if g:ctrlspace_load_last_workspace_on_start
-  au VimEnter * nested CtrlSpaceLoadWorkspace
+  au VimEnter * nested if argc() == 0 | CtrlSpaceLoadWorkspace | endif
 endif
 
 function! ctrlspace#statusline()
