@@ -54,7 +54,7 @@ a unique approach.
 
 <p align="center">
 <img alt="Vim-CtrlSpace" 
-src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/plugin_window.png" /><br />
+src="https://raw.github.com/szw/vim-ctrlspace/store_layouts/gfx/plugin_window.png" /><br />
 <em>Sample Plugin Window</em>
 </p>
 
