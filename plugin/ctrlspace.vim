@@ -1007,6 +1007,126 @@ function! <SID>load_workspace(bang, name)
   endif
 endfunction
 
+function! <SID>execute_workspace_commands_from_lines_v2(bang, name, lines)
+  let commands = []
+
+  if !a:bang
+    call <SID>msg("Loading workspace '" . a:name . "'...")
+    call add(commands, "tabe")
+    call add(commands, "tabo!")
+    call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
+    call add(commands, "call <SID>delete_foreign_buffers(1)")
+
+    call <SID>set_active_workspace_name(a:name)
+  else
+    call <SID>msg("Appending workspace '" . a:name . "'...")
+    call add(commands, "tabe")
+  endif
+
+  call writefile(a:lines, "CS_SESSION")
+
+  call add(commands, "source CS_SESSION")
+  call add(commands, "redraw!")
+
+  for c in commands
+    silent exe c
+  endfor
+
+  call delete("CS_SESSION")
+endfunction
+
+function! <SID>execute_workspace_commands_from_lines_v1(bang, name, lines)
+  let window_split_command = "vs "
+
+  let commands = []
+
+  if !a:bang
+    call <SID>msg("Loading workspace '" . a:name . "'...")
+    call add(commands, "tabe")
+    call add(commands, "tabo!")
+    call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
+    call add(commands, "call <SID>delete_foreign_buffers(1)")
+
+    let create_first_tab        = 0
+    call <SID>set_active_workspace_name(a:name)
+  else
+    call <SID>msg("Appending workspace '" . a:name . "'...")
+    let create_first_tab = 1
+  endif
+
+  for line in a:lines
+    let tab_data   = split(line, ",")
+    let tabnr      = tab_data[0]
+    let tab_label  = tab_data[1]
+    let is_current = str2nr(tab_data[2])
+    let files      = split(tab_data[3], "|")
+    let visibles   = (len(tab_data) > 4) ? split(tab_data[4], "|") : []
+
+    let readable_files = []
+    let visible_files  = []
+
+    let index = 0
+
+    for fname in files
+      if filereadable(fname)
+        call add(readable_files, fname)
+
+        if index(visibles, string(index)) > -1
+          call add(visible_files, fname)
+        endif
+      endif
+
+      let index += 1
+    endfor
+
+    if empty(readable_files)
+      continue
+    endif
+
+    if create_first_tab
+      call add(commands, "tabe")
+    else
+      let create_first_tab = 1 " we want omit only first tab creation if a:bang == 0 (append mode)
+    endif
+
+    for fname in readable_files
+      call add(commands, "e " . fnameescape(fname))
+      call add(commands, "if line(\"'\\\"\") > 0 | " .
+            \ "if line(\"'\\\"\") <= line('$') | " .
+            \ "exe(\"norm '\\\"\") | else | exe 'norm $' | " .
+            \ "endif | endif")
+    endfor
+
+    if !empty(visible_files)
+      call add(commands, "e " . fnameescape(visible_files[0]))
+      call add(commands, "normal! zbze")
+
+      for visible_fname in visible_files[1:-1]
+        call add(commands, window_split_command . visible_fname)
+        call add(commands, "normal! zbze")
+        call add(commands, "wincmd p")
+        call add(commands, "normal! zbze")
+        call add(commands, "wincmd p")
+      endfor
+    endif
+
+    if is_current
+      call add(commands, "let ctrlspace_workspace_current_tab = tabpagenr()")
+    endif
+
+    if !empty(tab_label)
+      call add(commands, "let t:ctrlspace_label = \"" . escape(tab_label, '"') . "\"")
+    endif
+  endfor
+
+  call add(commands, "silent! exe 'normal! ' . ctrlspace_workspace_current_tab . 'gt'")
+  call add(commands, "redraw!")
+
+  for c in commands
+    silent exe c
+  endfor
+endfunction
+
 " bang == 0) load
 " bang == 1) append
 function! <SID>load_workspace_externally(bang, name)
@@ -1060,31 +1180,11 @@ function! <SID>load_workspace_externally(bang, name)
     return
   endif
 
-  let commands = []
-
-  if !a:bang
-    call <SID>msg("Loading workspace '" . name . "'...")
-    call add(commands, "tabe")
-    call add(commands, "tabo!")
-    call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
-    call add(commands, "call <SID>delete_foreign_buffers(1)")
-
-    call <SID>set_active_workspace_name(name)
+  if lines[0] == "let SessionLoad = 1"
+    call <SID>execute_workspace_commands_from_lines_v2(a:bang, name, lines)
   else
-    call <SID>msg("Appending workspace '" . name . "'...")
-    call add(commands, "tabe")
+    call <SID>execute_workspace_commands_from_lines_v1(a:bang, name, lines)
   endif
-
-  call writefile(lines, "CS_SESSION")
-
-  call add(commands, "source CS_SESSION")
-  call add(commands, "redraw!")
-
-  for c in commands
-    silent exe c
-  endfor
-
-  call delete("CS_SESSION")
 
   if !a:bang
     call <SID>msg("The workspace '" . name . "' has been loaded.")
