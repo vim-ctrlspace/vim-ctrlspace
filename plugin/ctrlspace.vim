@@ -83,6 +83,7 @@ call <SID>define_config_variable("max_height", 0)
 call <SID>define_config_variable("set_default_mapping", 1)
 call <SID>define_config_variable("default_mapping_key", "<C-Space>")
 call <SID>define_config_variable("use_ruby_bindings", 1)
+call <SID>define_config_variable("glob_command", "")
 call <SID>define_config_variable("use_tabline", 1)
 call <SID>define_config_variable("use_mouse_and_arrows_in_term", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
@@ -1720,7 +1721,7 @@ function! <SID>ctrlspace_toggle(internal)
         let action = "Collecting files..."
         call <SID>msg(action)
 
-        for fname in split(globpath('.', '**'), '\n')
+        for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : systemlist(g:ctrlspace_glob_command)
           let fname_modified = fnamemodify(fname, ":.")
 
           if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)

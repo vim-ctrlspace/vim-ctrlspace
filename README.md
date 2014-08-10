@@ -986,6 +986,19 @@ operations are much faster in Ruby than in VimScript).
 Default value: `1`
 
 
+## `g:ctrlspace_glob_command`
+
+If not empty, the provided command will be used to list all files instead of Vim
+`globpath()` function. For example, if you have Ag installed that could be:
+
+```VimL
+if executable("ag") 
+  let g:ctrlspace_glob_command = 'ag . -l --nocolor -g ""'
+endif
+```
+
+Default value: `""`
+
 ## `g:ctrlspace_use_tabline`
 
 Should **Vim-CtrlSpace** change your default tabline to its own? 
