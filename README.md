@@ -1099,7 +1099,11 @@ endif
 ## `g:ctrlspace_ignored_files`
 
 The expression used to ignore some files during file collecting. It is used in
-addition to the `wildignore` option in Vim (see `:help wildignore`). 
+addition to the `wildignore` option in Vim (see `:help wildignore`). Notice, the
+`wildignore` option won't work with a custom glob command
+([`g:ctrlspace_glob_command`](#gctrlspace_glob_command)). And the glob command
+may ignore some files itself (for example: `Ag` command obeys `.gitignore`
+file).
 
 Default value: `'\v(tmp|temp)[\/]'`
 
