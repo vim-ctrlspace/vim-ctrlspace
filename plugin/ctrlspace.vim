@@ -663,7 +663,7 @@ function! <SID>create_workspace_digest()
     let bufs = []
 
     for bname in values(ctrlspace#bufferlist(t))
-      let bufname = fnamemodify(bname, ":.")
+      let bufname = fnamemodify(bname, ":p")
 
       if !filereadable(bufname)
         continue
