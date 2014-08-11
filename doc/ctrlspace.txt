@@ -41,6 +41,7 @@ Table of Contents                                  *ctrlspace-table-of-contents*
   4. Common Modes                                       |ctrlspace-common-modes|
     4.1 Search Mode                                      |ctrlspace-search-mode|
     4.2 Nop Mode                                            |ctrlspace-nop-mode|
+    4.3 Help Mode                                          |ctrlspace-help-mode|
   5. Configuration                                     |ctrlspace-configuration|
     5.1 g:ctrlspace_height                                  |g:ctrlspace_height|
     5.2 g:ctrlspace_max_height                          |g:ctrlspace_max_height|
