@@ -25,6 +25,7 @@ src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 * [Common Modes](#common-modes)
   * [Search Mode](#search-mode)
   * [Nop Mode](#nop-mode)
+  * [Help Mode](#help-mode)
 * [Configuration](#configuration)
 * [API ](#api)
   * [Commands](#commands)
@@ -284,6 +285,7 @@ important symbolic information:
 | Unicode Symbol | ASCII Symbol  | List        | Description                |
 |:--------------:|:-------------:| ----------- | -------------------------- |
 | `⌗`            | `#`           | All         | Vim-CtrlSpace symbol       |
+| `?¿?`          | `???`         | All         | Help Mode indicator        |
 | `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
 | `∷`            | `ALL`         | Buffer      | All Mode indicator         |
 | `◎`            | `OPEN`        | File        | (Open) File List indicator |
@@ -355,6 +357,13 @@ buffers from the current tab or buffers from all tabs.
 The first mode of Buffer List is the Single one. In that mode, the plugin
 shows you only buffers related to the current tab. Here's the full listing of
 all available keys:
+
+
+#### Help
+ 
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `?`      | Toogle the Help Mode                                 |
 
 
 #### Opening
@@ -470,6 +479,7 @@ all available keys:
 |:----:| ------------------------------------------------------------------- |
 | `S`  | Save the workspace immediately (or creates a new one if none)       |
 | `L`  | Load the last active workspace (if present)                         |
+| `N`  | Makes a new workspace (closes all buffers)                          |
 
 
 ### All Mode
@@ -528,6 +538,13 @@ a project with over 2200 files). Also, it depends on files stored for example in
 the SCM directory. In the end, the content of the project root directory is
 cached and available immediately. All time you can force plugin to refresh the
 list with the `r` key.
+
+
+### Help
+ 
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `?`      | Toogle the Help Mode                                 |
 
 
 ### Opening
@@ -643,6 +660,13 @@ In the Tab List view you can list all tabs. You can even turn off your tabline
 entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 
 
+### Help
+ 
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `?`      | Toogle the Help Mode                                 |
+
+
 ### Opening and closing
 
 | Key      | Action                                                     |
@@ -745,6 +769,13 @@ startup and save it active workspace on Vim exit. See
 `g:ctrlspace_save_workspace_on_exit` for more details.
 
 
+### Help
+ 
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `?`      | Toogle the Help Mode                                 |
+
+
 ### Accepting
 
 | Key            | Action                                          |
@@ -811,11 +842,18 @@ manually, with the `:cd` command. The plugin will behave in the same way. In
 fact, jumping with Bookmark List is just a shortcut for the `:cd` command. 
 
 
+### Help
+ 
+| Key      | Action                                               |
+|:--------:| ---------------------------------------------------- |
+| `?`      | Toogle the Help Mode                                 |
+
+
 ### Changing CWD location 
 
 | Key      | Action                                                     |
 |:--------:| ---------------------------------------------------------- |
-| `Return` | Jump to selected bookmark an enter the Buffer List         |
+| `Return` | Jump to selected bookmark and enter the Buffer List         |
 | `Tab`    | Jump to selected bookmark and close the plugin window      |
 | `Space`  | Jump to selected bookmark but stay in the Bookmark List    |
 
@@ -881,9 +919,12 @@ phase the following keys are available:
 | Key              | Action                                                  |
 |:----------------:| ------------------------------------------------------- |
 | `Return`         | Close the entering phase and accept the entered content |
-| `Backspace`      | Remove the previouse entered character                  |
+| `Backspace`      | Remove the previously entered character                 |
 | `/`              | Toggle the entering phase                               |
-| `a..z A..Z 0..9` | The charactes allowed in the entering phase             |
+| `a..z A..Z 0..9` | Add the character to the search phrase                  |
+| `Ctrl + c`       | Close the list                                          |
+| `Esc`            | Close the list - depending on settings                  |
+| `Ctrl + Space`   | Close the list - depending on settings                  |
 
 Besides the entering phase there is also a second state possible. That is the
 state of having a search query entered. The successfully entered query behaves
@@ -907,11 +948,12 @@ entering phase - there is a great number of resque options available.
 
 ### Nop (Search entering phase)
 
-| Key         | Action                                                  |
-|:-----------:| ------------------------------------------------------- |
-| `Backspace` | Remove the previouse entered character or close         |
-| `Ctrl + c`  | Close the list                                  |
-| `Esc`       | Close the list - depending on settings                  |
+| Key            | Action                                                  |
+|:--------------:| ------------------------------------------------------- |
+| `Backspace`    | Remove the previously entered character or clear search |
+| `Ctrl + c`     | Close the list                                          |
+| `Esc`          | Close the list - depending on settings                  |
+| `Ctrl + Space` | Close the list - depending on settings                  |
 
 
 ### Nop (outside the entering phase)
@@ -920,16 +962,45 @@ entering phase - there is a great number of resque options available.
 |:--------------:| ---------------------------------------------------- |
 | `Backspace`    | Delete the search query                              |
 | `q`            | Close the list                                       |
-| `Ctrl + c`     | Close the list                                  |
+| `Ctrl + c`     | Close the list                                       |
 | `Esc`          | Close the list - depending on settings               |
 | `Ctrl + Space` | Close the list - depending on settings               |
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
 | `a`            | Toggle between Single and All modes                  |
+| `A`            | Enter All mode and switch to Search Mode             |
 | `o`            | Enter the File List (Open List)                      |
+| `O`            | Enter the File List (Open List) in Search Mode       |
 | `l`            | Toggle the Tab List view                             |
 | `w`            | Toggle the Workspace List view                       |
+| `b`            | Toggle the Bookmark List view                        |
 | `Ctrl + p`     | Bring back the previous searched text                |
 | `Ctrl + n`     | Bring the next searched text                         |
+
+
+## Help Mode
+
+Help Mode is a view showing available keys together with theirs description,
+depending on your current list and mode. You can also jump to more detailed
+Vim-help with `h`. The navigation works in a similar fashion like in list views.
+
+| Key            | Action                                                   |
+|:--------------:| -------------------------------------------------------- |
+| `?`            | Toggle the Help Mode                                     |
+| `Backspace`    | Close the Help Mode                                      |
+| `h`            | Open Vim help for current list/mode                      |
+| `j`            | Move down                                                |
+| `k`            | Move up                                                  |
+| `J`            | Move to the bottom of the list                           |
+| `K`            | Move to the top of the list                              |
+| `Ctrl + f`     | Move one screen down                                     |
+| `Ctrl + b`     | Move one screen up                                       |
+| `Ctrl + d`     | Move a half screen down                                  |
+| `Ctrl + u`     | Move a half screen up                                    |
+| `q`            | Close the plugin window                                  |
+| `Ctrl + c`     | Close the plugin window                                  |
+| `Esc`          | Close the plugin window - depending on plugin settings   |
+| `Ctrl + Space` | Close the plugin window - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found          |
 
 
 # Configuration

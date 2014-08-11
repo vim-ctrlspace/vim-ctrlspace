@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-09
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-11
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.0.4~
+                               Vim-CtrlSpace 4.0.5~
 
                             Vim Workspace Controller
 
@@ -309,6 +309,7 @@ important symbolic information:
 | Unicode Symbol | ASCII Symbol  | List        | Description                |
 | -------------- | ------------- | ----------- | -------------------------- |
 | `⌗`              | `#`             | All         | Vim-CtrlSpace symbol       |
+| `?¿?`            | `???`           | All         | Help Mode indicator        |
 | `⊙`              | `TAB`           | Buffer      | Single Mode indicator      |
 | `∷`              | `ALL`           | Buffer      | All Mode indicator         |
 | `◎`              | `OPEN`          | File        | (Open) File List indicator |
@@ -379,7 +380,14 @@ shows you only buffers related to the current tab. Here's the full listing of
 all available keys:
 
 
-3.1.1.1 Opening~
+3.1.1.1 Help~
+
+| Key  | Action                                               |
+| ---- | ---------------------------------------------------- |
+| `?`    | Toogle the Help Mode                                 |
+
+
+3.1.1.2 Opening~
 
 | Key      | Action                                               |
 | -------- | ---------------------------------------------------- |
@@ -391,7 +399,7 @@ all available keys:
 | `t`        | Open a selected buffer in a new tab                  |
 
 
-3.1.1.2 Searching & Sorting~
+3.1.1.3 Searching & Sorting~
 
 | Key       | Action                                              |
 | --------- | --------------------------------------------------- |
@@ -400,7 +408,7 @@ all available keys:
 | `Ctrl` `+` `n`  | Bring the next searched text                        |
 
 
-3.1.1.3 Tabs Operations~
+3.1.1.4 Tabs Operations~
 
 | Key  | Action                                                  |
 | ---- | ------------------------------------------------------- |
@@ -421,7 +429,7 @@ all available keys:
 | `>`    | Copy the selected buffer to the next (right) tab        |
 
 
-3.1.1.4 Exiting~
+3.1.1.5 Exiting~
 
 | Key          | Action                                          |
 | ------------ | ----------------------------------------------- |
@@ -433,7 +441,7 @@ all available keys:
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
 
 
-3.1.1.5 Moving~
+3.1.1.6 Moving~
 
 | Key      | Action                                                    |
 | -------- | --------------------------------------------------------- |
@@ -450,7 +458,7 @@ all available keys:
 | `Ctrl` `+` `u` | Move the selection bar a half screen up                   |
 
 
-3.1.1.6 Closing~
+3.1.1.7 Closing~
 
 | Key | Action                                                              |
 | --- | ------------------------------------------------------------------- |
@@ -462,7 +470,7 @@ all available keys:
 | `C`   | Close the current tab, then perform `F`, and then `D`                   |
 
 
-3.1.1.7 Disk Operations~
+3.1.1.8 Disk Operations~
 
 | Key | Action                                                            |
 | --- | ----------------------------------------------------------------- |
@@ -473,7 +481,7 @@ all available keys:
 | `y`   | Copy selected file                                                |
 
 
-3.1.1.8 Mode and List Changing~
+3.1.1.9 Mode and List Changing~
 
 | Key | Action                                                            |
 | --- | ----------------------------------------------------------------- |
@@ -486,12 +494,13 @@ all available keys:
 | `b`   | Toggle the Bookmark List view                                     |
 
 
-3.1.1.9 Workspace shortcuts~
+3.1.1.10 Workspace shortcuts~
 
 | Key | Action                                                            |
 | --- | ----------------------------------------------------------------- |
 | `S`   | Save the workspace immediately (or creates a new one if none)     |
 | `L`   | Load the last active workspace (if present)                       |
+| `N`   | Makes a new workspace (closes all buffers)                        |
 
 
 3.1.2 All Mode                                              *ctrlspace-all-mode*
@@ -552,7 +561,14 @@ cached and available immediately. All time you can force plugin to refresh the
 list with the `r` key.
 
 
-3.2.1 Opening~
+3.2.1 Help~
+
+| Key  | Action                                               |
+| ---- | ---------------------------------------------------- |
+| `?`    | Toogle the Help Mode                                 |
+
+
+3.2.2 Opening~
 
 | Key     | Action                                               |
 | ------- | ---------------------------------------------------- |
@@ -563,7 +579,7 @@ list with the `r` key.
 | `t`       | Open a selected file in a new tab                    |
 
 
-3.2.2 Exiting~
+3.2.3 Exiting~
 
 | Key          | Action                                          |
 | ------------ | ----------------------------------------------- |
@@ -576,7 +592,7 @@ list with the `r` key.
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
 
 
-3.2.3 Tabs Operations~
+3.2.4 Tabs Operations~
 
 | Key  | Action                                                  |
 | ---- | ------------------------------------------------------- |
@@ -593,7 +609,7 @@ list with the `r` key.
 | `]`    | Go to the next (right) tab                              |
 
 
-3.2.4 Searching~
+3.2.5 Searching~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -603,7 +619,7 @@ list with the `r` key.
 | `Ctrl` `+` `n` | Bring the next searched text                        |
 
 
-3.2.5 Moving~
+3.2.6 Moving~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -617,14 +633,14 @@ list with the `r` key.
 | `Ctrl` `+` `u` | Move the selection bar a half screen up             |
 
 
-3.2.6 Closing~
+3.2.7 Closing~
 
 | Key | Action                                                     |
 | --- | ---------------------------------------------------------- |
 | `C`   | Close the current tab (with forgotten buffers and nonames) |
 
 
-3.2.7 Disk Operations~
+3.2.8 Disk Operations~
 
 | Key | Action                                       |
 | --- | -------------------------------------------- |
@@ -636,7 +652,7 @@ list with the `r` key.
 | `y`   | Copy the selected file                       |
 
 
-3.2.8 List Changing~
+3.2.9 List Changing~
 
 | Key | Action                                       |
 | --- | -------------------------------------------- |
@@ -665,7 +681,14 @@ In the Tab List view you can list all tabs. You can even turn off your tabline
 entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 
 
-3.3.1 Opening and closing~
+3.3.1 Help~
+
+| Key  | Action                                               |
+| ---- | ---------------------------------------------------- |
+| `?`    | Toogle the Help Mode                                 |
+
+
+3.3.2 Opening and closing~
 
 | Key    | Action                                                     |
 | ------ | ---------------------------------------------------------- |
@@ -676,7 +699,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `c`      | Close the selected tab, then forgotten buffers and nonames |
 
 
-3.3.2 Exiting~
+3.3.3 Exiting~
 
 | Key          | Action                                          |
 | ------------ | ----------------------------------------------- |
@@ -693,7 +716,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
 
 
-3.3.3 Tabs Operations~
+3.3.4 Tabs Operations~
 
 | Key | Action                                              |
 | --- | --------------------------------------------------- |
@@ -709,7 +732,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `y`   | Make a copy of the current tab                      |
 
 
-3.3.4 Moving~
+3.3.5 Moving~
 
 | Key      | Action                                                        |
 | -------- | ------------------------------------------------------------- |
@@ -767,14 +790,21 @@ startup and save it active workspace on Vim exit. See
 |g:ctrlspace_save_workspace_on_exit| for more details.
 
 
-3.4.1 Accepting~
+3.4.1 Help~
+
+| Key  | Action                                               |
+| ---- | ---------------------------------------------------- |
+| `?`    | Toogle the Help Mode                                 |
+
+
+3.4.2 Accepting~
 
 | Key          | Action                                          |
 | ------------ | ----------------------------------------------- |
 | `Return`       | Load (or save) the selected workspace           |
 
 
-3.4.2 Exiting~
+3.4.3 Exiting~
 
 | Key          | Action                                          |
 | ------------ | ----------------------------------------------- |
@@ -791,7 +821,7 @@ startup and save it active workspace on Vim exit. See
 | `Q`            | Quit Vim with a prompt if unsaved changes found |
 
 
-3.4.3 Workspace Operations~
+3.4.4 Workspace Operations~
 
 | Key | Action                                          |
 | --- | ----------------------------------------------- |
@@ -803,7 +833,7 @@ startup and save it active workspace on Vim exit. See
 | `d`   | Delete the selected workspace                   |
 
 
-3.4.4 Moving~
+3.4.5 Moving~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -833,16 +863,23 @@ manually, with the `:cd` command. The plugin will behave in the same way. In
 fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 
 
-3.5.1 Changing CWD location~
+3.5.1 Help~
+
+| Key  | Action                                               |
+| ---- | ---------------------------------------------------- |
+| `?`    | Toogle the Help Mode                                 |
+
+
+3.5.2 Changing CWD location~
 
 | Key    | Action                                                     |
 | ------ | ---------------------------------------------------------- |
-| `Return` | Jump to selected bookmark an enter the Buffer List         |
+| `Return` | Jump to selected bookmark and enter the Buffer List         |
 | `Tab`    | Jump to selected bookmark and close the plugin window      |
 | `Space`  | Jump to selected bookmark but stay in the Bookmark List    |
 
 
-3.5.2 Exiting~
+3.5.3 Exiting~
 
 | Key            | Action                                          |
 | -------------- | ----------------------------------------------- |
@@ -859,7 +896,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `Q`              | Quit Vim with a prompt if unsaved changes found |
 
 
-3.5.3 Bookmark Operations~
+3.5.4 Bookmark Operations~
 
 | Key | Action                                              |
 | --- | --------------------------------------------------- |
@@ -868,7 +905,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `=`   | Change selected bookmark name                       |
 
 
-3.5.4 Moving~
+3.5.5 Moving~
 
 | Key        | Action                                                      |
 | ---------- | ----------------------------------------------------------- |
@@ -904,9 +941,12 @@ phase the following keys are available:
 | Key            | Action                                                  |
 | -------------- | ------------------------------------------------------- |
 | `Return`         | Close the entering phase and accept the entered content |
-| `Backspace`      | Remove the previouse entered character                  |
+| `Backspace`      | Remove the previously entered character                 |
 | `/`              | Toggle the entering phase                               |
-| `a..z` `A..Z` `0..9` | The charactes allowed in the entering phase             |
+| `a..z` `A..Z` `0..9` | Add the character to the search phrase                  |
+| `Ctrl` `+` `c`       | Close the list                                          |
+| `Esc`            | Close the list - depending on settings                  |
+| `Ctrl` `+` `Space`   | Close the list - depending on settings                  |
 
 Besides the entering phase there is also a second state possible. That is the
 state of having a search query entered. The successfully entered query behaves
@@ -931,11 +971,12 @@ entering phase - there is a great number of resque options available.
 
 4.2.1 Nop (Search entering phase)~
 
-| Key       | Action                                                  |
-| --------- | ------------------------------------------------------- |
-| `Backspace` | Remove the previouse entered character or close         |
-| `Ctrl` `+` `c`  | Close the list                                  |
-| `Esc`       | Close the list - depending on settings                  |
+| Key          | Action                                                  |
+| ------------ | ------------------------------------------------------- |
+| `Backspace`    | Remove the previously entered character or clear search |
+| `Ctrl` `+` `c`     | Close the list                                          |
+| `Esc`          | Close the list - depending on settings                  |
+| `Ctrl` `+` `Space` | Close the list - depending on settings                  |
 
 
 4.2.2 Nop (outside the entering phase)~
@@ -944,16 +985,45 @@ entering phase - there is a great number of resque options available.
 | ------------ | ---------------------------------------------------- |
 | `Backspace`    | Delete the search query                              |
 | `q`            | Close the list                                       |
-| `Ctrl` `+` `c`     | Close the list                                  |
+| `Ctrl` `+` `c`     | Close the list                                       |
 | `Esc`          | Close the list - depending on settings               |
 | `Ctrl` `+` `Space` | Close the list - depending on settings               |
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
 | `a`            | Toggle between Single and All modes                  |
+| `A`            | Enter All mode and switch to Search Mode             |
 | `o`            | Enter the File List (Open List)                      |
+| `O`            | Enter the File List (Open List) in Search Mode       |
 | `l`            | Toggle the Tab List view                             |
 | `w`            | Toggle the Workspace List view                       |
+| `b`            | Toggle the Bookmark List view                        |
 | `Ctrl` `+` `p`     | Bring back the previous searched text                |
 | `Ctrl` `+` `n`     | Bring the next searched text                         |
+
+
+4.3 Help Mode                                              *ctrlspace-help-mode*
+
+Help Mode is a view showing available keys together with theirs description,
+depending on your current list and mode. You can also jump to more detailed
+Vim-help with `h`. The navigation works in a similar fashion like in list views.
+
+| Key          | Action                                                   |
+| ------------ | -------------------------------------------------------- |
+| `?`            | Toggle the Help Mode                                     |
+| `Backspace`    | Close the Help Mode                                      |
+| `h`            | Open Vim help for current list/mode                      |
+| `j`            | Move down                                                |
+| `k`            | Move up                                                  |
+| `J`            | Move to the bottom of the list                           |
+| `K`            | Move to the top of the list                              |
+| `Ctrl` `+` `f`     | Move one screen down                                     |
+| `Ctrl` `+` `b`     | Move one screen up                                       |
+| `Ctrl` `+` `d`     | Move a half screen down                                  |
+| `Ctrl` `+` `u`     | Move a half screen up                                    |
+| `q`            | Close the plugin window                                  |
+| `Ctrl` `+` `c`     | Close the plugin window                                  |
+| `Esc`          | Close the plugin window - depending on plugin settings   |
+| `Ctrl` `+` `Space` | Close the plugin window - depending on plugin settings   |
+| `Q`            | Quit Vim with a prompt if unsaved changes found          |
 
 
 ------------------------------------------------------------------------------

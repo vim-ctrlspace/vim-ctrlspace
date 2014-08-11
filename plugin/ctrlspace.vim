@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.4
+" Version:      4.0.5
 "
 " The MIT License (MIT)
 
@@ -56,7 +56,8 @@ function! <SID>define_symbols()
           \ "prv"     : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹",
-          \ "bm"      : "♡"
+          \ "bm"      : "♡",
+          \ "help"    : "?"
           \ }
   else
     let symbols = {
@@ -71,7 +72,8 @@ function! <SID>define_symbols()
           \ "prv"     : "*",
           \ "s_left"  : "[",
           \ "s_right" : "]",
-          \ "bm"      : "BM"
+          \ "bm"      : "BM",
+          \ "help"    : "?"
           \ }
   endif
 
@@ -458,6 +460,10 @@ function! ctrlspace#statusline_mode_segment(...)
     if s:preview_mode
       call add(statusline_elements, g:ctrlspace_symbols.prv)
     endif
+  endif
+
+  if s:help_mode
+    call add(statusline_elements, g:ctrlspace_symbols.help)
   endif
 
   let separator = (a:0 > 0) ? a:1 : "  "
@@ -1638,9 +1644,477 @@ function! <SID>start_ctrlspace_and_feedkeys(keys)
   endif
 endfunction
 
+function! <SID>puts(str)
+  let str = "  " . a:str
+
+  if &columns < (strwidth(str) + 2)
+    let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
+    let str = strpart(str, 0, &columns - 2 - strwidth(dots_symbol)) . dots_symbol
+  endif
+
+  while strwidth(str) < &columns
+    let str .= " "
+  endwhile
+
+  if !exists("s:text_buffer")
+    let s:text_buffer = []
+  endif
+
+  call add(s:text_buffer, str)
+endfunction
+
+function! <SID>flush_text_buffer()
+  let text = join(s:text_buffer, "\n")
+  unlet s:text_buffer
+  return text
+endfunction
+
+function! <SID>text_buffer_size()
+  return exists("s:text_buffer") ? len(s:text_buffer) : 0
+endfunction
+
+function! <SID>key_help(key, description)
+  if !exists("b:help_key_descriptions")
+    let b:help_key_descriptions = []
+    let b:help_key_width = 0
+  endif
+
+  call add(b:help_key_descriptions, { "key": a:key, "description": a:description })
+
+  if strwidth(a:key) > b:help_key_width
+    let b:help_key_width = strwidth(a:key)
+  else
+    for key_info in b:help_key_descriptions
+      while strwidth(key_info.key) < b:help_key_width
+        let key_info.key .= " "
+      endwhile
+    endfor
+  endif
+endfunction
+
+function! <SID>display_help()
+  call <SID>key_help("?", "Toggle the help view")
+
+  let current_list = ""
+  let current_mode = ""
+
+  if s:nop_mode
+    let b:help_tag = "ctrlspace-nop-mode"
+    let current_mode .= "NOP MODE"
+
+    if s:search_mode
+      let current_mode .= " - Search entering phase"
+
+      if empty(s:search_letters)
+        call <SID>key_help("BS", "Clear search")
+      else
+        let current_mode .= " ('" . join(s:search_letters, "") .  "')"
+        call <SID>key_help("BS", "Remove the previously entered character")
+      endif
+    else
+      call <SID>key_help("a", "Toggle between Single and All modes")
+      call <SID>key_help("A", "Enter All mode and switch to Search Mode")
+      call <SID>key_help("o", "Enter the File List (Open List)")
+      call <SID>key_help("O", "Enter the File List (Open List) in Search Mode")
+      call <SID>key_help("C-p", "Bring back the previous searched text")
+      call <SID>key_help("C-n", "Bring the next searched text")
+      call <SID>key_help("BS", "Delete the search query")
+      call <SID>key_help("w", "Toggle the Workspace List view")
+      call <SID>key_help("l", "Toggle the Tab List view")
+      call <SID>key_help("b", "Toggle the Bookmark List view")
+      call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+      call <SID>key_help("q", "Close the list")
+    endif
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+  elseif s:search_mode
+    let b:help_tag = "ctrlspace-search-mode"
+    let current_mode .= "SEARCH MODE"
+
+    if empty(s:search_letters)
+      call <SID>key_help("BS", "Clear search")
+    else
+      let current_mode .= " ('" . join(s:search_letters, "") .  "')"
+      call <SID>key_help("BS", "Remove the previously entered character")
+    endif
+
+    call <SID>key_help("CR", "Close the entering phase and accept the entered content")
+    call <SID>key_help("/", "Toggle the entering phase")
+    call <SID>key_help("a..z", "Add the character to the search phrase")
+    call <SID>key_help("A..Z", "Add the character to the search phrase")
+    call <SID>key_help("0..9", "Add the character to the search phrase")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+  elseif s:workspace_mode
+    let b:help_tag = "ctrlspace-workspace-list"
+    let current_list .= "WORKSPACE LIST"
+
+    if s:workspace_mode == 1
+      let current_mode .= "LOAD MODE"
+      call <SID>key_help("CR", "Load the selected workspace")
+    elseif s:workspace_mode == 2
+      let current_mode .= "SAVE MODE"
+      call <SID>key_help("CR", "Save the selected workspace")
+    endif
+
+    call <SID>key_help("q", "Close the list")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+    call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+    call <SID>key_help("a", "Append a selected workspace to the current one")
+    call <SID>key_help("n", "Makes a new workspace (closes all buffers)")
+
+    if s:workspace_mode == 1
+      call <SID>key_help("s", "Toggle the mode from Load to Save")
+    elseif s:workspace_mode == 2
+      call <SID>key_help("s", "Toggle the mode from Save to Load")
+    endif
+
+    call <SID>key_help("S", "Save the workspace immediately")
+    call <SID>key_help("L", "Load the last active workspace (if present)")
+    call <SID>key_help("w", "Go to the Buffer List")
+    call <SID>key_help("BS", "Go back to the Buffer List")
+    call <SID>key_help("d", "Delete the selected workspace")
+    call <SID>key_help("j", "Move the selection bar down")
+    call <SID>key_help("k", "Move the selection bar up")
+    call <SID>key_help("J", "Move the selection bar to the bottom of the list")
+    call <SID>key_help("K", "Move the selection bar to the top of the list")
+    call <SID>key_help("C-f", "Move the selection bar one screen down")
+    call <SID>key_help("C-b", "Move the selection bar one screen up")
+    call <SID>key_help("C-d", "Move the selection bar a half screen down")
+    call <SID>key_help("C-u", "Move the selection bar a half screen up")
+    call <SID>key_help("l", "Go to the Tab List")
+    call <SID>key_help("b", "Go to the Bookmark List")
+    call <SID>key_help("o", "Go to the File List")
+    call <SID>key_help("O", "Go to the File List in the Search Mode")
+  elseif s:tablist_mode
+    let b:help_tag = "ctrlspace-tab-list"
+    let current_list .= "TAB LIST"
+
+    call <SID>key_help("Tab", "Open a selected tab and close the plugin window")
+    call <SID>key_help("CR", "Open a selected tab and enter the Buffer List view")
+    call <SID>key_help("Space", "Open a selected tab but stay in the Tab List view")
+    call <SID>key_help("0..9", "Jump to the n-th tab (0 is for the 10th one)")
+    call <SID>key_help("p", "Move the selection bar to the previously opened tab")
+    call <SID>key_help("P", "Move the selection bar to the previously opened tab and open it")
+    call <SID>key_help("n", "Move the selection bar to the next opened tab")
+    call <SID>key_help("c", "Close the selected tab, then forgotten buffers and nonames")
+    call <SID>key_help("t", "Create a new tab nexto to the current one")
+    call <SID>key_help("y", "Make a copy of the current tab")
+    call <SID>key_help("[", "Go to the previous tab")
+    call <SID>key_help("]", "Go to the next tab")
+    call <SID>key_help("=", "Change the selected tab name")
+    call <SID>key_help("_", "Remove the selected tab name")
+    call <SID>key_help("+", "Move the selected tab forward (increase its number)")
+    call <SID>key_help("}", "Same as +")
+    call <SID>key_help("-", "Move the current tab backward (decrease its number)")
+    call <SID>key_help("{", "Same as -")
+    call <SID>key_help("BS", "Go back to the Buffer List")
+    call <SID>key_help("l", "Go back to the Buffer List")
+    call <SID>key_help("q", "Close the list")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+    call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+    call <SID>key_help("j", "Move the selection bar down")
+    call <SID>key_help("k", "Move the selection bar up")
+    call <SID>key_help("J", "Move the selection bar to the bottom of the list")
+    call <SID>key_help("K", "Move the selection bar to the top of the list")
+    call <SID>key_help("C-f", "Move the selection bar one screen down")
+    call <SID>key_help("C-b", "Move the selection bar one screen up")
+    call <SID>key_help("C-d", "Move the selection bar a half screen down")
+    call <SID>key_help("C-u", "Move the selection bar a half screen up")
+    call <SID>key_help("w", "Go to the Workspace List view")
+    call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("o", "Go to the File List view")
+    call <SID>key_help("O", "Go to the File List view in the Search Mode")
+  elseif s:bookmark_mode
+    let b:help_tag = "ctrlspace-bookmark-list"
+    let current_list .= "BOOKMARK LIST"
+
+    call <SID>key_help("Tab", "Jump to selected bookmark and close the plugin window")
+    call <SID>key_help("CR", "Jump to selected bookmark and enter the Buffer List")
+    call <SID>key_help("Space", "Jump to selected bookmark but stay in the Bookmark List")
+    call <SID>key_help("=", "Change selected bookmark name")
+    call <SID>key_help("a", "Add a new bookmark")
+    call <SID>key_help("d", "Delete selected bookmark")
+    call <SID>key_help("p", "Move selection bar to the previously opened bookmark")
+    call <SID>key_help("P", "Move selection bar to the previously opened tab and open it")
+    call <SID>key_help("n", "Move selection bar to the next opened bookmark")
+    call <SID>key_help("b", "Go to the Buffer List")
+    call <SID>key_help("BS", "Go back to the Buffer List")
+
+    call <SID>key_help("q", "Close the list")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+    call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+    call <SID>key_help("j", "Move the selection bar down")
+    call <SID>key_help("k", "Move the selection bar up")
+    call <SID>key_help("J", "Move the selection bar to the bottom of the list")
+    call <SID>key_help("K", "Move the selection bar to the top of the list")
+    call <SID>key_help("C-f", "Move the selection bar one screen down")
+    call <SID>key_help("C-b", "Move the selection bar one screen up")
+    call <SID>key_help("C-d", "Move the selection bar a half screen down")
+    call <SID>key_help("C-u", "Move the selection bar a half screen up")
+    call <SID>key_help("w", "Go to the Workspace List view")
+    call <SID>key_help("o", "Go to the File List view")
+    call <SID>key_help("O", "Go to the File List view in the Search Mode")
+    call <SID>key_help("l", "Go to the Tab List view")
+  elseif s:file_mode
+    let b:help_tag = "ctrlspace-file-list"
+    let current_list .= "FILE LIST"
+
+    if !empty(s:search_letters)
+      let current_list .= " - scoped to '" . join(s:search_letters, "") . "'"
+    endif
+
+    call <SID>key_help("CR", "Open a selected file")
+    call <SID>key_help("Space", "Open a selected file but stays in the plugin window")
+
+    if empty(s:search_letters)
+      call <SID>key_help("BS", "Go back to the Buffer List")
+    else
+      call <SID>key_help("BS", "Clear search")
+    endif
+
+    call <SID>key_help("/", "Enter the Search Mode")
+    call <SID>key_help("O", "Enter the Search Mode")
+    call <SID>key_help("v", "Open a selected file in a new vertical split")
+    call <SID>key_help("s", "Open a selected file in a new horizontal split")
+    call <SID>key_help("t", "Open a selected file in a new tab")
+    call <SID>key_help("T", "Create a new tab and stay in the plugin window")
+    call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
+    call <SID>key_help("=", "Change the tab name")
+    call <SID>key_help("0..9", "Jump to the n-th tab (0 is for 10th one)")
+    call <SID>key_help("+", "Move the current tab to the right (increase its number)")
+    call <SID>key_help("-", "Move the current tab to the left (decrease its number)")
+    call <SID>key_help("_", "Remove a custom tab name")
+    call <SID>key_help("[", "Go to the previous (left) tab")
+    call <SID>key_help("]", "Go to the next (right) tab")
+    call <SID>key_help("r", "Refresh the file list (force reloading)")
+    call <SID>key_help("q", "Close the list")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+    call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+    call <SID>key_help("j", "Move the selection bar down")
+    call <SID>key_help("k", "Move the selection bar up")
+    call <SID>key_help("J", "Move the selection bar to the bottom of the list")
+    call <SID>key_help("K", "Move the selection bar to the top of the list")
+    call <SID>key_help("C-f", "Move the selection bar one screen down")
+    call <SID>key_help("C-b", "Move the selection bar one screen up")
+    call <SID>key_help("C-d", "Move the selection bar a half screen down")
+    call <SID>key_help("C-u", "Move the selection bar a half screen up")
+
+    call <SID>key_help("o", "Go back to Buffer List")
+    call <SID>key_help("C-p", "Bring back the previous searched text")
+    call <SID>key_help("C-n", "Bring the next searched text")
+    call <SID>key_help("C", "Close the current tab (with forgotten buffers and nonames)")
+    call <SID>key_help("e", "Edit a sibling of the selected buffer")
+    call <SID>key_help("E", "Explore a directory of the selected buffer")
+    call <SID>key_help("R", "Remove the selected file entirely")
+    call <SID>key_help("m", "Move or rename the selected file")
+    call <SID>key_help("y", "Copy the selected file")
+    call <SID>key_help("w", "Toggle the Workspace List view")
+    call <SID>key_help("l", "Toggle the Tab List view")
+    call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("g", "Jump to a next tab containing the selected file")
+    call <SID>key_help("G", "Jump to a previous tab containing the selected file")
+  else
+    let b:help_tag = "ctrlspace-buffer-list"
+    let current_list .= "BUFFER LIST"
+
+    if !empty(s:search_letters)
+      let current_list .= " - scoped to '" . join(s:search_letters, "") . "'"
+    endif
+
+    let current_mode .= (s:single_mode ? "SINGLE MODE" : "ALL MODE")
+
+    if s:preview_mode
+      let current_mode .= " - PREVIEW MODE"
+    endif
+
+    call <SID>key_help("CR", "Open a selected buffer")
+    call <SID>key_help("Space", "Open a selected buffer and stay in the plugin window")
+    call <SID>key_help("Tab", "Enter the Preview Mode for selected buffer")
+
+    if !empty(s:search_letters)
+      call <SID>key_help("BS", "Clear search")
+    elseif !s:single_mode
+      call <SID>key_help("BS", "Go back to the Single Mode")
+    else
+      call <SID>key_help("BS", "Close the list")
+    endif
+
+    call <SID>key_help("/", "Enter the Search Mode")
+    call <SID>key_help("v", "Open a selected buffer in a new vertical split")
+    call <SID>key_help("s", "Open a selected buffer in a new horizontal split")
+    call <SID>key_help("t", "Open a selected buffer in a new tab")
+    call <SID>key_help("T", "Create a new tab and stay in the plugin window")
+    call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
+    call <SID>key_help("=", "Change the tab name")
+    call <SID>key_help("0..9", "Jump to the n-th tab (0 is for the 10th one)")
+    call <SID>key_help("+", "Move the current tab to the right (increase its number)")
+    call <SID>key_help("-", "Move the current tab to the left (decrease its number)")
+    call <SID>key_help("_", "Remove a custom tab name")
+    call <SID>key_help("[", "Go to the previous (left) tab")
+    call <SID>key_help("]", "Go to the next (right) tab")
+
+    if s:single_mode
+      call <SID>key_help("{", "Move the selected buffer to to the previous (left) tab")
+      call <SID>key_help("<", "Copy the selected buffer to to the previous (left) tab")
+      call <SID>key_help("}", "Move the selected buffer to the next (right) tab")
+      call <SID>key_help(">", "Copy the selected buffer to the next (right) tab")
+    endif
+
+    call <SID>key_help("q", "Close the list")
+
+    if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
+      call <SID>key_help("Esc", "Close the list")
+    endif
+
+    call <SID>key_help("C-c", "Close the list")
+    call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
+    call <SID>key_help("j", "Move the selection bar down")
+    call <SID>key_help("k", "Move the selection bar up")
+    call <SID>key_help("J", "Move the selection bar to the bottom of the list")
+    call <SID>key_help("K", "Move the selection bar to the top of the list")
+    call <SID>key_help("C-f", "Move the selection bar one screen down")
+    call <SID>key_help("C-b", "Move the selection bar one screen up")
+    call <SID>key_help("C-d", "Move the selection bar a half screen down")
+    call <SID>key_help("C-u", "Move the selection bar a half screen up")
+
+    call <SID>key_help("p", "Move the selection bar to the previous buffer")
+    call <SID>key_help("P", "Move the selection bar to the previous buffer and open it")
+    call <SID>key_help("n", "Move the selection bar to the next opened buffer")
+    call <SID>key_help("d", "Delete the selected buffer (close it)")
+    call <SID>key_help("D", "Close all empty noname buffers")
+
+    if s:single_mode
+      call <SID>key_help("a", "Enter the All Mode")
+      call <SID>key_help("A", "Enter the Search Mode combined with the All mode")
+      call <SID>key_help("f", "Forget the current buffer (make it a unrelated to the current tab)")
+      call <SID>key_help("c",  "Try to close selected buffer (delete if possible, forget otherwise)")
+    else
+      call <SID>key_help("a", "Enter the Single Mode")
+      call <SID>key_help("A", "Enter the Search Mode")
+    endif
+
+    call <SID>key_help("F", "Delete (close) all forgotten buffers (unrelated to any tab)")
+    call <SID>key_help("C", "Close the current tab, then perform F, and then D")
+    call <SID>key_help("e", "Edit a sibling of the selected buffer")
+    call <SID>key_help("E", "Explore a directory of the selected buffer")
+    call <SID>key_help("R", "Remove the selected buffer (file) entirely (from the disk too)")
+    call <SID>key_help("m", "Move or rename the selected buffer (together with its file)")
+    call <SID>key_help("y", "Copy selected file")
+    call <SID>key_help("S", "Save the workspace immediately (or creates a new one if none)")
+    call <SID>key_help("L", "Load the last active workspace (if present)")
+    call <SID>key_help("N", "Makes a new workspace (closes all buffers)")
+    call <SID>key_help("w", "Toggle the Workspace List view")
+    call <SID>key_help("l", "Toggle the Tab List view")
+    call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("o", "Toggle the File List (Open List)")
+    call <SID>key_help("C-p", "Bring back the previous searched text")
+    call <SID>key_help("C-n", "Bring the next searched text")
+    call <SID>key_help("O", "Enter the Search Mode in the File List")
+    call <SID>key_help("g", "Jump to a next tab containing the selected buffer")
+    call <SID>key_help("G", "Jump to a previous tab containing the selected buffer")
+  endif
+
+  let title_line = []
+
+  if !empty(current_list)
+    call add(title_line, current_list)
+  endif
+
+  if !empty(current_mode)
+    call add(title_line, current_mode)
+  endif
+
+  call <SID>puts("Context help for " . join(title_line, " - "))
+  call <SID>puts("You have following keys available (press 'h' for more detailed help):")
+  call <SID>puts("")
+
+  let separator = (g:ctrlspace_unicode_font ? " | " : " | ")
+
+  for key_info in b:help_key_descriptions
+    call<SID>puts(key_info.key . separator . key_info.description)
+  endfor
+
+  call <SID>puts("")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
+
+  setlocal modifiable
+
+  let b:bufcount = <SID>text_buffer_size()
+
+  " set up window height
+  if b:bufcount > g:ctrlspace_height
+    if b:bufcount < <SID>max_height()
+      silent! exe "resize " . b:bufcount
+    else
+      silent! exe "resize " . <SID>max_height()
+    endif
+  endif
+
+  silent! put! =<SID>flush_text_buffer()
+  normal! GkJ
+
+  let fill = <SID>make_filler()
+
+  while winheight(0) > line(".")
+    silent! put =fill
+  endwhile
+
+  normal! 0
+  normal! gg
+
+  " handle vim segfault on calling bd/bw if there are no buffers listed
+  let any_buffer_listed = 0
+  for i in range(1, bufnr("$"))
+    if buflisted(i)
+      let any_buffer_listed = 1
+      break
+    endif
+  endfor
+
+  if !any_buffer_listed
+    au! CtrlSpaceLeave BufLeave
+    noremap <silent> <buffer> q :q<CR>
+    if g:ctrlspace_set_default_mapping
+      silent! exe 'noremap <silent><buffer>' . g:ctrlspace_default_mapping_key . ' :q<CR>'
+    endif
+  endif
+
+  setlocal nomodifiable
+endfunction
+
 " toggled the buffer list on/off
 function! <SID>ctrlspace_toggle(internal)
   if !a:internal
+    let s:help_mode                      = 0
     let s:single_mode                    = 1
     let s:nop_mode                       = 0
     let s:new_search_performed           = 0
@@ -1705,6 +2179,12 @@ function! <SID>ctrlspace_toggle(internal)
   silent! exe "resize" g:ctrlspace_height
 
   call <SID>set_up_buffer()
+
+  if s:help_mode
+    call <SID>display_help()
+    call <SID>set_statusline()
+    return
+  endif
 
   let noises   = []
   let patterns = []
@@ -1915,12 +2395,12 @@ function! <SID>ctrlspace_toggle(internal)
 
   " go to the correct line
   if !empty(s:search_letters) && s:new_search_performed
-    call<SID>move(line("$"))
+    call<SID>move_selection_bar(line("$"))
     if !s:search_mode
       let s:new_search_performed = 0
     endif
   else
-    call <SID>move(activebufline)
+    call <SID>move_selection_bar(activebufline)
   endif
   normal! zb
 endfunction
@@ -2143,6 +2623,59 @@ function! <SID>tab_command(key)
 endfunction
 
 function! <SID>keypressed(key)
+  if a:key ==# "?"
+    call <SID>kill(0, 0)
+    let s:help_mode = !s:help_mode
+    call <SID>ctrlspace_toggle(1)
+    return
+  endif
+
+  if s:help_mode
+    if a:key ==# "h" && exists("b:help_tag")
+      let help_tag = b:help_tag
+      call <SID>kill(0, 1)
+      silent! exe "help " . help_tag
+    elseif a:key ==# "BS"
+      call <SID>kill(0, 0)
+      let s:help_mode = !s:help_mode
+      call <SID>ctrlspace_toggle(1)
+    elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
+      call <SID>kill(0, 1)
+    elseif a:key ==# "Q"
+      call <SID>quit_vim()
+    elseif a:key ==# "j"
+      call <SID>move_cursor("down")
+    elseif a:key ==# "k"
+      call <SID>move_cursor("up")
+    elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call <SID>move_cursor("up")
+    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call <SID>move_cursor("down")
+    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call <SID>move_cursor("mouse")
+    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call <SID>move_cursor("mouse")
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call feedkeys("j")
+    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
+      call feedkeys("k")
+    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
+      call <SID>move_cursor(1)
+    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
+      call <SID>move_cursor(line("$"))
+    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
+      call <SID>move_cursor("pgdown")
+    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
+      call <SID>move_cursor("pgup")
+    elseif a:key ==# "C-d"
+      call <SID>move_cursor("half_pgdown")
+    elseif a:key ==# "C-u"
+      call <SID>move_cursor("half_pgup")
+    endif
+    return
+  endif
+
   if s:nop_mode
     if !s:search_mode
       if a:key ==# "a"
@@ -2151,8 +2684,20 @@ function! <SID>keypressed(key)
         else
           call <SID>toggle_single_mode()
         endif
+      elseif a:key ==# "A"
+        if s:file_mode
+          call <SID>toggle_file_mode()
+        else
+          call <SID>toggle_single_mode()
+        endif
+        call <SID>switch_search_mode(1)
       elseif a:key ==# "o"
         call <SID>toggle_file_mode()
+      elseif a:key ==# "O"
+        if !s:file_mode
+          call <SID>toggle_file_mode()
+        endif
+        call <SID>switch_search_mode(1)
       elseif a:key ==# "w"
         if empty(<SID>get_workspace_names())
           call <SID>save_first_workspace()
@@ -2160,7 +2705,7 @@ function! <SID>keypressed(key)
           call <SID>kill(0, 0)
           let s:file_mode      = 0
           let s:tablist_mode   = 0
-          let s:bookmark_mode = 0
+          let s:bookmark_mode  = 0
           let s:workspace_mode = 1
           call <SID>ctrlspace_toggle(1)
         endif
@@ -2168,7 +2713,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode      = 0
         let s:tablist_mode   = 1
-        let s:bookmark_mode = 0
+        let s:bookmark_mode  = 0
         let s:workspace_mode = 0
         call <SID>ctrlspace_toggle(1)
       elseif a:key ==# "b"
@@ -2178,7 +2723,7 @@ function! <SID>keypressed(key)
           call <SID>kill(0, 0)
           let s:file_mode      = 0
           let s:tablist_mode   = 0
-          let s:bookmark_mode = 1
+          let s:bookmark_mode  = 1
           let s:workspace_mode = 0
           call <SID>ctrlspace_toggle(1)
         endif
@@ -2251,34 +2796,34 @@ function! <SID>keypressed(key)
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
+      call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "l"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -2335,34 +2880,34 @@ function! <SID>keypressed(key)
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       call <SID>save_workspace(<SID>get_selected_workspace_name())
     elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
+      call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "l"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -2463,10 +3008,10 @@ function! <SID>keypressed(key)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "["
-      call <SID>move(tabpagenr())
+      call <SID>move_selection_bar(tabpagenr())
       call feedkeys("k\<Space>")
     elseif a:key ==# "]"
-      call <SID>move(tabpagenr())
+      call <SID>move_selection_bar(tabpagenr())
       call feedkeys("j\<Space>")
     elseif a:key ==# "="
       let tab_nr = <SID>get_selected_buffer()
@@ -2506,17 +3051,17 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
@@ -2526,17 +3071,17 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
+      call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -2631,17 +3176,17 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       let bm_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       call <SID>goto_bookmark(bm_nr)
@@ -2652,17 +3197,17 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
+      call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "w"
       if empty(<SID>get_workspace_names())
         call <SID>save_first_workspace()
@@ -2741,35 +3286,35 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       call <SID>load_file()
     elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
-    elseif a:key ==? "o"
+      call <SID>move_selection_bar("half_pgup")
+    elseif a:key ==# "o"
       call <SID>toggle_file_mode()
     elseif a:key ==# "C-p"
       call <SID>restore_search_letters("previous")
@@ -2881,9 +3426,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "j"
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif a:key ==# "p"
       call <SID>jump("previous")
     elseif a:key ==# "P"
@@ -2896,30 +3441,30 @@ function! <SID>keypressed(key)
     elseif a:key ==# "D"
       call <SID>delete_hidden_noname_buffers(0)
     elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
     elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
     elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move("mouse")
+      call <SID>move_selection_bar("mouse")
       call <SID>load_buffer()
     elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("k")
     elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move(1)
+      call <SID>move_selection_bar(1)
     elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move(line("$"))
+      call <SID>move_selection_bar(line("$"))
     elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move("pgdown")
+      call <SID>move_selection_bar("pgdown")
     elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move("pgup")
+      call <SID>move_selection_bar("pgup")
     elseif a:key ==# "C-d"
-      call <SID>move("half_pgdown")
+      call <SID>move_selection_bar("half_pgdown")
     elseif a:key ==# "C-u"
-      call <SID>move("half_pgup")
+      call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "a"
       call <SID>toggle_single_mode()
     elseif a:key ==# "A"
@@ -3019,7 +3564,7 @@ function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
 
   for i in range(0, len(b:buflist))
     if b:buflist[i].raw == bufname(str2nr(nr))
-      call <SID>move(i + 1)
+      call <SID>move_selection_bar(i + 1)
       call <SID>load_many_buffers()
       break
     endif
@@ -3295,34 +3840,12 @@ function! <SID>display_list(displayedbufs, buflist)
   setlocal nomodifiable
 endfunction
 
-" move the selection bar of the list:
-" where can be "up"/"down"/"mouse" or
-" a line number
-function! <SID>move(where)
-  if b:bufcount < 1
-    return
-  endif
-  let newpos = 0
-  if !exists('b:lastline')
-    let b:lastline = 0
-  endif
-  setlocal modifiable
-
-  " the mouse was pressed: remember which line
-  " and go back to the original location for now
-  if a:where == "mouse"
-    let newpos = line(".")
-    call <SID>goto(b:lastline)
-  endif
-
-  " exchange the first char (>) with a space
-  call setline(line("."), " ".strpart(getline(line(".")), 1))
-
+function! <SID>move_cursor(where)
   " go where the user want's us to go
   if a:where == "up"
-    call <SID>goto(line(".")-1)
+    call <SID>goto(line(".") - 1)
   elseif a:where == "down"
-    call <SID>goto(line(".")+1)
+    call <SID>goto(line(".") + 1)
   elseif a:where == "mouse"
     call <SID>goto(newpos)
   elseif a:where == "pgup"
@@ -3352,9 +3875,38 @@ function! <SID>move(where)
   else
     call <SID>goto(a:where)
   endif
+endfunction
+
+" move the selection bar of the list:
+" where can be "up"/"down"/"mouse" or
+" a line number
+function! <SID>move_selection_bar(where)
+  if b:bufcount < 1
+    return
+  endif
+
+  let newpos = 0
+
+  if !exists('b:lastline')
+    let b:lastline = 0
+  endif
+
+  setlocal modifiable
+
+  " the mouse was pressed: remember which line
+  " and go back to the original location for now
+  if a:where == "mouse"
+    let newpos = line(".")
+    call <SID>goto(b:lastline)
+  endif
+
+  " exchange the first char (>) with a space
+  call setline(line("."), " " . strpart(getline(line(".")), 1))
+
+  call <SID>move_cursor(a:where)
 
   " and mark this line with a >
-  call setline(line("."), ">".strpart(getline(line(".")), 1))
+  call setline(line("."), ">" . strpart(getline(line(".")), 1))
 
   " remember this line, in case the mouse is clicked
   " (which automatically moves the cursor there)
@@ -3446,7 +3998,7 @@ function! <SID>jump(direction)
     endif
   endif
 
-  call <SID>move(string(b:jumplines[b:jumppos]["line"]))
+  call <SID>move_selection_bar(string(b:jumplines[b:jumppos]["line"]))
 endfunction
 
 function! <SID>goto_buffer_or_file(direction)
@@ -3509,7 +4061,7 @@ function! <SID>goto_buffer_or_file(direction)
     call <SID>ctrlspace_toggle(0)
     for i in range(0, len(b:buflist) -1)
       if b:buflist[i].number == target_buffer
-        call <SID>move(i + 1)
+        call <SID>move_selection_bar(i + 1)
         break
       endif
     endfor
@@ -3529,7 +4081,7 @@ function! <SID>load_many_buffers()
   normal! zb
 
   call <SID>ctrlspace_toggle(1)
-  call <SID>move(current_line)
+  call <SID>move_selection_bar(current_line)
 endfunction
 
 function! <SID>load_buffer(...)
@@ -3555,7 +4107,7 @@ function! <SID>load_many_files()
   normal! zb
 
   call <SID>ctrlspace_toggle(1)
-  call <SID>move(current_line)
+  call <SID>move_selection_bar(current_line)
 endfunction
 
 function! <SID>load_file(...)
@@ -3615,9 +4167,9 @@ function! <SID>delete_buffer()
   let selected_buffer_window = bufwinnr(str2nr(nr))
 
   if selected_buffer_window != -1
-    call <SID>move("down")
+    call <SID>move_selection_bar("down")
     if <SID>get_selected_buffer() == nr
-      call <SID>move("up")
+      call <SID>move_selection_bar("up")
       if <SID>get_selected_buffer() == nr
         if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
           call <SID>kill(0, 0)
@@ -4048,9 +4600,9 @@ function! <SID>detach_buffer()
   if exists('t:ctrlspace_list[' . nr . ']')
     let selected_buffer_window = bufwinnr(nr)
     if selected_buffer_window != -1
-      call <SID>move("down")
+      call <SID>move_selection_bar("down")
       if <SID>get_selected_buffer() == nr
-        call <SID>move("up")
+        call <SID>move_selection_bar("up")
         if <SID>get_selected_buffer() == nr
           if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
             call <SID>kill(0, 0)
