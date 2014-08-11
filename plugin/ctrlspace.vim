@@ -2057,10 +2057,8 @@ function! <SID>display_help()
   call <SID>puts("You have following keys available (press 'h' for more detailed help):")
   call <SID>puts("")
 
-  let separator = (g:ctrlspace_unicode_font ? " | " : " | ")
-
   for key_info in b:help_key_descriptions
-    call<SID>puts(key_info.key . separator . key_info.description)
+    call<SID>puts(key_info.key . " | " . key_info.description)
   endfor
 
   call <SID>puts("")
