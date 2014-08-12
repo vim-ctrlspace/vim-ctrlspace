@@ -294,7 +294,7 @@ if g:ctrlspace_save_workspace_on_exit
 endif
 
 if g:ctrlspace_load_last_workspace_on_start
-  au VimEnter * nested if argc() == 0 | CtrlSpaceLoadWorkspace | endif
+  au VimEnter * nested if (argc() == 0) && !empty(<SID>find_project_root()) | call <SID>load_workspace_externally(0, "") | endif
 endif
 
 function! ctrlspace#statusline()
