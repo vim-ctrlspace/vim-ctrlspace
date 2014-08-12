@@ -81,25 +81,25 @@ Its approach is somewhat unique, but certainly you will feel at home quickly,
 especially if you used intensively split windows, tabs, buffers, etc.
 
 You can think of it as a buffer/file/tab explorer mixed with a fuzzy finder
-like CtrlP, and a session and project explorer. Pretty wide area, isn't it?
+like CtrlP, and a session and project explorer. Pretty wide, isn't it?
 
-But this idea seems to work quite well and the plugin may become your coolest
+But this idea seems to work very well and the plugin may become your coolest
 companion. It can help you to manage your Vim workspace and increase your usage
 of core Vim features like multiple buffers, tabs, and windows in a great degree.
 The plugin can also provide you with some new concepts, like workspaces, named
 tabs, or separate buffer lists.
 
-It is worth to say, both for me and other plugin users, Vim-CtrlSpace became the
-most important tool in the Vim toolbox or a strong complement to their existing
-workflow.
+It is worth to say, for many plugin users including myself, Vim-CtrlSpace
+became the most important tool in the Vim toolbox and a strong improvement of
+the existing workflow.
 
 
 1.1 What's so special?~
 
 Visually, Vim-CtrlSpace is just a temporary window that sticks to the bottom
-of screen and contains a list from which you can select items. Although it
-acts as a split explorer, it doesn't show up in the split window itself.
-Rather, it creates a temporary preview window similarly to CtrlP.
+of screen and contains a list (like a menu) from which you can select items.
+Although it acts as a split explorer, it doesn't show up in the split window
+itself. Rather, it creates a temporary preview window similarly to CtrlP.
 
 The plugin window can display various lists: a list of open tab pages, a Buffer
 List (for current tab only or for all open buffers), a File List, a Workspace
