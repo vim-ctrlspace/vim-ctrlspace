@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.5
+" Version:      4.0.6
 "
 " The MIT License (MIT)
 
@@ -53,7 +53,7 @@ function! <SID>define_symbols()
           \ "c_tab"   : "●",
           \ "load"    : "⋮ → ∙",
           \ "save"    : "∙ → ⋮",
-          \ "prv"     : "⌕",
+          \ "zoom"    : "⌕",
           \ "s_left"  : "›",
           \ "s_right" : "‹",
           \ "bm"      : "♡",
@@ -69,7 +69,7 @@ function! <SID>define_symbols()
           \ "c_tab"   : "+",
           \ "load"    : "LOAD",
           \ "save"    : "SAVE",
-          \ "prv"     : "*",
+          \ "zoom"    : "*",
           \ "s_left"  : "[",
           \ "s_right" : "]",
           \ "bm"      : "BM",
@@ -135,7 +135,7 @@ if g:ctrlspace_set_default_mapping
 endif
 
 let s:files                   = []
-let s:preview_mode            = 0
+let s:zoom_mode            = 0
 let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
@@ -457,8 +457,8 @@ function! ctrlspace#statusline_mode_segment(...)
       call add(statusline_elements, search_element)
     endif
 
-    if s:preview_mode
-      call add(statusline_elements, g:ctrlspace_symbols.prv)
+    if s:zoom_mode
+      call add(statusline_elements, g:ctrlspace_symbols.zoom)
     endif
   endif
 
@@ -497,8 +497,8 @@ function! ctrlspace#tab_title(tabnr, bufnr, bufname)
 
   if empty(title)
     if bufname ==# "__CS__"
-      if s:preview_mode && exists("s:preview_mode_original_buffer")
-        let bufnr = s:preview_mode_original_buffer
+      if s:zoom_mode && exists("s:zoom_mode_original_buffer")
+        let bufnr = s:zoom_mode_original_buffer
       else
         let bufnr = winbufnr(t:ctrlspace_start_window)
       endif
@@ -1952,13 +1952,16 @@ function! <SID>display_help()
 
     let current_mode .= (s:single_mode ? "SINGLE MODE" : "ALL MODE")
 
-    if s:preview_mode
-      let current_mode .= " - PREVIEW MODE"
+    call <SID>key_help("CR", "Open a selected buffer")
+
+    if s:zoom_mode
+      let current_mode .= " - ZOOM MODE"
+      call <SID>key_help("Space", "Zoom (preview) selected buffer")
+    else
+      call <SID>key_help("Space", "Open a selected buffer and stay in the plugin window")
     endif
 
-    call <SID>key_help("CR", "Open a selected buffer")
-    call <SID>key_help("Space", "Open a selected buffer and stay in the plugin window")
-    call <SID>key_help("Tab", "Enter the Preview Mode for selected buffer")
+    call <SID>key_help("Tab", "Jump to the window containing selected buffer")
 
     if !empty(s:search_letters)
       call <SID>key_help("BS", "Clear search")
@@ -1969,6 +1972,7 @@ function! <SID>display_help()
     endif
 
     call <SID>key_help("/", "Enter the Search Mode")
+    call <SID>key_help("z", "Enter the Zoom Mode for selected buffer")
     call <SID>key_help("v", "Open a selected buffer in a new vertical split")
     call <SID>key_help("s", "Open a selected buffer in a new horizontal split")
     call <SID>key_help("t", "Open a selected buffer in a new tab")
@@ -2062,7 +2066,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2154,10 +2158,14 @@ function! <SID>ctrlspace_toggle(internal)
       endif
     endif
   elseif !a:internal
-    " make sure preview window is closed
+    " make sure zoom window is closed
     silent! exe "pclose"
     let t:ctrlspace_start_window = winnr()
     let t:ctrlspace_winrestcmd = winrestcmd()
+    let t:ctrlspace_activebuf = bufnr("")
+  endif
+
+  if s:zoom_mode
     let t:ctrlspace_activebuf = bufnr("")
   endif
 
@@ -2458,7 +2466,7 @@ function! <SID>decorate_with_indicators(name, bufnum)
     let indicators .= "+"
   endif
 
-  if s:preview_mode && (s:preview_mode_original_buffer == a:bufnum)
+  if s:zoom_mode && (s:zoom_mode_original_buffer == a:bufnum)
     let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
   elseif bufwinnr(a:bufnum) != -1
     let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
@@ -2555,10 +2563,10 @@ function! <SID>kill(buflistnr, final)
 
     call <SID>go_to_start_window()
 
-    if s:preview_mode
-      exec ":b " . s:preview_mode_original_buffer
-      unlet s:preview_mode_original_buffer
-      let s:preview_mode = 0
+    if s:zoom_mode
+      exec ":b " . s:zoom_mode_original_buffer
+      unlet s:zoom_mode_original_buffer
+      let s:zoom_mode = 0
     endif
   endif
 
@@ -2618,6 +2626,15 @@ function! <SID>tab_command(key)
   endif
 
   call <SID>ctrlspace_toggle(0)
+endfunction
+
+function! <SID>goto_window()
+  let nr = str2nr(<SID>get_selected_buffer())
+
+  if bufwinnr(nr) != -1
+    call <SID>kill(0, 1)
+    silent! exe bufwinnr(nr) . "wincmd w"
+  endif
 endfunction
 
 function! <SID>keypressed(key)
@@ -3364,7 +3381,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Space"
       call <SID>load_many_buffers()
     elseif (a:key ==# "Tab")
-      call <SID>preview_buffer(0)
+      call <SID>goto_window()
+    elseif (a:key ==# "z")
+      call <SID>zoom_buffer(0)
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
@@ -4121,10 +4140,10 @@ function! <SID>load_file(...)
   exec ":e " . fnameescape(file)
 endfunction
 
-function! <SID>preview_buffer(nr, ...)
-  if !s:preview_mode
-    let s:preview_mode = 1
-    let s:preview_mode_original_buffer = winbufnr(t:ctrlspace_start_window)
+function! <SID>zoom_buffer(nr, ...)
+  if !s:zoom_mode
+    let s:zoom_mode = 1
+    let s:zoom_mode_original_buffer = winbufnr(t:ctrlspace_start_window)
   endif
 
   let nr = a:nr ? a:nr : <SID>get_selected_buffer()
@@ -4303,7 +4322,7 @@ function! <SID>get_selected_buffer()
 endfunction
 
 function! <SID>add_tab_buffer()
-  if s:preview_mode
+  if s:zoom_mode
     return
   endif
 
@@ -4322,7 +4341,7 @@ function! <SID>add_tab_buffer()
 endfunction
 
 function! <SID>add_jump()
-  if s:preview_mode
+  if s:zoom_mode
     return
   endif
 
@@ -4450,7 +4469,7 @@ function! <SID>rename_file_or_buffer()
         call add(commands, "e") "reload filetype and syntax
       endif
 
-      call <SID>preview_buffer(str2nr(b), commands)
+      call <SID>zoom_buffer(str2nr(b), commands)
     endif
   endfor
 
@@ -4527,7 +4546,7 @@ function! <SID>copy_file_or_buffer()
   endif
 
   if buffer_only
-    call <SID>preview_buffer(str2nr(nr), ['normal! G""ygg'])
+    call <SID>zoom_buffer(str2nr(nr), ['normal! G""ygg'])
     call <SID>kill(0, 1)
     silent! exe "e " . fnameescape(new_file)
     silent! exe 'normal! ""pgg"_dd'

@@ -285,11 +285,11 @@ important symbolic information:
 | Unicode Symbol | ASCII Symbol  | List        | Description                |
 |:--------------:|:-------------:| ----------- | -------------------------- |
 | `⌗`            | `#`           | All         | Vim-CtrlSpace symbol       |
-| `?¿?`          | `???`         | All         | Help Mode indicator        |
+| `?`            | `?`           | All         | Help Mode indicator        |
 | `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
 | `∷`            | `ALL`         | Buffer      | All Mode indicator         |
 | `◎`            | `OPEN`        | File        | (Open) File List indicator |
-| `⌕`            | `*`           | Buffer      | Preview Mode indicator     |
+| `⌕`            | `*`           | Buffer      | Zoom Mode indicator        |
 | `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
 | `○●○`          | `-+-`         | Tab         | Tab List indicator         |
 | `⋮ → ∙`        | `LOAD`        | Workspace   | Workspace Load Mode        |
@@ -372,7 +372,8 @@ all available keys:
 |:--------:| ---------------------------------------------------- |
 | `Return` | Open a selected buffer                               |
 | `Space`  | Open a selected buffer and stay in the plugin window |
-| `Tab`    | Enter the Preview Mode for selected buffer           |
+| `Tab`    | Jump to the window containing selected buffer        |
+| `z`      | Enter the Zoom Mode for selected buffer              |
 | `v`      | Open a selected buffer in a new vertical split       |
 | `s`      | Open a selected buffer in a new horizontal split     |
 | `t`      | Open a selected buffer in a new tab                  |
@@ -494,28 +495,29 @@ in the Single Mode are not available here. The missing ones are `f`, `c`,
 `{`, `}`, `<`, `>` - as they are connected with current tab.
 
 
-### Preview Mode
+### Zoom Mode
 
 | Unicode | ASCII |
 |:-------:|:-----:|
 | `⌕`     | `*`   |
 
-This mode works in a conjunction with the Buffer List. You can invoke the
-Preview Mode by hitting the `Tab` key. Hitting `Tab` does almost the same as
-`Space` - it shows you the selected buffer, but unlike `Space`, that change of
-the target window content is not permanent. When you quit the plugin window, the
-old (previous) content of the target window is restored.
+This mode works in a conjunction with the Buffer List. You can invoke the Zoom
+Mode by hitting the `z` key. Hitting `z` does almost the same as `Space` - it
+shows you the selected buffer, but unlike `Space`, that change of the target
+window content is not permanent. However, once turned on - it alters the `Space`
+behavior temporarily too. When you quit the plugin window, the old (previous)
+content of the target window is restored.
 
 Also the jumps history remains unchanged and the selected buffer won't be added
 to the tab buffer list. In that way, you can just preview a buffer before
 actually opening it (with `Space`, `Return`, etc). 
 
-Those previewed files are marked on the list with the star symbol and the
+Those _zoomed_ files are marked on the list with the star symbol and the
 original content is marked with an empty star too:
 
 | Indicator        | Unicode | ASCII |
 | ---------------- |:-------:|:-----:|
-| Previewed buffer | `★`     | `*`   |
+| Zoomed buffer    | `★`     | `*`   |
 | Original buffer  | `☆`     | `*`   |
 
 
