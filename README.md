@@ -288,7 +288,7 @@ important symbolic information:
 | `?`            | `?`           | All         | Help Mode indicator        |
 | `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
 | `∷`            | `ALL`         | Buffer      | All Mode indicator         |
-| `◎`            | `FILE`        | File        | File List indicator        |
+| `〇`           | `FILE`        | File        | File List indicator        |
 | `⌕`            | `*`           | Buffer      | Zoom Mode indicator        |
 | `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
 | `○●○`          | `-+-`         | Tab         | Tab List indicator         |
@@ -534,7 +534,7 @@ original content is marked with an empty star too:
 
 | Unicode | ASCII  |
 |:-------:|:------:|
-| `◎`     | `FILE` |
+| `〇`    | `FILE` |
 
 This list shows you all files in the project and allows you to open a new file
 (as a buffer) in the current tab. Notice, only the project root directory
@@ -1152,7 +1152,7 @@ if g:ctrlspace_unicode_font
         \ "cs"      : "⌗",
         \ "tab"     : "⊙",
         \ "all"     : "∷",
-        \ "file"    : "◎",
+        \ "file"    : "〇",
         \ "tabs"    : "○",
         \ "c_tab"   : "●",
         \ "load"    : "⋮ → ∙",
