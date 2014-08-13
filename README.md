@@ -288,7 +288,7 @@ important symbolic information:
 | `?`            | `?`           | All         | Help Mode indicator        |
 | `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
 | `∷`            | `ALL`         | Buffer      | All Mode indicator         |
-| `◎`            | `OPEN`        | File        | (Open) File List indicator |
+| `◎`            | `FILE`        | File        | File List indicator        |
 | `⌕`            | `*`           | Buffer      | Zoom Mode indicator        |
 | `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
 | `○●○`          | `-+-`         | Tab         | Tab List indicator         |
@@ -369,16 +369,20 @@ all available keys:
 
 #### Window Operations
 
-| Key      | Action                                                     |
-|:--------:| ---------------------------------------------------------- |
-| `Return` | Open a selected buffer                                     |
-| `Space`  | Open a selected buffer and stay in the plugin window       |
-| `Tab`    | Jump to the window containing selected buffer              |
-| `S-Tab`  | Change the target window to one containing selected buffer |
-| `z`      | Toggle Zoom Mode                                           |
-| `v`      | Open a selected buffer in a new vertical split             |
-| `s`      | Open a selected buffer in a new horizontal split           |
-| `t`      | Open a selected buffer in a new tab                        |
+| Key      | Action                                                                       |
+|:--------:| ---------------------------------------------------------------------------- |
+| `Return` | Open selected buffer                                                         |
+| `Space`  | Open selected buffer and stay in the plugin window                           |
+| `Tab`    | Jump to the window containing selected buffer                                |
+| `S-Tab`  | Change the target window to one containing selected buffer                   |
+| `z`      | Toggle Zoom Mode                                                             |
+| `v`      | Open selected buffer in a new vertical split                                 |
+| `V`      | Open selected buffer in a new vertical split but stay in the plugin window   |
+| `s`      | Open selected buffer in a new horizontal split                               |
+| `S`      | Open selected buffer in a new horizontal split but stay in the plugin window |
+| `x`      | Close the split window containing selected buffer                            |
+| `X`      | Leave the window containing selected buffer - close all others               |
+| `t`      | Open selected buffer in a new tab                                            |
 
 
 #### Searching & Sorting
@@ -531,7 +535,7 @@ original content is marked with an empty star too:
 
 | Unicode | ASCII  |
 |:-------:|:------:|
-| `◎`     | `OPEN` |
+| `◎`     | `FILE` |
 
 This list shows you all files in the project and allows you to open a new file
 (as a buffer) in the current tab. Notice, only the project root directory
@@ -557,13 +561,15 @@ list with the `r` key.
 
 ### Opening
 
-| Key       | Action                                               |
-|:---------:| ---------------------------------------------------- |
-| `Return`  | Open a selected file                                 |
-| `Space`   | Open a selected file but stays in the plugin window  |
-| `v`       | Open a selected file in a new vertical split         |
-| `s`       | Open a selected file in a new horizontal split       |
-| `t`       | Open a selected file in a new tab                    |
+| Key       | Action                                                                     |
+|:---------:| -------------------------------------------------------------------------- |
+| `Return`  | Open selected file                                                         |
+| `Space`   | Open selected file but stays in the plugin window                          |
+| `v`       | Open selected file in a new vertical split                                 |
+| `V`       | Open selected file in a new vertical split but stay in the plugin window   |
+| `s`       | Open selected file in a new horizontal split                               |
+| `S`       | Open selected file in a new horizontal split but stay in the plugin window |
+| `t`       | Open selected file in a new tab                                            |
 
 
 ### Exiting
@@ -1147,7 +1153,7 @@ if g:ctrlspace_unicode_font
         \ "cs"      : "⌗",
         \ "tab"     : "⊙",
         \ "all"     : "∷",
-        \ "open"    : "◎",
+        \ "file"    : "◎",
         \ "tabs"    : "○",
         \ "c_tab"   : "●",
         \ "load"    : "⋮ → ∙",
@@ -1162,7 +1168,7 @@ else
         \ "cs"      : "#",
         \ "tab"     : "TAB",
         \ "all"     : "ALL",
-        \ "open"    : "OPEN",
+        \ "file"    : "FILE",
         \ "tabs"    : "-",
         \ "c_tab"   : "+",
         \ "load"    : "LOAD",

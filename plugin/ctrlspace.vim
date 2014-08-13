@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.8
+" Version:      4.0.9
 "
 " The MIT License (MIT)
 
@@ -48,7 +48,7 @@ function! <SID>define_symbols()
           \ "cs"      : "⌗",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
-          \ "open"    : "◎",
+          \ "file"    : "◎",
           \ "tabs"    : "○",
           \ "c_tab"   : "●",
           \ "load"    : "⋮ → ∙",
@@ -64,7 +64,7 @@ function! <SID>define_symbols()
           \ "cs"      : "#",
           \ "tab"     : "TAB",
           \ "all"     : "ALL",
-          \ "open"    : "OPEN",
+          \ "file"    : "FILE",
           \ "tabs"    : "-",
           \ "c_tab"   : "+",
           \ "load"    : "LOAD",
@@ -430,7 +430,7 @@ function! ctrlspace#statusline_mode_segment(...)
   let statusline_elements = []
 
   if s:file_mode
-    call add(statusline_elements, g:ctrlspace_symbols.open)
+    call add(statusline_elements, g:ctrlspace_symbols.file)
   elseif s:workspace_mode == 1
     call add(statusline_elements, g:ctrlspace_symbols.load)
   elseif s:workspace_mode == 2
@@ -660,10 +660,13 @@ function! <SID>create_workspace_digest()
   let lines = []
 
   for t in range(1, tabpagenr("$"))
-    let line = [t, gettabvar(t, "ctrlspace_label")]
-    let bufs = []
+    let line     = [t, gettabvar(t, "ctrlspace_label")]
+    let bufs     = []
+    let visibles = []
 
-    for bname in values(ctrlspace#bufferlist(t))
+    let tab_buffers = ctrlspace#bufferlist(t)
+
+    for bname in values(tab_buffers)
       let bufname = fnamemodify(bname, ":p")
 
       if !filereadable(bufname)
@@ -673,7 +676,20 @@ function! <SID>create_workspace_digest()
       call add(bufs, bufname)
     endfor
 
+    for visible_buf in tabpagebuflist(t)
+      if exists("tab_buffers[visible_buf]")
+        let bufname = fnamemodify(tab_buffers[visible_buf], ":p")
+
+        if !filereadable(bufname)
+          continue
+        endif
+
+        call add(visibles, bufname)
+      endif
+    endfor
+
     call add(line, join(bufs, "|"))
+    call add(line, join(visibles, "|"))
     call add(lines, join(line, ","))
   endfor
 
@@ -1888,8 +1904,8 @@ function! <SID>display_help()
       let current_list .= " - scoped to '" . join(s:search_letters, "") . "'"
     endif
 
-    call <SID>key_help("CR", "Open a selected file")
-    call <SID>key_help("Space", "Open a selected file but stays in the plugin window")
+    call <SID>key_help("CR", "Open selected file")
+    call <SID>key_help("Space", "Open selected file but stays in the plugin window")
 
     if empty(s:search_letters)
       call <SID>key_help("BS", "Go back to the Buffer List")
@@ -1899,9 +1915,12 @@ function! <SID>display_help()
 
     call <SID>key_help("/", "Enter the Search Mode")
     call <SID>key_help("O", "Enter the Search Mode")
-    call <SID>key_help("v", "Open a selected file in a new vertical split")
-    call <SID>key_help("s", "Open a selected file in a new horizontal split")
-    call <SID>key_help("t", "Open a selected file in a new tab")
+
+    call <SID>key_help("v", "Open selected file in a new vertical split")
+    call <SID>key_help("V", "Open selected file in a new vertical split but stay in the plugin window")
+    call <SID>key_help("s", "Open selected file in a new horizontal split")
+    call <SID>key_help("S", "Open selected file in a new horizontal split but stay in the plugin window")
+    call <SID>key_help("t", "Open selected file in a new tab")
     call <SID>key_help("T", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
@@ -1953,13 +1972,13 @@ function! <SID>display_help()
 
     let current_mode .= (s:single_mode ? "SINGLE MODE" : "ALL MODE")
 
-    call <SID>key_help("CR", "Open a selected buffer")
+    call <SID>key_help("CR", "Open selected buffer")
 
     if s:zoom_mode
       let current_mode .= " - ZOOM MODE"
       call <SID>key_help("Space", "Zoom (preview) selected buffer")
     else
-      call <SID>key_help("Space", "Open a selected buffer and stay in the plugin window")
+      call <SID>key_help("Space", "Open selected buffer and stay in the plugin window")
     endif
 
     call <SID>key_help("Tab", "Jump to the window containing selected buffer")
@@ -1975,9 +1994,13 @@ function! <SID>display_help()
 
     call <SID>key_help("/", "Toggle Search Mode")
     call <SID>key_help("z", "Toggle Zoom Mode")
-    call <SID>key_help("v", "Open a selected buffer in a new vertical split")
-    call <SID>key_help("s", "Open a selected buffer in a new horizontal split")
-    call <SID>key_help("t", "Open a selected buffer in a new tab")
+    call <SID>key_help("v", "Open selected buffer in a new vertical split")
+    call <SID>key_help("V", "Open selected buffer in a new vertical split but stay in the plugin window")
+    call <SID>key_help("s", "Open selected buffer in a new horizontal split")
+    call <SID>key_help("S", "Open selected buffer in a new horizontal split but stay in the plugin window")
+    call <SID>key_help("x", "Close the split window containing selected buffer")
+    call <SID>key_help("X", "Leave the window containing selected buffer - close all others")
+    call <SID>key_help("t", "Open selected buffer in a new tab")
     call <SID>key_help("T", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
@@ -2039,7 +2062,6 @@ function! <SID>display_help()
     call <SID>key_help("C-n", "Bring the next searched text")
     call <SID>key_help("g", "Jump to a next tab containing the selected buffer")
     call <SID>key_help("G", "Jump to a previous tab containing the selected buffer")
-    call <SID>key_help("S", "Save the workspace immediately (or creates a new one if none)")
     call <SID>key_help("L", "Load the last active workspace (if present)")
     call <SID>key_help("N", "Makes a new workspace (closes all buffers)")
     call <SID>key_help("w", "Toggle the Workspace List view")
@@ -2068,7 +2090,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.8 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3281,8 +3303,12 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "v"
       call <SID>load_file("vs")
+    elseif a:key ==# "V"
+      call <SID>load_many_files("vs")
     elseif a:key ==# "s"
       call <SID>load_file("sp")
+    elseif a:key ==# "S"
+      call <SID>load_many_files("sp")
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
     elseif a:key ==# "T"
@@ -3422,8 +3448,26 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
+    elseif a:key ==# "V"
+      call <SID>load_many_buffers("vs")
     elseif a:key ==# "s"
       call <SID>load_buffer("sp")
+    elseif a:key ==# "S"
+      call <SID>load_many_buffers("sp")
+    elseif a:key ==# "x"
+      let current_line = line(".")
+      if (winnr("$") > 2) && <SID>goto_window()
+        silent! exe "wincmd c"
+        call <SID>ctrlspace_toggle(0)
+        call <SID>move_selection_bar(current_line)
+      endif
+    elseif a:key ==# "X"
+      let current_line = line(".")
+      if (winnr("$") > 2) && <SID>goto_window()
+        silent! exe "wincmd o"
+        call <SID>ctrlspace_toggle(0)
+        call <SID>move_selection_bar(current_line)
+      endif
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
     elseif a:key ==# "T"
@@ -3533,12 +3577,6 @@ function! <SID>keypressed(key)
       call <SID>rename_file_or_buffer()
     elseif a:key ==# "y"
       call <SID>copy_file_or_buffer()
-    elseif a:key ==# "S"
-      if empty(<SID>get_workspace_names())
-        call <SID>save_first_workspace()
-      else
-        call <SID>save_workspace(s:active_workspace_name)
-      endif
     elseif a:key ==# "L"
       call <SID>load_last_active_workspace()
     elseif a:key ==# "N"
@@ -4117,12 +4155,16 @@ function! <SID>goto_buffer_or_file(direction)
   endif
 endfunction
 
-function! <SID>load_many_buffers()
+function! <SID>load_many_buffers(...)
   let nr = <SID>get_selected_buffer()
   let current_line = line(".")
 
   call <SID>kill(0, 0)
   call <SID>goto_start_window()
+
+  if !empty(a:000)
+    silent! exe ":" . a:1
+  endif
 
   exec ":b " . nr
   normal! zb
@@ -4142,13 +4184,17 @@ function! <SID>load_buffer(...)
   silent! exe ":b " . nr
 endfunction
 
-function! <SID>load_many_files()
+function! <SID>load_many_files(...)
   let file_number = <SID>get_selected_buffer()
   let file = fnamemodify(s:files[file_number - 1], ":p")
   let current_line = line(".")
 
   call <SID>kill(0, 0)
   call <SID>goto_start_window()
+
+  if !empty(a:000)
+    exec ":" . a:1
+  endif
 
   exec ":e " . fnameescape(file)
   normal! zb
