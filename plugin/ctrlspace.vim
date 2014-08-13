@@ -48,7 +48,7 @@ function! <SID>define_symbols()
           \ "cs"      : "⌗",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
-          \ "file"    : "◎",
+          \ "file"    : "〇",
           \ "tabs"    : "○",
           \ "c_tab"   : "●",
           \ "load"    : "⋮ → ∙",
