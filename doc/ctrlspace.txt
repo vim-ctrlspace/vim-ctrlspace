@@ -506,7 +506,6 @@ all available keys:
 
 | Key | Action                                                            |
 | --- | ----------------------------------------------------------------- |
-| `S`   | Save the workspace immediately (or creates a new one if none)     |
 | `L`   | Load the last active workspace (if present)                       |
 | `N`   | Makes a new workspace (closes all buffers)                        |
 
