@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.6
+" Version:      4.0.7
 "
 " The MIT License (MIT)
 
@@ -1971,8 +1971,8 @@ function! <SID>display_help()
       call <SID>key_help("BS", "Close the list")
     endif
 
-    call <SID>key_help("/", "Enter the Search Mode")
-    call <SID>key_help("z", "Enter the Zoom Mode for selected buffer")
+    call <SID>key_help("/", "Toggle Search Mode")
+    call <SID>key_help("z", "Toggle Zoom Mode")
     call <SID>key_help("v", "Open a selected buffer in a new vertical split")
     call <SID>key_help("s", "Open a selected buffer in a new horizontal split")
     call <SID>key_help("t", "Open a selected buffer in a new tab")
@@ -2066,7 +2066,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.7 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2183,6 +2183,13 @@ function! <SID>ctrlspace_toggle(internal)
   silent! exe "noautocmd botright pedit __CS__"
   silent! exe "noautocmd wincmd P"
   silent! exe "resize" g:ctrlspace_height
+
+  " zoom start window in Zoom Mode
+  if s:zoom_mode
+    silent! exe t:ctrlspace_start_window . "wincmd w"
+    vert resize | resize
+    silent! exe "noautocmd wincmd P"
+  endif
 
   call <SID>set_up_buffer()
 
@@ -2513,11 +2520,9 @@ function! <SID>find_activebufline(activebuf, buflist)
 endfunction
 
 function! <SID>go_to_start_window()
-  if exists("t:ctrlspace_start_window")
-    silent! exe t:ctrlspace_start_window . "wincmd w"
-  endif
+  silent! exe t:ctrlspace_start_window . "wincmd w"
 
-  if exists("t:ctrlspace_winrestcmd") && (winrestcmd() != t:ctrlspace_winrestcmd)
+  if winrestcmd() != t:ctrlspace_winrestcmd
     silent! exe t:ctrlspace_winrestcmd
 
     if winrestcmd() != t:ctrlspace_winrestcmd
@@ -3383,7 +3388,12 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "Tab")
       call <SID>goto_window()
     elseif (a:key ==# "z")
-      call <SID>zoom_buffer(0)
+      if !s:zoom_mode
+        call <SID>zoom_buffer(0)
+      else
+        call <SID>kill(0, 1)
+        call <SID>ctrlspace_toggle(0)
+      endif
     elseif a:key ==# "BS"
       if !empty(s:search_letters)
         call <SID>clear_search_mode()
@@ -4163,14 +4173,10 @@ function! <SID>zoom_buffer(nr, ...)
 endfunction
 
 function! <SID>load_buffer_into_window(winnr)
-  if exists("t:ctrlspace_start_window")
-    let old_start_window = t:ctrlspace_start_window
-    let t:ctrlspace_start_window = a:winnr
-  endif
+  let old_start_window = t:ctrlspace_start_window
+  let t:ctrlspace_start_window = a:winnr
   call <SID>load_buffer()
-  if exists("old_start_window")
-    let t:ctrlspace_start_window = old_start_window
-  endif
+  let t:ctrlspace_start_window = old_start_window
 endfunction
 
 " deletes the selected buffer

@@ -373,7 +373,7 @@ all available keys:
 | `Return` | Open a selected buffer                               |
 | `Space`  | Open a selected buffer and stay in the plugin window |
 | `Tab`    | Jump to the window containing selected buffer        |
-| `z`      | Enter the Zoom Mode for selected buffer              |
+| `z`      | Toggle Zoom Mode                                     |
 | `v`      | Open a selected buffer in a new vertical split       |
 | `s`      | Open a selected buffer in a new horizontal split     |
 | `t`      | Open a selected buffer in a new tab                  |
@@ -383,7 +383,7 @@ all available keys:
 
 | Key        | Action                                              |
 |:----------:| --------------------------------------------------- |
-| `/`        | Enter the Search Mode                               |
+| `/`        | Toggle Search Mode                                  |
 | `Ctrl + p` | Bring back the previous searched text               |
 | `Ctrl + n` | Bring the next searched text                        |
 
@@ -505,12 +505,16 @@ This mode works in a conjunction with the Buffer List. You can invoke the Zoom
 Mode by hitting the `z` key. Hitting `z` does almost the same as `Space` - it
 shows you the selected buffer, but unlike `Space`, that change of the target
 window content is not permanent. However, once turned on - it alters the `Space`
-behavior temporarily too. When you quit the plugin window, the old (previous)
-content of the target window is restored.
+behavior temporarily too. Also, the target window gets maximized to show you
+more content of the zoomed buffer. When you quit the plugin window, the old
+(previous) content of the target window is restored as well as its original
+window size.
 
-Also the jumps history remains unchanged and the selected buffer won't be added
+Jumps history remains unchanged and the selected buffer won't be added
 to the tab buffer list. In that way, you can just preview a buffer before
 actually opening it (with `Space`, `Return`, etc). 
+
+You can toggle the Zoom Mode on and off with the `z` key.
 
 Those _zoomed_ files are marked on the list with the star symbol and the
 original content is marked with an empty star too:
