@@ -116,6 +116,7 @@ module CtrlSpace
     active_workspace_name   = VIM.evaluate("s:active_workspace_name")
     active_workspace_digest = VIM.evaluate("s:active_workspace_digest")
     active_bookmark         = VIM.evaluate("s:active_bookmark")
+    start_window            = VIM.evaluate("t:ctrlspace_start_window")
 
     buftext                 = ""
 
@@ -132,9 +133,13 @@ module CtrlSpace
 
         indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
 
+        win = VIM.evaluate("bufwinnr(#{entry["number"]})")
+
         if zoom_mode && (VIM.evaluate("s:zoom_mode_original_buffer") == entry["number"])
           indicators << (unicode_font ? "☆" : "*")
-        elsif VIM.evaluate("bufwinnr(#{entry["number"]})") != -1
+        elsif !zoom_mode && (win == start_window)
+          indicators << (unicode_font ? "•" : "@")
+        elsif win != -1
           indicators << (unicode_font ? "★" : "*")
         end
 

@@ -299,10 +299,11 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator                |
-|:-------:|:-----:| ------------------------ |
-| `+`     | `+`   | Item modified            |
-| `★`     | `*`   | Item visible (or active) |
+| Unicode | ASCII | Indicator                         |
+|:-------:|:-----:| --------------------------------- |
+| `+`     | `+`   | Item modified                     |
+| `★`     | `*`   | Item visible (or active)          |
+| `•`     | `@`   | Item visible in the target window |
 
 
 ## Tab Management
@@ -366,17 +367,18 @@ all available keys:
 | `?`      | Toogle the Help Mode                                 |
 
 
-#### Opening
+#### Window Operations
 
-| Key      | Action                                               |
-|:--------:| ---------------------------------------------------- |
-| `Return` | Open a selected buffer                               |
-| `Space`  | Open a selected buffer and stay in the plugin window |
-| `Tab`    | Jump to the window containing selected buffer        |
-| `z`      | Toggle Zoom Mode                                     |
-| `v`      | Open a selected buffer in a new vertical split       |
-| `s`      | Open a selected buffer in a new horizontal split     |
-| `t`      | Open a selected buffer in a new tab                  |
+| Key      | Action                                                     |
+|:--------:| ---------------------------------------------------------- |
+| `Return` | Open a selected buffer                                     |
+| `Space`  | Open a selected buffer and stay in the plugin window       |
+| `Tab`    | Jump to the window containing selected buffer              |
+| `S-Tab`  | Change the target window to one containing selected buffer |
+| `z`      | Toggle Zoom Mode                                           |
+| `v`      | Open a selected buffer in a new vertical split             |
+| `s`      | Open a selected buffer in a new horizontal split           |
+| `t`      | Open a selected buffer in a new tab                        |
 
 
 #### Searching & Sorting

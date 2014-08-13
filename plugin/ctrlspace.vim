@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.7
+" Version:      4.0.8
 "
 " The MIT License (MIT)
 
@@ -135,7 +135,8 @@ if g:ctrlspace_set_default_mapping
 endif
 
 let s:files                   = []
-let s:zoom_mode            = 0
+let s:zoom_mode               = 0
+let s:key_esc_sequence        = 0
 let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
@@ -1962,6 +1963,7 @@ function! <SID>display_help()
     endif
 
     call <SID>key_help("Tab", "Jump to the window containing selected buffer")
+    call <SID>key_help("S-Tab", "Change the target window to one containing selected buffer")
 
     if !empty(s:search_letters)
       call <SID>key_help("BS", "Clear search")
@@ -2066,7 +2068,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.7 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.8 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2473,9 +2475,13 @@ function! <SID>decorate_with_indicators(name, bufnum)
     let indicators .= "+"
   endif
 
+  let win = bufwinnr(a:bufnum)
+
   if s:zoom_mode && (s:zoom_mode_original_buffer == a:bufnum)
     let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
-  elseif bufwinnr(a:bufnum) != -1
+  elseif !s:zoom_mode && (win == t:ctrlspace_start_window)
+    let indicators .= g:ctrlspace_unicode_font ? "•" : "@"
+  elseif win != -1
     let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
   endif
 
@@ -2519,7 +2525,7 @@ function! <SID>find_activebufline(activebuf, buflist)
   return (last_line > 0) ? last_line : activebufline
 endfunction
 
-function! <SID>go_to_start_window()
+function! <SID>goto_start_window()
   silent! exe t:ctrlspace_start_window . "wincmd w"
 
   if winrestcmd() != t:ctrlspace_winrestcmd
@@ -2566,7 +2572,7 @@ function! <SID>kill(buflistnr, final)
       call <SID>append_to_search_history()
     endif
 
-    call <SID>go_to_start_window()
+    call <SID>goto_start_window()
 
     if s:zoom_mode
       exec ":b " . s:zoom_mode_original_buffer
@@ -2639,10 +2645,16 @@ function! <SID>goto_window()
   if bufwinnr(nr) != -1
     call <SID>kill(0, 1)
     silent! exe bufwinnr(nr) . "wincmd w"
+    return 1
   endif
+
+  return 0
 endfunction
 
 function! <SID>keypressed(key)
+  let term_s_tab         = s:key_esc_sequence && (a:key ==# "Z")
+  let s:key_esc_sequence = 0
+
   if a:key ==# "?"
     call <SID>kill(0, 0)
     let s:help_mode = !s:help_mode
@@ -3385,9 +3397,13 @@ function! <SID>keypressed(key)
       call <SID>load_buffer()
     elseif a:key ==# "Space"
       call <SID>load_many_buffers()
-    elseif (a:key ==# "Tab")
+    elseif a:key ==# "Tab"
       call <SID>goto_window()
-    elseif (a:key ==# "z")
+    elseif (a:key ==# "S-Tab") || term_s_tab
+      if <SID>goto_window()
+        call <SID>ctrlspace_toggle(0)
+      endif
+    elseif a:key ==# "z"
       if !s:zoom_mode
         call <SID>zoom_buffer(0)
       else
@@ -3732,13 +3748,17 @@ function! <SID>set_up_buffer()
 
   if !g:ctrlspace_use_mouse_and_arrows_in_term && !has("gui_running")
     " Block unnecessary escape sequences!
-    noremap <silent><buffer><esc>[ <Nop>
+    noremap <silent><buffer><esc>[ :call <SID>mark_key_esc_sequence()<CR>
   endif
 
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
     silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_name . "\")<CR>"
   endfor
+endfunction
+
+function! <SID>mark_key_esc_sequence()
+  let s:key_esc_sequence = 1
 endfunction
 
 function! <SID>make_filler()
@@ -4102,7 +4122,7 @@ function! <SID>load_many_buffers()
   let current_line = line(".")
 
   call <SID>kill(0, 0)
-  call <SID>go_to_start_window()
+  call <SID>goto_start_window()
 
   exec ":b " . nr
   normal! zb
@@ -4128,7 +4148,7 @@ function! <SID>load_many_files()
   let current_line = line(".")
 
   call <SID>kill(0, 0)
-  call <SID>go_to_start_window()
+  call <SID>goto_start_window()
 
   exec ":e " . fnameescape(file)
   normal! zb
@@ -4160,7 +4180,7 @@ function! <SID>zoom_buffer(nr, ...)
 
   call <SID>kill(0, 0)
 
-  call <SID>go_to_start_window()
+  call <SID>goto_start_window()
   silent! exe ":b " . nr
 
   let custom_commands = !empty(a:000) ? a:1 : ["normal! zb"]
