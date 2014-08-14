@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-13
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-14
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.0.9~
+                               Vim-CtrlSpace 4.1.0~
 
                             Vim Workspace Controller
 
@@ -324,11 +324,14 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator                         |
-| ------- | ----- | --------------------------------- |
-| `+`       | `+`     | Item modified                     |
-| `★`       | `*`     | Item visible (or active)          |
-| `•`       | `@`     | Item visible in the target window |
+| Unicode | ASCII | Indicator                            |
+| ------- | ----- | ------------------------------------ |
+| `+`       | `+`     | Item modified                        |
+| `•`       | `*`     | Item active                          |
+| `★`       | `*`     | Buffer visible in the current window |
+| `☆`       | `*`     | Original buffer in the Zoom Mode     |
+
+Some of those can be configured via |g:ctrlspace_symbols| variable.
 
 
 2.6 Tab Management                                    *ctrlspace-tab-management*
@@ -794,10 +797,6 @@ directory. Its extact name and path is determined by defined and found project
 root markers. By default, the project root marker is taken as the destination
 directory.
 
-If there are 2 or more split windows in a tab, they will be recreated as
-horizontal or vertical splits while loading (depending on
-|g:ctrlspace_use_horizontal_splits| settings).
-
 It's also possible to automatically load the last active workspace on Vim
 startup and save it active workspace on Vim exit. See
 |g:ctrlspace_load_last_workspace_on_start| and
@@ -1173,36 +1172,46 @@ doesn't contain enough symbols or the glyphs are poorly rendered.
 
 Default value: >
 
-    if g:ctrlspace_unicode_font
-      let g:ctrlspace_symbols = {
-            \ "cs"      : "⌗",
-            \ "tab"     : "⊙",
-            \ "all"     : "∷",
-            \ "file"    : "〇",
-            \ "tabs"    : "○",
-            \ "c_tab"   : "●",
-            \ "load"    : "⋮ → ∙",
-            \ "save"    : "∙ → ⋮",
-            \ "prv"     : "⌕",
-            \ "s_left"  : "›",
-            \ "s_right" : "‹"
-            \ }
-    else
-      let g:ctrlspace_symbols = {
-            \ "cs"      : "#",
-            \ "tab"     : "TAB",
-            \ "all"     : "ALL",
-            \ "file"    : "FILE",
-            \ "tabs"    : "-",
-            \ "c_tab"   : "+",
-            \ "load"    : "LOAD",
-            \ "save"    : "SAVE",
-            \ "prv"     : "*",
-            \ "s_left"  : "[",
-            \ "s_right" : "]"
-            \ }
-    endif
-<
+  if g:ctrlspace_unicode_font
+    let g:ctrlspace_symbols = {
+          \ "cs"      : "⌗",
+          \ "tab"     : "⊙",
+          \ "all"     : "∷",
+          \ "file"    : "〇",
+          \ "tabs"    : "○",
+          \ "c_tab"   : "●",
+          \ "load"    : "⋮ → ∙",
+          \ "save"    : "∙ → ⋮",
+          \ "zoom"    : "⌕",
+          \ "s_left"  : "›",
+          \ "s_right" : "‹",
+          \ "bm"      : "♡",
+          \ "help"    : "?",
+          \ "dot"     : "•",
+          \ "star1"   : "☆",
+          \ "star2"   : "★"
+          \ }
+  else
+    let g:ctrlspace_symbols = {
+          \ "cs"      : "#",
+          \ "tab"     : "TAB",
+          \ "all"     : "ALL",
+          \ "file"    : "FILE",
+          \ "tabs"    : "-",
+          \ "c_tab"   : "+",
+          \ "load"    : "LOAD",
+          \ "save"    : "SAVE",
+          \ "zoom"    : "*",
+          \ "s_left"  : "[",
+          \ "s_right" : "]",
+          \ "bm"      : "BM",
+          \ "help"    : "?",
+          \ "dot"     : "*",
+          \ "star1"   : "*",
+          \ "star2"   : "*"
+          \ }
+  endif
+
 
 5.15 *g:ctrlspace_ignored_files*
 

@@ -136,10 +136,12 @@ The Demo has been recorded with:
 - a bit modified [Seoul256 color scheme](https://github.com/szw/seoul256.vim)
 - following Vim-CtrlSpace settings in .vimrc:
 
-        hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
-        hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
-        hi CtrlSpaceSearch   ctermfg=220  ctermbg=NONE cterm=bold
-        hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+```VimL
+hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
+hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
+hi CtrlSpaceSearch   ctermfg=220  ctermbg=NONE cterm=bold
+hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+```
 
 - music licensed under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/)
   1. Kate Orange - [Oops](http://www.jamendo.com/pl/track/474843/oops)
@@ -299,11 +301,14 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator                         |
-|:-------:|:-----:| --------------------------------- |
-| `+`     | `+`   | Item modified                     |
-| `★`     | `*`   | Item visible (or active)          |
-| `•`     | `@`   | Item visible in the target window |
+| Unicode | ASCII | Indicator                            |
+|:-------:|:-----:| ------------------------------------ |
+| `+`     | `+`   | Item modified                        |
+| `•`     | `*`   | Item active                          |
+| `★`     | `*`   | Buffer visible in the current window |
+| `☆`     | `*`   | Original buffer in the Zoom Mode     |
+
+Some of those can be configured via `g:ctrlspace_symbols` variable.
 
 
 ## Tab Management
@@ -772,10 +777,6 @@ directory. Its extact name and path is determined by defined and found project
 root markers. By default, the project root marker is taken as the destination
 directory.
 
-If there are 2 or more split windows in a tab, they will be recreated as
-horizontal or vertical splits while loading (depending on
-`g:ctrlspace_use_horizontal_splits` settings).
-
 It's also possible to automatically load the last active workspace on Vim
 startup and save it active workspace on Vim exit. See
 `g:ctrlspace_load_last_workspace_on_start` and
@@ -1157,10 +1158,14 @@ if g:ctrlspace_unicode_font
         \ "c_tab"   : "●",
         \ "load"    : "⋮ → ∙",
         \ "save"    : "∙ → ⋮",
-        \ "prv"     : "⌕",
+        \ "zoom"    : "⌕",
         \ "s_left"  : "›",
         \ "s_right" : "‹",
-        \ "bm"      : "♡"
+        \ "bm"      : "♡",
+        \ "help"    : "?",
+        \ "dot"     : "•",
+        \ "star1"   : "☆",
+        \ "star2"   : "★"
         \ }
 else
   let g:ctrlspace_symbols = {
@@ -1172,13 +1177,18 @@ else
         \ "c_tab"   : "+",
         \ "load"    : "LOAD",
         \ "save"    : "SAVE",
-        \ "prv"     : "*",
+        \ "zoom"    : "*",
         \ "s_left"  : "[",
         \ "s_right" : "]",
-        \ "bm"      : "BM"
+        \ "bm"      : "BM",
+        \ "help"    : "?",
+        \ "dot"     : "*",
+        \ "star1"   : "*",
+        \ "star2"   : "*"
         \ }
 endif
 ```
+
 
 ## `g:ctrlspace_ignored_files`
 

@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.0.9
+" Version:      4.1.0
 "
 " The MIT License (MIT)
 
@@ -57,7 +57,10 @@ function! <SID>define_symbols()
           \ "s_left"  : "›",
           \ "s_right" : "‹",
           \ "bm"      : "♡",
-          \ "help"    : "?"
+          \ "help"    : "?",
+          \ "dot"     : "•",
+          \ "star1"   : "☆",
+          \ "star2"   : "★"
           \ }
   else
     let symbols = {
@@ -73,7 +76,10 @@ function! <SID>define_symbols()
           \ "s_left"  : "[",
           \ "s_right" : "]",
           \ "bm"      : "BM",
-          \ "help"    : "?"
+          \ "help"    : "?",
+          \ "dot"     : "*",
+          \ "star1"   : "*",
+          \ "star2"   : "*"
           \ }
   endif
 
@@ -1470,7 +1476,7 @@ function! <SID>prepare_buftext_to_display(buflist)
             let bufname .= "+"
           endif
 
-          let bufname .= g:ctrlspace_unicode_font ? "★" : "*"
+          let bufname .= g:ctrlspace_symbols.dot
         endif
       elseif s:tablist_mode
         let indicators = ""
@@ -1480,7 +1486,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         endif
 
         if entry.number == tabpagenr()
-          let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+          let indicators .= g:ctrlspace_symbols.dot
         endif
 
         if !empty(indicators)
@@ -1490,7 +1496,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         let indicators = ""
 
         if !empty(s:active_bookmark) && (s:bookmarks[entry.number - 1].directory == s:active_bookmark.directory)
-          let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+          let indicators .= g:ctrlspace_symbols.dot
         endif
 
         if !empty(indicators)
@@ -2090,7 +2096,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.0.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.0 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2500,11 +2506,11 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let win = bufwinnr(a:bufnum)
 
   if s:zoom_mode && (s:zoom_mode_original_buffer == a:bufnum)
-    let indicators .= g:ctrlspace_unicode_font ? "☆" : "*"
+    let indicators .= g:ctrlspace_symbols.start1
   elseif !s:zoom_mode && (win == t:ctrlspace_start_window)
-    let indicators .= g:ctrlspace_unicode_font ? "•" : "@"
+    let indicators .= g:ctrlspace_symbols.dot
   elseif win != -1
-    let indicators .= g:ctrlspace_unicode_font ? "★" : "*"
+    let indicators .= g:ctrlspace_symbols.star2
   endif
 
   if !empty(indicators)

@@ -108,6 +108,9 @@ module CtrlSpace
   def self.prepare_buftext_to_display(buflist)
     columns                 = VIM.evaluate("&columns")
     unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0
+    dot                     = VIM.evaluate("g:ctrlspace_symbols.dot")
+    star1                   = VIM.evaluate("g:ctrlspace_symbols.star1")
+    star2                   = VIM.evaluate("g:ctrlspace_symbols.star2")
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
@@ -119,6 +122,16 @@ module CtrlSpace
     start_window            = VIM.evaluate("t:ctrlspace_start_window")
 
     buftext                 = ""
+
+    if RUBY_VERSION.to_f < 1.9
+      dot   = dot.to_s
+      star1 = star1.to_s
+      star2 = star2.to_s
+    else
+      dot   = dot.to_s.force_encoding("UTF-8")
+      star1 = star1.to_s.force_encoding("UTF-8")
+      star2 = star2.to_s.force_encoding("UTF-8")
+    end
 
     buflist.each do |entry|
       bufname = (RUBY_VERSION.to_f < 1.9) ? entry["raw"].to_s : entry["raw"].to_s.force_encoding("UTF-8")
@@ -136,11 +149,11 @@ module CtrlSpace
         win = VIM.evaluate("bufwinnr(#{entry["number"]})")
 
         if zoom_mode && (VIM.evaluate("s:zoom_mode_original_buffer") == entry["number"])
-          indicators << (unicode_font ? "☆" : "*")
+          indicators << star1
         elsif !zoom_mode && (win == start_window)
-          indicators << (unicode_font ? "•" : "@")
+          indicators << dot
         elsif win != -1
-          indicators << (unicode_font ? "★" : "*")
+          indicators << star2
         end
 
         bufname << " #{indicators}" unless indicators.empty?
@@ -148,19 +161,19 @@ module CtrlSpace
         if entry["raw"] == active_workspace_name
           bufname << " "
           bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
-          bufname << (unicode_font ? "★" : "*")
+          bufname << dot
         end
       elsif tablist_mode
         indicators = ""
         indicators << "+" if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
-        indicators << (unicode_font ? "★" : "*") if entry["number"] == VIM.evaluate("tabpagenr()")
+        indicators << dot if entry["number"] == VIM.evaluate("tabpagenr()")
         bufname << " #{indicators}" unless indicators.empty?
       elsif bookmark_mode
         indicators = ""
 
         unless active_bookmark.empty?
           bookmarks = VIM.evaluate("s:bookmarks")
-          indicators << (unicode_font ? "★" : "*") if bookmarks[entry["number"] - 1]["directory"] == active_bookmark["directory"]
+          indicators << dot if bookmarks[entry["number"] - 1]["directory"] == active_bookmark["directory"]
         end
 
         bufname << " #{indicators}" unless indicators.empty?
