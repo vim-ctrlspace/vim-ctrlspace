@@ -1078,7 +1078,7 @@ If not empty, the provided command will be used to list all files instead of Vim
 
 ```VimL
 if executable("ag") 
-  let g:ctrlspace_glob_command = 'ag . -l --nocolor -g ""'
+  let g:ctrlspace_glob_command = 'ag -l --nocolor -g ""'
 endif
 ```
 
