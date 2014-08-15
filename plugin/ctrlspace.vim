@@ -1958,8 +1958,8 @@ function! <SID>display_help()
     call <SID>key_help("C-p", "Bring back the previous searched text")
     call <SID>key_help("C-n", "Bring the next searched text")
     call <SID>key_help("C", "Close the current tab (with forgotten buffers and nonames)")
-    call <SID>key_help("e", "Edit a sibling of the selected buffer")
-    call <SID>key_help("E", "Explore a directory of the selected buffer")
+    call <SID>key_help("e", "Edit a new file or a sibling of selected file")
+    call <SID>key_help("E", "Explore a directory of selected file")
     call <SID>key_help("R", "Remove the selected file entirely")
     call <SID>key_help("m", "Move or rename the selected file")
     call <SID>key_help("y", "Copy the selected file")
@@ -2059,8 +2059,8 @@ function! <SID>display_help()
 
     call <SID>key_help("F", "Delete (close) all forgotten buffers (unrelated to any tab)")
     call <SID>key_help("C", "Close the current tab, then perform F, and then D")
-    call <SID>key_help("e", "Edit a sibling of the selected buffer")
-    call <SID>key_help("E", "Explore a directory of the selected buffer")
+    call <SID>key_help("e", "Edit a new file or a sibling of selected buffer")
+    call <SID>key_help("E", "Explore a directory of selected buffer")
     call <SID>key_help("R", "Remove the selected buffer (file) entirely (from the disk too)")
     call <SID>key_help("m", "Move or rename the selected buffer (together with its file)")
     call <SID>key_help("y", "Copy selected file")
@@ -4597,7 +4597,17 @@ function! <SID>edit_file()
 
   let new_file = <SID>get_input("Edit a new file: ", path . '/', "file")
 
-  if empty(new_file) || isdirectory(new_file) || !<SID>ensure_path(new_file)
+  if empty(new_file)
+    return
+  endif
+
+  if isdirectory(new_file)
+    call <SID>kill(0, 1)
+    enew
+    return
+  endif
+
+  if !<SID>ensure_path(new_file)
     return
   endif
 

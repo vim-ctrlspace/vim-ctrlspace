@@ -465,8 +465,8 @@ all available keys:
 
 | Key  | Action                                                            |
 |:----:| ----------------------------------------------------------------- |
-| `e`  | Edit a sibling of the selected buffer                             |
-| `E`  | Explore a directory of the selected buffer                        |
+| `e`  | Edit a new file or a sibling of selected buffer                   |
+| `E`  | Explore a directory of selected buffer                            |
 | `R`  | Remove the selected buffer (file) entirely (from the disk too)    |
 | `m`  | Move or rename the selected buffer (together with its file)       |
 | `y`  | Copy selected file                                                |
@@ -639,14 +639,14 @@ list with the `r` key.
 
 ### Disk Operations
 
-| Key | Action                                       |
-|:---:| -------------------------------------------- |
-| `e` | Edit a sibling of the selected buffer        |
-| `E` | Explore a directory of the selected buffer   |
-| `r` | Refresh the file list (force reloading)      |
-| `R` | Remove the selected file entirely            |
-| `m` | Move or rename the selected file             |
-| `y` | Copy the selected file                       |
+| Key | Action                                        |
+|:---:| --------------------------------------------- |
+| `e` | Edit a new file or a sibling of selected file |
+| `E` | Explore a directory of selected file          |
+| `r` | Refresh the file list (force reloading)       |
+| `R` | Remove the selected file entirely             |
+| `m` | Move or rename the selected file              |
+| `y` | Copy the selected file                        |
 
 
 ### List Changing
