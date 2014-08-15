@@ -2245,7 +2245,7 @@ function! <SID>ctrlspace_toggle(internal)
         call <SID>msg(action)
 
         for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : systemlist(g:ctrlspace_glob_command)
-          let fname_modified = fnamemodify(fname, ":.")
+          let fname_modified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
 
           if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)
             continue
