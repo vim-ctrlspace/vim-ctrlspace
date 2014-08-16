@@ -2715,7 +2715,6 @@ function! <SID>keypressed(key)
       call <SID>move_cursor("mouse")
     elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call <SID>move_cursor("mouse")
-      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
     elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
       call feedkeys("j")
     elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
@@ -3932,13 +3931,12 @@ function! <SID>display_list(displayedbufs, buflist)
 endfunction
 
 function! <SID>move_cursor(where)
-  " go where the user want's us to go
   if a:where == "up"
     call <SID>goto(line(".") - 1)
   elseif a:where == "down"
     call <SID>goto(line(".") + 1)
   elseif a:where == "mouse"
-    call <SID>goto(newpos)
+    call <SID>goto(line("."))
   elseif a:where == "pgup"
     let newpos = line(".") - winheight(0)
     if newpos < 1
@@ -3994,7 +3992,40 @@ function! <SID>move_selection_bar(where)
   " exchange the first char (>) with a space
   call setline(line("."), " " . strpart(getline(line(".")), 1))
 
-  call <SID>move_cursor(a:where)
+  " go where the user want's us to go
+  if a:where == "up"
+    call <SID>goto(line(".") - 1)
+  elseif a:where == "down"
+    call <SID>goto(line(".") + 1)
+  elseif a:where == "mouse"
+    call <SID>goto(newpos)
+  elseif a:where == "pgup"
+    let newpos = line(".") - winheight(0)
+    if newpos < 1
+      let newpos = 1
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "pgdown"
+    let newpos = line(".") + winheight(0)
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "half_pgup"
+    let newpos = line(".") - winheight(0) / 2
+    if newpos < 1
+      let newpos = 1
+    endif
+    call <SID>goto(newpos)
+  elseif a:where == "half_pgdown"
+    let newpos = line(".") + winheight(0) / 2
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call <SID>goto(newpos)
+  else
+    call <SID>goto(a:where)
+  endif
 
   " and mark this line with a >
   call setline(line("."), ">" . strpart(getline(line(".")), 1))
