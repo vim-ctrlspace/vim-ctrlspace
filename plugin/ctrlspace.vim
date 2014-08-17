@@ -2506,7 +2506,7 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let win = bufwinnr(a:bufnum)
 
   if s:zoom_mode && (s:zoom_mode_original_buffer == a:bufnum)
-    let indicators .= g:ctrlspace_symbols.start1
+    let indicators .= g:ctrlspace_symbols.star1
   elseif !s:zoom_mode && (win == t:ctrlspace_start_window)
     let indicators .= g:ctrlspace_symbols.dot
   elseif win != -1
