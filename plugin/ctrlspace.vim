@@ -48,7 +48,7 @@ function! <SID>define_symbols()
           \ "cs"      : "⌗",
           \ "tab"     : "⊙",
           \ "all"     : "∷",
-          \ "file"    : "〇",
+          \ "file"    : "⊚",
           \ "tabs"    : "○",
           \ "c_tab"   : "●",
           \ "load"    : "⋮ → ∙",
@@ -58,7 +58,6 @@ function! <SID>define_symbols()
           \ "s_right" : "‹",
           \ "bm"      : "♡",
           \ "help"    : "?",
-          \ "dot"     : "•",
           \ "star1"   : "☆",
           \ "star2"   : "★"
           \ }
@@ -77,7 +76,6 @@ function! <SID>define_symbols()
           \ "s_right" : "]",
           \ "bm"      : "BM",
           \ "help"    : "?",
-          \ "dot"     : "*",
           \ "star1"   : "*",
           \ "star2"   : "*"
           \ }
@@ -1476,7 +1474,7 @@ function! <SID>prepare_buftext_to_display(buflist)
             let bufname .= "+"
           endif
 
-          let bufname .= g:ctrlspace_symbols.dot
+          let bufname .= g:ctrlspace_symbols.star2
         endif
       elseif s:tablist_mode
         let indicators = ""
@@ -1486,7 +1484,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         endif
 
         if entry.number == tabpagenr()
-          let indicators .= g:ctrlspace_symbols.dot
+          let indicators .= g:ctrlspace_symbols.star2
         endif
 
         if !empty(indicators)
@@ -1496,7 +1494,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         let indicators = ""
 
         if !empty(s:active_bookmark) && (s:bookmarks[entry.number - 1].directory == s:active_bookmark.directory)
-          let indicators .= g:ctrlspace_symbols.dot
+          let indicators .= g:ctrlspace_symbols.star2
         endif
 
         if !empty(indicators)
@@ -2505,12 +2503,10 @@ function! <SID>decorate_with_indicators(name, bufnum)
 
   let win = bufwinnr(a:bufnum)
 
-  if s:zoom_mode && (s:zoom_mode_original_buffer == a:bufnum)
-    let indicators .= g:ctrlspace_symbols.star1
-  elseif !s:zoom_mode && (win == t:ctrlspace_start_window)
-    let indicators .= g:ctrlspace_symbols.dot
-  elseif win != -1
+  if win == t:ctrlspace_start_window
     let indicators .= g:ctrlspace_symbols.star2
+  elseif win != -1
+    let indicators .= g:ctrlspace_symbols.star1
   endif
 
   if !empty(indicators)

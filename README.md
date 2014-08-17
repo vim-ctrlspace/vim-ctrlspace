@@ -290,7 +290,7 @@ important symbolic information:
 | `?`            | `?`           | All         | Help Mode indicator        |
 | `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
 | `∷`            | `ALL`         | Buffer      | All Mode indicator         |
-| `〇`           | `FILE`        | File        | File List indicator        |
+| `⊚`           | `FILE`        | File        | File List indicator        |
 | `⌕`            | `*`           | Buffer      | Zoom Mode indicator        |
 | `›_‹`          | `[_]`         | Buffer/File | Search Mode indicator      |
 | `○●○`          | `-+-`         | Tab         | Tab List indicator         |
@@ -301,12 +301,11 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator                            |
-|:-------:|:-----:| ------------------------------------ |
-| `+`     | `+`   | Item modified                        |
-| `•`     | `*`   | Item active                          |
-| `★`     | `*`   | Buffer visible in the current window |
-| `☆`     | `*`   | Original buffer in the Zoom Mode     |
+| Unicode | ASCII | Indicator     |
+|:-------:|:-----:| ------------- |
+| `+`     | `+`   | Item modified |
+| `★`     | `*`   | Item active   |
+| `☆`     | `*`   | Item visible  |
 
 Some of those can be configured via `g:ctrlspace_symbols` variable.
 
@@ -522,24 +521,16 @@ window size.
 
 Jumps history remains unchanged and the selected buffer won't be added
 to the tab buffer list. In that way, you can just preview a buffer before
-actually opening it (with `Space`, `Return`, etc). 
+actually opening it. 
 
 You can toggle the Zoom Mode on and off with the `z` key.
-
-Those _zoomed_ files are marked on the list with the star symbol and the
-original content is marked with an empty star too:
-
-| Indicator        | Unicode | ASCII |
-| ---------------- |:-------:|:-----:|
-| Zoomed buffer    | `★`     | `*`   |
-| Original buffer  | `☆`     | `*`   |
 
 
 ## File List
 
 | Unicode | ASCII  |
 |:-------:|:------:|
-| `〇`    | `FILE` |
+| `⊚`    | `FILE` |
 
 This list shows you all files in the project and allows you to open a new file
 (as a buffer) in the current tab. Notice, only the project root directory
@@ -1153,7 +1144,7 @@ if g:ctrlspace_unicode_font
         \ "cs"      : "⌗",
         \ "tab"     : "⊙",
         \ "all"     : "∷",
-        \ "file"    : "〇",
+        \ "file"    : "⊚",
         \ "tabs"    : "○",
         \ "c_tab"   : "●",
         \ "load"    : "⋮ → ∙",
@@ -1163,7 +1154,6 @@ if g:ctrlspace_unicode_font
         \ "s_right" : "‹",
         \ "bm"      : "♡",
         \ "help"    : "?",
-        \ "dot"     : "•",
         \ "star1"   : "☆",
         \ "star2"   : "★"
         \ }
@@ -1182,7 +1172,6 @@ else
         \ "s_right" : "]",
         \ "bm"      : "BM",
         \ "help"    : "?",
-        \ "dot"     : "*",
         \ "star1"   : "*",
         \ "star2"   : "*"
         \ }
