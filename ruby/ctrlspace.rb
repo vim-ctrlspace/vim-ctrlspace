@@ -108,8 +108,8 @@ module CtrlSpace
   def self.prepare_buftext_to_display(buflist)
     columns                 = VIM.evaluate("&columns")
     unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0
-    star1                   = VIM.evaluate("g:ctrlspace_symbols.star1")
-    star2                   = VIM.evaluate("g:ctrlspace_symbols.star2")
+    iv                      = VIM.evaluate("g:ctrlspace_symbols.iv")
+    ia                      = VIM.evaluate("g:ctrlspace_symbols.ia")
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
@@ -122,11 +122,11 @@ module CtrlSpace
     buftext                 = ""
 
     if RUBY_VERSION.to_f < 1.9
-      star1 = star1.to_s
-      star2 = star2.to_s
+      iv = iv.to_s
+      ia = ia.to_s
     else
-      star1 = star1.to_s.force_encoding("UTF-8")
-      star2 = star2.to_s.force_encoding("UTF-8")
+      iv = iv.to_s.force_encoding("UTF-8")
+      ia = ia.to_s.force_encoding("UTF-8")
     end
 
     buflist.each do |entry|
@@ -145,9 +145,9 @@ module CtrlSpace
         win = VIM.evaluate("bufwinnr(#{entry["number"]})")
 
         if win == start_window
-          indicators << star2
+          indicators << ia
         elsif win != -1
-          indicators << star1
+          indicators << iv
         end
 
         bufname << " #{indicators}" unless indicators.empty?
@@ -155,19 +155,19 @@ module CtrlSpace
         if entry["raw"] == active_workspace_name
           bufname << " "
           bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
-          bufname << star2
+          bufname << ia
         end
       elsif tablist_mode
         indicators = ""
         indicators << "+" if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
-        indicators << star2 if entry["number"] == VIM.evaluate("tabpagenr()")
+        indicators << ia if entry["number"] == VIM.evaluate("tabpagenr()")
         bufname << " #{indicators}" unless indicators.empty?
       elsif bookmark_mode
         indicators = ""
 
         unless active_bookmark.empty?
           bookmarks = VIM.evaluate("s:bookmarks")
-          indicators << star2 if bookmarks[entry["number"] - 1]["directory"] == active_bookmark["directory"]
+          indicators << ia if bookmarks[entry["number"] - 1]["directory"] == active_bookmark["directory"]
         end
 
         bufname << " #{indicators}" unless indicators.empty?

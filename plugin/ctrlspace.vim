@@ -45,39 +45,39 @@ endfunction
 function! <SID>define_symbols()
   if g:ctrlspace_unicode_font
     let symbols = {
-          \ "cs"      : "⌗",
-          \ "tab"     : "⊙",
-          \ "all"     : "∷",
-          \ "file"    : "⊚",
-          \ "tabs"    : "○",
-          \ "c_tab"   : "●",
-          \ "load"    : "⋮ → ∙",
-          \ "save"    : "∙ → ⋮",
-          \ "zoom"    : "⌕",
-          \ "s_left"  : "›",
-          \ "s_right" : "‹",
-          \ "bm"      : "♡",
-          \ "help"    : "?",
-          \ "star1"   : "☆",
-          \ "star2"   : "★"
+          \ "cs":      "⌗",
+          \ "tab":     "⊙",
+          \ "all":     "∷",
+          \ "file":    "⊚",
+          \ "tabs":    "○",
+          \ "c_tab":   "●",
+          \ "load":    "⋮ → ∙",
+          \ "save":    "∙ → ⋮",
+          \ "zoom":    "⌕",
+          \ "s_left":  "›",
+          \ "s_right": "‹",
+          \ "bm":      "♡",
+          \ "help":    "?",
+          \ "iv":      "☆",
+          \ "ia":      "★"
           \ }
   else
     let symbols = {
-          \ "cs"      : "#",
-          \ "tab"     : "TAB",
-          \ "all"     : "ALL",
-          \ "file"    : "FILE",
-          \ "tabs"    : "-",
-          \ "c_tab"   : "+",
-          \ "load"    : "LOAD",
-          \ "save"    : "SAVE",
-          \ "zoom"    : "*",
-          \ "s_left"  : "[",
-          \ "s_right" : "]",
-          \ "bm"      : "BM",
-          \ "help"    : "?",
-          \ "star1"   : "*",
-          \ "star2"   : "*"
+          \ "cs":      "#",
+          \ "tab":     "TAB",
+          \ "all":     "ALL",
+          \ "file":    "FILE",
+          \ "tabs":    "-",
+          \ "c_tab":   "+",
+          \ "load":    "LOAD",
+          \ "save":    "SAVE",
+          \ "zoom":    "*",
+          \ "s_left":  "[",
+          \ "s_right": "]",
+          \ "bm":      "BM",
+          \ "help":    "?",
+          \ "iv":      "*",
+          \ "ia":      "*"
           \ }
   endif
 
@@ -1474,7 +1474,7 @@ function! <SID>prepare_buftext_to_display(buflist)
             let bufname .= "+"
           endif
 
-          let bufname .= g:ctrlspace_symbols.star2
+          let bufname .= g:ctrlspace_symbols.ia
         endif
       elseif s:tablist_mode
         let indicators = ""
@@ -1484,7 +1484,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         endif
 
         if entry.number == tabpagenr()
-          let indicators .= g:ctrlspace_symbols.star2
+          let indicators .= g:ctrlspace_symbols.ia
         endif
 
         if !empty(indicators)
@@ -1494,7 +1494,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         let indicators = ""
 
         if !empty(s:active_bookmark) && (s:bookmarks[entry.number - 1].directory == s:active_bookmark.directory)
-          let indicators .= g:ctrlspace_symbols.star2
+          let indicators .= g:ctrlspace_symbols.ia
         endif
 
         if !empty(indicators)
@@ -2504,9 +2504,9 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let win = bufwinnr(a:bufnum)
 
   if win == t:ctrlspace_start_window
-    let indicators .= g:ctrlspace_symbols.star2
+    let indicators .= g:ctrlspace_symbols.ia
   elseif win != -1
-    let indicators .= g:ctrlspace_symbols.star1
+    let indicators .= g:ctrlspace_symbols.iv
   endif
 
   if !empty(indicators)

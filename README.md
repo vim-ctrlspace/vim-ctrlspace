@@ -1141,39 +1141,39 @@ Default value:
 ```VimL
 if g:ctrlspace_unicode_font
   let g:ctrlspace_symbols = {
-        \ "cs"      : "⌗",
-        \ "tab"     : "⊙",
-        \ "all"     : "∷",
-        \ "file"    : "⊚",
-        \ "tabs"    : "○",
-        \ "c_tab"   : "●",
-        \ "load"    : "⋮ → ∙",
-        \ "save"    : "∙ → ⋮",
-        \ "zoom"    : "⌕",
-        \ "s_left"  : "›",
-        \ "s_right" : "‹",
-        \ "bm"      : "♡",
-        \ "help"    : "?",
-        \ "star1"   : "☆",
-        \ "star2"   : "★"
+        \ "cs":      "⌗",
+        \ "tab":     "⊙",
+        \ "all":     "∷",
+        \ "file":    "⊚",
+        \ "tabs":    "○",
+        \ "c_tab":   "●",
+        \ "load":    "⋮ → ∙",
+        \ "save":    "∙ → ⋮",
+        \ "zoom":    "⌕",
+        \ "s_left":  "›",
+        \ "s_right": "‹",
+        \ "bm":      "♡",
+        \ "help":    "?",
+        \ "iv":      "☆",
+        \ "ia":      "★"
         \ }
 else
   let g:ctrlspace_symbols = {
-        \ "cs"      : "#",
-        \ "tab"     : "TAB",
-        \ "all"     : "ALL",
-        \ "file"    : "FILE",
-        \ "tabs"    : "-",
-        \ "c_tab"   : "+",
-        \ "load"    : "LOAD",
-        \ "save"    : "SAVE",
-        \ "zoom"    : "*",
-        \ "s_left"  : "[",
-        \ "s_right" : "]",
-        \ "bm"      : "BM",
-        \ "help"    : "?",
-        \ "star1"   : "*",
-        \ "star2"   : "*"
+        \ "cs":      "#",
+        \ "tab":     "TAB",
+        \ "all":     "ALL",
+        \ "file":    "FILE",
+        \ "tabs":    "-",
+        \ "c_tab":   "+",
+        \ "load":    "LOAD",
+        \ "save":    "SAVE",
+        \ "zoom":    "*",
+        \ "s_left":  "[",
+        \ "s_right": "]",
+        \ "bm":      "BM",
+        \ "help":    "?",
+        \ "iv":      "*",
+        \ "ia":      "*"
         \ }
 endif
 ```
