@@ -973,10 +973,6 @@ function! <SID>load_last_active_workspace()
 endfunction
 
 function! <SID>new_workspace()
-  if !<SID>confirmed("Create a new blank workspace?")
-    return
-  endif
-
   if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
         \ && !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
     return
