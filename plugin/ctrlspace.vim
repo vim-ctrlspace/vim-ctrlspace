@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.0
+" Version:      4.1.1
 "
 " The MIT License (MIT)
 
@@ -843,10 +843,8 @@ function! <SID>delete_workspace(name)
     return
   endif
 
-  let filename = <SID>workspace_file()
-  let last_tab = tabpagenr("$")
-
-  let lines      = []
+  let filename     = <SID>workspace_file()
+  let lines        = []
   let in_workspace = 0
 
   let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
@@ -1000,6 +998,53 @@ function! <SID>new_workspace_externally()
   call <SID>delete_foreign_buffers(1)
   let s:active_workspace_name   = ""
   let s:active_workspace_digest = ""
+endfunction
+
+function! <SID>rename_workspace(name)
+  let new_name = <SID>get_input("Rename workspace '" . a:name . "' to: ", a:name)
+
+  if empty(new_name)
+    return
+  endif
+
+  for existing_name in s:workspace_names
+    if new_name ==? existing_name
+      call <SID>msg("The workspace '" . new_name . "' already exists.")
+      return
+    endif
+  endfor
+
+  let filename     = <SID>workspace_file()
+  let lines        = []
+  let in_workspace = 0
+
+  let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
+  let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
+
+  if filereadable(filename)
+    for line in readfile(filename)
+      if line ==? workspace_start_marker
+        let line = "CS_WORKSPACE_BEGIN: " . new_name
+      elseif line ==? workspace_end_marker
+        let line = "CS_WORKSPACE_END: " . new_name
+      endif
+
+      call add(lines, line)
+    endfor
+  endif
+
+  call writefile(lines, filename)
+
+  if s:active_workspace_name ==? a:name
+    call <SID>set_active_workspace_name(new_name)
+  endif
+
+  call <SID>msg("The workspace '" . a:name . "' has been renamed to '" . new_name . "'.")
+
+  let s:workspace_names = []
+
+  call <SID>kill(0, 0)
+  call <SID>ctrlspace_toggle(1)
 endfunction
 
 function! <SID>load_workspace(bang, name)
@@ -1803,7 +1848,8 @@ function! <SID>display_help()
     call <SID>key_help("L", "Load the last active workspace (if present)")
     call <SID>key_help("w", "Go to the Buffer List")
     call <SID>key_help("BS", "Go back to the Buffer List")
-    call <SID>key_help("d", "Delete the selected workspace")
+    call <SID>key_help("d", "Delete selected workspace")
+    call <SID>key_help("=", "Rename selected workspace")
     call <SID>key_help("j", "Move the selection bar down")
     call <SID>key_help("k", "Move the selection bar up")
     call <SID>key_help("J", "Move the selection bar to the bottom of the list")
@@ -2090,7 +2136,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.0 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.1 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2846,6 +2892,8 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
+    elseif a:key ==# "="
+      call <SID>rename_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
       call <SID>move_selection_bar("down")
     elseif a:key ==# "k"
@@ -2930,6 +2978,8 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
+    elseif a:key ==# "="
+      call <SID>rename_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "j"
       call <SID>move_selection_bar("down")
     elseif a:key ==# "k"

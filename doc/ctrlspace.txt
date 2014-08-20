@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-14
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-20
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.0~
+                               Vim-CtrlSpace 4.1.1~
 
                             Vim Workspace Controller
 
@@ -834,7 +834,8 @@ startup and save it active workspace on Vim exit. See
 | `S`   | Save the workspace immediately                  |
 | `L`   | Load the last active workspace (if present)     |
 | `n`   | Makes a new workspace (closes all buffers)      |
-| `d`   | Delete the selected workspace                   |
+| `d`   | Delete selected workspace                       |
+| `=`   | Rename selected workspace                       |
 
 
 3.4.5 Moving~

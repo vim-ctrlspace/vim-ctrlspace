@@ -814,7 +814,8 @@ startup and save it active workspace on Vim exit. See
 | `S`  | Save the workspace immediately                  |
 | `L`  | Load the last active workspace (if present)     |
 | `n`  | Makes a new workspace (closes all buffers)      |
-| `d`  | Delete the selected workspace                   |
+| `d`  | Delete selected workspace                       |
+| `=`  | Rename selected workspace                       |
 
 
 ### Moving
