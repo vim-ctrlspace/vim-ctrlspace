@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.2~
+                               Vim-CtrlSpace 4.1.3~
 
                             Vim Workspace Controller
 
@@ -298,8 +298,11 @@ You can jump between lists easily by pressing one of the following keys:
 | `o`   | Jump to File List (aka Open List)                      |
 | `O`   | Jump to File List (aka Open List) in Search Mode       |
 | `l`   | Jump to Tab List                                       |
+| `L`   | Jump to Tab List in Search Mode                        |
 | `w`   | Jump to Workspace List                                 |
+| `W`   | Jump to Workspace List in Search Mode                  |
 | `b`   | Jump to Bookmark List                                  |
+| `B`   | Jump to Bookmark List in Search Mode                   |
 
 Since the "Buffer List" is the default one, in order to jump to it press
 one of those keys again (except `O`) or just hit `Backspace`.
@@ -500,17 +503,20 @@ all available keys:
 | `o`   | Toggle the File List (Open List)                                  |
 | `O`   | Enter the Search Mode in the File List                            |
 | `l`   | Toggle the Tab List view                                          |
+| `L`   | Enter the Tab List view in Search Mode                            |
 | `w`   | Toggle the Workspace List view                                    |
 | `W`   | Enter the Workspace List view in Search Mode                      |
 | `b`   | Toggle the Bookmark List view                                     |
 | `B`   | Enter the Bookmark List view in Search Mode                       |
 
+
 3.1.1.10 Workspace shortcuts~
 
-| Key | Action                                                            |
-| --- | ----------------------------------------------------------------- |
-| `L`   | Load the last active workspace (if present)                       |
-| `N`   | Makes a new workspace (closes all buffers)                        |
+| Key      | Action                                                       |
+| -------- | ------------------------------------------------------------ |
+| `Ctrl` `+` `l` | Load the last active workspace (if present)                  |
+| `Ctrl` `+` `s` | Save the current workspace                                   |
+| `N`        | Make a new workspace (closes all buffers)                    |
 
 
 3.1.2 All Mode                                              *ctrlspace-all-mode*
@@ -666,6 +672,7 @@ list with the `r` key.
 | Key | Action                                       |
 | --- | -------------------------------------------- |
 | `l`   | Toggle the Tab List view                     |
+| `L`   | Enter the Tab List view in Search Mode       |
 | `w`   | Toggle the Workspace List view               |
 | `W`   | Enter the Workspace List view in Search Mode |
 | `b`   | Toggle the Bookmark List view                |
@@ -750,6 +757,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
 | `/`        | Toggle Search Mode                                  |
+| `L`        | Enter Search Mode                                   |
 | `Ctrl` `+` `p` | Bring back the previous searched text               |
 | `Ctrl` `+` `n` | Bring the next searched text                        |
 
@@ -829,8 +837,9 @@ startup and save it active workspace on Vim exit. See
 | `Backspace`    | Go back to the Buffer List                      |
 | `w`            | Go to the Buffer List                           |
 | `o`            | Go to the File List                             |
-| `O`            | Go to the File List in the Search Mode          |
+| `O`            | Go to the File List in Search Mode              |
 | `l`            | Go to the Tab List                              |
+| `L`            | Enter the Tab List in Search Mode               |
 | `b`            | Go to the Bookmark List                         |
 | `B`            | Enter the Bookmark List view in Search Mode     |
 | `q`            | Close the list                                  |
@@ -842,15 +851,15 @@ startup and save it active workspace on Vim exit. See
 
 3.4.4 Workspace Operations~
 
-| Key | Action                                          |
-| --- | ----------------------------------------------- |
-| `a`   | Append a selected workspace to the current one  |
-| `s`   | Toggle the mode from Load or Save (or backward) |
-| `S`   | Save the workspace immediately                  |
-| `L`   | Load the last active workspace (if present)     |
-| `n`   | Makes a new workspace (closes all buffers)      |
-| `d`   | Delete selected workspace                       |
-| `=`   | Rename selected workspace                       |
+| Key      | Action                                          |
+| -------- | ----------------------------------------------- |
+| `a`        | Append a selected workspace to the current one  |
+| `s`        | Toggle the mode from Load or Save (or backward) |
+| `n`        | Make a new workspace (closes all buffers)       |
+| `d`        | Delete selected workspace                       |
+| `=`        | Rename selected workspace                       |
+| `Ctrl` `+` `s` | Save the workspace immediately                  |
+| `Ctrl` `+` `l` | Load the last active workspace (if present)     |
 
 
 3.4.5 Searching~
@@ -918,6 +927,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `w`              | Go to the Workspace List view                   |
 | `W`              | Enter the Workspace List view in Search Mode    |
 | `l`              | Go to the Tab List view                         |
+| `L`              | Enter the Tab List view in Search Mode          |
 | `o`              | Go to the File List view                        |
 | `O`              | Go to the File List view in the Search Mode     |
 | `q`              | Close the list                                  |
@@ -1035,6 +1045,7 @@ entering phase - there is a great number of resque options available.
 | `o`            | Toggle the File List (Open List)                     |
 | `O`            | Enter the File List (Open List) in Search Mode       |
 | `l`            | Toggle the Tab List view                             |
+| `L`            | Enter the Tab List view in Search Mode               |
 | `w`            | Toggle the Workspace List view                       |
 | `W`            | Enter the Workspace List view in Search Mode         |
 | `b`            | Toggle the Bookmark List view                        |
