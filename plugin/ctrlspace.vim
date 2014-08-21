@@ -1385,7 +1385,7 @@ function! <SID>display_search_patterns(patterns)
 endfunction
 
 function! <SID>get_search_history_index()
-  if s:file_mode
+  if s:file_mode || s:tablist_mode || s:bookmark_mode || s:workspace_mode
     if !exists("s:search_history_index")
       let s:search_history_index = -1
     endif
