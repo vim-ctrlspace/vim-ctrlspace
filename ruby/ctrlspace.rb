@@ -111,6 +111,7 @@ module CtrlSpace
     iv                      = VIM.evaluate("g:ctrlspace_symbols.iv")
     ia                      = VIM.evaluate("g:ctrlspace_symbols.ia")
     im                      = VIM.evaluate("g:ctrlspace_symbols.im")
+    bufname_space           = VIM.evaluate("s:bufname_space")
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
@@ -135,9 +136,9 @@ module CtrlSpace
     buflist.each do |entry|
       bufname = (RUBY_VERSION.to_f < 1.9) ? entry["raw"].to_s : entry["raw"].to_s.force_encoding("UTF-8")
 
-      if bufname.length + 7 > columns
+      if bufname.length + bufname_space > columns
         dots_symbol = unicode_font ? "…" : "..."
-        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + 7 + dots_symbol.length)..-1]}"
+        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + bufname_space + dots_symbol.length)..-1]}"
       end
 
       if !file_mode && !workspace_mode && !tablist_mode && !bookmark_mode

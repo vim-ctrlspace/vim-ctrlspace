@@ -1503,6 +1503,11 @@ function! <SID>restore_search_letters(direction)
 endfunction
 
 function! <SID>prepare_buftext_to_display(buflist)
+  if !exists("s:bufname_space")
+    let s:bufname_space = 5 + max([strwidth(g:ctrlspace_symbols.iv), strwidth(g:ctrlspace_symbols.ia)])
+                          \ + strwidth(g:ctrlspace_symbols.im)
+  endif
+
   if has("ruby") && g:ctrlspace_use_ruby_bindings
     ruby VIM.command(%Q(return "#{CtrlSpace.prepare_buftext_to_display(VIM.evaluate('a:buflist'))}"))
   else
@@ -1511,9 +1516,9 @@ function! <SID>prepare_buftext_to_display(buflist)
     for entry in a:buflist
       let bufname = entry.raw
 
-      if strwidth(bufname) + 7 > &columns
+      if strwidth(bufname) + s:bufname_space > &columns
         let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
-        let bufname = dots_symbol . strpart(bufname, strwidth(bufname) - &columns + 7 + strwidth(dots_symbol))
+        let bufname = dots_symbol . strpart(bufname, strwidth(bufname) - &columns + s:bufname_space + strwidth(dots_symbol))
       endif
 
       if !s:file_mode && !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
