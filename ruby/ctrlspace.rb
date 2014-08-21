@@ -110,6 +110,7 @@ module CtrlSpace
     unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0
     iv                      = VIM.evaluate("g:ctrlspace_symbols.iv")
     ia                      = VIM.evaluate("g:ctrlspace_symbols.ia")
+    im                      = VIM.evaluate("g:ctrlspace_symbols.im")
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
@@ -122,9 +123,11 @@ module CtrlSpace
     buftext                 = ""
 
     if RUBY_VERSION.to_f < 1.9
+      im = im.to_s
       iv = iv.to_s
       ia = ia.to_s
     else
+      im = im.to_s.force_encoding("UTF-8")
       iv = iv.to_s.force_encoding("UTF-8")
       ia = ia.to_s.force_encoding("UTF-8")
     end
@@ -140,7 +143,7 @@ module CtrlSpace
       if !file_mode && !workspace_mode && !tablist_mode && !bookmark_mode
         indicators = ""
 
-        indicators << "+" if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
+        indicators << im if VIM.evaluate("getbufvar(#{entry["number"]}, '&modified')") > 0
 
         win = VIM.evaluate("bufwinnr(#{entry["number"]})")
 
@@ -154,12 +157,12 @@ module CtrlSpace
       elsif workspace_mode
         if entry["raw"] == active_workspace_name
           bufname << " "
-          bufname << "+" if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
+          bufname << im if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
           bufname << ia
         end
       elsif tablist_mode
         indicators = ""
-        indicators << "+" if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
+        indicators << im if VIM.evaluate("ctrlspace#tab_modified(#{entry["number"]})") > 0
         indicators << ia if entry["number"] == VIM.evaluate("tabpagenr()")
         bufname << " #{indicators}" unless indicators.empty?
       elsif bookmark_mode

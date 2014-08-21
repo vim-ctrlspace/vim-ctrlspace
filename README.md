@@ -310,7 +310,7 @@ item text):
 | `★`     | `*`   | Item active   |
 | `☆`     | `*`   | Item visible  |
 
-Some of those can be configured via `g:ctrlspace_symbols` variable.
+Those indicators can be configured via `g:ctrlspace_symbols` variable.
 
 
 ## Tab Management
@@ -1204,7 +1204,8 @@ if g:ctrlspace_unicode_font
         \ "bm":      "♡",
         \ "help":    "?",
         \ "iv":      "☆",
-        \ "ia":      "★"
+        \ "ia":      "★",
+        \ "im":      "+"
         \ }
 else
   let g:ctrlspace_symbols = {
@@ -1222,7 +1223,8 @@ else
         \ "bm":      "BM",
         \ "help":    "?",
         \ "iv":      "*",
-        \ "ia":      "*"
+        \ "ia":      "*",
+        \ "im":      "+"
         \ }
 endif
 ```

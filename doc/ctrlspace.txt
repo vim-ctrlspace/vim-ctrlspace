@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.3~
+                               Vim-CtrlSpace 4.1.4~
 
                             Vim Workspace Controller
 
@@ -333,7 +333,7 @@ item text):
 | `★`       | `*`     | Item active   |
 | `☆`       | `*`     | Item visible  |
 
-Some of those can be configured via |g:ctrlspace_symbols| variable.
+Those indicators can be configured via |g:ctrlspace_symbols| variable.
 
 
 2.6 Tab Management                                    *ctrlspace-tab-management*
@@ -1229,7 +1229,8 @@ Default value: >
           \ "bm":      "♡",
           \ "help":    "?",
           \ "iv":      "☆",
-          \ "ia":      "★"
+          \ "ia":      "★",
+          \ "im":      "+"
           \ }
   else
     let g:ctrlspace_symbols = {
@@ -1247,7 +1248,8 @@ Default value: >
           \ "bm":      "BM",
           \ "help":    "?",
           \ "iv":      "*",
-          \ "ia":      "*"
+          \ "ia":      "*",
+          \ "im":      "+"
           \ }
   endif
 

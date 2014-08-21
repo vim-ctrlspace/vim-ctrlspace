@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.3
+" Version:      4.1.4
 "
 " The MIT License (MIT)
 
@@ -59,7 +59,8 @@ function! <SID>define_symbols()
           \ "bm":      "♡",
           \ "help":    "?",
           \ "iv":      "☆",
-          \ "ia":      "★"
+          \ "ia":      "★",
+          \ "im":      "+"
           \ }
   else
     let symbols = {
@@ -77,7 +78,8 @@ function! <SID>define_symbols()
           \ "bm":      "BM",
           \ "help":    "?",
           \ "iv":      "*",
-          \ "ia":      "*"
+          \ "ia":      "*",
+          \ "im":      "+"
           \ }
   endif
 
@@ -1062,6 +1064,17 @@ function! <SID>load_workspace(bang, name)
     endif
   endif
 
+  " check for modified buffers
+  for t in range(1, tabpagenr("$"))
+    if ctrlspace#tab_modified(t)
+      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
+        return
+      else
+        break
+      endif
+    endif
+  endfor
+
   call <SID>kill(0, 1)
 
   call <SID>load_workspace_externally(a:bang, a:name)
@@ -1510,7 +1523,7 @@ function! <SID>prepare_buftext_to_display(buflist)
           let bufname .= " "
 
           if s:active_workspace_digest !=# <SID>create_workspace_digest()
-            let bufname .= "+"
+            let bufname .= g:ctrlspace_symbols.im
           endif
 
           let bufname .= g:ctrlspace_symbols.ia
@@ -1519,7 +1532,7 @@ function! <SID>prepare_buftext_to_display(buflist)
         let indicators = ""
 
         if ctrlspace#tab_modified(entry.number)
-          let indicators .= "+"
+          let indicators .= g:ctrlspace_symbols.im
         endif
 
         if entry.number == tabpagenr()
@@ -2168,7 +2181,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.3 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.4 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2565,10 +2578,7 @@ function! <SID>decorate_with_indicators(name, bufnum)
   let indicators = ""
 
   if getbufvar(a:bufnum, "&modified")
-    " since it's not a special unicode char it's safe to assume it's real
-    " width to be 1 character, and therefore characters won't overlap each
-    " other
-    let indicators .= "+"
+    let indicators .= g:ctrlspace_symbols.im
   endif
 
   let win = bufwinnr(a:bufnum)
