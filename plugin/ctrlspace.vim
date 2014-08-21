@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.1
+" Version:      4.1.2
 "
 " The MIT License (MIT)
 
@@ -449,22 +449,20 @@ function! ctrlspace#statusline_mode_segment(...)
     call add(statusline_elements, g:ctrlspace_symbols.all)
   endif
 
-  if !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
-    if !empty(s:search_letters) || s:search_mode
-      let search_element = g:ctrlspace_symbols.s_left . join(s:search_letters, "")
+  if !empty(s:search_letters) || s:search_mode
+    let search_element = g:ctrlspace_symbols.s_left . join(s:search_letters, "")
 
-      if s:search_mode
-        let search_element .= "_"
-      endif
-
-      let search_element .= g:ctrlspace_symbols.s_right
-
-      call add(statusline_elements, search_element)
+    if s:search_mode
+      let search_element .= "_"
     endif
 
-    if s:zoom_mode
-      call add(statusline_elements, g:ctrlspace_symbols.zoom)
-    endif
+    let search_element .= g:ctrlspace_symbols.s_right
+
+    call add(statusline_elements, search_element)
+  endif
+
+  if s:zoom_mode
+    call add(statusline_elements, g:ctrlspace_symbols.zoom)
   endif
 
   if s:help_mode
@@ -1390,7 +1388,7 @@ function! <SID>get_search_history_index()
 endfunction
 
 function! <SID>set_search_history_index(value)
-  if s:file_mode
+  if s:file_mode || s:tablist_mode || s:bookmark_mode || s:workspace_mode
     let s:search_history_index = a:value
   else
     let t:ctrlspace_search_history_index = a:value
@@ -1402,7 +1400,7 @@ function! <SID>append_to_search_history()
     return
   endif
 
-  if s:file_mode
+  if s:file_mode || s:tablist_mode || s:bookmark_mode || s:workspace_mode
     if !exists("s:search_history")
       let s:search_history = {}
     endif
@@ -1427,7 +1425,7 @@ function! <SID>restore_search_letters(direction)
     call add(history_stores, s:search_history)
   endif
 
-  if !s:file_mode
+  if !s:file_mode && !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
     let tab_range = s:single_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
 
     for t in tab_range
@@ -1776,14 +1774,16 @@ function! <SID>display_help()
     else
       call <SID>key_help("a", "Toggle between Single and All modes")
       call <SID>key_help("A", "Enter All mode and switch to Search Mode")
-      call <SID>key_help("o", "Enter the File List (Open List)")
+      call <SID>key_help("o", "Toggle the File List (Open List)")
       call <SID>key_help("O", "Enter the File List (Open List) in Search Mode")
+      call <SID>key_help("w", "Toggle the Workspace List view")
+      call <SID>key_help("W", "Enter the Workspace List view in Search Mode")
+      call <SID>key_help("l", "Toggle the Tab List view")
+      call <SID>key_help("b", "Toggle the Bookmark List view")
+      call <SID>key_help("B", "Enter the Bookmark List view in Search Mode")
       call <SID>key_help("C-p", "Bring back the previous searched text")
       call <SID>key_help("C-n", "Bring the next searched text")
       call <SID>key_help("BS", "Delete the search query")
-      call <SID>key_help("w", "Toggle the Workspace List view")
-      call <SID>key_help("l", "Toggle the Tab List view")
-      call <SID>key_help("b", "Toggle the Bookmark List view")
       call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
       call <SID>key_help("q", "Close the list")
     endif
@@ -1847,7 +1847,13 @@ function! <SID>display_help()
     call <SID>key_help("S", "Save the workspace immediately")
     call <SID>key_help("L", "Load the last active workspace (if present)")
     call <SID>key_help("w", "Go to the Buffer List")
-    call <SID>key_help("BS", "Go back to the Buffer List")
+    call <SID>key_help("W", "Enter the Search Mode")
+    call <SID>key_help("/", "Enter the Search Mode")
+    if empty(s:search_letters)
+      call <SID>key_help("BS", "Go back to the Buffer List")
+    else
+      call <SID>key_help("BS", "Clear search")
+    endif
     call <SID>key_help("d", "Delete selected workspace")
     call <SID>key_help("=", "Rename selected workspace")
     call <SID>key_help("j", "Move the selection bar down")
@@ -1860,6 +1866,7 @@ function! <SID>display_help()
     call <SID>key_help("C-u", "Move the selection bar a half screen up")
     call <SID>key_help("l", "Go to the Tab List")
     call <SID>key_help("b", "Go to the Bookmark List")
+    call <SID>key_help("B", "Enter the Bookmark List view in Search Mode")
     call <SID>key_help("o", "Go to the File List")
     call <SID>key_help("O", "Go to the File List in the Search Mode")
   elseif s:tablist_mode
@@ -1884,8 +1891,13 @@ function! <SID>display_help()
     call <SID>key_help("-", "Move the current tab backward (decrease its number)")
     call <SID>key_help("}", "Same as +")
     call <SID>key_help("{", "Same as -")
-    call <SID>key_help("BS", "Go back to the Buffer List")
+    call <SID>key_help("/", "Enter the Search Mode")
     call <SID>key_help("l", "Go back to the Buffer List")
+    if empty(s:search_letters)
+      call <SID>key_help("BS", "Go back to the Buffer List")
+    else
+      call <SID>key_help("BS", "Clear search")
+    endif
     call <SID>key_help("q", "Close the list")
 
     if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
@@ -1903,7 +1915,9 @@ function! <SID>display_help()
     call <SID>key_help("C-d", "Move the selection bar a half screen down")
     call <SID>key_help("C-u", "Move the selection bar a half screen up")
     call <SID>key_help("w", "Go to the Workspace List view")
+    call <SID>key_help("W", "Enter the Workspace List view in Search Mode")
     call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("B", "Enter the Bookmark List view in Search Mode")
     call <SID>key_help("o", "Go to the File List view")
     call <SID>key_help("O", "Go to the File List view in the Search Mode")
   elseif s:bookmark_mode
@@ -1920,7 +1934,13 @@ function! <SID>display_help()
     call <SID>key_help("P", "Move selection bar to the previously opened tab and open it")
     call <SID>key_help("n", "Move selection bar to the next opened bookmark")
     call <SID>key_help("b", "Go to the Buffer List")
-    call <SID>key_help("BS", "Go back to the Buffer List")
+    call <SID>key_help("B", "Enter the Search Mode")
+    call <SID>key_help("/", "Enter the Search Mode")
+    if empty(s:search_letters)
+      call <SID>key_help("BS", "Go back to the Buffer List")
+    else
+      call <SID>key_help("BS", "Clear search")
+    endif
 
     call <SID>key_help("q", "Close the list")
 
@@ -1939,6 +1959,7 @@ function! <SID>display_help()
     call <SID>key_help("C-d", "Move the selection bar a half screen down")
     call <SID>key_help("C-u", "Move the selection bar a half screen up")
     call <SID>key_help("w", "Go to the Workspace List view")
+    call <SID>key_help("W", "Enter the Workspace List view in Search Mode")
     call <SID>key_help("o", "Go to the File List view")
     call <SID>key_help("O", "Go to the File List view in the Search Mode")
     call <SID>key_help("l", "Go to the Tab List view")
@@ -2004,8 +2025,10 @@ function! <SID>display_help()
     call <SID>key_help("m", "Move or rename the selected file")
     call <SID>key_help("y", "Copy the selected file")
     call <SID>key_help("w", "Toggle the Workspace List view")
+    call <SID>key_help("W", "Enter the Workspace List view in Search Mode")
     call <SID>key_help("l", "Toggle the Tab List view")
     call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("B", "Enter the Bookmark List view in Search Mode")
     call <SID>key_help("g", "Jump to a next tab containing the selected file")
     call <SID>key_help("G", "Jump to a previous tab containing the selected file")
   else
@@ -2111,8 +2134,10 @@ function! <SID>display_help()
     call <SID>key_help("L", "Load the last active workspace (if present)")
     call <SID>key_help("N", "Makes a new workspace (closes all buffers)")
     call <SID>key_help("w", "Toggle the Workspace List view")
+    call <SID>key_help("W", "Enter the Workspace List view in Search Mode")
     call <SID>key_help("l", "Toggle the Tab List view")
     call <SID>key_help("b", "Toggle the Bookmark List view")
+    call <SID>key_help("B", "Enter the Bookmark List view in Search Mode")
     call <SID>key_help("o", "Toggle the File List (Open List)")
     call <SID>key_help("O", "Enter the Search Mode in the File List")
   endif
@@ -2136,7 +2161,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.1 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.2 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2365,15 +2390,11 @@ function! <SID>ctrlspace_toggle(internal)
 
       if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode || s:bookmark_mode ||
             \ (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-        if s:workspace_mode || s:tablist_mode || s:bookmark_mode || empty(s:search_letters)
-          let search_noise = 0
-        else
-          let search_noise = <SID>find_lowest_search_noise(bufname)
-        endif
+        let search_noise = empty(s:search_letters) ? 0 : <SID>find_lowest_search_noise(bufname)
 
         if search_noise == -1
           continue
-        elseif !empty(s:search_letters) && !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
+        elseif !empty(s:search_letters)
           if !max_results
             let displayedbufs += 1
             call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
@@ -2776,27 +2797,37 @@ function! <SID>keypressed(key)
   if s:nop_mode
     if !s:search_mode
       if a:key ==# "a"
-        if s:file_mode
-          call <SID>toggle_file_mode()
-        else
-          call <SID>toggle_single_mode()
-        endif
+        let s:tablist_mode   = 0
+        let s:bookmark_mode  = 0
+        let s:workspace_mode = 0
+        let s:file_mode      = 0
+        call <SID>toggle_single_mode()
       elseif a:key ==# "A"
-        if s:file_mode
-          call <SID>toggle_file_mode()
-        else
-          call <SID>toggle_single_mode()
-        endif
+        let s:tablist_mode   = 0
+        let s:bookmark_mode  = 0
+        let s:workspace_mode = 0
+        let s:file_mode      = 0
+        call <SID>toggle_single_mode()
         call <SID>switch_search_mode(1)
       elseif a:key ==# "o"
+        let s:tablist_mode   = 0
+        let s:bookmark_mode  = 0
+        let s:workspace_mode = 0
         call <SID>toggle_file_mode()
       elseif a:key ==# "O"
         if !s:file_mode
+          let s:tablist_mode   = 0
+          let s:bookmark_mode  = 0
+          let s:workspace_mode = 0
           call <SID>toggle_file_mode()
         endif
         call <SID>switch_search_mode(1)
       elseif a:key ==# "w"
-        if empty(<SID>get_workspace_names())
+        if s:workspace_mode
+          call <SID>kill(0, 0)
+          let s:workspace_mode = 0
+          call <SID>ctrlspace_toggle(1)
+        elseif empty(<SID>get_workspace_names())
           call <SID>save_first_workspace()
         else
           call <SID>kill(0, 0)
@@ -2806,23 +2837,67 @@ function! <SID>keypressed(key)
           let s:workspace_mode = 1
           call <SID>ctrlspace_toggle(1)
         endif
+      elseif a:key ==# "W"
+        if !s:workspace_mode
+          if empty(<SID>get_workspace_names())
+            call <SID>save_first_workspace()
+          else
+            call <SID>kill(0, 0)
+            let s:file_mode      = 0
+            let s:tablist_mode   = 0
+            let s:bookmark_mode  = 0
+            let s:workspace_mode = 1
+            call <SID>ctrlspace_toggle(1)
+            call <SID>switch_search_mode(1)
+          endif
+        else
+          call <SID>switch_search_mode(1)
+        endif
       elseif a:key ==# "l"
-        call <SID>kill(0, 0)
-        let s:file_mode      = 0
-        let s:tablist_mode   = 1
-        let s:bookmark_mode  = 0
-        let s:workspace_mode = 0
-        call <SID>ctrlspace_toggle(1)
-      elseif a:key ==# "b"
-        if empty(s:bookmarks)
-          call <SID>add_first_bookmark()
+        if s:tablist_mode
+          call <SID>kill(0, 0)
+          let s:tablist_mode = 0
+          call <SID>ctrlspace_toggle(1)
         else
           call <SID>kill(0, 0)
           let s:file_mode      = 0
-          let s:tablist_mode   = 0
-          let s:bookmark_mode  = 1
+          let s:tablist_mode   = 1
+          let s:bookmark_mode  = 0
           let s:workspace_mode = 0
           call <SID>ctrlspace_toggle(1)
+        endif
+      elseif a:key ==# "b"
+        if s:bookmark_mode
+          call <SID>kill(0, 0)
+          let s:bookmark_mode = 0
+          call <SID>ctrlspace_toggle(1)
+        else
+          if empty(s:bookmarks)
+            call <SID>add_first_bookmark()
+          else
+            call <SID>kill(0, 0)
+            let s:file_mode      = 0
+            let s:tablist_mode   = 0
+            let s:bookmark_mode  = 1
+            let s:workspace_mode = 0
+            call <SID>ctrlspace_toggle(1)
+          endif
+        endif
+      elseif a:key ==# "B"
+        if !s:bookmark_mode
+          if empty(s:bookmarks)
+            call <SID>add_first_bookmark()
+          else
+            call <SID>kill(0, 0)
+            let s:file_mode      = 0
+            let s:tablist_mode   = 0
+            let s:bookmark_mode  = 1
+            let s:workspace_mode = 0
+            call <SID>ctrlspace_toggle(1)
+            call <SID>switch_search_mode(1)
+          endif
+        else
+          call <SID>switch_search_mode(1)
         endif
       elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
         call <SID>kill(0, 1)
@@ -2885,11 +2960,26 @@ function! <SID>keypressed(key)
       call <SID>save_workspace(s:active_workspace_name)
     elseif a:key ==# "L"
       call <SID>load_last_active_workspace()
-    elseif (a:key ==# "w") || (a:key ==# "BS")
+    elseif a:key ==# "w"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
       let s:workspace_mode = 0
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "BS"
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        call <SID>ctrlspace_toggle(1)
+      endif
+    elseif (a:key ==# "/") || (a:key ==# "W")
+      call <SID>switch_search_mode(1)
+    elseif a:key ==# "C-p"
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "C-n"
+      call <SID>restore_search_letters("next")
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "="
@@ -2939,6 +3029,17 @@ function! <SID>keypressed(key)
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "B"
+      if empty(s:bookmarks)
+        call <SID>add_first_bookmark()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "o"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -2971,11 +3072,26 @@ function! <SID>keypressed(key)
       call <SID>save_workspace(s:active_workspace_name)
     elseif a:key ==# "L"
       call <SID>load_last_active_workspace()
-    elseif (a:key ==# "w") || (a:key ==# "BS")
+    elseif a:key ==# "w"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
       let s:workspace_mode = 0
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "BS"
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        call <SID>ctrlspace_toggle(1)
+      endif
+    elseif (a:key ==# "/") || (a:key ==# "W")
+      call <SID>switch_search_mode(1)
+    elseif a:key ==# "C-p"
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "C-n"
+      call <SID>restore_search_letters("next")
     elseif a:key ==# "d"
       call <SID>delete_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "="
@@ -3024,6 +3140,17 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 0
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
+      endif
+    elseif a:key ==# "B"
+      if empty(s:bookmarks)
+        call <SID>add_first_bookmark()
+      else
+        let s:last_browsed_workspace = line(".")
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 0
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
       endif
     elseif a:key ==# "o"
       let s:last_browsed_workspace = line(".")
@@ -3143,10 +3270,24 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
-    elseif (a:key ==# "BS") || (a:key ==# "l")
+    elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "BS"
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        call <SID>kill(0, 0)
+        let s:tablist_mode = 0
+        call <SID>ctrlspace_toggle(1)
+      endif
+    elseif a:key ==# "/"
+      call <SID>switch_search_mode(1)
+    elseif a:key ==# "C-p"
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "C-n"
+      call <SID>restore_search_letters("next")
     elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
@@ -3192,6 +3333,16 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "W"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:tablist_mode = 0
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "b"
       if empty(s:bookmarks)
         call <SID>add_first_bookmark()
@@ -3201,12 +3352,28 @@ function! <SID>keypressed(key)
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "B"
+      if empty(s:bookmarks)
+        call <SID>add_first_bookmark()
+      else
+        call <SID>kill(0, 0)
+        let s:tablist_mode = 0
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "o"
+      if !<SID>project_root_found()
+        return
+      endif
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
+      if !<SID>project_root_found()
+        return
+      endif
       call <SID>kill(0, 0)
       let s:tablist_mode = 0
       let s:file_mode = 1
@@ -3268,10 +3435,24 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "n"
       call <SID>jump("next")
-    elseif (a:key ==# "BS") || (a:key ==# "b")
+    elseif a:key ==# "b"
       call <SID>kill(0, 0)
       let s:bookmark_mode = 0
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "BS"
+      if !empty(s:search_letters)
+        call <SID>clear_search_mode()
+      else
+        call <SID>kill(0, 0)
+        let s:bookmark_mode = 0
+        call <SID>ctrlspace_toggle(1)
+      endif
+    elseif (a:key ==# "/") || (a:key ==# "B")
+      call <SID>switch_search_mode(1)
+    elseif a:key ==# "C-p"
+      call <SID>restore_search_letters("previous")
+    elseif a:key ==# "C-n"
+      call <SID>restore_search_letters("next")
     elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
@@ -3318,17 +3499,33 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "W"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:bookmark_mode = 0
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:bookmark_mode = 0
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "o"
+      if !<SID>project_root_found()
+        return
+      endif
       call <SID>kill(0, 0)
       let s:bookmark_mode = 0
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
+      if !<SID>project_root_found()
+        return
+      endif
       call <SID>kill(0, 0)
       let s:bookmark_mode = 0
       let s:file_mode = 1
@@ -3446,6 +3643,16 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "W"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:file_mode = !s:file_mode
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:file_mode = !s:file_mode
@@ -3459,6 +3666,16 @@ function! <SID>keypressed(key)
         let s:file_mode = !s:file_mode
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
+      endif
+    elseif a:key ==# "B"
+      if empty(s:bookmarks)
+        call <SID>add_first_bookmark()
+      else
+        call <SID>kill(0, 0)
+        let s:file_mode = !s:file_mode
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
       endif
     elseif a:key ==# "g"
       call <SID>goto_buffer_or_file("next")
@@ -3636,6 +3853,15 @@ function! <SID>keypressed(key)
         let s:workspace_mode = 1
         call <SID>ctrlspace_toggle(1)
       endif
+    elseif a:key ==# "W"
+      if empty(<SID>get_workspace_names())
+        call <SID>save_first_workspace()
+      else
+        call <SID>kill(0, 0)
+        let s:workspace_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
+      endif
     elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
@@ -3647,6 +3873,15 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:bookmark_mode = 1
         call <SID>ctrlspace_toggle(1)
+      endif
+    elseif a:key ==# "B"
+      if empty(s:bookmarks)
+        call <SID>add_first_bookmark()
+      else
+        call <SID>kill(0, 0)
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>switch_search_mode(1)
       endif
     elseif a:key ==# "o"
       call <SID>toggle_file_mode()
@@ -3906,10 +4141,10 @@ function! <SID>display_list(displayedbufs, buflist)
     if s:file_mode && empty(s:search_letters)
       let buftext = s:all_files_buftext
     else
-      if s:tablist_mode
-        call sort(a:buflist, function(<SID>SID() . "compare_tab_names"))
-      elseif !empty(s:search_letters)
+      if !empty(s:search_letters)
         call sort(a:buflist, function(<SID>SID() . "compare_raw_names_with_search_noise"))
+      elseif s:tablist_mode
+        call sort(a:buflist, function(<SID>SID() . "compare_tab_names"))
       else
         call sort(a:buflist, function(<SID>SID() . "compare_raw_names"))
       endif

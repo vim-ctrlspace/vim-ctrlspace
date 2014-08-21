@@ -481,7 +481,9 @@ all available keys:
 | `O`  | Enter the Search Mode in the File List                             |
 | `l`  | Toggle the Tab List view                                           |
 | `w`  | Toggle the Workspace List view                                     |
+| `W`  | Enter the Workspace List view in Search Mode                       |
 | `b`  | Toggle the Bookmark List view                                      |
+| `B`  | Enter the Bookmark List view in Search Mode                        |
 
 
 #### Workspace shortcuts
@@ -646,7 +648,9 @@ list with the `r` key.
 |:---:| -------------------------------------------- |
 | `l` | Toggle the Tab List view                     |
 | `w` | Toggle the Workspace List view               |
+| `W` | Enter the Workspace List view in Search Mode |
 | `b` | Toggle the Bookmark List view                |
+| `B` | Enter the Bookmark List view in Search Mode  |
 
 
 ## Tab List
@@ -694,7 +698,9 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `Backspace`    | Go back                                         |
 | `l`            | Go back                                         |
 | `w`            | Go to the Workspace List view                   |
+| `W`            | Enter the Workspace List view in Search Mode    |
 | `b`            | Toggle the Bookmark List view                   |
+| `B`            | Enter the Bookmark List view in Search Mode     |
 | `o`            | Go to the File List view                        |
 | `O`            | Go to the File List view in the Search Mode     |
 | `q`            | Close the list                                  |
@@ -718,6 +724,15 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `]` | Go to the next tab                                  |
 | `t` | Create a new tab nexto to the current one           |
 | `y` | Make a copy of the current tab                      |
+
+
+### Searching & Sorting
+
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `/`        | Toggle Search Mode                                  |
+| `Ctrl + p` | Bring back the previous searched text               |
+| `Ctrl + n` | Bring the next searched text                        |
 
 
 ### Moving
@@ -798,6 +813,7 @@ startup and save it active workspace on Vim exit. See
 | `O`            | Go to the File List in the Search Mode          | 
 | `l`            | Go to the Tab List                              |
 | `b`            | Go to the Bookmark List                         |
+| `B`            | Enter the Bookmark List view in Search Mode     |
 | `q`            | Close the list                                  |
 | `Ctrl + c`     | Close the list                                  |
 | `Esc`          | Close the list - depending on plugin settings   |
@@ -817,6 +833,15 @@ startup and save it active workspace on Vim exit. See
 | `d`  | Delete selected workspace                       |
 | `=`  | Rename selected workspace                       |
 
+
+### Searching & Sorting
+
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `/`        | Toggle Search Mode                                  |
+| `W`        | Enter Search Mode                                   |
+| `Ctrl + p` | Bring back the previous searched text               |
+| `Ctrl + n` | Bring the next searched text                        |
 
 ### Moving
 
@@ -871,6 +896,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `Backspace`    | Go back                                         |
 | `b`            | Go back                                         |
 | `w`            | Go to the Workspace List view                   |
+| `W`            | Enter the Workspace List view in Search Mode    |
 | `l`            | Go to the Tab List view                         |
 | `o`            | Go to the File List view                        |
 | `O`            | Go to the File List view in the Search Mode     |
@@ -888,6 +914,16 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `a` | Add a new bookmark                                  |
 | `d` | Delete selected bookmark                            |
 | `=` | Change selected bookmark name                       |
+
+
+### Searching & Sorting
+
+| Key        | Action                                              |
+|:----------:| --------------------------------------------------- |
+| `/`        | Toggle Search Mode                                  |
+| `B`        | Enter Search Mode                                   |
+| `Ctrl + p` | Bring back the previous searched text               |
+| `Ctrl + n` | Bring the next searched text                        |
 
 
 ### Moving
@@ -952,7 +988,7 @@ some preview ones). As you will see, in such circumstances - outside the
 entering phase - there is a great number of resque options available.
 
 
-### Nop (Search entering phase)
+### Nop (entering phase)
 
 | Key            | Action                                                  |
 |:--------------:| ------------------------------------------------------- |
@@ -974,11 +1010,13 @@ entering phase - there is a great number of resque options available.
 | `Q`            | Quit Vim with a prompt if unsaved changes found      |
 | `a`            | Toggle between Single and All modes                  |
 | `A`            | Enter All mode and switch to Search Mode             |
-| `o`            | Enter the File List (Open List)                      |
+| `o`            | Toggle the File List (Open List)                     |
 | `O`            | Enter the File List (Open List) in Search Mode       |
 | `l`            | Toggle the Tab List view                             |
 | `w`            | Toggle the Workspace List view                       |
+| `W`            | Enter the Workspace List view in Search Mode         |
 | `b`            | Toggle the Bookmark List view                        |
+| `B`            | Enter the Bookmark List view in Search Mode          |
 | `Ctrl + p`     | Bring back the previous searched text                |
 | `Ctrl + n`     | Bring the next searched text                         |
 
