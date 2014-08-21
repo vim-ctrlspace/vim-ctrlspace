@@ -409,7 +409,7 @@ all available keys:
 | `t`        | Open selected buffer in a new tab                                            |
 
 
-3.1.1.3 Searching & Sorting~
+3.1.1.3 Searching~
 
 | Key       | Action                                              |
 | --------- | --------------------------------------------------- |
@@ -745,7 +745,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `y`   | Make a copy of the current tab                      |
 
 
-3.3.5 Searching & Sorting~
+3.3.5 Searching~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -853,7 +853,7 @@ startup and save it active workspace on Vim exit. See
 | `=`   | Rename selected workspace                       |
 
 
-3.4.5 Searching & Sorting~
+3.4.5 Searching~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -936,7 +936,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `=`   | Change selected bookmark name                       |
 
 
-3.5.5 Searching & Sorting~
+3.5.5 Searching~
 
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
@@ -976,7 +976,7 @@ Common modes are available in more than one list.
 | `›_‹`     | `[_]`   |
 
 This mode is composed of two states or two phases. The first one is the
-"entering phase". Technically, this is the extact Search mode. In the entering
+"entering phase". Technically, this is the extact Search Mode. In the entering
 phase the following keys are available:
 
 | Key            | Action                                                  |
