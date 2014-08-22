@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-21
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-22
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.4~
+                               Vim-CtrlSpace 4.1.5~
 
                             Vim Workspace Controller
 
@@ -1230,7 +1230,8 @@ Default value: >
           \ "help":    "?",
           \ "iv":      "☆",
           \ "ia":      "★",
-          \ "im":      "+"
+          \ "im":      "+",
+          \ "dots":    "…"
           \ }
   else
     let g:ctrlspace_symbols = {
@@ -1249,7 +1250,8 @@ Default value: >
           \ "help":    "?",
           \ "iv":      "*",
           \ "ia":      "*",
-          \ "im":      "+"
+          \ "im":      "+",
+          \ "dots":    "..."
           \ }
   endif
 

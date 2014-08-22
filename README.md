@@ -1205,7 +1205,8 @@ if g:ctrlspace_unicode_font
         \ "help":    "?",
         \ "iv":      "☆",
         \ "ia":      "★",
-        \ "im":      "+"
+        \ "im":      "+",
+        \ "dots":    "…"
         \ }
 else
   let g:ctrlspace_symbols = {
@@ -1224,7 +1225,8 @@ else
         \ "help":    "?",
         \ "iv":      "*",
         \ "ia":      "*",
-        \ "im":      "+"
+        \ "im":      "+",
+        \ "dots":    "..."
         \ }
 endif
 ```

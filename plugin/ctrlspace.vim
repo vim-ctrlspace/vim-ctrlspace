@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.4
+" Version:      4.1.5
 "
 " The MIT License (MIT)
 
@@ -60,7 +60,8 @@ function! <SID>define_symbols()
           \ "help":    "?",
           \ "iv":      "☆",
           \ "ia":      "★",
-          \ "im":      "+"
+          \ "im":      "+",
+          \ "dots":    "…"
           \ }
   else
     let symbols = {
@@ -79,7 +80,8 @@ function! <SID>define_symbols()
           \ "help":    "?",
           \ "iv":      "*",
           \ "ia":      "*",
-          \ "im":      "+"
+          \ "im":      "+",
+          \ "dots":    "..."
           \ }
   endif
 
@@ -149,6 +151,7 @@ let s:workspace_names         = []
 let s:update_search_results   = 0
 let s:last_project_root       = ""
 let s:project_root            = ""
+let s:symbol_sizes            = {}
 let s:CS_SEP                  = "|CS_###_CS|"
 
 function! <SID>init_project_roots_and_bookmarks()
@@ -1503,22 +1506,24 @@ function! <SID>restore_search_letters(direction)
 endfunction
 
 function! <SID>prepare_buftext_to_display(buflist)
-  if !exists("s:bufname_space")
-    let s:bufname_space = 5 + max([strwidth(g:ctrlspace_symbols.iv), strwidth(g:ctrlspace_symbols.ia)])
-                          \ + strwidth(g:ctrlspace_symbols.im)
-  endif
-
   if has("ruby") && g:ctrlspace_use_ruby_bindings
     ruby VIM.command(%Q(return "#{CtrlSpace.prepare_buftext_to_display(VIM.evaluate('a:buflist'))}"))
   else
+    if s:file_mode
+      let bufname_space = 5
+    elseif s:bookmark_mode
+      let bufname_space = 5 + s:symbol_sizes.iav
+    else
+      let bufname_space = 5 + s:symbol_sizes.iav + s:symbol_sizes.im
+    endif
+
     let buftext = ""
 
     for entry in a:buflist
       let bufname = entry.raw
 
-      if strwidth(bufname) + s:bufname_space > &columns
-        let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
-        let bufname = dots_symbol . strpart(bufname, strwidth(bufname) - &columns + s:bufname_space + strwidth(dots_symbol))
+      if strwidth(bufname) + bufname_space > &columns
+        let bufname = g:ctrlspace_symbols.dots . strpart(bufname, strwidth(bufname) - &columns + bufname_space + s:symbol_sizes.dots)
       endif
 
       if !s:file_mode && !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
@@ -1726,8 +1731,7 @@ function! <SID>puts(str)
   let str = "  " . a:str
 
   if &columns < (strwidth(str) + 2)
-    let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
-    let str = strpart(str, 0, &columns - 2 - strwidth(dots_symbol)) . dots_symbol
+    let str = strpart(str, 0, &columns - 2 - s:symbol_sizes.dots) . g:ctrlspace_symbols.dots
   endif
 
   while strwidth(str) < &columns
@@ -2186,7 +2190,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.4 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2257,6 +2261,12 @@ function! <SID>ctrlspace_toggle(internal)
       let s:files             = []
       let s:workspace_names   = []
       let s:last_project_root = s:project_root
+    endif
+
+    if empty(s:symbol_sizes)
+      let s:symbol_sizes.iav  = max([strwidth(g:ctrlspace_symbols.iv), strwidth(g:ctrlspace_symbols.ia)])
+      let s:symbol_sizes.im   = strwidth(g:ctrlspace_symbols.im)
+      let s:symbol_sizes.dots = strwidth(g:ctrlspace_symbols.dots)
     endif
 
     call <SID>handle_autochdir("start")
@@ -4247,8 +4257,7 @@ function! <SID>display_list(displayedbufs, buflist)
     let empty_list_message = "  List empty"
 
     if &columns < (strwidth(empty_list_message) + 2)
-      let dots_symbol = g:ctrlspace_unicode_font ? "…" : "..."
-      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - strwidth(dots_symbol)) . dots_symbol
+      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - s:symbol_sizes.dots) . g:ctrlspace_symbols.dots
     endif
 
     while strwidth(empty_list_message) < &columns

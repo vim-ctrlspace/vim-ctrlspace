@@ -107,11 +107,11 @@ module CtrlSpace
 
   def self.prepare_buftext_to_display(buflist)
     columns                 = VIM.evaluate("&columns")
-    unicode_font            = VIM.evaluate("g:ctrlspace_unicode_font") > 0
     iv                      = VIM.evaluate("g:ctrlspace_symbols.iv")
     ia                      = VIM.evaluate("g:ctrlspace_symbols.ia")
     im                      = VIM.evaluate("g:ctrlspace_symbols.im")
-    bufname_space           = VIM.evaluate("s:bufname_space")
+    dots                    = VIM.evaluate("g:ctrlspace_symbols.dots")
+    symbol_sizes            = VIM.evaluate("s:symbol_sizes")
     file_mode               = VIM.evaluate("s:file_mode") > 0
     workspace_mode          = VIM.evaluate("s:workspace_mode") > 0
     tablist_mode            = VIM.evaluate("s:tablist_mode") > 0
@@ -124,21 +124,30 @@ module CtrlSpace
     buftext                 = ""
 
     if RUBY_VERSION.to_f < 1.9
-      im = im.to_s
-      iv = iv.to_s
-      ia = ia.to_s
+      im   = im.to_s
+      iv   = iv.to_s
+      ia   = ia.to_s
+      dots = dots.to_s
     else
-      im = im.to_s.force_encoding("UTF-8")
-      iv = iv.to_s.force_encoding("UTF-8")
-      ia = ia.to_s.force_encoding("UTF-8")
+      im   = im.to_s.force_encoding("UTF-8")
+      iv   = iv.to_s.force_encoding("UTF-8")
+      ia   = ia.to_s.force_encoding("UTF-8")
+      dots = dots.to_s.force_encoding("UTF-8")
     end
+
+    bufname_space = if file_mode
+                      5
+                    elsif bookmark_mode
+                      5 + symbol_sizes["iav"]
+                    else
+                      5 + symbol_sizes["iav"] + symbol_sizes["im"]
+                    end
 
     buflist.each do |entry|
       bufname = (RUBY_VERSION.to_f < 1.9) ? entry["raw"].to_s : entry["raw"].to_s.force_encoding("UTF-8")
 
       if bufname.length + bufname_space > columns
-        dots_symbol = unicode_font ? "…" : "..."
-        bufname = "#{dots_symbol}#{bufname[(bufname.length - columns + bufname_space + dots_symbol.length)..-1]}"
+        bufname = "#{dots}#{bufname[(bufname.length - columns + bufname_space + symbol_sizes["dots"])..-1]}"
       end
 
       if !file_mode && !workspace_mode && !tablist_mode && !bookmark_mode
