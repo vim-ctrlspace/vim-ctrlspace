@@ -313,7 +313,7 @@ function! ctrlspace#statusline()
   let statusline = "%1*" . g:ctrlspace_symbols.cs . "    " . ctrlspace#statusline_mode_segment("    ")
 
   if !&showtabline
-    let statusline .= " %=%1* " . ctrlspace#statusline_tab_segment()
+    let statusline .= " %=%1* %<" . ctrlspace#statusline_tab_segment()
   endif
 
   return statusline
@@ -973,22 +973,25 @@ function! <SID>load_last_active_workspace()
   endif
 endfunction
 
+function <SID>proceed_if_modified()
+  for i in range(1, bufnr("$"))
+    if getbufvar(i, "&modified")
+      return <SID>confirmed("Some buffers not saved. Proceed anyway?")
+    endif
+  endfor
+
+  return 1
+endfunction
+
 function! <SID>new_workspace()
   if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
         \ && !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
     return
   endif
 
-  " check for modified buffers
-  for t in range(1, tabpagenr("$"))
-    if ctrlspace#tab_modified(t)
-      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
-        return
-      else
-        break
-      endif
-    endif
-  endfor
+  if !<SID>proceed_if_modified()
+    return
+  endif
 
   call <SID>kill(0, 1)
   call <SID>new_workspace_externally()
@@ -1067,16 +1070,9 @@ function! <SID>load_workspace(bang, name)
     endif
   endif
 
-  " check for modified buffers
-  for t in range(1, tabpagenr("$"))
-    if ctrlspace#tab_modified(t)
-      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
-        return
-      else
-        break
-      endif
-    endif
-  endfor
+  if !a:bang && !<SID>proceed_if_modified()
+    return
+  endif
 
   call <SID>kill(0, 1)
 
@@ -1289,16 +1285,9 @@ function! <SID>quit_vim()
     return
   endif
 
-  " check for modified buffers
-  for t in range(1, tabpagenr("$"))
-    if ctrlspace#tab_modified(t)
-      if !<SID>confirmed("Some buffers not saved. Proceed anyway?")
-        return
-      else
-        break
-      endif
-    endif
-  endfor
+  if !<SID>proceed_if_modified()
+    return
+  endif
 
   call <SID>kill(0, 1)
   qa!
