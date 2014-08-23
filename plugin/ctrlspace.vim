@@ -2662,6 +2662,10 @@ function! <SID>kill(buflistnr, final)
     silent! exe "set timeoutlen=" . b:timeoutlen_save
   endif
 
+  if exists("b:mouse_save")
+    silent! exe "set mouse=" . b:mouse_save
+  endif
+
   " shellslash support for win32
   if exists("b:nossl_save") && b:nossl_save
     set nossl
@@ -4149,6 +4153,8 @@ function! <SID>set_up_buffer()
   if !g:ctrlspace_use_mouse_and_arrows_in_term && !has("gui_running")
     " Block unnecessary escape sequences!
     noremap <silent><buffer><esc>[ :call <SID>mark_key_esc_sequence()<CR>
+    let b:mouse_save = &mouse
+    set mouse=
   endif
 
   for key_name in s:key_names
