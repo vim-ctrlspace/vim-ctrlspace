@@ -23,12 +23,6 @@ Table of Contents                                  *ctrlspace-table-of-contents*
 
   1. Overview                                               |ctrlspace-overview|
   2. Getting Started                                 |ctrlspace-getting-started|
-    2.1 Colors                                          |ctrlspace-setup-colors|
-    2.2 Status Line                                      |ctrlspace-status-line|
-    2.3 Tabline                                              |ctrlspace-tabline|
-    2.4 Project Root                                    |ctrlspace-project-root|
-    2.5 User Interface                                |ctrlspace-user-interface|
-    2.6 Tab Management                                |ctrlspace-tab-management|
   3. Lists                                                     |ctrlspace-lists|
     3.1 Buffer List                                      |ctrlspace-buffer-list|
       3.1.1 Single Mode                                  |ctrlspace-single-mode|
@@ -75,66 +69,113 @@ Table of Contents                                  *ctrlspace-table-of-contents*
 ------------------------------------------------------------------------------
 1. Overview                                                 *ctrlspace-overview*
 
-Vim-CtrlSpace is a Vim plugin for creating and managing lists of
-buffers, files, tabs, workspaces (sessions), and finally bookmarks (projects).
-Its approach is somewhat unique, but certainly you will feel at home quickly,
-especially if you used intensively split windows, tabs, buffers, etc.
+**Vim-CtrlSpace** is a Vim plugin to control and organize your working space in
+Vim. Including managing buffers, files, tabs, sessions, and finally projects.
+Its approach is somewhat unique, but certainly you will feel at home,
+especially if you use already split windows, tabs, buffers, etc.
 
 You can think of it as a buffer/file/tab explorer mixed with a fuzzy finder
-like CtrlP, and a session and project explorer. Pretty wide, isn't it?
+like CtrlP, and a session and project explorer. Pretty wide, isn't it? With
+Vim-CtrlSpace you gain a good view of what is open and where it is, together
+with good categorization through various lists.
 
-But this idea seems to work very well and the plugin may become your coolest
+This idea seems to work very well and the plugin may become your coolest
 companion. It can help you to manage your Vim workspace and increase your usage
 of core Vim features like multiple buffers, tabs, and windows in a great degree.
 The plugin can also provide you with some new concepts, like workspaces, named
 tabs, or separate buffer lists.
 
-It is worth to say, for many plugin users including myself, Vim-CtrlSpace
-became the most important tool in the Vim toolbox and a strong improvement of
-the existing workflow.
+It is worth to say, for many users including myself, Vim-CtrlSpace became
+the most important tool in the Vim toolbox and a strong improvement of the
+existing workflow.
 
 
-1.1 What's so special?~
+1.1 The Idea~
 
-Visually, Vim-CtrlSpace is just a temporary window that sticks to the bottom
-of screen and contains a list (like a menu) from which you can select items.
-Although it acts as a split explorer, it doesn't show up in the split window
-itself. Rather, it creates a temporary preview window similarly to CtrlP.
+Visually, Vim-CtrlSpace is a temporary window that sticks to the bottom of
+screen and contains a list (like a menu) from which you can select items.
 
-The plugin window can display various lists: a list of open tab pages, a Buffer
-List (for current tab only or for all open buffers), a File List, a Workspace
-List, and last but not least, a Bookmark List. Within those lists you can both
-navigate to selected items and manage them as well - rename, add, delete, move,
-copy, and so on.
+However, to leverage the most of unique Vim-CtrlSpace approach you should
+understand well Vim's concepts of buffers, tab pages, and split windows as they
+are quite distinct from other editors.
 
-Buffer and File Lists are rather obvious ones. You can look for buffers/files
-with fuzzy search algorithm. But the special part here is this: each tab page
-contains its own Buffer List with buffers related to that tab only. _Related_
-means the given buffer has been shown in the given tab at least once. In that
-way you have separate sets of buffers for each tab. And that's really useful. Of
-course, the _all buffers_ mode is still available.
 
-The Workspace List is also something very unique. You can name your tabs and you
-can save the whole set of tabs and buffers as a workspace in your project
-directory and reopen it later. The Tab List is something comparable to Vim's
-tabline. However the Vim's tabline has several limitations, like tab count or
-tabline length. The Tab List was introduced as a convenient replacement of Vim
-tabline. Needless to say, you can perform moving, copying, renaming, and
-deleting operations on tab items too.
+1.1.1 Buffers, Windows, and Tabs~
 
-The last list available in Vim-CtrlSpace is the Bookmark list. Vim-CtrlSpace
-tries to handle files and buffers relative to the current working directory. It
-can also try to guess the project root. But of course you are not limited to one
-project root only. You can change/navigate to various working directories even
-through the `:cd` command. Bookmarks are just shortcuts to your favorite
-directories (projects). You can save some time here by jumping to different
-locations with friendly names. In that way you can literally jump between
-various projects, manage (or interchange) files/buffers/workspaces between them,
-etc.
+The files opened in Vim reside in memory slots called buffers. Buffers are also
+used for various special cases by Vim itself and by many plugins. Buffers can be
+visible in a list called _buffer list_. You can display them with `:ls` command.
+To see also those special unlisted buffers add a bang: `:ls!`. The listed
+buffers are usually normal text buffers you are working on whereas those
+unlisted ones are special purpose Vim and plugins internals (often automatically
+created).
+
+Please also notice, that the buffer list is usually called a tab list in other
+editors. In those editors you can have many files opened in separate tabs. In
+Vim the buffer list serves in the same way.
+
+A window in Vim is a frame that always displays a buffer. The buffers without
+any windows attached are called _hidden_ (since they are invisible at the
+moment). A buffer can have many windows attached to it but a window can display
+only one buffer at a time. However, in the main application window (let's name
+it view or viewport) you can display many windows side by side. Those windows
+are then called split ones. This is in fact very handy feature of Vim.
+
+The next important Vim feature are tab pages. In fact they are those viewports
+containing split windows. It's like instead of one main app window you can have
+a bunch of viewports. And you can switch them easily.
+
+This feature led people to collect groups of split windows with concrete
+buffers in viewports. In that way each viewport - tabpage - is in fact a set
+of buffers related to some concrete topic.
+
+
+1.1.2 Vim-CtrlSpace Concept~
+
+The ability of collecting buffers in tab pages is the root of Vim-CtrlSpace
+plugin. Split windows are not so good in that role. You can have a finite number
+of split windows. Each new window leads to harder navigation. Each new window is
+also smaller (thus they split larger windows, right?).
+
+Given with those facts Vim-CtrlSpace provides a solution. In Vim-CtrlSpace, each
+tab page, besides being a viewport is also a separate list of buffers.
+Technically, each tab page has its own buffer list. In that way, you can easily
+split your buffers to number of sublists. You can create new ones, remove them,
+move, copy, add and remove items, finally give them meaningful names.
+
+The whole set of lists - tab pages - can be saved permanently as a workspace.
+In one project directory you can have plenty of saved workspaces. And again, you
+can add new ones, remove, rename them or even merge. Workspaces behaves similar
+to Vim sessions.
+
+The last but not least feature is that you can easily navigate between your
+favorite projects with bookmarks - a permanent list of your favorite locations
+(directory paths). Each project directory contains different workspaces.
+
+Summarizing, in the plugin window you have access to 5 different lists:
+Buffer List, File List, Tab List, Workspace List, and Bookmark List.
+Each list displays items you can use and modify. Moreover, each list
+provides a fuzzy Search Mode to narrow displayed items. Some of lists provides
+also various modes depending on context.
+
+Here's the short description of each list:
+
+* Buffer List - displays buffers from current list - tab page. It has also
+  a mode to display all available buffers. Buffer List allows you also to
+  manipulate windows of the current tab page.
+* File List - displays all files of the current project. You can easily find and
+  open them, therefore it's shortcut is `o` - for "Open".
+* Tab List - displays tab pages - and since they are also separate buffer lists,
+  the shortcut here is `l` - for "Lists". You can operate on them as on other
+  items. Managing tab pages has never been so easy!
+* Workspace List - shows your stored workspaces - sessions for the current
+  project (`w`).
+* Bookmark List - shows your favorite projects (`b`). You can easily jump to given
+  locations. This is extremely useful combined with other lists.
 
 The plugin name follows the convention of naming similar plugins after their
-default mappings (like Command-T or CtrlP). Obviously, the plugin mapping is
-by default <C-Space>.
+default mappings (like "Command-T" or "CtrlP"). Obviously, the plugin mapping is
+by default `Ctrl` `+` `Space`.
 
 If you like the plugin please don't forget to add a star to its GitHub
 repository (https://github.com/szw/vim-ctrlspace)! This will help me to
@@ -160,6 +201,7 @@ https://www.youtube.com/watch?v=09l92uwKupI - a bit more verbose.
 The Demo has been recorded with:
 
 - a console Vim 7.4 (Monaco font)
+  - a Vim-CtrlSpace plugin v. 4.0.0
 - a bit modified Seoul256 color scheme (https://github.com/szw/seoul256.vim)
 - following Vim-CtrlSpace settings in .vimrc: >
 
@@ -179,57 +221,88 @@ The Demo has been recorded with:
 The plugin installation is really simple. You can use Vundle or Pathogen, or
 just clone the repository to your `.vim` directory. In case of Vundle, add: >
 
-  Plugin 'szw/vim-ctrlspace'
-
-<to your `.vimrc`.
+    Plugin 'szw/vim-ctrlspace'
+<
+to your `.vimrc`.
 
 To improve your overall experience please enable the `hidden` option too: >
 
-  set hidden
+    set hidden
 <
 If you want to increase plugin speed (e.g. fuzzy search), make sure you have
 decent Ruby bindings enabled in (compiled into) your Vim. The plugin will try
 to use your Ruby by default.
 
 
-2.1 Colors                                              *ctrlspace-setup-colors*
+2.1 Colors~
 
-You should also improve default plugin colors to work well with your
-colorscheme. For example, I used to work in the terminal Vim with slightly
-modified Seoul256 (https://github.com/szw/seoul256.vim) colorscheme originally
-developed by Junegunn Choi (https://github.com/junegunn/seoul256.vim).
+Next you should spend some time on adjusting plugin colors to match your
+colorscheme. Please don't leave this step. It's very important to make sure, the
+plugin clearly displays the information. You will use its window very very
+often. So it's worth to make it eye-candy.
 
-Therefore, I put following settings in my `.vimrc`: >
+By default the plugin uses some default settings basing on your active
+colorscheme - just in order to display anything. But those default are very far
+from perfect. The best way to set the colors is to use `:hi` command (without
+anything) and see colors defined already in you colorsheme.
 
-  hi CtrlSpaceSelected term=reverse ctermfg=187  ctermbg=23  cterm=bold
-  hi CtrlSpaceNormal   term=NONE    ctermfg=244  ctermbg=232 cterm=NONE
-  hi CtrlSpaceSearch   ctermfg=220  ctermbg=NONE cterm=bold
-  hi CtrlSpaceStatus   ctermfg=230  ctermbg=234  cterm=NONE
+For example, I use Solarized Dark colorscheme both in MacVim and in the terminal
+Vim. For terminal (iTerm2) I had to load the Solarized preset first. Then Vim
+uses the terminal colors (16). Whereas the Mac Vim uses full HEX values.
 
-<If you use a terminal Vim you can use the chart from
-http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html to
-discover best colors matching your colorscheme. To find out more about enabling
-256 colours in your terminal check e.g. Tom Ryder's blog - Arabesque
-(http://blog.sanctum.geek.nz/256-colour-terminals/).
+In the console Vim and in the MacVim I issued `:hi` and got for example the
+following entries for `TabLine`:
 
-For MacVim I use Solarized color scheme (dark background), so I found these
-settings to work well: >
+MacVim: >
 
-  hi CtrlSpaceSelected guifg=#021B25 guibg=#93A1A1 gui=bold
-  hi CtrlSpaceNormal   guifg=#839496 guibg=#021B25 gui=NONE
-  hi CtrlSpaceSearch   guifg=#9b1b06 guibg=NONE    gui=bold
-  hi CtrlSpaceStatus   guifg=#000000 guibg=#667B83 gui=NONE
+  TabLine xxx term=underline cterm=underline ctermfg=15 ctermbg=8 gui=underline
+              guifg=#839496 guibg=#073642 guisp=#839496
 <
-Notice, it's worth to spent some time to adjust settings to someting
-eye-pleasant, because chances are, you will use (a thus see) the plugin a lot
-;).
+Console Vim: >
 
+  TabLine xxx term=underline cterm=underline ctermfg=12 ctermbg=0 gui=underline guibg=DarkGrey
+<
+Basing on that I used the `cterm*` parts from Console Vim and the `gui*` parts
+from MacVim to create the Vim-Ctrlspace color definition for Normal background: >
+
+  hi CtrlSpaceNormal guifg=#839496 guibg=#073642 guisp=#839496 gui=NONE ctermfg=12 ctermbg=0 cterm=NONE
+<
+As you can see, I stripped off the `underline` directive.
+
+In the following way you should define all four Vim-CtrlSpace highlight
+definitions: `CtrlSpaceNormal`, `CtrlSpaceSelected`, `CtrlSpaceSearch`, and
+`CtrlSpaceStatus`.
+
+If you are curious, here is my full highlight definition set for Solarized Dark
+scheme: >
+
+  " Colors of CtrlSpace for Solarized Dark
+  " (MacVim and Console Vim under iTerm2 with Solarized Dark theme)
+
+  " Based on Solarized TablineSel
+  hi CtrlSpaceSelected guifg=#586e75 guibg=#eee8d5 guisp=#839496 gui=reverse,bold ctermfg=10 ctermbg=7 cterm=reverse,bold
+
+  " Based on Solarized Tabline/TablineFill
+  " original Normal
+  " hi CtrlSpaceNormal   guifg=#839496 guibg=#073642 guisp=#839496 gui=NONE ctermfg=12 ctermbg=0 cterm=NONE
+  " tweaked Normal with darker background in Gui
+  hi CtrlSpaceNormal   guifg=#839496 guibg=#021B25 guisp=#839496 gui=NONE ctermfg=12 ctermbg=0 cterm=NONE
+
+  " Based on Title
+  hi CtrlSpaceSearch   guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
+
+  " Based on PmenuThumb
+  hi CtrlSpaceStatus   guifg=#839496 guibg=#002b36 gui=reverse term=reverse cterm=reverse ctermfg=12 ctermbg=8
+<
 If you use a popular colorscheme and you would like to share your
 settings, I'd love to add them here! Please post a pull request, an issue or
-just an email to szymon@wrozynski.com.
+just an email: szymon@wrozynski.com.
+
+If you are a color scheme maker and you use and like Vim-CtrlSpace, perhaps you
+could consider to create highlight definitions for the plugin too?
 
 
-2.2 Status Line                                          *ctrlspace-status-line*
+2.2 Status Line~
 
 Vim-CtrlSpace requires a status bar. If you are using a plugin customizing the
 status bar this might be a bit tricky. For example "vim-airline"
@@ -239,7 +312,7 @@ status bar this might be a bit tricky. For example "vim-airline"
 line segments, provided by Vim-CtrlSpace API.
 
 
-2.3 Tabline                                                  *ctrlspace-tabline*
+2.3 Tabline~
 
 Vim-CtrlSpace can set a custom tabline. If the proper option is enabled
 (`g:ctrlspace_use_tabline`), the plugin will set a custom tabline for you. The
@@ -257,25 +330,24 @@ If GUI tabs are detected, this option will also set the proper function to
 
 Notice, that if you intensify your tabs usage, the Vim tabline feature could
 become less usable, because of increasing tab number, especially with long
-names. However, there is no need to worry. Moreover, its perfectly fine to even
-turn off tabline completely because plugin has a Tab List ready for you. If you
-feel brave or you are just curious try to add `set` `showtabline=0` to your
-`.vimrc` and check plugin Tab List instead (press `l` in the plugin window).
+names. And that's where you found the Tab List really usable. You can even
+turn off the tabline completely: `set` `showtabline=0` and rely on the Tab List
+only. To see Tab List press `l` in the plugin window.
 
 
-2.4 Project Root                                        *ctrlspace-project-root*
+2.4 Project Root~
 
 Some plugin features require a project root to work properly. If you open the
-File List for the first time it will try to find out the possible root
-directory. First, it starts in the Vim's current working directory and check if
-there are so called root markers. The root markers are characteristic
-directories that are available in an exemplary project root directory, like e.g.
-`.git` or `.hg` ones. You can define them yourself in the
-`g:ctrlspace_project_root_markers` variable. If no markers were found the plugin
-will check if perhaps this directory is a known root. The known roots are those
-ones you provided (accepted) yourself when no markers were found. If the current
-directory cannot be proven as a project root, the algorithm will repeat the
-whole procedure in the parent one.
+File List for the first time in given Vim's working directory it will try to
+find out the possible root directory. First, it starts in the Vim's current
+working directory and check if there are so called "root markers". The root
+markers are characteristic directories that are available in an exemplary
+project root directory, like e.g. `.git` or `.hg` ones. You can define them
+yourself in the `g:ctrlspace_project_root_markers` variable. If no markers were
+found the plugin will check if perhaps this directory is a known root. The known
+roots are those directories you provided (accepted) yourself when no markers
+were found. If the current directory cannot be proven as a project root, the
+algorithm will repeat the whole procedure in the parent one.
 
 After checking all predecessors it will ask you to provide the root folder
 explicitly. After your acceptance that root folder will be stored pemanently in
@@ -285,7 +357,7 @@ If you add the directory to bookmarks, it will be considered as project root
 automatically.
 
 
-2.5 User Interface                                    *ctrlspace-user-interface*
+2.5 User Interface~
 
 Vim-CtrlSpace contains 5 different lists: "Buffer List", "File List", "Tab
 List", "Workspace List", and "Bookmark List". Some of those have additional
@@ -304,8 +376,8 @@ You can jump between lists easily by pressing one of the following keys:
 | `b`   | Jump to Bookmark List                                  |
 | `B`   | Jump to Bookmark List in Search Mode                   |
 
-Since the "Buffer List" is the default one, in order to jump to it press
-one of those keys again (except `O`) or just hit `Backspace`.
+Since the "Buffer List" is the default one, in order to jump to it press one of
+those keys again (except `O`, `L`, `W`, or `B`) or just hit `Backspace`.
 
 User interface of the plugin is a list window. Its status line contains
 important symbolic information:
@@ -314,11 +386,11 @@ important symbolic information:
 | -------------- | ------------- | ----------- | -------------------------- |
 | `⌗`              | `#`             | All         | Vim-CtrlSpace symbol       |
 | `?`              | `?`             | All         | Help Mode indicator        |
+| `›_‹`            | `[_]`           | All         | Search Mode indicator      |
 | `⊙`              | `TAB`           | Buffer      | Single Mode indicator      |
 | `∷`              | `ALL`           | Buffer      | All Mode indicator         |
-| `⊚`             | `FILE`          | File        | File List indicator        |
+| `⊚`              | `FILE`          | File        | File List indicator        |
 | `⌕`              | `*`             | Buffer      | Zoom Mode indicator        |
-| `›_‹`            | `[_]`           | Buffer/File | Search Mode indicator      |
 | `○●○`            | `-+-`           | Tab         | Tab List indicator         |
 | `⋮` `→` `∙`          | `LOAD`          | Workspace   | Workspace Load Mode        |
 | `∙` `→` `⋮`          | `SAVE`          | Workspace   | Workspace Save Mode        |
@@ -336,25 +408,17 @@ item text):
 Those indicators can be configured via |g:ctrlspace_symbols| variable.
 
 
-2.6 Tab Management                                    *ctrlspace-tab-management*
+2.6 Tab Management~
 
-Tabs in Vim-CtrlSpace (like in Vim) are groups of related buffers. The plugin
-lets you to perform many classic tab actions easily in the Buffer List view
-and of course in the Tab List view (turned on with letter `l`). Those ones
-include e.g. switching (`[` and `]`), moving (`+` and `-`), closing (uppercase
-`C`), or renaming (`=`).
+Tabs in **Vim-CtrlSpace** are considered as lists of related buffers. But of
+course, they remain regular Vim tab pages. So they can display the buffers they
+carry in split windows, they can be moved, deleted, switched, etc. Moreover, the
+plugin lets you to perform many classic tab actions easily in the Buffer List
+view and of course in the Tab List (turned on with letter `l`).
 
-You can also create empty tabs (`T`) or copy them (`Y`). The latter action is
-useful if you want to split your tab (your group of buffers) into smaller
-ones.  Referring to the demo example, the tab "Users" (holding model files,
-controller files and views) could be split into something like "Users
-(models)" and "Users (views)". "Users (models)" could then have model and
-controller files whereas "Users (views)" could be storing controller and view
-ones. With the help of tab copying (`Y`) all you need is to copy the "Users"
-tab, close superfluous buffers in each (lowercase `c`), and finally rename
-both (`=`). Of course, the split shown in that example might be a bit dummy
-but in a typical project there are a lot of natural splits, like for example,
-backend and frontend layers.
+You can also rename them - tabs (lists) in Vim-CtrlSpace can be named - or even
+copy them! The latter action is useful if you want to split your tab/list into
+smaller ones.
 
 
 ------------------------------------------------------------------------------
@@ -373,7 +437,7 @@ https://raw.github.com/szw/vim-ctrlspace/master/gfx/lists.png
 3.1 Buffer List                                          *ctrlspace-buffer-list*
 
 This is the basic list of the plugin. Depending of its mode it can collect
-buffers from the current tab or buffers from all tabs.
+buffers from the current tab or all available buffers.
 
 
 3.1.1 Single Mode                                        *ctrlspace-single-mode*
@@ -383,8 +447,8 @@ buffers from the current tab or buffers from all tabs.
 | `⊙`       | `TAB`   |
 
 The first mode of Buffer List is the Single one. In that mode, the plugin
-shows you only buffers related to the current tab. Here's the full listing of
-all available keys:
+shows you only buffers related to the current tab (list). Here's the full
+listing of all available keys:
 
 
 3.1.1.1 Help~
