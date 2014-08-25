@@ -812,7 +812,8 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `_`   | Remove the selected tab name                        |
 | `[`   | Go to the previous tab                              |
 | `]`   | Go to the next tab                                  |
-| `t`   | Create a new tab nexto to the current one           |
+| `t`   | Create a new tab                                    |
+| `a`   | Create a new tab                                    |
 | `y`   | Make a copy of the current tab                      |
 
 

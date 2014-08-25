@@ -1894,7 +1894,8 @@ function! <SID>display_help()
     call <SID>key_help("P", "Move the selection bar to the previously opened tab and open it")
     call <SID>key_help("n", "Move the selection bar to the next opened tab")
     call <SID>key_help("c", "Close the selected tab, then forgotten buffers and nonames")
-    call <SID>key_help("t", "Create a new tab nexto to the current one")
+    call <SID>key_help("t", "Create a new tab")
+    call <SID>key_help("a", "Create a new tab")
     call <SID>key_help("y", "Make a copy of the current tab")
     call <SID>key_help("[", "Go to the previous tab")
     call <SID>key_help("]", "Go to the next tab")
@@ -3276,7 +3277,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
       call <SID>ctrlspace_toggle(1)
-    elseif a:key ==# "t"
+    elseif (a:key ==# "t") || (a:key ==# "a")
       let tab_nr = <SID>get_selected_buffer()
       call <SID>kill(0, 1)
       silent! exe "normal! " . tab_nr . "gt"
