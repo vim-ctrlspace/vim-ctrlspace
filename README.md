@@ -97,7 +97,7 @@ containing split windows. It's like instead of one main app window you can have
 a bunch of viewports. And you can switch them easily.
 
 This feature led people to collect groups of split windows with concrete
-buffers in viewports. In that way each viewport - tabpage - is in fact a set  
+buffers in viewports. In that way each viewport - tabpage - is in fact a set
 of buffers related to some concrete topic.
 
 
@@ -509,7 +509,7 @@ all available keys:
 |:----------:| --------------------------------------------------------- |
 | `j`        | Move the selection bar down                               |
 | `k`        | Move the selection bar up                                 |
-| `J`        | Move the selection bar to the bottom of the list          |        
+| `J`        | Move the selection bar to the bottom of the list          |
 | `K`        | Move the selection bar to the top of the list             |
 | `p`        | Move the selection bar to the previous buffer             |
 | `P`        | Move the selection bar to the previous buffer and open it |
