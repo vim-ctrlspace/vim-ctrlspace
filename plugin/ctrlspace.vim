@@ -345,7 +345,7 @@ function! <SID>go_outside_list(direction)
     endif
   endfor
 
-  call sort(buffer_list, function(<SID>SID() . "compare_raw_names"))
+  call sort(buffer_list, function("s:compare_raw_names"))
 
   let current_index   = -1
   let buffer_list_len = len(buffer_list)
@@ -1463,7 +1463,7 @@ function! <SID>restore_search_letters(direction)
     call add(history_entries, { "letters": letters, "counter": counter })
 	endfor
 
-  call sort(history_entries, function(<SID>SID() . "compare_jumps"))
+  call sort(history_entries, function("s:compare_jumps"))
 
   let history_index = <SID>get_search_history_index()
 
@@ -2353,7 +2353,7 @@ function! <SID>ctrlspace_toggle(internal)
       let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
             \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
 
-      call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
+      call sort(s:all_files_cached, function("s:compare_raw_names"))
       let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
 
       redraw!
@@ -4217,11 +4217,6 @@ function! <SID>compare_raw_names_with_search_noise(a, b)
   endif
 endfunction
 
-function! <SID>SID()
-  let fullname = expand("<sfile>")
-  return matchstr(fullname, '<SNR>\d\+_')
-endfunction
-
 function! <SID>display_list(displayedbufs, buflist)
   setlocal modifiable
   if a:displayedbufs > 0
@@ -4229,11 +4224,11 @@ function! <SID>display_list(displayedbufs, buflist)
       let buftext = s:all_files_buftext
     else
       if !empty(s:search_letters)
-        call sort(a:buflist, function(<SID>SID() . "compare_raw_names_with_search_noise"))
+        call sort(a:buflist, function("s:compare_raw_names_with_search_noise"))
       elseif s:tablist_mode
-        call sort(a:buflist, function(<SID>SID() . "compare_tab_names"))
+        call sort(a:buflist, function("s:compare_tab_names"))
       else
-        call sort(a:buflist, function(<SID>SID() . "compare_raw_names"))
+        call sort(a:buflist, function("s:compare_raw_names"))
       endif
 
       " trim the list in search mode
@@ -4462,7 +4457,7 @@ function! <SID>jump(direction)
       call <SID>create_buffer_jumps()
     endif
 
-    call sort(b:jumplines, function(<SID>SID() . "compare_jumps"))
+    call sort(b:jumplines, function("s:compare_jumps"))
   endif
 
   if !exists("b:jumppos")
@@ -4873,7 +4868,7 @@ function! <SID>update_file_list(path, new_path)
 
   let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
         \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
-  call sort(s:all_files_cached, function(<SID>SID() . "compare_raw_names"))
+  call sort(s:all_files_cached, function("s:compare_raw_names"))
 
   let old_files_mode = s:file_mode
 
