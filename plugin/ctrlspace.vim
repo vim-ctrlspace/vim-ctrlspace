@@ -1834,10 +1834,12 @@ function! <SID>display_help()
 
     if s:workspace_mode == 1
       let current_mode .= "LOAD MODE"
-      call <SID>key_help("CR", "Load the selected workspace")
+      call <SID>key_help("CR", "Load selected workspace")
+      call <SID>key_help("Space", "Load selected workspace and stay in the list")
     elseif s:workspace_mode == 2
       let current_mode .= "SAVE MODE"
-      call <SID>key_help("CR", "Save the selected workspace")
+      call <SID>key_help("CR", "Save selected workspace")
+      call <SID>key_help("Space", "Save selected workspace and stay in the list")
     endif
 
     call <SID>key_help("q", "Close the list")
@@ -1850,6 +1852,7 @@ function! <SID>display_help()
     call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
     call <SID>key_help("a", "Append a selected workspace to the current one")
     call <SID>key_help("n", "Make a new workspace (closes all buffers)")
+    call <SID>key_help("N", "Make a new workspace but stay in the list")
 
     if s:workspace_mode == 1
       call <SID>key_help("s", "Toggle the mode from Load to Save")
@@ -1858,15 +1861,21 @@ function! <SID>display_help()
     endif
 
     call <SID>key_help("C-s", "Save the workspace immediately")
-    call <SID>key_help("C-l", "Load the last active workspace (if present)")
+
+    if !empty(s:last_active_workspace)
+      call <SID>key_help("C-l", "Load the last active workspace")
+    endif
+
     call <SID>key_help("w", "Go to the Buffer List")
     call <SID>key_help("W", "Enter the Search Mode")
     call <SID>key_help("/", "Enter the Search Mode")
+
     if empty(s:search_letters)
       call <SID>key_help("BS", "Go back to the Buffer List")
     else
       call <SID>key_help("BS", "Clear search")
     endif
+
     call <SID>key_help("d", "Delete selected workspace")
     call <SID>key_help("=", "Rename selected workspace")
     call <SID>key_help("j", "Move the selection bar down")
@@ -2990,6 +2999,9 @@ function! <SID>keypressed(key)
   elseif s:workspace_mode == 1
     if a:key ==# "CR"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+    elseif a:key ==# "Space"
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+      call <SID>start_ctrlspace_and_feedkeys("w")
     elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
@@ -2998,6 +3010,9 @@ function! <SID>keypressed(key)
       call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "n"
       call <SID>new_workspace()
+    elseif a:key ==# "N"
+      call <SID>new_workspace()
+      call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
@@ -3115,12 +3130,18 @@ function! <SID>keypressed(key)
   elseif s:workspace_mode == 2
     if a:key ==# "CR"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
+    elseif a:key ==# "Space"
+      call <SID>save_workspace(<SID>get_selected_workspace_name())
+      call <SID>start_ctrlspace_and_feedkeys("w")
     elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
       call <SID>quit_vim()
     elseif a:key ==# "n"
       call <SID>new_workspace()
+    elseif a:key ==# "N"
+      call <SID>new_workspace()
+      call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"
       let s:last_browsed_workspace = line(".")
       call <SID>kill(0, 0)
