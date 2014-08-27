@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-22
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-27
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.5~
+                               Vim-CtrlSpace 4.1.6~
 
                             Vim Workspace Controller
 
@@ -399,11 +399,11 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator     |
-| ------- | ----- | ------------- |
-| `+`       | `+`     | Item modified |
-| `★`       | `*`     | Item active   |
-| `☆`       | `*`     | Item visible  |
+| Unicode | ASCII | Indicator                 |
+| ------- | ----- | ------------------------- |
+| `+`       | `+`     | Item modified             |
+| `★`       | `*`     | Item active               |
+| `☆`       | `*`     | Item visible or last used |
 
 Those indicators can be configured via |g:ctrlspace_symbols| variable.
 

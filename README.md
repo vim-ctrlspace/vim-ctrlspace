@@ -381,11 +381,11 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator     |
-|:-------:|:-----:| ------------- |
-| `+`     | `+`   | Item modified |
-| `★`     | `*`   | Item active   |
-| `☆`     | `*`   | Item visible  |
+| Unicode | ASCII | Indicator                 |
+|:-------:|:-----:| ------------------------- |
+| `+`     | `+`   | Item modified             |
+| `★`     | `*`   | Item active               |
+| `☆`     | `*`   | Item visible or last used |
 
 Those indicators can be configured via `g:ctrlspace_symbols` variable.
 

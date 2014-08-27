@@ -118,6 +118,7 @@ module CtrlSpace
     bookmark_mode           = VIM.evaluate("s:bookmark_mode") > 0
     active_workspace_name   = VIM.evaluate("s:active_workspace_name")
     active_workspace_digest = VIM.evaluate("s:active_workspace_digest")
+    last_active_workspace   = VIM.evaluate("s:last_active_workspace")
     active_bookmark         = VIM.evaluate("s:active_bookmark")
     start_window            = VIM.evaluate("t:ctrlspace_start_window")
 
@@ -169,6 +170,8 @@ module CtrlSpace
           bufname << " "
           bufname << im if active_workspace_digest != VIM.evaluate("<SID>create_workspace_digest()")
           bufname << ia
+        elsif entry["raw"] == last_active_workspace
+          bufname << " #{iv}"
         end
       elsif tablist_mode
         indicators = ""

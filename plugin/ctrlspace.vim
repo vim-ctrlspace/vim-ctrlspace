@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.5
+" Version:      4.1.6
 "
 " The MIT License (MIT)
 
@@ -148,6 +148,7 @@ let s:key_esc_sequence        = 0
 let s:active_workspace_name   = ""
 let s:active_workspace_digest = ""
 let s:workspace_names         = []
+let s:last_active_workspace   = ""
 let s:update_search_results   = 0
 let s:last_project_root       = ""
 let s:project_root            = ""
@@ -889,37 +890,27 @@ function! <SID>delete_workspace(name)
 endfunction
 
 function! <SID>get_workspace_names()
-  let filename = <SID>workspace_file()
+  if empty(s:workspace_names)
+    let filename                = <SID>workspace_file()
+    let s:last_active_workspace = ""
 
-  let names = []
-
-  if filereadable(filename)
-    for line in readfile(filename)
-      if line =~? "CS_WORKSPACE_BEGIN: "
-        call add(names, line[20:])
-      endif
-    endfor
+    if filereadable(filename)
+      for line in readfile(filename)
+        if line =~? "CS_WORKSPACE_BEGIN: "
+          call add(s:workspace_names, line[20:])
+        elseif line =~? "CS_LAST_WORKSPACE: "
+          let s:last_active_workspace = line[19:]
+        endif
+      endfor
+    endif
   endif
 
-  return names
-endfunction
-
-function! <SID>get_last_active_workspace_name()
-  let filename = <SID>workspace_file()
-
-  if filereadable(filename)
-    for line in readfile(filename)
-      if line =~? "CS_LAST_WORKSPACE: "
-        return line[19:]
-      endif
-    endfor
-  endif
-
-  return ""
+  return s:workspace_names
 endfunction
 
 function! <SID>set_active_workspace_name(name)
   let s:active_workspace_name = a:name
+  let s:last_active_workspace = a:name
 
   let filename = <SID>workspace_file()
   let lines    = []
@@ -967,9 +958,8 @@ function! <SID>confirmed(msg)
 endfunction
 
 function! <SID>load_last_active_workspace()
-  let last_active_workspace = <SID>get_last_active_workspace_name()
-  if !empty(last_active_workspace)
-    call <SID>load_workspace(0, last_active_workspace)
+  if !empty(s:last_active_workspace)
+    call <SID>load_workspace(0, s:last_active_workspace)
   endif
 endfunction
 
@@ -1126,7 +1116,7 @@ function! <SID>execute_workspace_commands_from_lines_v1(bang, name, lines)
     call add(commands, "call <SID>delete_hidden_noname_buffers(1)")
     call add(commands, "call <SID>delete_foreign_buffers(1)")
 
-    let create_first_tab        = 0
+    let create_first_tab = 0
     call <SID>set_active_workspace_name(a:name)
   else
     call <SID>msg("Appending workspace '" . a:name . "'...")
@@ -1225,8 +1215,17 @@ function! <SID>load_workspace_externally(bang, name)
     return
   endif
 
+  let old_lines = readfile(filename)
+
   if empty(a:name)
-    let name = <SID>get_last_active_workspace_name()
+    let name = ""
+
+    for line in old_lines
+      if line =~? "CS_LAST_WORKSPACE: "
+        let name = line[19:]
+        break
+      endif
+    endfor
 
     if empty(name)
       silent! exe "cd " . cwd_save
@@ -1242,7 +1241,7 @@ function! <SID>load_workspace_externally(bang, name)
   let lines        = []
   let in_workspace = 0
 
-  for old_line in readfile(filename)
+  for old_line in old_lines
     if old_line ==? workspace_start_marker
       let in_workspace = 1
     elseif old_line ==? workspace_end_marker
@@ -1526,6 +1525,8 @@ function! <SID>prepare_buftext_to_display(buflist)
           endif
 
           let bufname .= g:ctrlspace_symbols.ia
+        elseif entry.raw ==# s:last_active_workspace
+          let bufname .= " " . g:ctrlspace_symbols.iv
         endif
       elseif s:tablist_mode
         let indicators = ""
@@ -2180,7 +2181,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2363,7 +2364,7 @@ function! <SID>ctrlspace_toggle(internal)
     let bufcount = len(s:files)
   elseif s:workspace_mode
     if empty(s:workspace_names)
-      let s:workspace_names = <SID>get_workspace_names()
+      call <SID>get_workspace_names()
     endif
 
     let bufcount = len(s:workspace_names)
@@ -2484,12 +2485,20 @@ function! <SID>ctrlspace_toggle(internal)
       let activebufline = 1
 
       if !empty(s:active_workspace_name)
+        let current_workspace = s:active_workspace_name
+      elseif !empty(s:last_active_workspace)
+        let current_workspace = s:last_active_workspace
+      else
+        let current_workspace = ""
+      endif
+
+      if !empty(current_workspace)
         let active_workspace_line = 0
 
         for workspace_name in buflist
           let active_workspace_line += 1
 
-          if s:active_workspace_name ==# workspace_name.raw
+          if current_workspace ==# workspace_name.raw
             let activebufline = active_workspace_line
             break
           endif
