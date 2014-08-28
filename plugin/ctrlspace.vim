@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.6
+" Version:      4.1.7
 "
 " The MIT License (MIT)
 
@@ -1852,7 +1852,7 @@ function! <SID>display_help()
     call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
     call <SID>key_help("a", "Append a selected workspace to the current one")
     call <SID>key_help("n", "Make a new workspace (closes all buffers)")
-    call <SID>key_help("N", "Make a new workspace but stay in the list")
+    call <SID>key_help("c", "Make a new workspace but stay in the list")
 
     if s:workspace_mode == 1
       call <SID>key_help("s", "Toggle the mode from Load to Save")
@@ -2190,7 +2190,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.7 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3010,7 +3010,7 @@ function! <SID>keypressed(key)
       call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "n"
       call <SID>new_workspace()
-    elseif a:key ==# "N"
+    elseif a:key ==# "c"
       call <SID>new_workspace()
       call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"
@@ -3139,7 +3139,7 @@ function! <SID>keypressed(key)
       call <SID>quit_vim()
     elseif a:key ==# "n"
       call <SID>new_workspace()
-    elseif a:key ==# "N"
+    elseif a:key ==# "c"
       call <SID>new_workspace()
       call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"

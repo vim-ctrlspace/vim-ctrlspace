@@ -913,7 +913,7 @@ startup and save it active workspace on Vim exit. See
 | `a`        | Append a selected workspace to the current one  |
 | `s`        | Toggle the mode from Load or Save (or backward) |
 | `n`        | Make a new workspace (closes all buffers)       |
-| `N`        | Make a new workspace but stay in the list       |
+| `c`        | Make a new workspace but stay in the list       |
 | `d`        | Delete selected workspace                       |
 | `=`        | Rename selected workspace                       |
 | `Ctrl + s` | Save the workspace immediately                  |
