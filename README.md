@@ -881,10 +881,11 @@ startup and save it active workspace on Vim exit. See
 
 ### Accepting
 
-| Key      | Action                                                 |
-|:--------:| ------------------------------------------------------ |
-| `Return` | Load (or save) selected workspace                      |
-| `Space`  | Load (or save) selected workspace but stay in the list |
+| Key      | Action                                                           |
+|:--------:| ---------------------------------------------------------------- |
+| `Tab`    | Load (or save) selected workspace and close the plugin window    |
+| `Return` | Load (or save) selected workspace and enter the Buffer List      |
+| `Space`  | Load (or save) selected workspace but stay in the Workspace List |
 
 
 ### Exiting

@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.7
+" Version:      4.1.8
 "
 " The MIT License (MIT)
 
@@ -1834,12 +1834,14 @@ function! <SID>display_help()
 
     if s:workspace_mode == 1
       let current_mode .= "LOAD MODE"
-      call <SID>key_help("CR", "Load selected workspace")
-      call <SID>key_help("Space", "Load selected workspace and stay in the list")
+      call <SID>key_help("Tab", "Load selected workspace and close the plugin window")
+      call <SID>key_help("CR", "Load selected workspace and enter the Buffer List")
+      call <SID>key_help("Space", "Load selected workspace but stay in the Workspace List")
     elseif s:workspace_mode == 2
       let current_mode .= "SAVE MODE"
-      call <SID>key_help("CR", "Save selected workspace")
-      call <SID>key_help("Space", "Save selected workspace and stay in the list")
+      call <SID>key_help("Tab", "Save selected workspace and close the plugin window")
+      call <SID>key_help("CR", "Save selected workspace and enter the Buffer List")
+      call <SID>key_help("Space", "Save selected workspace but stay in the Workspace List")
     endif
 
     call <SID>key_help("q", "Close the list")
@@ -2190,7 +2192,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.7 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.8 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2997,8 +2999,11 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     endif
   elseif s:workspace_mode == 1
-    if a:key ==# "CR"
+    if a:key ==# "Tab"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+    elseif a:key ==# "CR"
+      call <SID>load_workspace(0, <SID>get_selected_workspace_name())
+      call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "Space"
       call <SID>load_workspace(0, <SID>get_selected_workspace_name())
       call <SID>start_ctrlspace_and_feedkeys("w")
@@ -3128,8 +3133,11 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     endif
   elseif s:workspace_mode == 2
-    if a:key ==# "CR"
+    if a:key ==# "Tab"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
+    elseif a:key ==# "CR"
+      call <SID>save_workspace(<SID>get_selected_workspace_name())
+      call <SID>ctrlspace_toggle(0)
     elseif a:key ==# "Space"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
       call <SID>start_ctrlspace_and_feedkeys("w")
