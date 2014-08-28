@@ -213,9 +213,15 @@ to use your Ruby by default.
 ## Colors
 
 Next you should spend some time on adjusting plugin colors to match your
-colorscheme. Please don't leave this step. It's very important to make sure, the
-plugin clearly displays the information. You will use its window very very
-often. So it's worth to make it eye-candy.
+colorscheme. Please don't leave this step. It's very important to make sure,
+the plugin clearly displays the information, but there are so many colorshemes
+available for Vim so it's impossible to assure that with defaults. You will
+use the plugin window very very often. It's worth to make it eye-candy.
+
+Similarly, the font glyphs used as various symbols might not look well in your
+setup. Their rendering depends on many settings, so they are configurable via
+|g:ctrlspace_symbols| variable. Don't hesitate to adjust them to meet your
+needs.
 
 By default the plugin uses some default settings basing on your active
 colorscheme - just in order to display anything. But those default are very far
@@ -381,11 +387,11 @@ important symbolic information:
 Items listed in the plugin window can have additional indicators (following the
 item text):
 
-| Unicode | ASCII | Indicator                 |
-|:-------:|:-----:| ------------------------- |
-| `+`     | `+`   | Item modified             |
-| `★`     | `*`   | Item active               |
-| `☆`     | `^`   | Item visible or last used |
+| Unicode | ASCII | Indicator                         |
+|:-------:|:-----:| --------------------------------- |
+| `+`     | `+`   | Item modified                     |
+| `★`     | `*`   | Item active                       |
+| `☆`     | `^`   | Item visible or previously active |
 
 Those indicators can be configured via `g:ctrlspace_symbols` variable.
 
