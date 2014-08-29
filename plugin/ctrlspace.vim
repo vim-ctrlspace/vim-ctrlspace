@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.8
+" Version:      4.1.9
 "
 " The MIT License (MIT)
 
@@ -2016,7 +2016,8 @@ function! <SID>display_help()
     call <SID>key_help("s", "Open selected file in a new horizontal split")
     call <SID>key_help("S", "Open selected file in a new horizontal split but stay in the plugin window")
     call <SID>key_help("t", "Open selected file in a new tab")
-    call <SID>key_help("T", "Create a new tab and stay in the plugin window")
+    call <SID>key_help("T", "Open selected file in a new tab but stay in the plugin window")
+    call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
     call <SID>key_help("0..9", "Jump to the n-th tab (0 is for 10th one)")
@@ -2099,7 +2100,8 @@ function! <SID>display_help()
     call <SID>key_help("x", "Close the split window containing selected buffer")
     call <SID>key_help("X", "Leave the window containing selected buffer - close all others")
     call <SID>key_help("t", "Open selected buffer in a new tab")
-    call <SID>key_help("T", "Create a new tab and stay in the plugin window")
+    call <SID>key_help("T", "Open selected buffer in a new tab but stay in the plugin window")
+    call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
     call <SID>key_help("0..9", "Jump to the n-th tab (0 is for the 10th one)")
@@ -2192,7 +2194,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.8 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3662,7 +3664,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
     elseif a:key ==# "T"
-      call <SID>tab_command(a:key)
+      call <SID>load_many_files("tabnew", "tabprevious")
+    elseif a:key ==# "C-t"
+      call <SID>tab_command("T")
     elseif a:key ==# "Y"
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
@@ -3847,7 +3851,9 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
     elseif a:key ==# "T"
-      call <SID>tab_command(a:key)
+      call <SID>load_many_buffers("tabnew", "tabprevious")
+    elseif a:key ==# "C-t"
+      call <SID>tab_command("T")
     elseif a:key ==# "Y"
       call <SID>tab_command(a:key)
     elseif a:key ==# "="
@@ -4595,12 +4601,18 @@ function! <SID>load_many_buffers(...)
   call <SID>kill(0, 0)
   call <SID>goto_start_window()
 
-  if !empty(a:000)
+  let commands = len(a:000)
+
+  if commands > 0
     silent! exe ":" . a:1
   endif
 
   exec ":b " . nr
   normal! zb
+
+  if commands > 1
+    silent! exe ":" . a:2
+  endif
 
   call <SID>ctrlspace_toggle(1)
   call <SID>move_selection_bar(current_line)
@@ -4610,11 +4622,17 @@ function! <SID>load_buffer(...)
   let nr = <SID>get_selected_buffer()
   call <SID>kill(0, 1)
 
-  if !empty(a:000)
+  let commands = len(a:000)
+
+  if commands > 0
     silent! exe ":" . a:1
   endif
 
   silent! exe ":b " . nr
+
+  if commands > 1
+    silent! exe ":" . a:2
+  endif
 endfunction
 
 function! <SID>load_many_files(...)
@@ -4625,12 +4643,18 @@ function! <SID>load_many_files(...)
   call <SID>kill(0, 0)
   call <SID>goto_start_window()
 
-  if !empty(a:000)
+  let commands = len(a:000)
+
+  if commands > 0
     exec ":" . a:1
   endif
 
   exec ":e " . fnameescape(file)
   normal! zb
+
+  if commands > 1
+    silent! exe ":" . a:2
+  endif
 
   call <SID>ctrlspace_toggle(1)
   call <SID>move_selection_bar(current_line)
@@ -4642,11 +4666,17 @@ function! <SID>load_file(...)
 
   call <SID>kill(0, 1)
 
-  if !empty(a:000)
+  let commands = len(a:000)
+
+  if commands > 0
     exec ":" . a:1
   endif
 
   exec ":e " . fnameescape(file)
+
+  if commands > 1
+    silent! exe ":" . a:2
+  endif
 endfunction
 
 function! <SID>zoom_buffer(nr, ...)

@@ -465,6 +465,7 @@ all available keys:
 | `x`      | Close the split window containing selected buffer                            |
 | `X`      | Leave the window containing selected buffer - close all others               |
 | `t`      | Open selected buffer in a new tab                                            |
+| `T`      | Open selected buffer in a new tab but stay in the plugin window              |
 
 
 #### Searching
@@ -478,23 +479,23 @@ all available keys:
 
 #### Tabs Operations
 
-| Key    | Action                                                  |
-|:------:| ------------------------------------------------------- |
-| `T`    | Create a new tab and stay in the plugin window          |
-| `Y`    | Copy (yank) the current tab into a new one              |
-| `0..9` | Jump to the n-th tab (0 is for the 10th one)            |
-| `g`    | Jump to a next tab containing the selected buffer       |
-| `G`    | Jump to a previous tab containing the selected buffer   |
-| `-`    | Move the current tab to the left (decrease its number)  |
-| `+`    | Move the current tab to the right (increase its number) |
-| `=`    | Change the tab name                                     |
-| `_`    | Remove a custom tab name                                |
-| `[`    | Go to the previous (left) tab                           |
-| `]`    | Go to the next (right) tab                              |
-| `{`    | Move the selected buffer to to the previous (left) tab  |
-| `}`    | Move the selected buffer to the next (right) tab        |
-| `<`    | Copy the selected buffer to to the previous (left) tab  |
-| `>`    | Copy the selected buffer to the next (right) tab        |
+| Key        | Action                                                  |
+|:----------:| ------------------------------------------------------- |
+| `Ctrl + t` | Create a new tab and stay in the plugin window          |
+| `Y`        | Copy (yank) the current tab into a new one              |
+| `0..9`     | Jump to the n-th tab (0 is for the 10th one)            |
+| `g`        | Jump to a next tab containing the selected buffer       |
+| `G`        | Jump to a previous tab containing the selected buffer   |
+| `-`        | Move the current tab to the left (decrease its number)  |
+| `+`        | Move the current tab to the right (increase its number) |
+| `=`        | Change the tab name                                     |
+| `_`        | Remove a custom tab name                                |
+| `[`        | Go to the previous (left) tab                           |
+| `]`        | Go to the next (right) tab                              |
+| `{`        | Move the selected buffer to to the previous (left) tab  |
+| `}`        | Move the selected buffer to the next (right) tab        |
+| `<`        | Copy the selected buffer to to the previous (left) tab  |
+| `>`        | Copy the selected buffer to the next (right) tab        |
 
 
 #### Exiting
@@ -647,6 +648,7 @@ list with the `r` key.
 | `s`       | Open selected file in a new horizontal split                               |
 | `S`       | Open selected file in a new horizontal split but stay in the plugin window |
 | `t`       | Open selected file in a new tab                                            |
+| `T`       | Open selected file in a new tab but stay in the plugin window              |
 
 
 ### Exiting
@@ -664,19 +666,19 @@ list with the `r` key.
 
 ### Tabs Operations
 
-| Key    | Action                                                  |
-|:------:| ------------------------------------------------------- |
-| `T`    | Create a new tab and stay in the plugin window          |
-| `Y`    | Copy (yank) the current tab into a new one              |
-| `0..9` | Jump to the n-th tab (0 is for 10th one)                |
-| `g`    | Jump to a next tab containing the selected file         |
-| `G`    | Jump to a previous tab containing the selected file     |
-| `-`    | Move the current tab to the left (decrease its number)  |
-| `+`    | Move the current tab to the right (increase its number) |
-| `=`    | Change the tab name                                     |
-| `_`    | Remove a custom tab name                                |
-| `[`    | Go to the previous (left) tab                           |
-| `]`    | Go to the next (right) tab                              |
+| Key        | Action                                                  |
+|:----------:| ------------------------------------------------------- |
+| `Ctrl + t` | Create a new tab and stay in the plugin window          |
+| `Y`        | Copy (yank) the current tab into a new one              |
+| `0..9`     | Jump to the n-th tab (0 is for 10th one)                |
+| `g`        | Jump to a next tab containing the selected file         |
+| `G`        | Jump to a previous tab containing the selected file     |
+| `-`        | Move the current tab to the left (decrease its number)  |
+| `+`        | Move the current tab to the right (increase its number) |
+| `=`        | Change the tab name                                     |
+| `_`        | Remove a custom tab name                                |
+| `[`        | Go to the previous (left) tab                           |
+| `]`        | Go to the next (right) tab                              |
 
 
 ### Searching
