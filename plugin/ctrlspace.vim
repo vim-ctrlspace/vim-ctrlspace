@@ -78,7 +78,7 @@ function! <SID>define_symbols()
           \ "s_right": "]",
           \ "bm":      "BM",
           \ "help":    "?",
-          \ "iv":      "^",
+          \ "iv":      "-",
           \ "ia":      "*",
           \ "im":      "+",
           \ "dots":    "..."

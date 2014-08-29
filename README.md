@@ -391,7 +391,7 @@ item text):
 |:-------:|:-----:| --------------------------------- |
 | `+`     | `+`   | Item modified                     |
 | `★`     | `*`   | Item active                       |
-| `☆`     | `^`   | Item visible or previously active |
+| `☆`     | `-`   | Item visible or previously active |
 
 Those indicators can be configured via `g:ctrlspace_symbols` variable.
 
@@ -1302,7 +1302,7 @@ else
         \ "s_right": "]",
         \ "bm":      "BM",
         \ "help":    "?",
-        \ "iv":      "^",
+        \ "iv":      "-",
         \ "ia":      "*",
         \ "im":      "+",
         \ "dots":    "..."

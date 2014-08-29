@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-28
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-08-29
 *ctrlspace*
 
 
@@ -409,7 +409,7 @@ item text):
 | ------- | ----- | --------------------------------- |
 | `+`       | `+`     | Item modified                     |
 | `★`       | `*`     | Item active                       |
-| `☆`       | `^`     | Item visible or previously active |
+| `☆`       | `-`     | Item visible or previously active |
 
 Those indicators can be configured via |g:ctrlspace_symbols| variable.
 
@@ -1322,7 +1322,7 @@ Default value: >
           \ "s_right": "]",
           \ "bm":      "BM",
           \ "help":    "?",
-          \ "iv":      "^",
+          \ "iv":      "-",
           \ "ia":      "*",
           \ "im":      "+",
           \ "dots":    "..."
