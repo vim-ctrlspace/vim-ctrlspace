@@ -879,9 +879,9 @@ function! <SID>delete_workspace(name)
 
   call <SID>msg("The workspace '" . a:name . "' has been deleted.")
 
-  let s:workspace_names = []
+  call <SID>set_workspace_names()
 
-  if empty(<SID>get_workspace_names())
+  if empty(s:workspace_names)
     call <SID>kill(0, 1)
   else
     call <SID>kill(0, 0)
@@ -889,23 +889,20 @@ function! <SID>delete_workspace(name)
   endif
 endfunction
 
-function! <SID>get_workspace_names()
-  if empty(s:workspace_names)
-    let filename                = <SID>workspace_file()
-    let s:last_active_workspace = ""
+function! <SID>set_workspace_names()
+  let filename                = <SID>workspace_file()
+  let s:last_active_workspace = ""
+  let s:workspace_names       = []
 
-    if filereadable(filename)
-      for line in readfile(filename)
-        if line =~? "CS_WORKSPACE_BEGIN: "
-          call add(s:workspace_names, line[20:])
-        elseif line =~? "CS_LAST_WORKSPACE: "
-          let s:last_active_workspace = line[19:]
-        endif
-      endfor
-    endif
+  if filereadable(filename)
+    for line in readfile(filename)
+      if line =~? "CS_WORKSPACE_BEGIN: "
+        call add(s:workspace_names, line[20:])
+      elseif line =~? "CS_LAST_WORKSPACE: "
+        let s:last_active_workspace = line[19:]
+      endif
+    endfor
   endif
-
-  return s:workspace_names
 endfunction
 
 function! <SID>set_active_workspace_name(name)
@@ -2263,8 +2260,9 @@ function! <SID>ctrlspace_toggle(internal)
 
     if s:last_project_root != s:project_root
       let s:files             = []
-      let s:workspace_names   = []
       let s:last_project_root = s:project_root
+
+      call <SID>set_workspace_names()
     endif
 
     if empty(s:symbol_sizes)
@@ -2376,10 +2374,6 @@ function! <SID>ctrlspace_toggle(internal)
 
     let bufcount = len(s:files)
   elseif s:workspace_mode
-    if empty(s:workspace_names)
-      call <SID>get_workspace_names()
-    endif
-
     let bufcount = len(s:workspace_names)
   elseif s:tablist_mode
     let bufcount = tabpagenr("$")
@@ -2875,7 +2869,7 @@ function! <SID>keypressed(key)
           call <SID>kill(0, 0)
           let s:workspace_mode = 0
           call <SID>ctrlspace_toggle(1)
-        elseif empty(<SID>get_workspace_names())
+        elseif empty(s:workspace_names)
           call <SID>save_first_workspace()
         else
           call <SID>kill(0, 0)
@@ -2887,7 +2881,7 @@ function! <SID>keypressed(key)
         endif
       elseif a:key ==# "W"
         if !s:workspace_mode
-          if empty(<SID>get_workspace_names())
+          if empty(s:workspace_names)
             call <SID>save_first_workspace()
           else
             call <SID>kill(0, 0)
@@ -3427,7 +3421,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "C-u"
       call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "w"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3436,7 +3430,7 @@ function! <SID>keypressed(key)
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3593,7 +3587,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "C-u"
       call <SID>move_selection_bar("half_pgup")
     elseif a:key ==# "w"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3602,7 +3596,7 @@ function! <SID>keypressed(key)
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3745,7 +3739,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "y"
       call <SID>copy_file_or_buffer()
     elseif a:key ==# "w"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3754,7 +3748,7 @@ function! <SID>keypressed(key)
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3970,7 +3964,7 @@ function! <SID>keypressed(key)
         call <SID>save_workspace(s:active_workspace_name)
       endif
     elseif a:key ==# "w"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
@@ -3978,7 +3972,7 @@ function! <SID>keypressed(key)
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
-      if empty(<SID>get_workspace_names())
+      if empty(s:workspace_names)
         call <SID>save_first_workspace()
       else
         call <SID>kill(0, 0)
