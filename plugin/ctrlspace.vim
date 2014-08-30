@@ -1851,7 +1851,7 @@ function! <SID>display_help()
     call <SID>key_help("Q", "Quit Vim with a prompt if unsaved changes found")
     call <SID>key_help("a", "Append a selected workspace to the current one")
     call <SID>key_help("n", "Make a new workspace (closes all buffers)")
-    call <SID>key_help("c", "Make a new workspace but stay in the list")
+    call <SID>key_help("N", "Make a new workspace but stay in the list")
 
     if s:workspace_mode == 1
       call <SID>key_help("s", "Toggle the mode from Load to Save")
@@ -3011,7 +3011,7 @@ function! <SID>keypressed(key)
       call <SID>load_workspace(1, <SID>get_selected_workspace_name())
     elseif a:key ==# "n"
       call <SID>new_workspace()
-    elseif a:key ==# "c"
+    elseif a:key ==# "N"
       call <SID>new_workspace()
       call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"
@@ -3143,7 +3143,7 @@ function! <SID>keypressed(key)
       call <SID>quit_vim()
     elseif a:key ==# "n"
       call <SID>new_workspace()
-    elseif a:key ==# "c"
+    elseif a:key ==# "N"
       call <SID>new_workspace()
       call <SID>start_ctrlspace_and_feedkeys("w")
     elseif a:key ==# "s"
