@@ -833,7 +833,8 @@ function <SID>save_workspace_externally(name)
   call <SID>set_active_workspace_name(name)
 
   let s:active_workspace_digest = <SID>create_workspace_digest()
-  let s:workspace_names         = []
+
+  call <SID>set_workspace_names()
 
   silent! exe "cd " . cwd_save
   silent! exe "set ssop=" . ssop_save
@@ -1034,7 +1035,7 @@ function! <SID>rename_workspace(name)
 
   call <SID>msg("The workspace '" . a:name . "' has been renamed to '" . new_name . "'.")
 
-  let s:workspace_names = []
+  call <SID>set_workspace_names()
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -1250,7 +1251,7 @@ function! <SID>load_workspace_externally(bang, name)
 
   if empty(lines)
     call <SID>msg("Workspace '" . name . "' not found in file '" . filename . "'.")
-    let s:workspace_names = []
+    call <SID>set_workspace_names()
     silent! exe "cd " . cwd_save
     return
   endif
@@ -1675,7 +1676,7 @@ function! <SID>project_root_found()
       let project_root = <SID>get_input("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
       if !empty(project_root) && isdirectory(project_root)
         let s:files = [] " clear current files - force reload
-        let s:workspace_names = [] " force reload
+        call <SID>set_workspace_names()
         call <SID>add_project_root(project_root)
       else
         call <SID>msg("Cannot continue with the project root not set.")
