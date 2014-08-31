@@ -1014,6 +1014,7 @@ function! <SID>rename_workspace(name)
 
   let workspace_start_marker = "CS_WORKSPACE_BEGIN: " . a:name
   let workspace_end_marker   = "CS_WORKSPACE_END: " . a:name
+  let last_workspace_marker  = "CS_LAST_WORKSPACE: " . a:name
 
   if filereadable(filename)
     for line in readfile(filename)
@@ -1021,6 +1022,8 @@ function! <SID>rename_workspace(name)
         let line = "CS_WORKSPACE_BEGIN: " . new_name
       elseif line ==? workspace_end_marker
         let line = "CS_WORKSPACE_END: " . new_name
+      elseif line ==? last_workspace_marker
+        let line = "CS_LAST_WORKSPACE: " . new_name
       endif
 
       call add(lines, line)
