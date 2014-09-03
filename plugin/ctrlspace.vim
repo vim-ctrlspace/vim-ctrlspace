@@ -626,15 +626,19 @@ function! <SID>max_height()
 endfunction
 
 function! <SID>internal_file_path(name)
+  let full_part = empty(s:project_root) ? "" : (s:project_root . "/")
+
   if !empty(g:ctrlspace_project_root_markers)
     for candidate in g:ctrlspace_project_root_markers
-      if isdirectory(candidate)
-        return candidate . "/" . a:name
+      let candidate_path = full_part . candidate
+
+      if isdirectory(candidate_path)
+        return candidate_path . "/" . a:name
       endif
     endfor
   endif
 
-  return "." . a:name
+  return full_part . "." . a:name
 endfunction
 
 function! <SID>workspace_file()
@@ -1679,8 +1683,9 @@ function! <SID>project_root_found()
       let project_root = <SID>get_input("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
       if !empty(project_root) && isdirectory(project_root)
         let s:files = [] " clear current files - force reload
-        call <SID>set_workspace_names()
         call <SID>add_project_root(project_root)
+        let s:project_root = <SID>find_project_root()
+        call <SID>set_workspace_names()
       else
         call <SID>msg("Cannot continue with the project root not set.")
         return 0
