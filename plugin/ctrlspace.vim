@@ -1684,8 +1684,6 @@ function! <SID>project_root_found()
       if !empty(project_root) && isdirectory(project_root)
         let s:files = [] " clear current files - force reload
         call <SID>add_project_root(project_root)
-        let s:project_root = <SID>find_project_root()
-        call <SID>set_workspace_names()
       else
         call <SID>msg("Cannot continue with the project root not set.")
         return 0
