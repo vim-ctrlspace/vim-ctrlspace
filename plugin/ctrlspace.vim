@@ -716,11 +716,12 @@ function! <SID>save_workspace(name)
   let name = <SID>get_input("Save current workspace as: ", a:name)
 
   if empty(name)
-    return
+    return 0
   endif
 
   call <SID>kill(0, 1)
   call <SID>save_workspace_externally(name)
+  return 1
 endfunction
 
 function <SID>save_workspace_externally(name)
@@ -3139,11 +3140,13 @@ function! <SID>keypressed(key)
     if a:key ==# "Tab"
       call <SID>save_workspace(<SID>get_selected_workspace_name())
     elseif a:key ==# "CR"
-      call <SID>save_workspace(<SID>get_selected_workspace_name())
-      call <SID>ctrlspace_toggle(0)
+      if <SID>save_workspace(<SID>get_selected_workspace_name())
+        call <SID>ctrlspace_toggle(0)
+      endif
     elseif a:key ==# "Space"
-      call <SID>save_workspace(<SID>get_selected_workspace_name())
-      call <SID>start_ctrlspace_and_feedkeys("w")
+      if <SID>save_workspace(<SID>get_selected_workspace_name())
+        call <SID>start_ctrlspace_and_feedkeys("w")
+      endif
     elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     elseif a:key ==# "Q"
