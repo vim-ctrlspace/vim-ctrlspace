@@ -465,7 +465,7 @@ all available keys:
 | `x`      | Close the split window containing selected buffer                            |
 | `X`      | Leave the window containing selected buffer - close all others               |
 | `t`      | Open selected buffer in a new tab                                            |
-| `T`      | Open selected buffer in a new tab but stay in the plugin window              |
+| `T`      | Open selected buffer in a new (or next) tab but stay in the plugin window    |
 
 
 #### Searching
@@ -648,7 +648,7 @@ list with the `r` key.
 | `s`       | Open selected file in a new horizontal split                               |
 | `S`       | Open selected file in a new horizontal split but stay in the plugin window |
 | `t`       | Open selected file in a new tab                                            |
-| `T`       | Open selected file in a new tab but stay in the plugin window              |
+| `T`       | Open selected file in a new (or next) tab but stay in the plugin window    |
 
 
 ### Exiting

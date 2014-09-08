@@ -1637,7 +1637,7 @@ function! <SID>goto_bookmark(bm_nr)
   endif
 
   silent! exe "cd " . new_bookmark.directory
-  call <SID>delayed_msg("CWD changed to '" . new_bookmark.directory . "'.")
+  call <SID>delayed_msg("CWD is now: " . new_bookmark.directory)
 endfunction
 
 function! <SID>change_bookmark_name(bm_nr)
@@ -2021,7 +2021,13 @@ function! <SID>display_help()
     call <SID>key_help("s", "Open selected file in a new horizontal split")
     call <SID>key_help("S", "Open selected file in a new horizontal split but stay in the plugin window")
     call <SID>key_help("t", "Open selected file in a new tab")
-    call <SID>key_help("T", "Open selected file in a new tab but stay in the plugin window")
+
+    if s:open_in_next_tab_mode
+      call <SID>key_help("T", "Open selected file in the nex tab but stay in the plugin window")
+    else
+      call <SID>key_help("T", "Open selected file in a new tab but stay in the plugin window")
+    endif
+
     call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
@@ -2105,7 +2111,13 @@ function! <SID>display_help()
     call <SID>key_help("x", "Close the split window containing selected buffer")
     call <SID>key_help("X", "Leave the window containing selected buffer - close all others")
     call <SID>key_help("t", "Open selected buffer in a new tab")
-    call <SID>key_help("T", "Open selected buffer in a new tab but stay in the plugin window")
+
+    if s:open_in_next_tab_mode
+      call <SID>key_help("T", "Open selected buffer in the next tab but stay in the plugin window")
+    else
+      call <SID>key_help("T", "Open selected buffer in a new tab but stay in the plugin window")
+    endif
+
     call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
     call <SID>key_help("=", "Change the tab name")
@@ -2260,6 +2272,7 @@ function! <SID>ctrlspace_toggle(internal)
     let s:bookmark_mode                  = 0
     let s:last_browsed_workspace         = 0
     let s:restored_search_mode           = 0
+    let s:open_in_next_tab_mode          = 0
     let s:search_letters                 = []
     let t:ctrlspace_search_history_index = -1
     let s:search_history_index           = -1
@@ -3668,7 +3681,12 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_file("tabnew")
     elseif a:key ==# "T"
-      call <SID>load_many_files("tabnew", "tabprevious")
+      if s:open_in_next_tab_mode
+        call <SID>load_many_files("tabnext", "tabprevious")
+      else
+        call <SID>load_many_files("tabnew", "tabprevious")
+        let s:open_in_next_tab_mode = 1
+      endif
     elseif a:key ==# "C-t"
       call <SID>tab_command("T")
     elseif a:key ==# "Y"
@@ -3755,6 +3773,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:workspace_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
@@ -3764,6 +3783,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:workspace_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
         call <SID>switch_search_mode(1)
       endif
@@ -3771,11 +3791,13 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 0)
       let s:file_mode = !s:file_mode
       let s:tablist_mode = 1
+      let s:open_in_next_tab_mode = 0
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "L"
       call <SID>kill(0, 0)
       let s:file_mode = !s:file_mode
       let s:tablist_mode = 1
+      let s:open_in_next_tab_mode = 0
       call <SID>ctrlspace_toggle(1)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "b"
@@ -3785,6 +3807,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:bookmark_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "B"
@@ -3794,6 +3817,7 @@ function! <SID>keypressed(key)
         call <SID>kill(0, 0)
         let s:file_mode = !s:file_mode
         let s:bookmark_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
         call <SID>switch_search_mode(1)
       endif
@@ -3855,7 +3879,12 @@ function! <SID>keypressed(key)
     elseif a:key ==# "t"
       call <SID>load_buffer("tabnew")
     elseif a:key ==# "T"
-      call <SID>load_many_buffers("tabnew", "tabprevious")
+      if s:open_in_next_tab_mode
+        call <SID>load_many_buffers("tabnext", "tabprevious")
+      else
+        call <SID>load_many_buffers("tabnew", "tabprevious")
+        let s:open_in_next_tab_mode = 1
+      endif
     elseif a:key ==# "C-t"
       call <SID>tab_command("T")
     elseif a:key ==# "Y"
@@ -3979,6 +4008,7 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:workspace_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "W"
@@ -3987,16 +4017,19 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:workspace_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
         call <SID>switch_search_mode(1)
       endif
     elseif a:key ==# "l"
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
+      let s:open_in_next_tab_mode = 0
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "L"
       call <SID>kill(0, 0)
       let s:tablist_mode = 1
+      let s:open_in_next_tab_mode = 0
       call <SID>ctrlspace_toggle(1)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "b"
@@ -4005,6 +4038,7 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:bookmark_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
       endif
     elseif a:key ==# "B"
@@ -4013,6 +4047,7 @@ function! <SID>keypressed(key)
       else
         call <SID>kill(0, 0)
         let s:bookmark_mode = 1
+        let s:open_in_next_tab_mode = 0
         call <SID>ctrlspace_toggle(1)
         call <SID>switch_search_mode(1)
       endif
