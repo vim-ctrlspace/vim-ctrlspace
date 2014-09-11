@@ -739,6 +739,7 @@ function <SID>save_workspace_externally(name)
       let name = s:active_workspace_name
     else
       silent! exe "cd " . cwd_save
+      call <SID>handle_autochdir("stop")
       return
     endif
   else
@@ -798,7 +799,16 @@ function <SID>save_workspace_externally(name)
     call add(tab_data, data)
   endfor
 
-  mksession! CS_SESSION
+  silent! exe "mksession! CS_SESSION"
+
+  if !filereadable("CS_SESSION")
+    silent! exe "cd " . cwd_save
+    silent! exe "set ssop=" . ssop_save
+
+    call <SID>handle_autochdir("stop")
+    call <SID>msg("The workspace '" . name . "' cannot be saved at this moment.")
+    return
+  endif
 
   let tab_index = 0
 
