@@ -1593,7 +1593,7 @@ function! <SID>add_first_bookmark()
 endfunction
 
 function! <SID>normalize_directory(directory)
-  let directory = a:directory
+  let directory = resolve(expand(a:directory))
 
   while directory[strlen(directory) - 1] == "/" || directory[strlen(directory) - 1] == "\\"
     let directory = directory[0:-2]
@@ -4097,10 +4097,10 @@ function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
 endfunction
 
 function! <SID>find_active_bookmark()
-  let project_root = empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root
+  let project_root = <SID>normalize_directory(empty(s:project_root) ? fnamemodify(".", ":p:h") : s:project_root)
 
   for bookmark in s:bookmarks
-    if bookmark.directory == project_root
+    if <SID>normalize_directory(bookmark.directory) == project_root
       let s:jump_counter += 1
       let bookmark.jump_counter = s:jump_counter
       return bookmark
