@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.1.9
+" Version:      4.2.0
 "
 " The MIT License (MIT)
 
@@ -279,6 +279,7 @@ function! <SID>init_key_names()
 
   let s:key_names = split(join([lowercase_letters, uppercase_letters, control_letters, numbers, special_chars], " "), " ")
 
+  " won't work with leader mappings
   if exists("s:default_key")
     for i in range(0, len(s:key_names) - 1)
       let full_key_name = (strlen(s:key_names[i]) > 1) ? ("<" . s:key_names[i] . ">") : s:key_names[i]
@@ -2221,7 +2222,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.1.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.0 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2247,23 +2248,6 @@ function! <SID>display_help()
 
   normal! 0
   normal! gg
-
-  " handle vim segfault on calling bd/bw if there are no buffers listed
-  let any_buffer_listed = 0
-  for i in range(1, bufnr("$"))
-    if buflisted(i)
-      let any_buffer_listed = 1
-      break
-    endif
-  endfor
-
-  if !any_buffer_listed
-    au! CtrlSpaceLeave BufLeave
-    noremap <silent> <buffer> q :q<CR>
-    if g:ctrlspace_set_default_mapping
-      silent! exe 'noremap <silent><buffer>' . g:ctrlspace_default_mapping_key . ' :q<CR>'
-    endif
-  endif
 
   setlocal nomodifiable
 endfunction
@@ -4358,23 +4342,6 @@ function! <SID>display_list(displayedbufs, buflist)
     endwhile
 
     normal! 0
-
-    " handle vim segfault on calling bd/bw if there are no buffers listed
-    let any_buffer_listed = 0
-    for i in range(1, bufnr("$"))
-      if buflisted(i)
-        let any_buffer_listed = 1
-        break
-      endif
-    endfor
-
-    if !any_buffer_listed
-      au! CtrlSpaceLeave BufLeave
-      noremap <silent> <buffer> q :q<CR>
-      if g:ctrlspace_set_default_mapping
-        silent! exe 'noremap <silent><buffer>' . g:ctrlspace_default_mapping_key . ' :q<CR>'
-      endif
-    endif
 
     let s:nop_mode = 1
   endif
