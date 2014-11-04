@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.0
+" Version:      4.2.1
 "
 " The MIT License (MIT)
 
@@ -1979,6 +1979,7 @@ function! <SID>display_help()
     call <SID>key_help("Space", "Jump to selected bookmark but stay in the Bookmark List")
     call <SID>key_help("=", "Change selected bookmark name")
     call <SID>key_help("a", "Add a new bookmark")
+    call <SID>key_help("A", "Add a new bookmark for the current directory")
     call <SID>key_help("d", "Delete selected bookmark")
     call <SID>key_help("p", "Move selection bar to the previously opened bookmark")
     call <SID>key_help("P", "Move selection bar to the previously opened tab and open it")
@@ -2229,7 +2230,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.0 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.1 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3529,6 +3530,15 @@ function! <SID>keypressed(key)
     elseif a:key ==# "a"
       let bm_nr = <SID>get_selected_buffer()
       if <SID>add_new_bookmark(bm_nr)
+        call <SID>kill(0, 1)
+        call <SID>ctrlspace_toggle(0)
+        call <SID>kill(0, 0)
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>delayed_msg()
+      endif
+    elseif a:key ==# "A"
+      if <SID>add_new_bookmark(0)
         call <SID>kill(0, 1)
         call <SID>ctrlspace_toggle(0)
         call <SID>kill(0, 0)

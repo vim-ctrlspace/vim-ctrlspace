@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-09-08
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-11-04
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.1.9~
+                               Vim-CtrlSpace 4.2.1~
 
                             Vim Workspace Controller
 
@@ -1018,6 +1018,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | Key | Action                                              |
 | --- | --------------------------------------------------- |
 | `a`   | Add a new bookmark                                  |
+| `A`   | Add a new bookmark for the current directory        |
 | `d`   | Delete selected bookmark                            |
 | `=`   | Change selected bookmark name                       |
 
