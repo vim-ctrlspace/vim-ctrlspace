@@ -5016,6 +5016,14 @@ function! <SID>rename_file_or_buffer()
     return
   endif
 
+  if isdirectory(new_file)
+    if new_file !~ "/$"
+      let new_file .= "/"
+    endif
+
+    let new_file .= fnamemodify(path, ":t")
+  endif
+
   let buffer_names = {}
 
   " must be collected BEFORE actual file renaming
