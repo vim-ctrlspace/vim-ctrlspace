@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.1
+" Version:      4.2.2
 "
 " The MIT License (MIT)
 
@@ -99,6 +99,7 @@ call <SID>define_config_variable("use_mouse_and_arrows_in_term", 0)
 call <SID>define_config_variable("statusline_function", "ctrlspace#statusline()")
 call <SID>define_config_variable("cache_files", 1)
 call <SID>define_config_variable("save_workspace_on_exit", 0)
+call <SID>define_config_variable("save_workspace_on_switch", 0)
 call <SID>define_config_variable("load_last_workspace_on_start", 0)
 call <SID>define_config_variable("cache_dir", expand($HOME))
 
@@ -988,9 +989,14 @@ function <SID>proceed_if_modified()
 endfunction
 
 function! <SID>new_workspace()
+  let save_workspace_before = 0
+
   if !empty(s:active_workspace_name) && (s:active_workspace_digest !=# <SID>create_workspace_digest())
-        \ && !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
-    return
+    if g:ctrlspace_save_workspace_on_switch
+      let save_workspace_before = 1
+    elseif !<SID>confirmed("Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?")
+      return
+    endif
   endif
 
   if !<SID>proceed_if_modified()
@@ -998,6 +1004,11 @@ function! <SID>new_workspace()
   endif
 
   call <SID>kill(0, 1)
+
+  if save_workspace_before
+    call <SID>save_workspace_externally("")
+  endif
+
   call <SID>new_workspace_externally()
 endfunction
 
@@ -1061,6 +1072,8 @@ function! <SID>rename_workspace(name)
 endfunction
 
 function! <SID>load_workspace(bang, name)
+  let save_workspace_before = 0
+
   if !empty(s:active_workspace_name) && !a:bang
     let msg = ""
 
@@ -1068,7 +1081,11 @@ function! <SID>load_workspace(bang, name)
       let msg = "Reload current workspace: '" . a:name . "'?"
     elseif !empty(s:active_workspace_name)
       if s:active_workspace_digest !=# <SID>create_workspace_digest()
-        let msg = "Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?"
+        if g:ctrlspace_save_workspace_on_switch
+          let save_workspace_before = 1
+        else
+          let msg = "Current workspace ('" . s:active_workspace_name . "') not saved. Proceed anyway?"
+        end
       endif
     endif
 
@@ -1082,6 +1099,10 @@ function! <SID>load_workspace(bang, name)
   endif
 
   call <SID>kill(0, 1)
+
+  if save_workspace_before
+    call <SID>save_workspace_externally("")
+  endif
 
   call <SID>load_workspace_externally(a:bang, a:name)
 
@@ -2230,7 +2251,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.1 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.2 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 

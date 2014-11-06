@@ -1230,6 +1230,15 @@ changes.
 Default value: `0`
 
 
+## `g:ctrlspace_save_workspace_on_switch`
+
+Saves the active workspace (if present) upon switching to another workspace or
+clearing (closing) the current one. If this option is set, the plugin won't warn
+you about an unsaved workspace.
+
+Default value: `0`
+
+
 ## `g:ctrlspace_load_last_workspace_on_start`
 
 Loads the last active workspace (if found) on Vim startup. 
