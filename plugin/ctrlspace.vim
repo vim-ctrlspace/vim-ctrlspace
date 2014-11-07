@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.2
+" Version:      4.2.3
 "
 " The MIT License (MIT)
 
@@ -1826,6 +1826,7 @@ function! <SID>display_help()
       else
         let current_mode .= " ('" . join(s:search_letters, "") .  "')"
         call <SID>key_help("BS", "Remove the previously entered character")
+        call <SID>key_help("C-u", "Clear the search phrase")
       endif
     else
       call <SID>key_help("a", "Toggle between Single and All modes")
@@ -1859,6 +1860,7 @@ function! <SID>display_help()
     else
       let current_mode .= " ('" . join(s:search_letters, "") .  "')"
       call <SID>key_help("BS", "Remove the previously entered character")
+      call <SID>key_help("C-u", "Clear the search phrase")
     endif
 
     call <SID>key_help("CR", "Close the entering phase and accept the entered content")
@@ -2251,7 +2253,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.2 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.3 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2628,6 +2630,16 @@ function! <SID>remove_search_letter()
   redraws
 endfunction
 
+function! <SID>clear_search_letters()
+  if !empty(s:search_letters)
+    let s:search_letters = []
+    let s:new_search_performed = 1
+    let s:update_search_results = 1
+    call <SID>set_statusline()
+    redraws
+  endif
+endfunction
+
 function! <SID>switch_search_mode(switch)
   if (a:switch == 0) && !empty(s:search_letters)
     call <SID>append_to_search_history()
@@ -2881,7 +2893,11 @@ function! <SID>keypressed(key)
   endif
 
   if s:nop_mode
-    if !s:search_mode
+    if s:search_mode
+      if a:key ==# "C-u"
+        call <SID>clear_search_letters()
+      endif
+    else
       if a:key ==# "a"
         let s:tablist_mode   = 0
         let s:bookmark_mode  = 0
@@ -3021,6 +3037,7 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "Esc") || (a:key ==# "C-c")
       call <SID>kill(0, 1)
     endif
+
     return
   endif
 
@@ -3033,6 +3050,8 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "CR")
       call <SID>switch_search_mode(0)
+    elseif a:key ==# "C-u"
+      call <SID>clear_search_letters()
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)
     elseif (a:key ==# "Esc") || (a:key ==# "C-c")
