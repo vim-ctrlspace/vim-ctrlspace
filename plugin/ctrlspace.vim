@@ -4708,6 +4708,14 @@ function! <SID>load_buffer(...)
   endif
 endfunction
 
+function! <SID>load_file_or_buffer(file)
+  if bufexists(a:file)
+    silent! exe ":b " . bufnr(a:file)
+  else
+    exec ":e " . fnameescape(a:file)
+  endif
+endfunction
+
 function! <SID>load_many_files(...)
   let file_number = <SID>get_selected_buffer()
   let file = fnamemodify(s:files[file_number - 1], ":p")
@@ -4722,7 +4730,7 @@ function! <SID>load_many_files(...)
     exec ":" . a:1
   endif
 
-  exec ":e " . fnameescape(file)
+  call <SID>load_file_or_buffer(file)
   normal! zb
 
   if commands > 1
@@ -4745,7 +4753,7 @@ function! <SID>load_file(...)
     exec ":" . a:1
   endif
 
-  exec ":e " . fnameescape(file)
+  call <SID>load_file_or_buffer(file)
 
   if commands > 1
     silent! exe ":" . a:2
