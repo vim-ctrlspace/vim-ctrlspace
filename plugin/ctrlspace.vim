@@ -731,7 +731,7 @@ function <SID>save_workspace_externally(name)
     return
   endif
 
-  call <SID>handle_autochdir("start")
+  call <SID>handle_vim_settings("start")
 
   let cwd_save = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
@@ -741,7 +741,7 @@ function <SID>save_workspace_externally(name)
       let name = s:active_workspace_name
     else
       silent! exe "cd " . cwd_save
-      call <SID>handle_autochdir("stop")
+      call <SID>handle_vim_settings("stop")
       return
     endif
   else
@@ -807,7 +807,7 @@ function <SID>save_workspace_externally(name)
     silent! exe "cd " . cwd_save
     silent! exe "set ssop=" . ssop_save
 
-    call <SID>handle_autochdir("stop")
+    call <SID>handle_vim_settings("stop")
     call <SID>msg("The workspace '" . name . "' cannot be saved at this moment.")
     return
   endif
@@ -856,7 +856,7 @@ function <SID>save_workspace_externally(name)
   silent! exe "cd " . cwd_save
   silent! exe "set ssop=" . ssop_save
 
-  call <SID>handle_autochdir("stop")
+  call <SID>handle_vim_settings("stop")
   call <SID>msg("The workspace '" . name . "' has been saved.")
 endfunction
 
@@ -1241,7 +1241,7 @@ function! <SID>load_workspace_externally(bang, name)
     return
   endif
 
-  call <SID>handle_autochdir("start")
+  call <SID>handle_vim_settings("start")
 
   let cwd_save = fnamemodify(".", ":p:h")
   silent! exe "cd " . s:project_root
@@ -1312,7 +1312,7 @@ function! <SID>load_workspace_externally(bang, name)
 
   silent! exe "cd " . cwd_save
 
-  call <SID>handle_autochdir("stop")
+  call <SID>handle_vim_settings("stop")
 endfunction
 
 function! <SID>quit_vim()
@@ -2317,7 +2317,7 @@ function! <SID>ctrlspace_toggle(internal)
       let s:symbol_sizes.dots = strwidth(g:ctrlspace_symbols.dots)
     endif
 
-    call <SID>handle_autochdir("start")
+    call <SID>handle_vim_settings("start")
   endif
 
   " if we get called and the list is open --> close it
@@ -2751,7 +2751,7 @@ function! <SID>kill(buflistnr, final)
   endif
 
   if a:final
-    call <SID>handle_autochdir("stop")
+    call <SID>handle_vim_settings("stop")
 
     if s:restored_search_mode
       call <SID>append_to_search_history()
@@ -4204,6 +4204,16 @@ function! <SID>find_project_root()
   return project_root
 endfunction
 
+function! <SID>handle_switchbuf(switch)
+  if (a:switch == "start") && !empty(&swb)
+    let s:swb_save = &swb
+    set swb=
+  elseif (a:switch == "stop") && exists("s:swb_save")
+    let &swb = s:swb_save
+    unlet s:swb_save
+  endif
+endfunction
+
 function! <SID>handle_autochdir(switch)
   if (a:switch == "start") && &acd
     let s:acd_was_on = 1
@@ -4212,6 +4222,11 @@ function! <SID>handle_autochdir(switch)
     set acd
     unlet s:acd_was_on
   endif
+endfunction
+
+function! <SID>handle_vim_settings(switch)
+  call <SID>handle_switchbuf(a:switch)
+  call <SID>handle_autochdir(a:switch)
 endfunction
 
 function! <SID>toggle_file_mode()
