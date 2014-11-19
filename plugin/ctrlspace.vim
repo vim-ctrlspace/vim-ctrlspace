@@ -4709,7 +4709,7 @@ function! <SID>load_buffer(...)
 endfunction
 
 function! <SID>load_file_or_buffer(file)
-  if bufexists(a:file)
+  if buflisted(a:file)
     silent! exe ":b " . bufnr(a:file)
   else
     exec ":e " . fnameescape(a:file)
