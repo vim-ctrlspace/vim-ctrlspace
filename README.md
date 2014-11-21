@@ -370,19 +370,20 @@ those keys again (except `O`, `L`, `W`, or `B`) or just hit `Backspace`.
 User interface of the plugin is a window with a list. Its status line contains
 important symbolic information:
 
-| Unicode Symbol | ASCII Symbol  | List        | Description                |
-|:--------------:|:-------------:| ----------- | -------------------------- |
-| `⌗`            | `#`           | All         | Vim-CtrlSpace symbol       |
-| `?`            | `?`           | All         | Help Mode indicator        |
-| `›_‹`          | `[_]`         | All         | Search Mode indicator      |
-| `⊙`            | `TAB`         | Buffer      | Single Mode indicator      |
-| `∷`            | `ALL`         | Buffer      | All Mode indicator         |
-| `⊚`            | `FILE`        | File        | File List indicator        |
-| `⌕`            | `*`           | Buffer      | Zoom Mode indicator        |
-| `○●○`          | `-+-`         | Tab         | Tab List indicator         |
-| `⋮ → ∙`        | `LOAD`        | Workspace   | Workspace Load Mode        |
-| `∙ → ⋮`        | `SAVE`        | Workspace   | Workspace Save Mode        |
-| `♡`            | `BM`          | Bookmark    | Bookmark List indicator    |
+| Unicode | ASCII  | List        | Description             |
+|:-------:|:------:| ----------- | ----------------------- |
+| `⌗`     | `#`    | All         | Vim-CtrlSpace symbol    |
+| `?`     | `?`    | All         | Help Mode indicator     |
+| `›_‹`   | `[_]`  | All         | Search Mode indicator   |
+| `⊙`     | `TAB`  | Buffer      | Single Mode indicator   |
+| `∷`     | `ALL`  | Buffer      | All Mode indicator      |
+| `⊚`     | `FILE` | File        | File List indicator     |
+| `⁺`     | `+`    | Buffer/File | Next Tab Mode indicator |
+| `⌕`     | `*`    | Buffer      | Zoom Mode indicator     |
+| `○●○`   | `-+-`  | Tab         | Tab List indicator      |
+| `⋮ → ∙` | `LOAD` | Workspace   | Workspace Load Mode     |
+| `∙ → ⋮` | `SAVE` | Workspace   | Workspace Save Mode     |
+| `♡`     | `BM`   | Bookmark    | Bookmark List indicator |
 
 Items listed in the plugin window can have additional indicators (following the
 item text):
