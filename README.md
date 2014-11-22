@@ -378,7 +378,7 @@ important symbolic information:
 | `⊙`     | `TAB`  | Buffer      | Single Mode indicator   |
 | `∷`     | `ALL`  | Buffer      | All Mode indicator      |
 | `⊚`     | `FILE` | File        | File List indicator     |
-| `⁺`     | `+`    | Buffer/File | Next Tab Mode indicator |
+| `⁺²`    | `+2`   | Buffer/File | Next Tab Mode indicator |
 | `⌕`     | `*`    | Buffer      | Zoom Mode indicator     |
 | `○●○`   | `-+-`  | Tab         | Tab List indicator      |
 | `⋮ → ∙` | `LOAD` | Workspace   | Workspace Load Mode     |
@@ -1529,9 +1529,9 @@ Provides the custom label for GVim's tabs.
 ### `ctrlspace#tab_buffers_number(tabnr)`
 
 Returns formatted number of buffers belonging to given tab. Formats the output
-as small Unicode characters (upper indexes), or with help of a colon (depending
-on Vim-CtrlSpace unicode settings). It is helper function useful if you provide
-your custom tabline function implementation.
+as small Unicode characters (upper indexes) or regular ASCII number characters
+(depending on Vim-CtrlSpace unicode settings). It is helper function useful if
+you provide your custom tabline function implementation.
 
 
 ### `ctrlspace#tab_title(tabnr, bufnr, bufname)`

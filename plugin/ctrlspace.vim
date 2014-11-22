@@ -418,7 +418,11 @@ function! ctrlspace#statusline_tab_segment()
   let bufs_number = ctrlspace#tab_buffers_number(current_tab)
   let title       = ctrlspace#tab_title(current_tab, bufnr, bufname)
 
-  let tabinfo     = string(current_tab) . bufs_number . " "
+  if !g:ctrlspace_unicode_font && !empty(bufs_number)
+    let bufs_number = ":" . bufs_number
+  end
+
+  let tabinfo = string(current_tab) . bufs_number . " "
 
   if ctrlspace#tab_modified(current_tab)
     let tabinfo .= "+ "
@@ -461,7 +465,7 @@ function! ctrlspace#statusline_mode_segment(...)
     endif
 
     if s:next_tab_mode
-      let symbol .= g:ctrlspace_symbols.ntm
+      let symbol .= g:ctrlspace_symbols.ntm . ctrlspace#tab_buffers_number(tabpagenr() + 1)
     endif
 
     call add(statusline_elements, symbol)
@@ -504,7 +508,7 @@ function! ctrlspace#tab_buffers_number(tabnr)
         let number_to_show .= small_numbers[str2nr(number_str[i])]
       endfor
     else
-      let number_to_show = ":" . buffers_number
+      let number_to_show = string(buffers_number)
     endif
   endif
 
@@ -542,8 +546,12 @@ function! ctrlspace#guitablabel()
   let buflist     = tabpagebuflist(v:lnum)
   let bufnr       = buflist[winnr - 1]
   let bufname     = bufname(bufnr)
-  let bufs_number = ctrlspace#tab_buffers_number(v:lnum)
   let title       = ctrlspace#tab_title(v:lnum, bufnr, bufname)
+  let bufs_number = ctrlspace#tab_buffers_number(v:lnum)
+
+  if !g:ctrlspace_unicode_font && !empty(bufs_number)
+    let bufs_number = ":" . bufs_number
+  end
 
   let label = '' . v:lnum . bufs_number . ' '
 
@@ -568,6 +576,10 @@ function! ctrlspace#tabline()
     let bufname     = bufname(bufnr)
     let bufs_number = ctrlspace#tab_buffers_number(t)
     let title       = ctrlspace#tab_title(t, bufnr, bufname)
+
+    if !g:ctrlspace_unicode_font && !empty(bufs_number)
+      let bufs_number = ":" . bufs_number
+    end
 
     let tabline .= '%' . t . 'T'
     let tabline .= (t == current_tab ? '%#TabLineSel#' : '%#TabLine#')
@@ -2461,6 +2473,10 @@ function! <SID>ctrlspace_toggle(internal)
         let tab_bufname     = bufname(tab_bufnr)
         let tab_bufs_number = ctrlspace#tab_buffers_number(i)
         let tab_title       = ctrlspace#tab_title(i, tab_bufnr, tab_bufname)
+
+        if !g:ctrlspace_unicode_font && !empty(tab_bufs_number)
+          let tab_bufs_number = ":" . tab_bufs_number
+        end
 
         let bufname         = string(i) . tab_bufs_number . " " . tab_title
       elseif s:bookmark_mode
