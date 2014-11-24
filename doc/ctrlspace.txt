@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-11-22
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-11-24
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.2.4~
+                               Vim-CtrlSpace 4.2.5~
 
                             Vim Workspace Controller
 
@@ -501,6 +501,7 @@ listing of all available keys:
 | -------- | ------------------------------------------------------- |
 | `Ctrl` `+` `t` | Create a new tab and stay in the plugin window          |
 | `Y`        | Copy (yank) the current tab into a new one              |
+| `U`        | Create a new tab with all unsaved buffers               |
 | `0..9`     | Jump to the n-th tab (0 is for the 10th one)            |
 | `g`        | Jump to a next tab containing the selected buffer       |
 | `G`        | Jump to a previous tab containing the selected buffer   |
@@ -688,6 +689,7 @@ list with the `r` key.
 | -------- | ------------------------------------------------------- |
 | `Ctrl` `+` `t` | Create a new tab and stay in the plugin window          |
 | `Y`        | Copy (yank) the current tab into a new one              |
+| `U`        | Create a new tab with all unsaved buffers               |
 | `0..9`     | Jump to the n-th tab (0 is for 10th one)                |
 | `g`        | Jump to a next tab containing the selected file         |
 | `G`        | Jump to a previous tab containing the selected file     |
@@ -826,6 +828,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `t`   | Create a new tab                                    |
 | `a`   | Create a new tab                                    |
 | `y`   | Make a copy of the current tab                      |
+| `u`   | Create a new tab with all unsaved buffers           |
 
 
 3.3.5 Searching~

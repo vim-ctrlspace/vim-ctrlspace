@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.4
+" Version:      4.2.5
 "
 " The MIT License (MIT)
 
@@ -1977,6 +1977,7 @@ function! <SID>display_help()
     call <SID>key_help("t", "Create a new tab")
     call <SID>key_help("a", "Create a new tab")
     call <SID>key_help("y", "Make a copy of the current tab")
+    call <SID>key_help("u", "Create a new tab with all unsaved buffers")
     call <SID>key_help("[", "Go to the previous tab")
     call <SID>key_help("]", "Go to the next tab")
     call <SID>key_help("=", "Change the selected tab name")
@@ -2094,6 +2095,7 @@ function! <SID>display_help()
 
     call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
+    call <SID>key_help("U", "Create a new tab with all unsaved buffers")
     call <SID>key_help("=", "Change the tab name")
     call <SID>key_help("0..9", "Jump to the n-th tab (0 is for 10th one)")
     call <SID>key_help("+", "Move the current tab to the right (increase its number)")
@@ -2184,6 +2186,7 @@ function! <SID>display_help()
 
     call <SID>key_help("C-t", "Create a new tab and stay in the plugin window")
     call <SID>key_help("Y", "Copy (yank) the current tab into a new one")
+    call <SID>key_help("U", "Create a new tab with all unsaved buffers")
     call <SID>key_help("=", "Change the tab name")
     call <SID>key_help("0..9", "Jump to the n-th tab (0 is for the 10th one)")
     call <SID>key_help("+", "Move the current tab to the right (increase its number)")
@@ -2275,7 +2278,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.4 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3566,6 +3569,10 @@ function! <SID>keypressed(key)
       let s:file_mode = 1
       call <SID>ctrlspace_toggle(1)
       call <SID>switch_search_mode(1)
+    elseif a:key ==# "u"
+      if <SID>collect_unsaved_buffers()
+        call feedkeys("l")
+      endif
     endif
   elseif s:bookmark_mode
     if a:key ==# "Tab"
@@ -3902,6 +3909,8 @@ function! <SID>keypressed(key)
       call <SID>goto_buffer_or_file("next")
     elseif a:key ==# "G"
       call <SID>goto_buffer_or_file("previous")
+    elseif a:key ==# "U"
+      call <SID>collect_unsaved_buffers()
     endif
   else
     if a:key ==# "CR"
@@ -4141,6 +4150,8 @@ function! <SID>keypressed(key)
       call <SID>goto_buffer_or_file("next")
     elseif a:key ==# "G"
       call <SID>goto_buffer_or_file("previous")
+    elseif a:key ==# "U"
+      call <SID>collect_unsaved_buffers()
     endif
   endif
 endfunction
@@ -4706,6 +4717,33 @@ function! <SID>goto_buffer_or_file(direction)
   else
     call <SID>msg("Cannot find a tab containing selected " . (s:file_mode ? "file" : "buffer"))
   endif
+endfunction
+
+function! <SID>collect_unsaved_buffers()
+  let buffers = []
+
+  for i in range(1, bufnr("$"))
+    if getbufvar(i, "&modified") && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+      call add(buffers, i)
+    endif
+  endfor
+
+  if empty(buffers)
+    return 0
+  endif
+
+  call <SID>kill(0, 1)
+
+  tabnew
+
+  let t:ctrlspace_label = "Unsaved buffers"
+
+  for b in buffers
+    silent! exe ":b " . b
+  endfor
+
+  call <SID>ctrlspace_toggle(0)
+  return 1
 endfunction
 
 function! <SID>load_many_buffers(...)

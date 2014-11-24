@@ -220,7 +220,7 @@ use the plugin window very very often. It's worth to make it eye-candy.
 
 Similarly, the font glyphs used as various symbols might not look well in your
 setup. Their rendering depends on many settings, so they are configurable via
-|g:ctrlspace_symbols| variable. Don't hesitate to adjust them to meet your
+`g:ctrlspace_symbols` variable. Don't hesitate to adjust them to meet your
 needs.
 
 By default the plugin uses some default settings basing on your active
@@ -484,6 +484,7 @@ all available keys:
 |:----------:| ------------------------------------------------------- |
 | `Ctrl + t` | Create a new tab and stay in the plugin window          |
 | `Y`        | Copy (yank) the current tab into a new one              |
+| `U`        | Create a new tab with all unsaved buffers               |
 | `0..9`     | Jump to the n-th tab (0 is for the 10th one)            |
 | `g`        | Jump to a next tab containing the selected buffer       |
 | `G`        | Jump to a previous tab containing the selected buffer   |
@@ -671,6 +672,7 @@ list with the `r` key.
 |:----------:| ------------------------------------------------------- |
 | `Ctrl + t` | Create a new tab and stay in the plugin window          |
 | `Y`        | Copy (yank) the current tab into a new one              |
+| `U`        | Create a new tab with all unsaved buffers               |
 | `0..9`     | Jump to the n-th tab (0 is for 10th one)                |
 | `g`        | Jump to a next tab containing the selected file         |
 | `G`        | Jump to a previous tab containing the selected file     |
@@ -809,6 +811,7 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 | `t` | Create a new tab                                    |
 | `a` | Create a new tab                                    |
 | `y` | Make a copy of the current tab                      |
+| `u` | Create a new tab with all unsaved buffers           |
 
 
 ### Searching
