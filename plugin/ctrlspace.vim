@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.5
+" Version:      4.2.6
 "
 " The MIT License (MIT)
 
@@ -270,7 +270,7 @@ function! <SID>init_key_names()
   let control_letters = join(control_letters_list, " ")
 
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d " .
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w" .
                     \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
                     \ "Down Up Home End Left Right PageUp PageDown"
 
@@ -1848,7 +1848,9 @@ function! <SID>display_help()
       else
         let current_mode .= " ('" . join(s:search_letters, "") .  "')"
         call <SID>key_help("BS", "Remove the previously entered character")
+        call <SID>key_help("C-h", "Remove the previously entered character")
         call <SID>key_help("C-u", "Clear the search phrase")
+        call <SID>key_help("C-w", "Clear the search phrase")
       endif
     else
       call <SID>key_help("a", "Toggle between Single and All modes")
@@ -1882,7 +1884,9 @@ function! <SID>display_help()
     else
       let current_mode .= " ('" . join(s:search_letters, "") .  "')"
       call <SID>key_help("BS", "Remove the previously entered character")
+      call <SID>key_help("C-h", "Remove the previously entered character")
       call <SID>key_help("C-u", "Clear the search phrase")
+      call <SID>key_help("C-w", "Clear the search phrase")
     endif
 
     call <SID>key_help("CR", "Close the entering phase and accept the entered content")
@@ -2278,7 +2282,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.5 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2923,7 +2927,7 @@ function! <SID>keypressed(key)
 
   if s:nop_mode
     if s:search_mode
-      if a:key ==# "C-u"
+      if (a:key ==# "C-u") || (a:key ==# "C-w")
         call <SID>clear_search_letters()
       endif
     else
@@ -3053,7 +3057,7 @@ function! <SID>keypressed(key)
       endif
     endif
 
-    if a:key ==# "BS"
+    if (a:key ==# "BS") || (a:key ==# "C-h")
       if s:search_mode
         if empty(s:search_letters)
           call <SID>clear_search_mode()
@@ -3071,7 +3075,7 @@ function! <SID>keypressed(key)
   endif
 
   if s:search_mode
-    if a:key ==# "BS"
+    if (a:key ==# "BS") || (a:key ==# "C-h")
       if empty(s:search_letters)
         call <SID>clear_search_mode()
       else
@@ -3079,7 +3083,7 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "CR")
       call <SID>switch_search_mode(0)
-    elseif a:key ==# "C-u"
+    elseif (a:key ==# "C-u") || (a:key ==# "C-w")
       call <SID>clear_search_letters()
     elseif a:key =~? "^[A-Z0-9]$"
       call <SID>add_search_letter(a:key)

@@ -1057,6 +1057,8 @@ phase the following keys are available:
 |:----------------:| ------------------------------------------------------- |
 | `Return`         | Close the entering phase and accept the entered content |
 | `Backspace`      | Remove the previously entered character                 |
+| `Ctrl + h`       | Remove the previously entered character                 |
+| `Ctrl + w`       | Clear the search phrase                                 |
 | `Ctrl + u`       | Clear the search phrase                                 |
 | `/`              | Toggle the entering phase                               |
 | `a..z A..Z 0..9` | Add the character to the search phrase                  |
@@ -1089,6 +1091,8 @@ entering phase - there is a great number of resque options available.
 | Key            | Action                                                  |
 |:--------------:| ------------------------------------------------------- |
 | `Backspace`    | Remove the previously entered character or clear search |
+| `Ctrl + h`     | Remove the previously entered character or clear search |
+| `Ctrl + w`     | Clear the search phrase                                 |
 | `Ctrl + u`     | Clear the search phrase                                 |
 | `Ctrl + c`     | Close the list                                          |
 | `Esc`          | Close the list - depending on settings                  |
