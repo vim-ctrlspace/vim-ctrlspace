@@ -2421,6 +2421,8 @@ function! <SID>ctrlspace_toggle(internal)
         let action = "Collecting files..."
         call <SID>msg(action)
 
+        let unique_files = {}
+
         for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : systemlist(g:ctrlspace_glob_command)
           let fname_modified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
 
@@ -2428,9 +2430,10 @@ function! <SID>ctrlspace_toggle(internal)
             continue
           endif
 
-          call add(s:files, fname_modified)
+          let unique_files[fname_modified] = 1
         endfor
 
+        let s:files = keys(unique_files)
         call <SID>save_files_in_cache()
       else
         let action = "Loading files..."
