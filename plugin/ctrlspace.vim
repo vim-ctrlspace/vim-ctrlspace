@@ -157,6 +157,7 @@ let s:last_project_root       = ""
 let s:project_root            = ""
 let s:symbol_sizes            = {}
 let s:CS_SEP                  = "|CS_###_CS|"
+let s:plugin_buffer           = -1
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -521,7 +522,7 @@ function! ctrlspace#tab_title(tabnr, bufnr, bufname)
   let title   = gettabvar(a:tabnr, "ctrlspace_label")
 
   if empty(title)
-    if bufname ==# "__CS__"
+    if getbufvar(bufnr, "&ft") == "ctrlspace"
       if s:zoom_mode && exists("s:zoom_mode_original_buffer")
         let bufnr = s:zoom_mode_original_buffer
       else
@@ -2350,14 +2351,12 @@ function! <SID>ctrlspace_toggle(internal)
   endif
 
   " if we get called and the list is open --> close it
-  let buflistnr = bufnr("__CS__")
-
-  if bufexists(buflistnr)
-    if bufwinnr(buflistnr) != -1
-      call <SID>kill(buflistnr, 1)
+  if bufexists(s:plugin_buffer)
+    if bufwinnr(s:plugin_buffer) != -1
+      call <SID>kill(s:plugin_buffer, 1)
       return
     else
-      call <SID>kill(buflistnr, 0)
+      call <SID>kill(s:plugin_buffer, 0)
       if !a:internal
         let t:ctrlspace_start_window = winnr()
         let t:ctrlspace_winrestcmd = winrestcmd()
@@ -2387,7 +2386,7 @@ function! <SID>ctrlspace_toggle(internal)
   endif
 
   " create the buffer first & set it up
-  silent! exe "noautocmd botright pedit __CS__"
+  silent! exe "noautocmd botright pedit CtrlSpace"
   silent! exe "noautocmd wincmd P"
   silent! exe "resize" g:ctrlspace_height
 
@@ -2754,10 +2753,10 @@ function! <SID>goto_start_window()
   endif
 endfunction
 
-function! <SID>kill(buflistnr, final)
+function! <SID>kill(plugin_buffer, final)
   " added workaround for strange Vim behavior when, when kill starts with some delay
   " (in a wrong buffer). This happens in some Nop modes (in a File List view).
-  if (exists("s:killing_now") && s:killing_now) || (!a:buflistnr && bufname("%") != "__CS__")
+  if (exists("s:killing_now") && s:killing_now) || (!a:plugin_buffer && &ft != "ctrlspace")
     return
   endif
 
@@ -2780,8 +2779,8 @@ function! <SID>kill(buflistnr, final)
     set nossl
   endif
 
-  if a:buflistnr
-    silent! exe ':' . a:buflistnr . 'bwipeout'
+  if a:plugin_buffer
+    silent! exe ':' . a:plugin_buffer . 'bwipeout'
   else
     bwipeout
   endif
@@ -4305,6 +4304,9 @@ function! <SID>set_up_buffer()
   setlocal nocursorline
   setlocal nolist
   setlocal cc=
+  setlocal filetype=ctrlspace
+
+  let s:plugin_buffer = bufnr("%")
 
   if !empty(s:project_root)
     silent! exe "lcd " . s:project_root
@@ -5037,7 +5039,7 @@ function! <SID>add_tab_buffer()
   if !exists("t:ctrlspace_list[" . current . "]") &&
         \ getbufvar(current, '&modifiable') &&
         \ getbufvar(current, '&buflisted') &&
-        \ current != bufnr("__CS__")
+        \ getbufvar(current, '&ft') != "ctrlspace"
     let t:ctrlspace_list[current] = len(t:ctrlspace_list) + 1
   endif
 endfunction
@@ -5049,7 +5051,9 @@ function! <SID>add_jump()
 
   let current = bufnr('%')
 
-  if getbufvar(current, '&modifiable') && getbufvar(current, '&buflisted') && current != bufnr("__CS__")
+  if getbufvar(current, '&modifiable') &&
+        \ getbufvar(current, '&buflisted') &&
+        \ getbufvar(current, '&ft') != "ctrlspace"
     let s:jump_counter += 1
     let b:ctrlspace_jump_counter = s:jump_counter
   endif
