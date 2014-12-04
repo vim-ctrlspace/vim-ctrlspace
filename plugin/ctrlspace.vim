@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.6
+" Version:      4.2.7
 "
 " The MIT License (MIT)
 
@@ -48,6 +48,7 @@ function! <SID>define_symbols()
           \ "cs":      "⌗",
           \ "tab":     "⊙",
           \ "all":     "∷",
+          \ "vis":     "★",
           \ "file":    "⊚",
           \ "tabs":    "○",
           \ "c_tab":   "●",
@@ -69,6 +70,7 @@ function! <SID>define_symbols()
           \ "cs":      "#",
           \ "tab":     "TAB",
           \ "all":     "ALL",
+          \ "vis":     "VIS",
           \ "file":    "FILE",
           \ "tabs":    "-",
           \ "c_tab":   "+",
@@ -459,7 +461,9 @@ function! ctrlspace#statusline_mode_segment(...)
   else
     if s:file_mode
       let symbol = g:ctrlspace_symbols.file
-    elseif s:single_mode
+    elseif s:single_mode == 2
+      let symbol = g:ctrlspace_symbols.vis
+    elseif s:single_mode == 1
       let symbol = g:ctrlspace_symbols.tab
     else
       let symbol = g:ctrlspace_symbols.all
@@ -2151,7 +2155,13 @@ function! <SID>display_help()
       let current_list .= " - scoped to '" . join(s:search_letters, "") . "'"
     endif
 
-    let current_mode .= (s:single_mode ? "SINGLE MODE" : "ALL MODE")
+    if s:single_mode == 2
+      let current_mode = "VISIBLE MODE"
+    elseif s:single_mode == 1
+      let current_mode = "SINGLE MODE"
+    else
+      let current_mode = "ALL MODE"
+    endif
 
     call <SID>key_help("CR", "Open selected buffer")
 
@@ -2173,6 +2183,7 @@ function! <SID>display_help()
       call <SID>key_help("BS", "Close the list")
     endif
 
+    call <SID>key_help("*", "Toggle Visible Mode")
     call <SID>key_help("/", "Toggle Search Mode")
     call <SID>key_help("z", "Toggle Zoom Mode")
     call <SID>key_help("v", "Open selected buffer in a new vertical split")
@@ -2283,7 +2294,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.6 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.7 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2491,7 +2502,8 @@ function! <SID>ctrlspace_toggle(internal)
       elseif s:bookmark_mode
         let bufname = s:bookmarks[i - 1].name
       else
-        if s:single_mode && !exists('t:ctrlspace_list[' . i . ']')
+        if ((s:single_mode == 1) && !exists('t:ctrlspace_list[' . i . ']')) ||
+              \ ((s:single_mode == 2) && (bufwinnr(i) == -1))
           continue
         endif
 
@@ -3926,9 +3938,26 @@ function! <SID>keypressed(key)
     elseif a:key ==# "Tab"
       call <SID>goto_window()
     elseif (a:key ==# "S-Tab") || term_s_tab
+      let single_mode_save = s:single_mode
+
       if <SID>goto_window()
         call <SID>ctrlspace_toggle(0)
+
+        if single_mode_save != 1
+          call <SID>kill(0, 0)
+          let s:single_mode = single_mode_save
+          call <SID>ctrlspace_toggle(1)
+        endif
       endif
+    elseif a:key == "*"
+      if s:single_mode == 2
+        let s:single_mode = 1
+      else
+        let s:single_mode = 2
+      endif
+
+      call <SID>kill(0, 0)
+      call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "z"
       if !s:zoom_mode
         call <SID>zoom_buffer(0)

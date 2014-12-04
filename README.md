@@ -376,6 +376,7 @@ important symbolic information:
 | `?`     | `?`    | All         | Help Mode indicator     |
 | `›_‹`   | `[_]`  | All         | Search Mode indicator   |
 | `⊙`     | `TAB`  | Buffer      | Single Mode indicator   |
+| `★`     | `VIS`  | Buffer      | Visible Mode indicator  |
 | `∷`     | `ALL`  | Buffer      | All Mode indicator      |
 | `⊚`     | `FILE` | File        | File List indicator     |
 | `⁺²`    | `+2`   | Buffer/File | Next Tab Mode indicator |
@@ -556,6 +557,7 @@ all available keys:
 
 | Key  | Action                                                             |
 |:----:| ------------------------------------------------------------------ |
+| `*`  | Toggle between Single and Visible modes                            |
 | `a`  | Toggle between Single and All modes                                |
 | `A`  | Enter the Search Mode combined with the All mode                   |
 | `o`  | Toggle the File List (Open List)                                   |
@@ -575,6 +577,17 @@ all available keys:
 | `Ctrl + l` | Load the last active workspace (if present)                  |
 | `Ctrl + s` | Save the current workspace                                   |
 | `N`        | Make a new workspace (closes all buffers)                    |
+
+
+### Visible Mode
+
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `★`     | `VIS` |
+
+This mode is a variant of the Single Mode narrow to visible buffers only. It is
+useful if you want e.g. to jump between windows in the current tab with `Tab` or
+`S-Tab` keys.
 
 
 ### All Mode
@@ -1148,6 +1161,20 @@ Vim-help with `h`. The navigation works in a similar fashion like in list views.
 | `Ctrl + Space` | Close the plugin window - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found          |
 
+
+## Next Tab Mode
+
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `⁺²`    | `+2`  | 
+
+This mode occurs in File and Buffer Lists. It can be turned on with the
+uppercase `T` letter. If the mode is active, the `T` creates the new tab only
+once and opens all further files/buffers in that tab. This is opposite to `t` 
+which opens in a new tab all the time. 
+
+The mode indicator shows you the number of buffers opened in the next tab. You
+can jump to that tab anytime with `]` key.
 
 # Configuration
 

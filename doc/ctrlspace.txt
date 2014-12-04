@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-11-27
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-12-04
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.2.6~
+                               Vim-CtrlSpace 4.2.7~
 
                             Vim Workspace Controller
 
@@ -26,8 +26,9 @@ Table of Contents                                  *ctrlspace-table-of-contents*
   3. Lists                                                     |ctrlspace-lists|
     3.1 Buffer List                                      |ctrlspace-buffer-list|
       3.1.1 Single Mode                                  |ctrlspace-single-mode|
-      3.1.2 All Mode                                        |ctrlspace-all-mode|
-      3.1.3 Zoom Mode                                      |ctrlspace-zoom-mode|
+      3.1.2 Visible Mode                                |ctrlspace-visible-mode|
+      3.1.3 All Mode                                        |ctrlspace-all-mode|
+      3.1.4 Zoom Mode                                      |ctrlspace-zoom-mode|
     3.2 File List                                          |ctrlspace-file-list|
     3.3 Tab List                                            |ctrlspace-tab-list|
     3.4 Workspace List                                |ctrlspace-workspace-list|
@@ -36,6 +37,7 @@ Table of Contents                                  *ctrlspace-table-of-contents*
     4.1 Search Mode                                      |ctrlspace-search-mode|
     4.2 Nop Mode                                            |ctrlspace-nop-mode|
     4.3 Help Mode                                          |ctrlspace-help-mode|
+    4.4 Next Tab Mode                                  |ctrlspace-next-tab-mode|
   5. Configuration                                     |ctrlspace-configuration|
     5.1 g:ctrlspace_height                                  |g:ctrlspace_height|
     5.2 g:ctrlspace_max_height                          |g:ctrlspace_max_height|
@@ -396,6 +398,7 @@ important symbolic information:
 | `?`       | `?`     | All         | Help Mode indicator     |
 | `›_‹`     | `[_]`   | All         | Search Mode indicator   |
 | `⊙`       | `TAB`   | Buffer      | Single Mode indicator   |
+| `★`       | `VIS`   | Buffer      | Visible Mode indicator  |
 | `∷`       | `ALL`   | Buffer      | All Mode indicator      |
 | `⊚`       | `FILE`  | File        | File List indicator     |
 | `⁺²`      | `+2`    | Buffer/File | Next Tab Mode indicator |
@@ -573,6 +576,7 @@ listing of all available keys:
 
 | Key | Action                                                            |
 | --- | ----------------------------------------------------------------- |
+| `*`   | Toggle between Single and Visible modes                           |
 | `a`   | Toggle between Single and All modes                               |
 | `A`   | Enter the Search Mode combined with the All mode                  |
 | `o`   | Toggle the File List (Open List)                                  |
@@ -594,7 +598,18 @@ listing of all available keys:
 | `N`        | Make a new workspace (closes all buffers)                    |
 
 
-3.1.2 All Mode                                              *ctrlspace-all-mode*
+3.1.2 Visible Mode                                      *ctrlspace-visible-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `★`       | `VIS`   |
+
+This mode is a variant of the Single Mode narrow to visible buffers only. It is
+useful if you want e.g. to jump between windows in the current tab with `Tab` or
+`S-Tab` keys.
+
+
+3.1.3 All Mode                                              *ctrlspace-all-mode*
 
 | Unicode | ASCII |
 | ------- | ----- |
@@ -606,7 +621,7 @@ presented in the Single Mode are not available here. The missing ones are
 `f`, `c`, `{`, `}`, `<`, `>` - as they are connected with current tab.
 
 
-3.1.3 Zoom Mode                                            *ctrlspace-zoom-mode*
+3.1.4 Zoom Mode                                            *ctrlspace-zoom-mode*
 
 | Unicode | ASCII |
 | ------- | ----- |
@@ -1167,6 +1182,21 @@ Vim-help with `h`. The navigation works in a similar fashion like in list views.
 | `Esc`          | Close the plugin window - depending on plugin settings   |
 | `Ctrl` `+` `Space` | Close the plugin window - depending on plugin settings   |
 | `Q`            | Quit Vim with a prompt if unsaved changes found          |
+
+
+4.4 Next Tab Mode                                      *ctrlspace-next-tab-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `⁺²`      | `+2`    |
+
+This mode occurs in File and Buffer Lists. It can be turned on with the
+uppercase `T` letter. If the mode is active, the `T` creates the new tab only
+once and opens all further files/buffers in that tab. This is opposite to `t`
+which opens in a new tab all the time.
+
+The mode indicator shows you the number of buffers opened in the next tab. You
+can jump to that tab anytime with `]` key.
 
 
 ------------------------------------------------------------------------------
