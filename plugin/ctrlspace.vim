@@ -611,16 +611,13 @@ function! <SID>new_tab_label(tabnr)
   let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
   let label = <SID>get_input("Label for tab " . tabnr . ": ", gettabvar(tabnr, "ctrlspace_label"))
   if !empty(label)
-    call settabvar(tabnr, "ctrlspace_label", label)
+    call <SID>set_tab_label(tabnr, label, 0)
   endif
 endfunction
 
 function! <SID>remove_tab_label(tabnr)
-  if a:tabnr > 0
-    call settabvar(a:tabnr, "ctrlspace_label", "")
-  else
-    let t:ctrlspace_label = ""
-  endif
+  let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
+  call <SID>set_tab_label(tabnr, "", 0)
 endfunction
 
 function! ctrlspace#tab_modified(tabnr)
@@ -808,7 +805,10 @@ function <SID>save_workspace_externally(name)
   let tab_data = []
 
   for t in range(1, last_tab)
-    let data = { "label": gettabvar(t, "ctrlspace_label") }
+    let data = {
+          \ "label": gettabvar(t, "ctrlspace_label"),
+          \ "autotab": <SID>gettabvar_with_default(t, "ctrlspace_autotab", 0)
+          \ }
 
     let ctrlspace_list = ctrlspace#bufferlist(t)
 
@@ -855,6 +855,10 @@ function <SID>save_workspace_externally(name)
 
       if !empty(data.label)
         call add(lines, "let t:ctrlspace_label = '" . substitute(data.label, "'", "''","g") . "'")
+      endif
+
+      if !empty(data.autotab)
+        call add(lines, "let t:ctrlspace_autotab = " . data.autotab)
       endif
 
       if tab_index == 0
@@ -2836,7 +2840,9 @@ function! <SID>tab_command(key)
 
     silent! exe "tabnew"
 
-    let t:ctrlspace_label = empty(source_label) ? ("Copy of tab " . source_tab_nr) : (source_label . " (copy)")
+    let label = empty(source_label) ? ("Copy of tab " . source_tab_nr) : (source_label . " (copy)")
+    call <SID>set_tab_label(tabpagenr(), label, 1)
+
     let t:ctrlspace_list = source_list
 
     if exists("source_search_history")
@@ -4774,7 +4780,7 @@ function! <SID>collect_unsaved_buffers()
 
   tabnew
 
-  let t:ctrlspace_label = "Unsaved buffers"
+  call <SID>set_tab_label(tabpagenr(), "Unsaved buffers", 1)
 
   for b in buffers
     silent! exe ":b " . b
@@ -5321,12 +5327,19 @@ function! <SID>copy_file_or_buffer()
   call <SID>ctrlspace_toggle(1)
 endfunction
 
+function! <SID>set_tab_label(tabnr, label, auto)
+  call settabvar(a:tabnr, "ctrlspace_label", a:label)
+  call settabvar(a:tabnr, "ctrlspace_autotab", a:auto)
+endfunction
+
 function! <SID>close_tab()
   if tabpagenr("$") == 1
     return
   endif
 
-  if exists("t:ctrlspace_label") && !empty(t:ctrlspace_label)
+  if exists("t:ctrlspace_autotab") && (t:ctrlspace_autotab != 0)
+    " do nothing
+  elseif exists("t:ctrlspace_label") && !empty(t:ctrlspace_label)
     let buf_count = len(ctrlspace#bufferlist(tabpagenr()))
 
     if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:ctrlspace_label . "' with " . buf_count . " buffers?")
