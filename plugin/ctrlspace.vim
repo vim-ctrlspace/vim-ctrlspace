@@ -2810,6 +2810,8 @@ function! <SID>kill(plugin_buffer, final)
 
     call <SID>goto_start_window()
 
+    unlet t:ctrlspace_start_window
+
     if s:zoom_mode
       exec ":b " . s:zoom_mode_original_buffer
       unlet s:zoom_mode_original_buffer
