@@ -4213,7 +4213,9 @@ function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
   endif
 
   if empty(map)
-    call settabvar(a:tab, "ctrlspace_list", { nr: 1 })
+    let new_map = {}
+    let new_map[nr] = 1
+    call settabvar(a:tab, "ctrlspace_list", new_map)
   elseif !exists("map[nr]")
     let map[nr] = len(map) + 1
   endif
