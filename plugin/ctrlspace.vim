@@ -608,7 +608,7 @@ function! ctrlspace#tabline()
 endfunction
 
 function! ctrlspace#bufnr()
-  return bufexists(s:plugin_buffer) ? s:plugin_buffer : 0
+  return bufexists(s:plugin_buffer) ? s:plugin_buffer : -1
 endfunction
 
 function! <SID>new_tab_label(tabnr)
