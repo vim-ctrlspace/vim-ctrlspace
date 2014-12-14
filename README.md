@@ -1580,6 +1580,12 @@ and buffer name is returned instead.
 Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
 
+### `ctrlspace#bufnr()`
+
+Returns the current plugin buffer number if the plugin is visible or
+`0` otherwise.
+
+
 # Authors and License
 
 Copyright &copy; 2013-2014 [Szymon Wrozynski and

@@ -1599,6 +1599,10 @@ and buffer name is returned instead.
 
 Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
+6.2.10 *ctrlspace#bufnr* `()`
+
+Returns the current plugin buffer number if the plugin is visible or
+`0` otherwise.
 
 ------------------------------------------------------------------------------
 7. Authors and License                          *ctrlspace-authors-and-license*

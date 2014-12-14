@@ -607,6 +607,10 @@ function! ctrlspace#tabline()
   return tabline
 endfunction
 
+function! ctrlspace#bufnr()
+  return bufexists(s:plugin_buffer) ? s:plugin_buffer : 0
+endfunction
+
 function! <SID>new_tab_label(tabnr)
   let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
   let label = <SID>get_input("Label for tab " . tabnr . ": ", gettabvar(tabnr, "ctrlspace_label"))
@@ -2809,8 +2813,6 @@ function! <SID>kill(plugin_buffer, final)
     endif
 
     call <SID>goto_start_window()
-
-    unlet t:ctrlspace_start_window
 
     if s:zoom_mode
       exec ":b " . s:zoom_mode_original_buffer
