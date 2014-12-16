@@ -4988,6 +4988,10 @@ function! <SID>forget_buffers_in_all_tabs(numbers)
   for t in range(1, tabpagenr("$"))
     let ctrlspace_list = copy(gettabvar(t, "ctrlspace_list"))
 
+    if empty(ctrlspace_list)
+      continue
+    end
+
     for nr in a:numbers
       if exists("ctrlspace_list[" . nr . "]")
         call remove(ctrlspace_list, nr)
