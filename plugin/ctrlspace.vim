@@ -4990,7 +4990,7 @@ function! <SID>forget_buffers_in_all_tabs(numbers)
 
     if empty(ctrlspace_list)
       continue
-    end
+    endif
 
     for nr in a:numbers
       if exists("ctrlspace_list[" . nr . "]")
