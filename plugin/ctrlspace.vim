@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.8
+" Version:      4.2.9
 "
 " The MIT License (MIT)
 
@@ -2142,6 +2142,8 @@ function! <SID>display_help()
     call <SID>key_help("C-p", "Bring back the previous searched text")
     call <SID>key_help("C-n", "Bring the next searched text")
     call <SID>key_help("C", "Close the current tab (with forgotten buffers and nonames)")
+    call <SID>key_help("i", "Go into a directory having the selected file (changes its CWD)")
+    call <SID>key_help("I", "Go back to the previous directory (reverse to 'i')")
     call <SID>key_help("e", "Edit a new file or a sibling of selected file")
     call <SID>key_help("E", "Explore a directory of selected file")
     call <SID>key_help("R", "Remove the selected file entirely")
@@ -2261,6 +2263,8 @@ function! <SID>display_help()
 
     call <SID>key_help("F", "Delete (close) all forgotten buffers (unrelated to any tab)")
     call <SID>key_help("C", "Close the current tab, then perform F, and then D")
+    call <SID>key_help("i", "Go into a directory having the selected buffer (changes its CWD)")
+    call <SID>key_help("I", "Go back to the previous directory (reverse to 'i')")
     call <SID>key_help("e", "Edit a new file or a sibling of selected buffer")
     call <SID>key_help("E", "Explore a directory of selected buffer")
     call <SID>key_help("R", "Remove the selected buffer (file) entirely (from the disk too)")
@@ -2302,7 +2306,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.8 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3870,6 +3874,10 @@ function! <SID>keypressed(key)
       call <SID>close_tab()
     elseif a:key ==# "e"
       call <SID>edit_file()
+    elseif a:key ==# "i"
+      call <SID>goto_directory(0)
+    elseif a:key ==# "I"
+      call <SID>goto_directory(1)
     elseif a:key ==# "E"
       call <SID>explore_directory()
     elseif a:key ==# "R"
@@ -4115,6 +4123,10 @@ function! <SID>keypressed(key)
       call <SID>close_tab()
     elseif a:key ==# "e"
       call <SID>edit_file()
+    elseif a:key ==# "i"
+      call <SID>goto_directory(0)
+    elseif a:key ==# "I"
+      call <SID>goto_directory(1)
     elseif a:key ==# "E"
       call <SID>explore_directory()
     elseif a:key ==# "R"
@@ -5238,6 +5250,57 @@ function! <SID>rename_file_or_buffer()
 
   call <SID>kill(0, 1)
   call <SID>ctrlspace_toggle(1)
+endfunction
+
+function! <SID>goto_directory(back)
+  if !exists("s:goto_directory_save")
+    let s:goto_directory_save = []
+  endif
+
+  if a:back
+    if !empty(s:goto_directory_save)
+      let path = s:goto_directory_save[-1]
+    else
+      return
+    endif
+  else
+    let nr   = <SID>get_selected_buffer()
+    let path = s:file_mode ? s:files[nr - 1] : resolve(bufname(nr))
+  endif
+
+  let old_file_mode   = s:file_mode
+  let old_single_mode = s:single_mode
+
+  let directory = <SID>normalize_directory(fnamemodify(path, ":p:h"))
+
+  if !isdirectory(directory)
+    return
+  endif
+
+  call <SID>kill(0, 1)
+
+  let cwd = <SID>normalize_directory(fnamemodify(getcwd(), ":p:h"))
+
+  if cwd != directory
+    if a:back
+      call remove(s:goto_directory_save, -1)
+    else
+      call add(s:goto_directory_save, cwd)
+    endif
+
+    silent! exe "cd " . fnameescape(directory)
+  endif
+
+  call <SID>delayed_msg("CWD is now: " . directory)
+
+  call <SID>ctrlspace_toggle(0)
+  call <SID>kill(0, 0)
+
+  let s:file_mode   = old_file_mode
+  let s:single_mode = old_single_mode
+
+  call <SID>ctrlspace_toggle(1)
+  call <SID>delayed_msg()
 endfunction
 
 function! <SID>explore_directory()

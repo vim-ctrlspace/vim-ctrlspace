@@ -546,6 +546,8 @@ all available keys:
 
 | Key  | Action                                                            |
 |:----:| ----------------------------------------------------------------- |
+| `i`  | Go into a directory having the selected buffer (changes its CWD)  |
+| `I`  | Go back to the previous directory (reverse to `i`)                |
 | `e`  | Edit a new file or a sibling of selected buffer                   |
 | `E`  | Explore a directory of selected buffer                            |
 | `R`  | Remove the selected buffer (file) entirely (from the disk too)    |
@@ -730,14 +732,16 @@ list with the `r` key.
 
 ### Disk Operations
 
-| Key | Action                                        |
-|:---:| --------------------------------------------- |
-| `e` | Edit a new file or a sibling of selected file |
-| `E` | Explore a directory of selected file          |
-| `r` | Refresh the file list (force reloading)       |
-| `R` | Remove the selected file entirely             |
-| `m` | Move or rename the selected file              |
-| `y` | Copy the selected file                        |
+| Key | Action                                                         |
+|:---:| -------------------------------------------------------------- |
+| `i` | Go into a directory having the selected file (changes its CWD) |
+| `I` | Go back to the previous directory (reverse to `i`)             |
+| `e` | Edit a new file or a sibling of selected file                  |
+| `E` | Explore a directory of selected file                           |
+| `r` | Refresh the file list (force reloading)                        |
+| `R` | Remove the selected file entirely                              |
+| `m` | Move or rename the selected file                               |
+| `y` | Copy the selected file                                         |
 
 
 ### List Changing
