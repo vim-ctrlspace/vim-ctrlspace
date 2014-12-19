@@ -4933,19 +4933,22 @@ endfunction
 " deletes the selected buffer
 function! <SID>delete_buffer()
   let nr = <SID>get_selected_buffer()
+  let modified = getbufvar(str2nr(nr), '&modified')
 
-  if getbufvar(str2nr(nr), '&modified') && !<SID>confirmed("The buffer contains unsaved changes. Proceed anyway?")
+  if modified && !<SID>confirmed("The buffer contains unsaved changes. Proceed anyway?")
     return
   endif
 
   let selected_buffer_window = bufwinnr(str2nr(nr))
+  let current_line = line(".")
 
   if selected_buffer_window != -1
     call <SID>move_selection_bar("down")
     if <SID>get_selected_buffer() == nr
       call <SID>move_selection_bar("up")
       if <SID>get_selected_buffer() == nr
-        if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
+        if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)) || modified)
+          let current_line = line(".")
           call <SID>kill(0, 0)
           silent! exe selected_buffer_window . "wincmd w"
           enew
@@ -4959,6 +4962,7 @@ function! <SID>delete_buffer()
       call <SID>load_buffer_into_window(selected_buffer_window)
     endif
   else
+    let current_line = line(".")
     call <SID>kill(0, 0)
   endif
 
@@ -4974,9 +4978,11 @@ function! <SID>delete_buffer()
         silent! exe "tabn " . t
 
         let tab_window = bufwinnr(b)
-        let ctrlspace_list = gettabvar(t, "ctrlspace_list")
+        let ctrlspace_list = copy(gettabvar(t, "ctrlspace_list"))
 
         call remove(ctrlspace_list, nr)
+
+        settabvar(t, "ctrlspace_list", ctrlspace_list)
 
         silent! exe tab_window . "wincmd w"
 
@@ -4994,6 +5000,7 @@ function! <SID>delete_buffer()
 
   call <SID>forget_buffers_in_all_tabs([nr])
   call <SID>ctrlspace_toggle(1)
+  call <SID>move_selection_bar(current_line)
 endfunction
 
 function! <SID>forget_buffers_in_all_tabs(numbers)
