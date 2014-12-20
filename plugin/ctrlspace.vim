@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.9
+" Version:      4.2.10
 "
 " The MIT License (MIT)
 
@@ -1004,7 +1004,7 @@ function! <SID>get_input(msg, ...)
 endfunction
 
 function! <SID>confirmed(msg)
-  return <SID>get_input(a:msg . " (type 'yes' to confirm): ") ==? "yes"
+  return <SID>get_input(a:msg . " (yN): ") =~? "y"
 endfunction
 
 function! <SID>load_last_active_workspace()
@@ -2306,7 +2306,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.9 (c) 2013-2014 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.10 (c) 2013-2014 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
