@@ -4982,7 +4982,7 @@ function! <SID>delete_buffer()
 
         call remove(ctrlspace_list, nr)
 
-        settabvar(t, "ctrlspace_list", ctrlspace_list)
+        call settabvar(t, "ctrlspace_list", ctrlspace_list)
 
         silent! exe tab_window . "wincmd w"
 
