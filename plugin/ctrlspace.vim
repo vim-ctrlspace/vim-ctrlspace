@@ -873,7 +873,11 @@ function <SID>save_workspace_externally(name)
 
       let tab_index += 1
     else
-      call add(lines, cmd)
+      let badd_list = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
+
+      if !(exists("badd_list[1]") && !empty(badd_list[1]) && !filereadable(badd_list[1]))
+        call add(lines, cmd)
+      endif
     endif
   endfor
 
