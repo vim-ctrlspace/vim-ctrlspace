@@ -2449,7 +2449,7 @@ function! <SID>ctrlspace_toggle(internal)
 
         let unique_files = {}
 
-        for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : systemlist(g:ctrlspace_glob_command)
+        for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : split(system(g:ctrlspace_glob_command), '\n')
           let fname_modified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
 
           if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)
