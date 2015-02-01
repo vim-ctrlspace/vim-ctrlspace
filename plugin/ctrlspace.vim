@@ -275,7 +275,8 @@ function! <SID>init_key_names()
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
   let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w" .
                     \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
-                    \ "Down Up Home End Left Right PageUp PageDown"
+                    \ "Down Up Home End Left Right PageUp PageDown" .
+                    \ "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12"
 
   if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
     let special_chars .= " Esc"
