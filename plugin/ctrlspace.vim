@@ -329,38 +329,15 @@ function! ctrlspace#statusline()
 endfunction
 
 function! <SID>go_outside_list(direction)
-  let buffer_list     = []
   let tabnr           = tabpagenr()
-  let single_list     = gettabvar(tabnr, "ctrlspace_list")
-  let visible_buffers = tabpagebuflist(tabnr)
-
-  if type(single_list) != 4
-    return
-  endif
-
-  let current_buffer = bufnr("%")
-
-  for i in keys(single_list)
-    let i = str2nr(i)
-
-    let bufname = bufname(i)
-
-    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
-      let bufname = '[' . i . '*No Name]'
-    endif
-
-    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      call add(buffer_list, { "number": i, "raw": bufname })
-    endif
-  endfor
-
-  call sort(buffer_list, function("s:compare_raw_names"))
-
-  let current_index   = -1
+  let buffer_list     = ctrlspace#sortedtabbufnrs(tabnr)
   let buffer_list_len = len(buffer_list)
 
+  let current_index   = -1
+  let current_buffer = bufnr("%")
+
   for index in range(0, buffer_list_len - 1)
-    if buffer_list[index]["number"] == current_buffer
+    if buffer_list[index] == current_buffer
       let current_index = index
       break
     endif
@@ -384,7 +361,7 @@ function! <SID>go_outside_list(direction)
     endif
   endif
 
-  silent! exe ":b " . buffer_list[target_index]["number"]
+  silent! exe ":b " . buffer_list[target_index]
 endfunction
 
 function! ctrlspace#bufferlist(tabnr)
@@ -411,6 +388,41 @@ function! ctrlspace#bufferlist(tabnr)
   endfor
 
   return buffer_list
+endfunction
+
+function! ctrlspace#sortedtabbufnrs(tabnr)
+  let buffer_list     = []
+  let single_list     = gettabvar(a:tabnr, "ctrlspace_list")
+  let visible_buffers = tabpagebuflist(a:tabnr)
+  let simple_list     = []
+
+  if type(single_list) != 4
+    return
+  endif
+
+  for i in keys(single_list)
+    let i = str2nr(i)
+
+    let bufname = bufname(i)
+
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+      let bufname = '[' . i . '*No Name]'
+    endif
+
+    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+      call add(buffer_list, { "number": i, "raw": bufname })
+    endif
+  endfor
+
+  call sort(buffer_list, function("s:compare_raw_names"))
+
+  let buffer_list_len = len(buffer_list)
+  for index in range(0, buffer_list_len - 1)
+      let current_number = buffer_list[index]["number"]
+      call add(simple_list, current_number)
+  endfor
+
+  return simple_list
 endfunction
 
 function! ctrlspace#statusline_tab_segment()
