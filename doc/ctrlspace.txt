@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2014-12-20
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2015-02-24
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.2.10~
+                               Vim-CtrlSpace 4.2.11~
 
                             Vim Workspace Controller
 
@@ -15,7 +15,7 @@
 
 
 
-Copyright (c) 2013-2014 Szymon Wrozynski and Contributors
+Copyright (c) 2013-2015 Szymon Wrozynski and Contributors
 
 ==============================================================================
 
@@ -1617,7 +1617,7 @@ Returns the current plugin buffer number if the plugin is visible or
 ------------------------------------------------------------------------------
 7. Authors and License                          *ctrlspace-authors-and-license*
 
-Copyright &copy; 2013-2014 Szymon Wrozynski and
+Copyright &copy; 2013-2015 Szymon Wrozynski and
 Contributors (https://github.com/szw/vim-ctrlspace/commits/master). Licensed
 under MIT
 License (https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)

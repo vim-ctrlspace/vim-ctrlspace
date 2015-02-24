@@ -1598,7 +1598,7 @@ Returns the current plugin buffer number if the plugin is visible or
 
 # Authors and License
 
-Copyright &copy; 2013-2014 [Szymon Wrozynski and
+Copyright &copy; 2013-2015 [Szymon Wrozynski and
 Contributors](https://github.com/szw/vim-ctrlspace/commits/master). Licensed
 under [MIT
 License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
