@@ -2114,7 +2114,7 @@ function! <SID>display_help()
     call <SID>key_help("t", "Open selected file in a new tab")
 
     if s:next_tab_mode
-      call <SID>key_help("T", "Open selected file in the nex tab but stay in the plugin window")
+      call <SID>key_help("T", "Open selected file in the next tab but stay in the plugin window")
     else
       call <SID>key_help("T", "Open selected file in a new tab but stay in the plugin window")
     endif
