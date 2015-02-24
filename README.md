@@ -1466,7 +1466,7 @@ helpful.
 ## Commands
 
 At the moment Vim-CtrlSpace provides you 8 commands: `:CtrlSpace`,
-`:CtrlSpaceGoNext`, `:CtrlSpaceGoPrevious`, `:CtrlSpaceTabLabel`,
+`:CtrlSpaceGoDown`, `:CtrlSpaceGoUp`, `:CtrlSpaceTabLabel`,
 `:CtrlSpaceClearTabLabel`, `:CtrlSpaceSaveWorkspace`, `:CtrlSpaceLoadWorkspace`,
 `:CtrlSpaceNewWorkspace`.
 
@@ -1478,13 +1478,13 @@ sophisticated plugin integration. You can pass keys that will be "pressed" in th
 plugin window.
 
 
-### `:CtrlSpaceGoNext`
+### `:CtrlSpaceGoDown`
 
 Opens the next buffer from the current Single Mode buffer list (without opening
 the plugin window).
 
 
-### `:CtrlSpaceGoPrevious`
+### `:CtrlSpaceGoUp`
 
 Opens the previous buffer from the current Single Mode buffer list (without opening
 the plugin window).
@@ -1529,10 +1529,16 @@ start creating a workspace from the very beginning.
 tabline integration, or just for more advanced interactions with other plugins.
 
 
-### `ctrlspace#bufferlist(tabnr)`
+### `ctrlspace#buffers(tabnr)`
 
 Returns a dictionary of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
+
+
+### `ctrlspace#bufferlist(tabnr)`
+
+Returns a list of buffers available in the given tab. The list is sorted in the
+same order like in the CtrlSpace window.
 
 
 ### `ctrlspace#statusline_mode_segment(...)`

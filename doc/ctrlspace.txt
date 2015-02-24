@@ -1486,7 +1486,7 @@ helpful.
 6.1 Commands                                                *ctrlspace-commands*
 
 At the moment Vim-CtrlSpace provides you 8 commands: |:CtrlSpace|,
-|:CtrlSpaceGoNext|, |:CtrlSpaceGoPrevious|, |:CtrlSpaceTabLabel|,
+|:CtrlSpaceGoDown|, |:CtrlSpaceGoUp|, |:CtrlSpaceTabLabel|,
 |:CtrlSpaceClearTabLabel|, |:CtrlSpaceSaveWorkspace|, |:CtrlSpaceLoadWorkspace|,
 |:CtrlSpaceNewWorkspace|.
 
@@ -1498,13 +1498,13 @@ sophisticated plugin integration. You can pass keys that will be "pressed" in th
 plugin window.
 
 
-6.1.2 *:CtrlSpaceGoNext*
+6.1.2 *:CtrlSpaceGoDown*
 
 Opens the next buffer from the current Single Mode buffer list (without opening
 the plugin window).
 
 
-6.1.3 *:CtrlSpaceGoPrevious*
+6.1.3 *:CtrlSpaceGoUp*
 
 Opens the previous buffer from the current Single Mode buffer list (without opening
 the plugin window).
@@ -1549,42 +1549,48 @@ Vim-CtrlSpace provides you a couple of functions defined in the common
 tabline integration, or just for more advanced interactions with other plugins.
 
 
-6.2.1 *ctrlspace#bufferlist* `(tabnr)`
+6.2.1 *ctrlspace#buffers* `(tabnr)`
 
 Returns a dictionary of buffer number and name pairs for given tab. This is the
 content of the internal buffer list belonging to the specified tab.
 
 
-6.2.2 *ctrlspace#statusline_mode_segment* `(...)`
+6.2.2 *ctrlspace#bufferlist* `(tabnr)`
+
+Returns a list of buffers available in the given tab. The list is sorted in the
+same order like in the CtrlSpace window.
+
+
+6.2.3 *ctrlspace#statusline_mode_segment* `(...)`
 
 Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (e.g. in
 plugins like LightLine (https://github.com/itchyny/lightline.vim))
 
 
-6.2.3 *ctrlspace#statusline_tab_segment* `(...)`
+6.2.4 *ctrlspace#statusline_tab_segment* `(...)`
 
 Returns the info about the current tab (tab number, label, etc.). It is useful
 if you don't use the custom tabline string (or perhaps you have set
 |showtabline| to `0` (see |showtabline| for more info)).
 
 
-6.2.4 *ctrlspace#statusline* `()`
+6.2.5 *ctrlspace#statusline* `()`
 
 Provides the custom statusline string.
 
 
-6.2.5 *ctrlspace#tabline* `()`
+6.2.6 *ctrlspace#tabline* `()`
 
 Provides the custom tabline string.
 
 
-6.2.6 *ctrlspace#guitablabel* `()`
+6.2.7 *ctrlspace#guitablabel* `()`
 
 Provides the custom label for GVim's tabs.
 
 
-6.2.7 *ctrlspace#tab_buffers_number* `(tabnr)`
+6.2.8 *ctrlspace#tab_buffers_number* `(tabnr)`
 
 Returns formatted number of buffers belonging to given tab. Formats the output
 as small Unicode characters (upper indexes) or regular ASCII number characters
@@ -1592,18 +1598,18 @@ as small Unicode characters (upper indexes) or regular ASCII number characters
 you provide your custom tabline function implementation.
 
 
-6.2.8 *ctrlspace#tab_title* `(tabnr,` `bufnr,` `bufname)`
+6.2.9 *ctrlspace#tab_title* `(tabnr,` `bufnr,` `bufname)`
 
 A helper function returning a consistent title for given tab. If the tab does
 not have a custom title, then the title based on passed buffer number
 and buffer name is returned instead.
 
 
-6.2.9 *ctrlspace#tab_modified* `(tabnr)`
+6.2.10 *ctrlspace#tab_modified* `(tabnr)`
 
 Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
-6.2.10 *ctrlspace#bufnr* `()`
+6.2.11 *ctrlspace#bufnr* `()`
 
 Returns the current plugin buffer number if the plugin is visible or
 `-1` otherwise.

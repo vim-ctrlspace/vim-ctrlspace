@@ -119,8 +119,8 @@ call <SID>define_config_variable("search_timing", [50, 500])
 call <SID>define_config_variable("search_resonators", ['.', '/', '\', '_', '-'])
 
 command! -nargs=* -range CtrlSpace :call <SID>start_ctrlspace_and_feedkeys(<q-args>)
-command! -nargs=0 -range CtrlSpaceGoNext :call <SID>go_outside_list("next")
-command! -nargs=0 -range CtrlSpaceGoPrevious :call <SID>go_outside_list("previous")
+command! -nargs=0 -range CtrlSpaceGoUp :call <SID>go_outside_list("up")
+command! -nargs=0 -range CtrlSpaceGoDown :call <SID>go_outside_list("down")
 command! -nargs=0 -range CtrlSpaceTabLabel :call <SID>new_tab_label(0)
 command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
@@ -329,33 +329,8 @@ function! ctrlspace#statusline()
 endfunction
 
 function! <SID>go_outside_list(direction)
-  let buffer_list     = []
-  let tabnr           = tabpagenr()
-  let single_list     = gettabvar(tabnr, "ctrlspace_list")
-  let visible_buffers = tabpagebuflist(tabnr)
-
-  if type(single_list) != 4
-    return
-  endif
-
-  let current_buffer = bufnr("%")
-
-  for i in keys(single_list)
-    let i = str2nr(i)
-
-    let bufname = bufname(i)
-
-    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
-      let bufname = '[' . i . '*No Name]'
-    endif
-
-    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      call add(buffer_list, { "number": i, "raw": bufname })
-    endif
-  endfor
-
-  call sort(buffer_list, function("s:compare_raw_names"))
-
+  let buffer_list     = ctrlspace#bufferlist(tabpagenr())
+  let current_buffer  = bufnr("%")
   let current_index   = -1
   let buffer_list_len = len(buffer_list)
 
@@ -370,7 +345,7 @@ function! <SID>go_outside_list(direction)
     return
   endif
 
-  if a:direction == "next"
+  if a:direction == "down"
     let target_index = current_index + 1
 
     if target_index == buffer_list_len
@@ -388,6 +363,35 @@ function! <SID>go_outside_list(direction)
 endfunction
 
 function! ctrlspace#bufferlist(tabnr)
+  let buffer_list     = []
+  let tabnr           = tabpagenr()
+  let single_list     = gettabvar(tabnr, "ctrlspace_list")
+  let visible_buffers = tabpagebuflist(tabnr)
+
+  if type(single_list) != 4
+    return
+  endif
+
+  for i in keys(single_list)
+    let i = str2nr(i)
+
+    let bufname = bufname(i)
+
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+      let bufname = '[' . i . '*No Name]'
+    endif
+
+    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+      call add(buffer_list, { "number": i, "raw": bufname })
+    endif
+  endfor
+
+  call sort(buffer_list, function("s:compare_raw_names"))
+
+  return buffer_list
+endfunction
+
+function! ctrlspace#buffers(tabnr)
   let buffer_list     = {}
   let ctrlspace_list  = gettabvar(a:tabnr, "ctrlspace_list")
   let visible_buffers = tabpagebuflist(a:tabnr)
@@ -502,7 +506,7 @@ function! ctrlspace#statusline_mode_segment(...)
 endfunction
 
 function! ctrlspace#tab_buffers_number(tabnr)
-  let buffers_number = len(ctrlspace#bufferlist(a:tabnr))
+  let buffers_number = len(ctrlspace#buffers(a:tabnr))
   let number_to_show = ""
 
   if buffers_number > 1
@@ -626,7 +630,7 @@ function! <SID>remove_tab_label(tabnr)
 endfunction
 
 function! ctrlspace#tab_modified(tabnr)
-  for b in map(keys(ctrlspace#bufferlist(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(ctrlspace#buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -707,7 +711,7 @@ function! <SID>create_workspace_digest()
     let bufs     = []
     let visibles = []
 
-    let tab_buffers = ctrlspace#bufferlist(t)
+    let tab_buffers = ctrlspace#buffers(t)
 
     for bname in values(tab_buffers)
       let bufname = fnamemodify(bname, ":p")
@@ -815,7 +819,7 @@ function <SID>save_workspace_externally(name)
           \ "autotab": <SID>gettabvar_with_default(t, "ctrlspace_autotab", 0)
           \ }
 
-    let ctrlspace_list = ctrlspace#bufferlist(t)
+    let ctrlspace_list = ctrlspace#buffers(t)
 
     let bufs = []
 
@@ -4752,7 +4756,7 @@ function! <SID>goto_buffer_or_file(direction)
   endif
 
   for t in tabs_to_check
-    for [bufnr, name] in items(ctrlspace#bufferlist(t))
+    for [bufnr, name] in items(ctrlspace#buffers(t))
       if s:file_mode
         if fnamemodify(name, ":p") != file
           continue
@@ -5425,7 +5429,7 @@ function! <SID>close_tab()
   if exists("t:ctrlspace_autotab") && (t:ctrlspace_autotab != 0)
     " do nothing
   elseif exists("t:ctrlspace_label") && !empty(t:ctrlspace_label)
-    let buf_count = len(ctrlspace#bufferlist(tabpagenr()))
+    let buf_count = len(ctrlspace#buffers(tabpagenr()))
 
     if (buf_count > 1) && !<SID>confirmed("Close tab named '" . t:ctrlspace_label . "' with " . buf_count . " buffers?")
       return
