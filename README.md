@@ -1026,6 +1026,7 @@ fact, jumping with Bookmark List is just a shortcut for the `:cd` command.
 | `A` | Add a new bookmark for the current directory        |
 | `d` | Delete selected bookmark                            |
 | `=` | Change selected bookmark name                       |
+| `e` | Edit selected bookmark directory                    |
 
 
 ### Searching

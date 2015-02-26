@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.11
+" Version:      4.2.12
 "
 " The MIT License (MIT)
 
@@ -231,7 +231,7 @@ function! <SID>add_to_bookmarks(directory, name)
   call add(s:bookmarks, bookmark)
 
   let lines      = []
-  let bm_roots  = {}
+  let bm_roots   = {}
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
 
   if filereadable(cache_file)
@@ -1732,6 +1732,39 @@ function! <SID>change_bookmark_name(bm_nr)
   endif
 endfunction
 
+function! <SID>change_bookmark_directory(bm_nr)
+  let bookmark  = s:bookmarks[a:bm_nr - 1]
+  let current   = bookmark.directory
+  let directory = <SID>get_input("Edit directory for bookmark '" . bookmark.name . "': ", current, "dir")
+
+  if empty(directory)
+    return 0
+  endif
+
+  let directory = <SID>normalize_directory(directory)
+
+  if !isdirectory(directory)
+    call <SID>msg("Directory incorrect.")
+    return 0
+  endif
+
+  for bookmark in s:bookmarks
+    if bookmark.directory == directory
+      call <SID>msg("This directory has been already bookmarked under name '" . bookmark.name . "'.")
+      return 0
+    endif
+  endfor
+
+  call remove(s:bookmarks, a:bm_nr - 1)
+
+  let name = bookmark.name
+
+  call <SID>add_to_bookmarks(directory, name)
+  call <SID>msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
+
+  return 1
+endfunction
+
 function! <SID>remove_bookmark(bm_nr)
   let name = s:bookmarks[a:bm_nr - 1].name
 
@@ -1757,6 +1790,7 @@ function! <SID>remove_bookmark(bm_nr)
   endfor
 
   call writefile(lines, cache_file)
+
   call <SID>delayed_msg("Bookmark '" . name . "' has been deleted.")
 endfunction
 
@@ -2050,6 +2084,7 @@ function! <SID>display_help()
     call <SID>key_help("CR", "Jump to selected bookmark and enter the Buffer List")
     call <SID>key_help("Space", "Jump to selected bookmark but stay in the Bookmark List")
     call <SID>key_help("=", "Change selected bookmark name")
+    call <SID>key_help("e", "Edit selected bookmark directory")
     call <SID>key_help("a", "Add a new bookmark")
     call <SID>key_help("A", "Add a new bookmark for the current directory")
     call <SID>key_help("d", "Delete selected bookmark")
@@ -2315,7 +2350,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.11 (c) 2013-2015 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.12 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -3641,6 +3676,9 @@ function! <SID>keypressed(key)
       call <SID>change_bookmark_name(bm_nr)
       call <SID>kill(0, 0)
       call <SID>ctrlspace_toggle(1)
+    elseif a:key ==# "e"
+      let bm_nr = <SID>get_selected_buffer()
+      call <SID>change_bookmark_directory(bm_nr)
     elseif a:key ==# "a"
       let bm_nr = <SID>get_selected_buffer()
       if <SID>add_new_bookmark(bm_nr)
