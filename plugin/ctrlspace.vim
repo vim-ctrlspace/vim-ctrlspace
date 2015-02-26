@@ -1735,7 +1735,8 @@ endfunction
 function! <SID>change_bookmark_directory(bm_nr)
   let bookmark  = s:bookmarks[a:bm_nr - 1]
   let current   = bookmark.directory
-  let directory = <SID>get_input("Edit directory for bookmark '" . bookmark.name . "': ", current, "dir")
+  let name      = bookmark.name
+  let directory = <SID>get_input("Edit directory for bookmark '" . name . "': ", current, "dir")
 
   if empty(directory)
     return 0
@@ -1750,17 +1751,15 @@ function! <SID>change_bookmark_directory(bm_nr)
 
   for bookmark in s:bookmarks
     if bookmark.directory == directory
-      call <SID>msg("This directory has been already bookmarked under name '" . bookmark.name . "'.")
+      call <SID>msg("This directory has been already bookmarked under name '" . name . "'.")
       return 0
     endif
   endfor
 
   call remove(s:bookmarks, a:bm_nr - 1)
 
-  let name = bookmark.name
-
   call <SID>add_to_bookmarks(directory, name)
-  call <SID>msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
+  call <SID>delayed_msg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
 
   return 1
 endfunction
@@ -3672,13 +3671,24 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
       call <SID>delayed_msg()
     elseif a:key ==# "="
+      let current_line = line(".")
       let bm_nr = <SID>get_selected_buffer()
       call <SID>change_bookmark_name(bm_nr)
       call <SID>kill(0, 0)
       call <SID>ctrlspace_toggle(1)
+      call <SID>move_selection_bar(current_line)
     elseif a:key ==# "e"
       let bm_nr = <SID>get_selected_buffer()
-      call <SID>change_bookmark_directory(bm_nr)
+      let current_line = line(".")
+      if <SID>change_bookmark_directory(bm_nr)
+        call <SID>kill(0, 1)
+        call <SID>ctrlspace_toggle(0)
+        call <SID>kill(0, 0)
+        let s:bookmark_mode = 1
+        call <SID>ctrlspace_toggle(1)
+        call <SID>move_selection_bar(current_line)
+        call <SID>delayed_msg()
+      endif
     elseif a:key ==# "a"
       let bm_nr = <SID>get_selected_buffer()
       if <SID>add_new_bookmark(bm_nr)
