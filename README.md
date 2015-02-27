@@ -475,6 +475,7 @@ all available keys:
 | Key        | Action                                              |
 |:----------:| --------------------------------------------------- |
 | `/`        | Toggle Search Mode                                  |
+| `\`        | Cyclic search through parent directories            |
 | `Ctrl + p` | Bring back the previous searched text               |
 | `Ctrl + n` | Bring the next searched text                        |
 
@@ -704,6 +705,7 @@ list with the `r` key.
 | Key        | Action                                              |
 |:----------:| --------------------------------------------------- |
 | `/`        | Enter the Search Mode                               |
+| `\`        | Cyclic search through parent directories            |
 | `O`        | Enter the Search Mode                               |
 | `Ctrl + p` | Bring back the previous searched text               |
 | `Ctrl + n` | Bring the next searched text                        |

@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2015-02-26
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2015-02-27
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.2.12~
+                               Vim-CtrlSpace 4.2.13~
 
                             Vim Workspace Controller
 
@@ -494,6 +494,7 @@ listing of all available keys:
 | Key       | Action                                              |
 | --------- | --------------------------------------------------- |
 | `/`         | Enter the Search Mode                               |
+| `\`         | Cyclic search through parent directories            |
 | `Ctrl` `+` `p`  | Bring back the previous searched text               |
 | `Ctrl` `+` `n`  | Bring the next searched text                        |
 
@@ -723,6 +724,7 @@ list with the `r` key.
 | Key      | Action                                              |
 | -------- | --------------------------------------------------- |
 | `/`        | Enter the Search Mode                               |
+| `\`        | Cyclic search through parent directories            |
 | `O`        | Enter the Search Mode                               |
 | `Ctrl` `+` `p` | Bring back the previous searched text               |
 | `Ctrl` `+` `n` | Bring the next searched text                        |

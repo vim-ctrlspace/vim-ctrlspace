@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.12
+" Version:      4.2.13
 "
 " The MIT License (MIT)
 
@@ -160,6 +160,7 @@ let s:project_root            = ""
 let s:symbol_sizes            = {}
 let s:CS_SEP                  = "|CS_###_CS|"
 let s:plugin_buffer           = -1
+let s:previously_pressed_key  = ""
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -273,10 +274,10 @@ function! <SID>init_key_names()
   let control_letters = join(control_letters_list, " ")
 
   let numbers       = "1 2 3 4 5 6 7 8 9 0"
-  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w" .
+  let special_chars = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " .
                     \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
-                    \ "Down Up Home End Left Right PageUp PageDown" .
-                    \ "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12"
+                    \ "Down Up Home End Left Right PageUp PageDown " .
+                    \ 'F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 "'
 
   if !g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running")
     let special_chars .= " Esc"
@@ -2139,6 +2140,7 @@ function! <SID>display_help()
     endif
 
     call <SID>key_help("/", "Enter the Search Mode")
+    call <SID>key_help('\', "Cyclic search through parent directories")
     call <SID>key_help("O", "Enter the Search Mode")
 
     call <SID>key_help("v", "Open selected file in a new vertical split")
@@ -2238,6 +2240,7 @@ function! <SID>display_help()
 
     call <SID>key_help("*", "Toggle Visible Mode")
     call <SID>key_help("/", "Toggle Search Mode")
+    call <SID>key_help('\', "Cyclic search through parent directories")
     call <SID>key_help("z", "Toggle Zoom Mode")
     call <SID>key_help("v", "Open selected buffer in a new vertical split")
     call <SID>key_help("V", "Open selected buffer in a new vertical split but stay in the plugin window")
@@ -2349,7 +2352,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.12 (c) 2013-2015 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.13 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
@@ -2399,6 +2402,7 @@ function! <SID>ctrlspace_toggle(internal)
     let s:search_history_index           = -1
     let s:project_root                   = <SID>find_project_root()
     let s:active_bookmark                = <SID>find_active_bookmark()
+    let s:search_dir_cycle               = {}
 
     if s:last_project_root != s:project_root
       let s:files             = []
@@ -2703,6 +2707,7 @@ function! <SID>clear_search_mode()
   let s:search_mode                    = 0
   let t:ctrlspace_search_history_index = -1
   let s:search_history_index           = -1
+  let s:search_dir_cycle               = {}
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -2751,6 +2756,48 @@ function! <SID>switch_search_mode(switch)
   let s:update_search_results = 1
 
   call <SID>update_search_results()
+endfunction
+
+function! <SID>insert_search_text(text)
+  let letters = []
+
+  for i in range(0, strlen(a:text) - 1)
+    if a:text[i] =~? "^[A-Z0-9]$"
+      call add(letters, a:text[i])
+    endif
+  endfor
+
+  if !empty(letters)
+    let s:search_letters = copy(letters)
+    call <SID>append_to_search_history()
+    let s:update_search_results = 1
+    call <SID>update_search_results()
+    return 1
+  endif
+
+  return 0
+endfunction
+
+function! <SID>get_selected_directory()
+  let bufentry = b:buflist[line(".") - 1]
+  return fnamemodify(bufentry.raw, ":h")
+endfunction
+
+function! <SID>search_parent_directory_cycle(key)
+  if !exists("s:search_dir_cycle.last") || (s:previously_pressed_key !=# a:key)
+    let candidate = <SID>get_selected_directory()
+
+    let s:search_dir_cycle.last  = candidate
+    let s:search_dir_cycle.first = candidate
+  else
+    let s:search_dir_cycle.last = fnamemodify(s:search_dir_cycle.last, ":h")
+  endif
+
+  if !<SID>insert_search_text(s:search_dir_cycle.last)
+    if <SID>insert_search_text(s:search_dir_cycle.first)
+      let s:search_dir_cycle.last = s:search_dir_cycle.first
+    endif
+  endif
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)
@@ -2948,6 +2995,7 @@ function! <SID>keypressed(key)
     call <SID>kill(0, 0)
     let s:help_mode = !s:help_mode
     call <SID>ctrlspace_toggle(1)
+    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -2993,6 +3041,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "C-u"
       call <SID>move_cursor("half_pgup")
     endif
+    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -3142,6 +3191,7 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     endif
 
+    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -3629,6 +3679,7 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "o"
       if !<SID>project_root_found()
+        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3637,6 +3688,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
       if !<SID>project_root_found()
+        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3814,6 +3866,7 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "o"
       if !<SID>project_root_found()
+        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3822,6 +3875,7 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
       if !<SID>project_root_found()
+        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3843,6 +3897,8 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "O")
       call <SID>switch_search_mode(1)
+    elseif a:key ==# "BSlash"
+      call <SID>search_parent_directory_cycle(a:key)
     elseif a:key ==# "v"
       call <SID>load_file("vs")
     elseif a:key ==# "V"
@@ -4050,6 +4106,8 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
+    elseif a:key ==# "BSlash"
+      call <SID>search_parent_directory_cycle(a:key)
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
     elseif a:key ==# "V"
@@ -4268,6 +4326,8 @@ function! <SID>keypressed(key)
       call <SID>collect_unsaved_buffers()
     endif
   endif
+
+  let s:previously_pressed_key = a:key
 endfunction
 
 function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
@@ -4465,6 +4525,11 @@ function! <SID>set_up_buffer()
 
   for key_name in s:key_names
     let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
+
+    if key_name == '"'
+      let key_name = '\' . key_name
+    endif
+
     silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_name . "\")<CR>"
   endfor
 endfunction
