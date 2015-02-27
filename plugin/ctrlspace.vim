@@ -160,7 +160,6 @@ let s:project_root            = ""
 let s:symbol_sizes            = {}
 let s:CS_SEP                  = "|CS_###_CS|"
 let s:plugin_buffer           = -1
-let s:previously_pressed_key  = ""
 
 function! <SID>init_project_roots_and_bookmarks()
   let cache_file      = g:ctrlspace_cache_dir . "/.cs_cache"
@@ -2402,7 +2401,8 @@ function! <SID>ctrlspace_toggle(internal)
     let s:search_history_index           = -1
     let s:project_root                   = <SID>find_project_root()
     let s:active_bookmark                = <SID>find_active_bookmark()
-    let s:search_dir_cycle               = {}
+
+    unlet! s:last_searched_directory
 
     if s:last_project_root != s:project_root
       let s:files             = []
@@ -2707,7 +2707,8 @@ function! <SID>clear_search_mode()
   let s:search_mode                    = 0
   let t:ctrlspace_search_history_index = -1
   let s:search_history_index           = -1
-  let s:search_dir_cycle               = {}
+
+  unlet! s:last_searched_directory
 
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
@@ -2783,21 +2784,16 @@ function! <SID>get_selected_directory()
   return fnamemodify(bufentry.raw, ":h")
 endfunction
 
-function! <SID>search_parent_directory_cycle(key)
-  if !exists("s:search_dir_cycle.last") || (s:previously_pressed_key !=# a:key)
-    let candidate = <SID>get_selected_directory()
+function! <SID>search_parent_directory_cycle()
+  let candidate = <SID>get_selected_directory()
 
-    let s:search_dir_cycle.last  = candidate
-    let s:search_dir_cycle.first = candidate
+  if !exists("s:last_searched_directory") || s:last_searched_directory != candidate
+    let s:last_searched_directory = candidate
   else
-    let s:search_dir_cycle.last = fnamemodify(s:search_dir_cycle.last, ":h")
+    let s:last_searched_directory = fnamemodify(s:last_searched_directory, ":h")
   endif
 
-  if !<SID>insert_search_text(s:search_dir_cycle.last)
-    if <SID>insert_search_text(s:search_dir_cycle.first)
-      let s:search_dir_cycle.last = s:search_dir_cycle.first
-    endif
-  endif
+  call <SID>insert_search_text(s:last_searched_directory)
 endfunction
 
 function! <SID>decorate_with_indicators(name, bufnum)
@@ -2995,7 +2991,6 @@ function! <SID>keypressed(key)
     call <SID>kill(0, 0)
     let s:help_mode = !s:help_mode
     call <SID>ctrlspace_toggle(1)
-    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -3041,7 +3036,6 @@ function! <SID>keypressed(key)
     elseif a:key ==# "C-u"
       call <SID>move_cursor("half_pgup")
     endif
-    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -3191,7 +3185,6 @@ function! <SID>keypressed(key)
       call <SID>kill(0, 1)
     endif
 
-    let s:previously_pressed_key = a:key
     return
   endif
 
@@ -3679,7 +3672,6 @@ function! <SID>keypressed(key)
       endif
     elseif a:key ==# "o"
       if !<SID>project_root_found()
-        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3688,7 +3680,6 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
       if !<SID>project_root_found()
-        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3866,7 +3857,6 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "o"
       if !<SID>project_root_found()
-        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3875,7 +3865,6 @@ function! <SID>keypressed(key)
       call <SID>ctrlspace_toggle(1)
     elseif a:key ==# "O"
       if !<SID>project_root_found()
-        let s:previously_pressed_key = a:key
         return
       endif
       call <SID>kill(0, 0)
@@ -3898,7 +3887,7 @@ function! <SID>keypressed(key)
     elseif (a:key ==# "/") || (a:key ==# "O")
       call <SID>switch_search_mode(1)
     elseif a:key ==# "BSlash"
-      call <SID>search_parent_directory_cycle(a:key)
+      call <SID>search_parent_directory_cycle()
     elseif a:key ==# "v"
       call <SID>load_file("vs")
     elseif a:key ==# "V"
@@ -4107,7 +4096,7 @@ function! <SID>keypressed(key)
     elseif a:key ==# "/"
       call <SID>switch_search_mode(1)
     elseif a:key ==# "BSlash"
-      call <SID>search_parent_directory_cycle(a:key)
+      call <SID>search_parent_directory_cycle()
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
     elseif a:key ==# "V"
@@ -4326,8 +4315,6 @@ function! <SID>keypressed(key)
       call <SID>collect_unsaved_buffers()
     endif
   endif
-
-  let s:previously_pressed_key = a:key
 endfunction
 
 function! <SID>copy_or_move_selected_buffer_into_tab(tab, move)
