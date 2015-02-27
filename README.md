@@ -472,12 +472,13 @@ all available keys:
 
 #### Searching
 
-| Key        | Action                                              |
-|:----------:| --------------------------------------------------- |
-| `/`        | Toggle Search Mode                                  |
-| `\`        | Cyclic search through parent directories            |
-| `Ctrl + p` | Bring back the previous searched text               |
-| `Ctrl + n` | Bring the next searched text                        |
+| Key        | Action                                                |
+|:----------:| ----------------------------------------------------- |
+| `/`        | Toggle Search Mode                                    |
+| `\`        | Cyclic search through parent directories              |
+| `|`        | Cyclic search through parent directories in File Mode |
+| `Ctrl + p` | Bring back the previous searched text                 |
+| `Ctrl + n` | Bring the next searched text                          |
 
 
 #### Tabs Operations

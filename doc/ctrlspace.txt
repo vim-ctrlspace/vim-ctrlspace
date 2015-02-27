@@ -491,12 +491,13 @@ listing of all available keys:
 
 3.1.1.3 Searching~
 
-| Key       | Action                                              |
-| --------- | --------------------------------------------------- |
-| `/`         | Enter the Search Mode                               |
-| `\`         | Cyclic search through parent directories            |
-| `Ctrl` `+` `p`  | Bring back the previous searched text               |
-| `Ctrl` `+` `n`  | Bring the next searched text                        |
+| Key       | Action                                                |
+| --------- | ----------------------------------------------------- |
+| `/`         | Enter the Search Mode                                 |
+| `\`         | Cyclic search through parent directories              |
+| `|`         | Cyclic search through parent directories in File Mode |
+| `Ctrl` `+` `p`  | Bring back the previous searched text                 |
+| `Ctrl` `+` `n`  | Bring the next searched text                          |
 
 
 3.1.1.4 Tabs Operations~

@@ -2240,6 +2240,7 @@ function! <SID>display_help()
     call <SID>key_help("*", "Toggle Visible Mode")
     call <SID>key_help("/", "Toggle Search Mode")
     call <SID>key_help('\', "Cyclic search through parent directories")
+    call <SID>key_help('|', "Cyclic search through parent directories in File Mode")
     call <SID>key_help("z", "Toggle Zoom Mode")
     call <SID>key_help("v", "Open selected buffer in a new vertical split")
     call <SID>key_help("V", "Open selected buffer in a new vertical split but stay in the plugin window")
@@ -4097,6 +4098,9 @@ function! <SID>keypressed(key)
       call <SID>switch_search_mode(1)
     elseif a:key ==# "BSlash"
       call <SID>search_parent_directory_cycle()
+    elseif a:key ==# "Bar"
+      call <SID>search_parent_directory_cycle()
+      call <SID>toggle_file_mode()
     elseif a:key ==# "v"
       call <SID>load_buffer("vs")
     elseif a:key ==# "V"
