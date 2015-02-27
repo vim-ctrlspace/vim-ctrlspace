@@ -2708,9 +2708,7 @@ function! <SID>clear_search_mode()
   let s:search_mode                    = 0
   let t:ctrlspace_search_history_index = -1
   let s:search_history_index           = -1
-
   unlet! s:last_searched_directory
-
   call <SID>kill(0, 0)
   call <SID>ctrlspace_toggle(1)
 endfunction
@@ -2727,6 +2725,7 @@ function! <SID>add_search_letter(letter)
   call add(s:search_letters, a:letter)
   let s:new_search_performed = 1
   let s:update_search_results = 1
+  unlet! s:last_searched_directory
   call <SID>set_statusline()
   redraws
 endfunction
@@ -2735,6 +2734,7 @@ function! <SID>remove_search_letter()
   call remove(s:search_letters, -1)
   let s:new_search_performed = 1
   let s:update_search_results = 1
+  unlet! s:last_searched_directory
   call <SID>set_statusline()
   redraws
 endfunction
@@ -2744,6 +2744,7 @@ function! <SID>clear_search_letters()
     let s:search_letters = []
     let s:new_search_performed = 1
     let s:update_search_results = 1
+    unlet! s:last_searched_directory
     call <SID>set_statusline()
     redraws
   endif
