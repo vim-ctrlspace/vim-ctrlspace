@@ -2771,9 +2771,11 @@ function! <SID>insert_search_text(text)
   endfor
 
   if !empty(letters)
-    let s:search_letters = copy(letters)
+    let s:search_letters = letters
     call <SID>append_to_search_history()
-    let s:update_search_results = 1
+    let t:ctrlspace_search_history_index = 0
+    let s:search_history_index           = 0
+    let s:update_search_results          = 1
     call <SID>update_search_results()
     return 1
   endif
