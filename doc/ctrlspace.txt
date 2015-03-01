@@ -1,4 +1,4 @@
-*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2015-02-27
+*ctrlspace.txt*                 For Vim version 7.3+      Last change: 2015-03-01
 *ctrlspace*
 
 
@@ -6,7 +6,7 @@
 
 
 
-                               Vim-CtrlSpace 4.2.13~
+                               Vim-CtrlSpace 4.2.14~
 
                             Vim Workspace Controller
 
@@ -1492,7 +1492,8 @@ helpful.
 At the moment Vim-CtrlSpace provides you 8 commands: |:CtrlSpace|,
 |:CtrlSpaceGoDown|, |:CtrlSpaceGoUp|, |:CtrlSpaceTabLabel|,
 |:CtrlSpaceClearTabLabel|, |:CtrlSpaceSaveWorkspace|, |:CtrlSpaceLoadWorkspace|,
-|:CtrlSpaceNewWorkspace|.
+|:CtrlSpaceNewWorkspace|, |:CtrlSpaceAddProjectRoot|,
+|:CtrlSpaceRemoveProjectRoot|.
 
 
 6.1.1 *:CtrlSpace* `[keys]`
@@ -1544,6 +1545,20 @@ present).
 Closes all opened buffers and eventually opened workspace and leaves only one
 tab and one buffer, as in a fresh Vim instance. This is useful if you want to
 start creating a workspace from the very beginning.
+
+
+6.1.9 *:CtrlSpaceAddProjectRoot* [directory]
+
+Add a passed directory as a permanent project root. It's useful when e.g.
+project root markers are missing or available on a too higher level of
+a hierarchy. If no directory has been passed the current working one is taken
+instead.
+
+
+6.1.10 *:CtrlSpaceRemoveProjectRoot* [directory]
+
+Removes a passed directory from permanent project root collection. If no
+directory has been passed the current working one is taken instead.
 
 
 6.2 Functions                                              *ctrlspace-functions*

@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
 " Maintainer:   Szymon Wrozynski
-" Version:      4.2.13
+" Version:      4.2.14
 "
 " The MIT License (MIT)
 
@@ -126,6 +126,8 @@ command! -nargs=0 -range CtrlSpaceClearTabLabel :call <SID>remove_tab_label(0)
 command! -nargs=* -range CtrlSpaceSaveWorkspace :call <SID>save_workspace_externally(<q-args>)
 command! -nargs=0 -range CtrlSpaceNewWorkspace :call <SID>new_workspace_externally()
 command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call <SID>load_workspace_externally(<bang>0, <q-args>)
+command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call <SID>add_project_root_ui(<q-args>)
+command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call <SID>remove_project_root_ui(<q-args>)
 
 hi def link CtrlSpaceNormal   Normal
 hi def link CtrlSpaceSelected Visual
@@ -184,12 +186,72 @@ endfunction
 
 call <SID>init_project_roots_and_bookmarks()
 
+function! <SID>add_project_root_ui(directory)
+  let directory = <SID>normalize_directory(empty(a:directory) ? getcwd() : a:directory)
+
+  if !isdirectory(directory)
+    call <SID>msg("Invalid directory: '" . directory . "'")
+    return
+  endif
+
+  let roots = copy(s:project_roots)
+
+  for bookmark in s:bookmarks
+    let roots[bookmark.directory] = 1
+  endfor
+
+  if exists("roots[directory]")
+    call <SID>msg("Directory is already a permanent project root!")
+    return
+  endif
+
+  call <SID>add_project_root(directory)
+  call <SID>msg("Directory '" . directory . "' has been added as a permanent project root.")
+endfunction
+
+function! <SID>remove_project_root_ui(directory)
+  let directory = <SID>normalize_directory(empty(a:directory) ? getcwd() : a:directory)
+
+  if !exists("s:project_roots[directory]")
+    call <SID>msg("Directory '" . directory . "' is not a permanent project root!" )
+    return
+  endif
+
+  call <SID>remove_project_root(directory)
+  call <SID>msg("The project root '" . directory . "' has been removed.")
+endfunction
+
+function! <SID>remove_project_root(directory)
+  let directory = <SID>normalize_directory(a:directory)
+
+  if exists("s:project_roots[directory]")
+    unlet s:project_roots[directory]
+  endif
+
+  let lines      = []
+  let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
+
+  if filereadable(cache_file)
+    for old_line in readfile(cache_file)
+      if old_line !~# "CS_PROJECT_ROOT: "
+        call add(lines, old_line)
+      endif
+    endfor
+  endif
+
+  for root in keys(s:project_roots)
+    call add(lines, "CS_PROJECT_ROOT: " . root)
+  endfor
+
+  call writefile(lines, cache_file)
+endfunction
+
 function! <SID>add_project_root(directory)
   let directory = <SID>normalize_directory(a:directory)
   let s:project_roots[directory] = 1
 
   let lines      = []
-  let bm_roots  = {}
+  let bm_roots   = {}
   let cache_file = g:ctrlspace_cache_dir . "/.cs_cache"
 
   for bookmark in s:bookmarks
@@ -2352,7 +2414,7 @@ function! <SID>display_help()
   endfor
 
   call <SID>puts("")
-  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.13 (c) 2013-2015 Szymon Wrozynski and Contributors")
+  call <SID>puts(g:ctrlspace_symbols.cs . " CtrlSpace 4.2.14 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
   setlocal modifiable
 
