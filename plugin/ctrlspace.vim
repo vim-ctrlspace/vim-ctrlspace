@@ -5531,13 +5531,14 @@ function! <SID>edit_file()
     return
   endif
 
+  let new_file = expand(new_file)
+
   if isdirectory(new_file)
     call <SID>kill(0, 1)
     enew
     return
   endif
 
-  let new_file = expand(new_file)
   if !<SID>ensure_path(new_file)
     return
   endif
