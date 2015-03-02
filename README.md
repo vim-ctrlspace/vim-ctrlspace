@@ -707,6 +707,7 @@ list with the `r` key.
 |:----------:| --------------------------------------------------- |
 | `/`        | Enter the Search Mode                               |
 | `\`        | Cyclic search through parent directories            |
+| `|`        | The same as `\`                                     |
 | `O`        | Enter the Search Mode                               |
 | `Ctrl + p` | Bring back the previous searched text               |
 | `Ctrl + n` | Bring the next searched text                        |

@@ -2202,6 +2202,7 @@ function! <SID>display_help()
 
     call <SID>key_help("/", "Enter the Search Mode")
     call <SID>key_help('\', "Cyclic search through parent directories")
+    call <SID>key_help('|', "The same as \\")
     call <SID>key_help("O", "Enter the Search Mode")
 
     call <SID>key_help("v", "Open selected file in a new vertical split")
@@ -3952,7 +3953,7 @@ function! <SID>keypressed(key)
       endif
     elseif (a:key ==# "/") || (a:key ==# "O")
       call <SID>switch_search_mode(1)
-    elseif a:key ==# "BSlash"
+    elseif (a:key ==# "BSlash") || (a:key ==# "Bar")
       call <SID>search_parent_directory_cycle()
     elseif a:key ==# "v"
       call <SID>load_file("vs")
