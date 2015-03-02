@@ -854,7 +854,7 @@ function <SID>save_workspace_externally(name)
 
   if filereadable(filename)
     for old_line in readfile(filename)
-      if old_line ==? workspace_start_marker
+      if old_line ==# workspace_start_marker
         let in_workspace = 1
       endif
 
@@ -862,7 +862,7 @@ function <SID>save_workspace_externally(name)
         call add(lines, old_line)
       endif
 
-      if old_line ==? workspace_end_marker
+      if old_line ==# workspace_end_marker
         let in_workspace = 0
       endif
     endfor
@@ -980,7 +980,7 @@ function! <SID>delete_workspace(name)
 
   if filereadable(filename)
     for old_line in readfile(filename)
-      if old_line ==? workspace_start_marker
+      if old_line ==# workspace_start_marker
         let in_workspace = 1
       endif
 
@@ -988,7 +988,7 @@ function! <SID>delete_workspace(name)
         call add(lines, old_line)
       endif
 
-      if old_line ==? workspace_end_marker
+      if old_line ==# workspace_end_marker
         let in_workspace = 0
       endif
     endfor
@@ -996,7 +996,7 @@ function! <SID>delete_workspace(name)
 
   call writefile(lines, filename)
 
-  if s:active_workspace_name ==? a:name
+  if s:active_workspace_name ==# a:name
     call <SID>set_active_workspace_name("")
     let s:active_workspace_digest = ""
   endif
@@ -1135,7 +1135,7 @@ function! <SID>rename_workspace(name)
   endif
 
   for existing_name in s:workspace_names
-    if new_name ==? existing_name
+    if new_name ==# existing_name
       call <SID>msg("The workspace '" . new_name . "' already exists.")
       return
     endif
@@ -1151,11 +1151,11 @@ function! <SID>rename_workspace(name)
 
   if filereadable(filename)
     for line in readfile(filename)
-      if line ==? workspace_start_marker
+      if line ==# workspace_start_marker
         let line = "CS_WORKSPACE_BEGIN: " . new_name
-      elseif line ==? workspace_end_marker
+      elseif line ==# workspace_end_marker
         let line = "CS_WORKSPACE_END: " . new_name
-      elseif line ==? last_workspace_marker
+      elseif line ==# last_workspace_marker
         let line = "CS_LAST_WORKSPACE: " . new_name
       endif
 
@@ -1165,7 +1165,7 @@ function! <SID>rename_workspace(name)
 
   call writefile(lines, filename)
 
-  if s:active_workspace_name ==? a:name
+  if s:active_workspace_name ==# a:name
     call <SID>set_active_workspace_name(new_name)
   endif
 
@@ -1386,9 +1386,9 @@ function! <SID>load_workspace_externally(bang, name)
   let in_workspace = 0
 
   for old_line in old_lines
-    if old_line ==? workspace_start_marker
+    if old_line ==# workspace_start_marker
       let in_workspace = 1
-    elseif old_line ==? workspace_end_marker
+    elseif old_line ==# workspace_end_marker
       let in_workspace = 0
     elseif in_workspace
       call add(lines, old_line)
