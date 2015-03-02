@@ -46,7 +46,7 @@ function! <SID>define_symbols()
   if g:ctrlspace_unicode_font
     let symbols = {
           \ "cs":      "⌗",
-          \ "tab":     "⊙",
+          \ "tab":     "∙",
           \ "all":     "∷",
           \ "vis":     "★",
           \ "file":    "⊚",

@@ -375,7 +375,7 @@ important symbolic information:
 | `⌗`     | `#`    | All         | Vim-CtrlSpace symbol    |
 | `?`     | `?`    | All         | Help Mode indicator     |
 | `›_‹`   | `[_]`  | All         | Search Mode indicator   |
-| `⊙`     | `TAB`  | Buffer      | Single Mode indicator   |
+| `∙`     | `TAB`  | Buffer      | Single Mode indicator   |
 | `★`     | `VIS`  | Buffer      | Visible Mode indicator  |
 | `∷`     | `ALL`  | Buffer      | All Mode indicator      |
 | `⊚`     | `FILE` | File        | File List indicator     |
@@ -437,7 +437,7 @@ buffers from the current tab or all available buffers.
 
 | Unicode | ASCII |
 |:-------:|:-----:|
-| `⊙`     | `TAB` |
+| `∙`     | `TAB` |
 
 The first mode of Buffer List is the Single one. In that mode, the plugin shows
 you only buffers related to the current tab (list). Here's the full listing of
@@ -1328,7 +1328,7 @@ Default value:
 if g:ctrlspace_unicode_font
   let g:ctrlspace_symbols = {
         \ "cs":      "⌗",
-        \ "tab":     "⊙",
+        \ "tab":     "∙",
         \ "all":     "∷",
         \ "file":    "⊚",
         \ "tabs":    "○",
