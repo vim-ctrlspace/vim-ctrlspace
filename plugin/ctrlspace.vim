@@ -5537,6 +5537,7 @@ function! <SID>edit_file()
     return
   endif
 
+  let new_file = expand(new_file)
   if !<SID>ensure_path(new_file)
     return
   endif
