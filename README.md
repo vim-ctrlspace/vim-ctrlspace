@@ -377,13 +377,13 @@ important symbolic information:
 | `›_‹`   | `[_]`  | All         | Search Mode indicator   |
 | `∙`     | `TAB`  | Buffer      | Single Mode indicator   |
 | `★`     | `VIS`  | Buffer      | Visible Mode indicator  |
-| `∷`     | `ALL`  | Buffer      | All Mode indicator      |
+| `፨`     | `ALL`  | Buffer      | All Mode indicator      |
 | `⊚`     | `FILE` | File        | File List indicator     |
 | `⁺²`    | `+2`   | Buffer/File | Next Tab Mode indicator |
 | `⌕`     | `*`    | Buffer      | Zoom Mode indicator     |
 | `○●○`   | `-+-`  | Tab         | Tab List indicator      |
-| `⋮ → ∙` | `LOAD` | Workspace   | Workspace Load Mode     |
-| `∙ → ⋮` | `SAVE` | Workspace   | Workspace Save Mode     |
+| `|∷|`   | `|::|` | Workspace   | Workspace Load Mode     |
+| `[∷]`   | `[::]` | Workspace   | Workspace Save Mode     |
 | `♡`     | `BM`   | Bookmark    | Bookmark List indicator |
 
 Items listed in the plugin window can have additional indicators (following the
@@ -598,7 +598,7 @@ useful if you want e.g. to jump between windows in the current tab with `Tab` or
 
 | Unicode | ASCII |
 |:-------:|:-----:|
-| `∷`     | `ALL` |
+| `፨`     | `ALL` |
 
 This mode is almost identical to the Single Mode, except it shows you all
 available buffers (from all tabs and unrelated ones too). Some of keys presented
@@ -866,8 +866,8 @@ entirely (via Vim's `showtabline` option) and stick to the Tab List only.
 
 | Unicode | ASCII  | Mode      |
 |:-------:|:------:| --------- |
-| `⋮ → ∙` | `LOAD` | Load Mode |
-| `∙ → ⋮` | `SAVE` | Save mode |
+| `|∷|`   | `|::|` | Load Mode |
+| `[∷]`   | `[::]` | Save mode |
 
 The plugin allows you to save and load so called _workspaces_. A workspace is
 a set of opened windows, tabs, their names, and buffers. In fact, the word
@@ -1329,12 +1329,12 @@ if g:ctrlspace_unicode_font
   let g:ctrlspace_symbols = {
         \ "cs":      "⌗",
         \ "tab":     "∙",
-        \ "all":     "∷",
+        \ "all":     "፨",
         \ "file":    "⊚",
         \ "tabs":    "○",
         \ "c_tab":   "●",
-        \ "load":    "⋮ → ∙",
-        \ "save":    "∙ → ⋮",
+        \ "load":    "|∷|",
+        \ "save":    "[∷]",
         \ "zoom":    "⌕",
         \ "s_left":  "›",
         \ "s_right": "‹",
@@ -1353,8 +1353,8 @@ else
         \ "file":    "FILE",
         \ "tabs":    "-",
         \ "c_tab":   "+",
-        \ "load":    "LOAD",
-        \ "save":    "SAVE",
+        \ "load":    "|::|",
+        \ "save":    "[::]",
         \ "zoom":    "*",
         \ "s_left":  "[",
         \ "s_right": "]",
