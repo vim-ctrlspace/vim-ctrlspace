@@ -384,7 +384,7 @@ important symbolic information:
 | `○●○`   | `-+-`  | Tab         | Tab List indicator      |
 | `|∷|`   | `|::|` | Workspace   | Workspace Load Mode     |
 | `[∷]`   | `[::]` | Workspace   | Workspace Save Mode     |
-| `♡`     | `BM`   | Bookmark    | Bookmark List indicator |
+| `♥`     | `BM`   | Bookmark    | Bookmark List indicator |
 
 Items listed in the plugin window can have additional indicators (following the
 item text):
@@ -973,6 +973,10 @@ startup and save it active workspace on Vim exit. See
 
 ## Bookmark List
 
+| Unicode | ASCII |
+|:-------:|:-----:|
+| `♥`     | `BM`  |
+
 Bookmarks can be treated as a Project list populated with your favorite
 projects. With bookmarks you can easily jump between different directory
 locations in Vim. The plugin will follow those jumps with its all settings.
@@ -1338,7 +1342,7 @@ if g:ctrlspace_unicode_font
         \ "zoom":    "⌕",
         \ "s_left":  "›",
         \ "s_right": "‹",
-        \ "bm":      "♡",
+        \ "bm":      "♥",
         \ "help":    "?",
         \ "iv":      "☆",
         \ "ia":      "★",

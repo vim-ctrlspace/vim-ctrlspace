@@ -58,7 +58,7 @@ function! <SID>define_symbols()
           \ "zoom":    "⌕",
           \ "s_left":  "›",
           \ "s_right": "‹",
-          \ "bm":      "♡",
+          \ "bm":      "♥",
           \ "help":    "?",
           \ "iv":      "☆",
           \ "ia":      "★",
