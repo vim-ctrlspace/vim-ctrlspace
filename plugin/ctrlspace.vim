@@ -2625,6 +2625,10 @@ function! <SID>ctrlspace_toggle(internal)
       elseif s:bookmark_mode
         let bufname = s:bookmarks[i - 1].name
       else
+        if !bufexists(i)
+          continue
+        endif
+
         if ((s:single_mode == 1) && !exists('t:ctrlspace_list[' . i . ']')) ||
               \ ((s:single_mode == 2) && (bufwinnr(i) == -1))
           continue
