@@ -2,10 +2,9 @@ let s:config = ctrlspace#context#Configuration.Instance()
 
 function! ctrlspace#roots#RemoveProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(a:directory)
-  let roots     = ctrlspace#context#ProjectRoots()
 
-  if exists("roots[directory]")
-    unlet roots[directory]
+  if exists("ctrlspace#context#ProjectRoots[directory]")
+    unlet ctrlspace#context#ProjectRoots[directory]
   endif
 
   let lines     = []
@@ -19,27 +18,24 @@ function! ctrlspace#roots#RemoveProjectRoot(directory)
     endfor
   endif
 
-  for root in keys(roots)
+  for root in keys(ctrlspace#context#ProjectRoots)
     call add(lines, "CS_PROJECT_ROOT: " . root)
   endfor
 
-  call ctrlspace#context#SetProjectRoots(roots)
   call writefile(lines, cacheFile)
 endfunction
 
 function! ctrlspace#roots#AddProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(a:directory)
-  let roots     = ctrlspace#context#ProjectRoots()
-  let bookmarks = ctrlspace#context#Bookmarks()
 
-  let roots[directory] = 1
+  let ctrlspace#context#ProjectRoots[directory] = 1
 
   let lines     = []
   let bmRoots   = {}
   let cacheFile = s:config.CacheDir . "/.cs_cache"
 
-  for bookmark in bookmarks
-    let bmRoots[bookmark.directory] = 1
+  for bookmark in ctrlspace#context#Bookmarks
+    let bmRoots[bookmark.Directory] = 1
   endfor
 
   if filereadable(cacheFile)
@@ -50,13 +46,12 @@ function! ctrlspace#roots#AddProjectRoot(directory)
     endfor
   endif
 
-  for root in keys(roots)
+  for root in keys(ctrlspace#context#ProjectRoots)
     if !exists("bmRoots[root]")
       call add(lines, "CS_PROJECT_ROOT: " . root)
     endif
   endfor
 
-  call ctrlspace#context#SetProjectRoots(roots)
   call writefile(lines, cacheFile)
 endfunction
 
@@ -64,9 +59,7 @@ function! ctrlspace#roots#FindProjectRoot()
   let projectRoot = fnamemodify(".", ":p:h")
 
   if !empty(s:config.ProjectRootMarkers)
-    let roots         = ctrlspace#context#ProjectRoots()
     let rootFound     = 0
-
     let candidate     = fnamemodify(projectRoot, ":p:h")
     let lastCandidate = ""
 
@@ -80,7 +73,7 @@ function! ctrlspace#roots#FindProjectRoot()
       endfor
 
       if !rootFound
-        let rootFound = exists("roots[candidate]")
+        let rootFound = exists("ctrlspace#context#ProjectRoots[candidate]")
       endif
 
       if rootFound
@@ -99,12 +92,14 @@ function! ctrlspace#roots#FindProjectRoot()
 endfunction
 
 function! ctrlspace#roots#ProjectRootFound()
-  if empty(ctrlspace#context#ProjectRoot())
-    call ctrlspace#context#SetProjectRoot(ctrlspace#roots#FindProjectRoot())
-    if empty(ctrlspace#context#ProjectRoot())
+  if empty(ctrlspace#context#ProjectRoot)
+    let ctrlspace#context#ProjectRoot = ctrlspace#roots#FindProjectRoot()
+
+    if empty(ctrlspace#context#ProjectRoot)
       let projectRoot = ctrlspace#ui#GetInput("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
+
       if !empty(projectRoot) && isdirectory(projectRoot)
-        ctrlspace#context#SetFiles([]) " clear current files - force reload
+        let ctrlspace#context#Files = [] " clear current files - force reload
         call ctrlspace#roots#AddProjectRoot(project_root)
       else
         call ctrlspace#ui#Msg("Cannot continue with the project root not set.")

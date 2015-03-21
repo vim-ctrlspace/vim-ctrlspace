@@ -1,1 +1,0 @@
-let ctrlspace#lists#BufferList = {}

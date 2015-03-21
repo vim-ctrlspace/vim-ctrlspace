@@ -44,7 +44,7 @@ function! ctrlspace#util#FilesCache()
 endfunction
 
 function! s:internalFilePath(name)
-  let root = ctrlspace#context#ProjectRoot()
+  let root = ctrlspace#context#ProjectRoot
   let fullPart = empty(root) ? "" : (root . "/")
 
   if !empty(s:config.ProjectRootMarkers)
@@ -60,14 +60,6 @@ function! s:internalFilePath(name)
   return fullPart . "." . a:name
 endfunction
 
-function! ctrlspace#util#PluginFolder()
-  if !exists("s:pluginFolder")
-    let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-  endif
-
-  return s:pluginFolder
-endfunction
-
 function! ctrlspace#util#GetbufvarWithDefault(nr, name, default)
   let value = getbufvar(a:nr, a:name)
   return type(value) == type("") && empty(value) ? a:default : value
@@ -76,4 +68,38 @@ endfunction
 function! ctrlspace#util#GettabvarWithDefault(nr, name, default)
   let value = gettabvar(a:nr, a:name)
   return type(value) == type("") && empty(value) ? a:default : value
+endfunction
+
+function ctrlspace#util#SetStatusline()
+  if has("statusline")
+    silent! exe "let &l:statusline = " . s:config.StatuslineFunction
+  endif
+endfunction
+
+function! ctrlspace#util#UpdateSearchResults()
+  if ctrlspace#context#UpdateSearchResults
+    let ctrlspace#context#UpdateSearchResults = 0
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
+  endif
+endfunction
+
+function! ctrlspace#util#SaveFilesInCache()
+  let filename = ctrlspace#util#FilesCache()
+
+  if empty(filename)
+    return
+  endif
+
+  call writefile(ctrlspace#context#Files, filename)
+endfunction
+
+function! ctrlspace#util#LoadFilesFromCache()
+  let filename = ctrlspace#util#FilesCache()
+
+  if empty(filename) || !filereadable(filename)
+    return
+  endif
+
+  let ctrlspace#context#Files = readfile(filename)
 endfunction

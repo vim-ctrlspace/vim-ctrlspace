@@ -1,76 +1,95 @@
 let s:config = ctrlspace#context#Configuration.Instance()
 
-function! ctrlspace#api#BufferList(tabnr)
-  let buffer_list     = []
-  let tabnr           = tabpagenr()
-  let single_list     = gettabvar(tabnr, "ctrlspace_list")
-  let visible_buffers = tabpagebuflist(tabnr)
+function! s:compareRawNames(a, b)
+  if a:a.raw < a:b.raw
+    return -1
+  elseif a:a.raw > a:b.raw
+    return 1
+  else
+    return 0
+  endif
+endfunction
 
-  if type(single_list) != 4
+function! ctrlspace#api#BufferList(tabnr)
+  let bufferList     = []
+  let tabnr          = tabpagenr()
+  let singleList     = gettabvar(tabnr, "CtrlSpaceList")
+  let visibleBuffers = tabpagebuflist(tabnr)
+
+  if type(singleList) != 4
     return
   endif
 
-  for i in keys(single_list)
+  for i in keys(singleList)
     let i = str2nr(i)
 
     let bufname = bufname(i)
 
-    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visibleBuffers, i) != -1))
       let bufname = '[' . i . '*No Name]'
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      call add(buffer_list, { "number": i, "raw": bufname })
+      call add(bufferList, { "number": i, "raw": bufname })
     endif
   endfor
 
-  call sort(buffer_list, function("s:compare_raw_names"))
+  call sort(bufferList, function("s:compareRawNames"))
 
-  return buffer_list
+  return bufferList
 endfunction
 
 function! ctrlspace#api#Buffers(tabnr)
-  let buffer_list     = {}
-  let ctrlspace_list  = gettabvar(a:tabnr, "ctrlspace_list")
-  let visible_buffers = tabpagebuflist(a:tabnr)
+  let bufferList     = {}
+  let ctrlspaceList  = gettabvar(a:tabnr, "CtrlSpaceList")
+  let visibleBuffers = tabpagebuflist(a:tabnr)
 
-  if type(ctrlspace_list) != 4
-    return buffer_list
+  if type(ctrlspaceList) != 4
+    return bufferList
   endif
 
-  for i in keys(ctrlspace_list)
+  for i in keys(ctrlspaceList)
     let i = str2nr(i)
 
     let bufname = bufname(i)
 
-    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visible_buffers, i) != -1))
+    if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visibleBuffers, i) != -1))
       let bufname = '[' . i . '*No Name]'
     endif
 
     if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      let buffer_list[i] = bufname
+      let bufferList[i] = bufname
     endif
   endfor
 
-  return buffer_list
+  return bufferList
+endfunction
+
+function! ctrlspace#api#TabModified(tabnr)
+  for b in map(keys(ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
+    if getbufvar(b, '&modified')
+      return 1
+    endif
+  endfor
+  return 0
 endfunction
 
 function! ctrlspace#api#StatuslineTabSegment()
-  let current_tab = tabpagenr()
-  let winnr       = tabpagewinnr(current_tab)
-  let buflist     = tabpagebuflist(current_tab)
-  let bufnr       = buflist[winnr - 1]
-  let bufname     = bufname(bufnr)
-  let bufs_number = ctrlspace#tab_buffers_number(current_tab)
-  let title       = ctrlspace#tab_title(current_tab, bufnr, bufname)
+  let currentTab = tabpagenr()
+  let winnr      = tabpagewinnr(currentTab)
+  let buflist    = tabpagebuflist(currentTab)
+  let bufnr      = buflist[winnr - 1]
+  let bufname    = bufname(bufnr)
+  let bufsNumber = ctrlspace#api#TabBuffersNumber(currentTab)
+  let title      = ctrlspace#api#TabTitle(currentTab, bufnr, bufname)
 
-  if !g:ctrlspace_unicode_font && !empty(bufs_number)
-    let bufs_number = ":" . bufs_number
+  if !s:config.UnicodeFont && !empty(bufsNumber)
+    let bufsNumber = ":" . bufsNumber
   end
 
-  let tabinfo = string(current_tab) . bufs_number . " "
+  let tabinfo = string(currentTab) . bufsNumber . " "
 
-  if ctrlspace#tab_modified(current_tab)
+  if ctrlspace#api#TabModified(currentTab)
     let tabinfo .= "+ "
   endif
 
@@ -79,101 +98,106 @@ function! ctrlspace#api#StatuslineTabSegment()
   return tabinfo
 endfunction
 
-function! <SID>create_status_tabline()
+function! s:createStatusTabline()
   let current = tabpagenr()
   let line    = ""
 
   for i in range(1, tabpagenr("$"))
-    let line .= (current == i ? g:ctrlspace_symbols.c_tab : g:ctrlspace_symbols.tabs)
+    let line .= (current == i ? s:config.Symbols.CTab : s:config.Symbols.Tabs)
   endfor
 
   return line
 endfunction
 
 function! ctrlspace#api#StatuslineModeSegment(...)
-  let statusline_elements = []
+  let statuslineElements = []
 
-  if s:workspace_mode == 1
-    call add(statusline_elements, g:ctrlspace_symbols.load)
-  elseif s:workspace_mode == 2
-    call add(statusline_elements, g:ctrlspace_symbols.save)
-  elseif s:tablist_mode
-    call add(statusline_elements, <SID>create_status_tabline())
-  elseif s:bookmark_mode
-    call add(statusline_elements, g:ctrlspace_symbols.bm)
+  if ctrlspace#modes#Workspace.Enabled
+    if ctrlspace#modes#Workspace.Data.SubMode == "load"
+      call add(statuslineElements, s:config.Symbols.WLoad)
+    elseif currentList.Data.SubMode == "save"
+      call add(statuslineElements, s:config.Symbols.WSave)
+    endif
+  elseif ctrlspace#modes#Tablist.Enabled
+    call add(statuslineElements, s:createStatusTabline())
+  elseif ctrlspace#modes#Bookmark.Enabled
+    call add(statuslineElements, s:config.Symbols.BM)
   else
-    if s:file_mode
-      let symbol = g:ctrlspace_symbols.file
-    elseif s:single_mode == 2
-      let symbol = g:ctrlspace_symbols.vis
-    elseif s:single_mode == 1
-      let symbol = g:ctrlspace_symbols.tab
-    else
-      let symbol = g:ctrlspace_symbols.all
+    if ctrlspace#modes#File.Enabled
+      let symbol = s:config.Symbols.File
+    elseif ctrlspace#modes#Buffer.Enabled
+      if ctrlspace#modes#Buffer.Data.SubMode == "visual"
+        let symbol = s:config.Symbols.Vis
+      elseif ctrlspace#modes#Buffer.Data.SubMode == "single"
+        let symbol = s:config.Symbols.Sin
+      elseif ctrlspace#modes#Buffer.Data.SubMode == "all"
+        let symbol = s:config.Symbols.All
+      endif
     endif
 
-    if s:next_tab_mode
-      let symbol .= g:ctrlspace_symbols.ntm . ctrlspace#tab_buffers_number(tabpagenr() + 1)
+    if ctrlspace#modes#NextTab.Enabled
+      let symbol .= s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
     endif
 
-    call add(statusline_elements, symbol)
+    call add(statuslineElements, symbol)
   endif
 
-  if !empty(s:search_letters) || s:search_mode
-    let search_element = g:ctrlspace_symbols.s_left . join(s:search_letters, "")
+  if !empty(ctrlspace#modes#Search.Data.Letters) || ctrlspace#modes#Search.Enabled
+    let searchElement = s:config.Symbols.SLeft . join(ctrlspace#modes#Search.Data.Letters, "")
 
-    if s:search_mode
-      let search_element .= "_"
+    if ctrlspace#modes#Search.Enabled
+      let searchElement .= "_"
     endif
 
-    let search_element .= g:ctrlspace_symbols.s_right
+    let searchElement .= s:config.Symbols.SRight
 
-    call add(statusline_elements, search_element)
+    call add(statuslineElements, searchElement)
   endif
 
-  if s:zoom_mode
-    call add(statusline_elements, g:ctrlspace_symbols.zoom)
+  if ctrlspace#modes#Zoom.Enabled
+    call add(statuslineElements, s:config.Symbols.Zoom)
   endif
 
-  if s:help_mode
-    call add(statusline_elements, g:ctrlspace_symbols.help)
+  if ctrlspace#modes#Help.Enabled
+    call add(statuslineElements, s:config.Symbols.Help)
   endif
 
   let separator = (a:0 > 0) ? a:1 : "  "
-  return join(statusline_elements, separator)
+
+  return join(statuslineElements, separator)
 endfunction
 
 function! ctrlspace#api#TabBuffersNumber(tabnr)
-  let buffers_number = len(ctrlspace#buffers(a:tabnr))
-  let number_to_show = ""
+  let buffersNumber = len(ctrlspace#api#Buffers(a:tabnr))
+  let numberToShow  = ""
 
-  if buffers_number > 1
-    if g:ctrlspace_unicode_font
-      let small_numbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
-      let number_str    = string(buffers_number)
+  if buffersNumber > 1
+    if s:config.UnicodeFont
+      let smallNumbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+      let numberStr    = string(buffersNumber)
 
-      for i in range(0, len(number_str) - 1)
-        let number_to_show .= small_numbers[str2nr(number_str[i])]
+      for i in range(0, len(numberStr) - 1)
+        let numberToShow .= smallNumbers[str2nr(numberStr[i])]
       endfor
     else
-      let number_to_show = string(buffers_number)
+      let numberToShow = string(buffersNumber)
     endif
   endif
 
-  return number_to_show
+  return numberToShow
 endfunction
 
 function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
   let bufname = a:bufname
   let bufnr   = a:bufnr
-  let title   = gettabvar(a:tabnr, "ctrlspace_label")
+  let title   = gettabvar(a:tabnr, "CtrlSpaceLabel")
 
   if empty(title)
     if getbufvar(bufnr, "&ft") == "ctrlspace"
-      if s:zoom_mode && exists("s:zoom_mode_original_buffer")
-        let bufnr = s:zoom_mode_original_buffer
+      if ctrlspace#modes#Zoom.Enabled && ctrlspace#modes#Zoom.Data.OriginalBuffer
+        let bufnr = ctrlspace#modes#Zoom.Data.OriginalBuffer
       else
-        let bufnr = winbufnr(t:ctrlspace_start_window)
+        let bufnr = winbufnr(t:CtrlSpaceStartWindow)
       endif
 
       let bufname = bufname(bufnr)
@@ -190,20 +214,20 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 endfunction
 
 function! ctrlspace#api#Guitablabel()
-  let winnr       = tabpagewinnr(v:lnum)
-  let buflist     = tabpagebuflist(v:lnum)
-  let bufnr       = buflist[winnr - 1]
-  let bufname     = bufname(bufnr)
-  let title       = ctrlspace#tab_title(v:lnum, bufnr, bufname)
-  let bufs_number = ctrlspace#tab_buffers_number(v:lnum)
+  let winnr      = tabpagewinnr(v:lnum)
+  let buflist    = tabpagebuflist(v:lnum)
+  let bufnr      = buflist[winnr - 1]
+  let bufname    = bufname(bufnr)
+  let title      = ctrlspace#api#TabTitle(v:lnum, bufnr, bufname)
+  let bufsNumber = ctrlspace#api#TabBuffersNumber(v:lnum)
 
-  if !g:ctrlspace_unicode_font && !empty(bufs_number)
-    let bufs_number = ":" . bufs_number
+  if !s:config.UnicodeFont && !empty(bufsNumber)
+    let bufsNumber = ":" . bufsNumber
   end
 
-  let label = '' . v:lnum . bufs_number . ' '
+  let label = '' . v:lnum . bufsNumber . ' '
 
-  if ctrlspace#tab_modified(v:lnum)
+  if ctrlspace#api#TabModified(v:lnum)
     let label .= '+ '
   endif
 
@@ -213,27 +237,27 @@ function! ctrlspace#api#Guitablabel()
 endfunction
 
 function! ctrlspace#api#Tabline()
-  let last_tab    = tabpagenr("$")
-  let current_tab = tabpagenr()
-  let tabline     = ''
+  let lastTab    = tabpagenr("$")
+  let currentTab = tabpagenr()
+  let tabline    = ''
 
-  for t in range(1, last_tab)
-    let winnr       = tabpagewinnr(t)
-    let buflist     = tabpagebuflist(t)
-    let bufnr       = buflist[winnr - 1]
-    let bufname     = bufname(bufnr)
-    let bufs_number = ctrlspace#tab_buffers_number(t)
-    let title       = ctrlspace#tab_title(t, bufnr, bufname)
+  for t in range(1, lastTab)
+    let winnr      = tabpagewinnr(t)
+    let buflist    = tabpagebuflist(t)
+    let bufnr      = buflist[winnr - 1]
+    let bufname    = bufname(bufnr)
+    let bufsNumber = ctrlspace#api#TabBuffersNumber(t)
+    let title      = ctrlspace#api#TabTitle(t, bufnr, bufname)
 
-    if !g:ctrlspace_unicode_font && !empty(bufs_number)
-      let bufs_number = ":" . bufs_number
+    if !s:config.UnicodeFont && !empty(bufsNumber)
+      let bufsNumber = ":" . bufsNumber
     end
 
     let tabline .= '%' . t . 'T'
-    let tabline .= (t == current_tab ? '%#TabLineSel#' : '%#TabLine#')
-    let tabline .= ' ' . t . bufs_number . ' '
+    let tabline .= (t == currentTab ? '%#TabLineSel#' : '%#TabLine#')
+    let tabline .= ' ' . t . bufsNumber . ' '
 
-    if ctrlspace#tab_modified(t)
+    if ctrlspace#api#TabModified(t)
       let tabline .= '+ '
     endif
 
@@ -242,7 +266,7 @@ function! ctrlspace#api#Tabline()
 
   let tabline .= '%#TabLineFill#%T'
 
-  if last_tab > 1
+  if lastTab > 1
     let tabline .= '%='
     let tabline .= '%#TabLine#%999XX'
   endif
@@ -250,12 +274,12 @@ function! ctrlspace#api#Tabline()
   return tabline
 endfunction
 
-function! ctrlspace#api#bufnr()
-  return bufexists(s:plugin_buffer) ? s:plugin_buffer : -1
+function! ctrlspace#api#BufNr()
+  return bufexists(ctrlspace#context#PluginBuffer) ? ctrlspace#context#PluginBuffer : -1
 endfunction
 
-function! ctrlspace#api#tab_modified(tabnr)
-  for b in map(keys(ctrlspace#buffers(a:tabnr)), "str2nr(v:val)")
+function! ctrlspace#api#TabModified(tabnr)
+  for b in map(keys(ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif

@@ -1,13 +1,3 @@
-  " command! -nargs=* -range CtrlSpace :call ctrlspace#ui#StartAndFeedkeys(<q-args>)
-  " command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#ui#GoToBufferOnList("up")
-  " command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#ui#GoToBufferOnList("down")
-  " command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#ui#NewTabLabel(0)
-  " command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#ui#RemoveTabLabel(0)
-  " command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspaceExternally(<q-args>)
-  " command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#ui#NewWorkspaceExternally()
-  " command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#ui#LoadWorkspaceExternally(<bang>0, <q-args>)
-  " command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#ui#AddProjectRootUi(<q-args>)
-  " command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#ui#RemoveProjectRootUi(<q-args>)
 let s:config = ctrlspace#context#Configuration.Instance()
 
 function! ctrlspace#ui#AddProjectRoot(directory)
@@ -18,10 +8,9 @@ function! ctrlspace#ui#AddProjectRoot(directory)
     return
   endif
 
-  let roots     = copy(ctrlspace#context#ProjectRoots())
-  let bookmarks = ctrlspace#context#Bookmarks()
+  let roots = copy(ctrlspace#context#ProjectRoots)
 
-  for bookmark in bookmarks
+  for bookmark in ctrlspace#context#Bookmarks
     let roots[bookmark.directory] = 1
   endfor
 
@@ -37,8 +26,7 @@ endfunction
 function! ctrlspace#ui#RemoveProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
 
-  let roots = ctrlspace#context#ProjectRoots()
-  if !exists("roots[directory]")
+  if !exists("ctrlspace#context#ProjectRoots[directory]")
     call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
     return
   endif
@@ -48,7 +36,7 @@ function! ctrlspace#ui#RemoveProjectRoot(directory)
 endfunction
 
 function! ctrlspace#ui#Msg(message)
-  echo s:config.Symbols.cs . "  " . a:message
+  echo s:config.Symbols.CS . "  " . a:message
 endfunction
 
 function! ctrlspace#ui#DelayedMsg(...)
@@ -70,7 +58,7 @@ function! ctrlspace#ui#StartAndFeedkeys(keys)
 endfunction
 
 function! ctrlspace#ui#GetInput(msg, ...)
-  let msg = s:config.Symbols.cs . "  " . a:msg
+  let msg = s:config.Symbols.CS . "  " . a:msg
 
   call inputsave()
 
@@ -92,8 +80,8 @@ function! ctrlspace#ui#Confirmed(msg)
   return ctrlspace#ui#GetInput(a:msg . " (yN): ") =~? "y"
 endfunction
 
-function! ctrlspace#ui#GoToBufferOnList(direction)
-  let bufferList    = ctrlspace#api#bufferlist(tabpagenr())
+function! ctrlspace#ui#GoToBufferListPosition(direction)
+  let bufferList    = ctrlspace#api#BufferList(tabpagenr())
   let currentBuffer = bufnr("%")
   let currentIndex  = -1
   let bufferListLen = len(bufferList)
@@ -147,11 +135,11 @@ function ctrlspace#ui#SaveWorkspace(name)
   call ctrlspace#util#HandleVimSettings("start")
 
   let cwdSave = fnamemodify(".", ":p:h")
-  silent! exe "cd " . ctrlspace#context#ProjectRoot()
+  silent! exe "cd " . ctrlspace#context#ProjectRoot
 
   if empty(a:name)
-    if !empty(ctrlspace#context#ActiveWorkspace().Name)
-      let name = ctrlspace#context#ActiveWorkspace().Name
+    if !empty(ctrlspace#modes#Workspace.Data.Active.Name)
+      let name = ctrlspace#modes#Workspace.Data.Active.Name
     else
       silent! exe "cd " . cwdSave
       call ctrlspace#util#HandleVimSettings("stop")
@@ -199,11 +187,11 @@ function ctrlspace#ui#SaveWorkspace(name)
           \ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
           \ }
 
-    let ctrlspace_list = ctrlspace#buffers(t)
+    let ctrlspaceList = ctrlspace#api#Buffers(t)
 
     let bufs = []
 
-    for [nr, bname] in items(ctrlspace_list)
+    for [nr, bname] in items(ctrlspaceList)
       let bufname = fnamemodify(bname, ":.")
 
       if !filereadable(bufname)
@@ -223,18 +211,18 @@ function ctrlspace#ui#SaveWorkspace(name)
     silent! exe "cd " . cwdSave
     silent! exe "set ssop=" . ssopSave
 
-    call <SID>handle_vim_settings("stop")
-    call <SID>msg("The workspace '" . name . "' cannot be saved at this moment.")
+    call ctrlspace#util#HandleVimSettings("stop")
+    call ctrlspace#ui#Msg("The workspace '" . name . "' cannot be saved at this moment.")
     return
   endif
 
-  let tab_index = 0
+  let tabIndex = 0
 
   for cmd in readfile("CS_SESSION")
-    if ((cmd =~# "^edit") && (tab_index == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
-      let data = tabData[tab_index]
+    if ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+      let data = tabData[tabIndex]
 
-      if tab_index > 0
+      if tabIndex > 0
         call add(lines, cmd)
       endif
 
@@ -243,24 +231,24 @@ function ctrlspace#ui#SaveWorkspace(name)
       endfor
 
       if !empty(data.label)
-        call add(lines, "let t:ctrlspace_label = '" . substitute(data.label, "'", "''","g") . "'")
+        call add(lines, "let t:CtrlSpaceLabel = '" . substitute(data.label, "'", "''","g") . "'")
       endif
 
       if !empty(data.autotab)
-        call add(lines, "let t:ctrlspace_autotab = " . data.autotab)
+        call add(lines, "let t:CtrlSpaceAutotab = " . data.autotab)
       endif
 
-      if tab_index == 0
+      if tabIndex == 0
         call add(lines, cmd)
       elseif cmd =~# "^tabedit"
         call add(lines, cmd[3:]) "make edit from tabedit
       endif
 
-      let tab_index += 1
+      let tabIndex += 1
     else
-      let badd_list = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
+      let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
 
-      if !(exists("badd_list[1]") && !empty(badd_list[1]) && !filereadable(badd_list[1]))
+      if !(exists("baddList[1]") && !empty(baddList[1]) && !filereadable(baddList[1]))
         call add(lines, cmd)
       endif
     endif
@@ -271,17 +259,16 @@ function ctrlspace#ui#SaveWorkspace(name)
   call writefile(lines, filename)
   call delete("CS_SESSION")
 
-  call <SID>set_active_workspace_name(name)
+  call ctrlspace#workspaces#SetActiveWorkspaceName(name)
+  let ctrlspace#mode#Workspace.Data.Active.Digest = ctrlspace#workspaces#CreateWorkspaceDigest()
 
-  let s:active_workspace_digest = <SID>create_workspace_digest()
-
-  call <SID>set_workspace_names()
+  call ctrlspace#workspaces#SetWorkspaceNames()
 
   silent! exe "cd " . cwdSave
   silent! exe "set ssop=" . ssopSave
 
-  call <SID>handle_vim_settings("stop")
-  call <SID>msg("The workspace '" . name . "' has been saved.")
+  call ctrlspace#util#HandleVimSettings("stop")
+  call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
 endfunction
 
 " command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspaceExternally(<q-args>)

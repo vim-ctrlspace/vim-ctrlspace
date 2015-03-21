@@ -2,20 +2,20 @@ let s:config = ctrlspace#context#Configuration.Instance()
 
 function! ctrlspace#init#Initialize()
   if s:config.UseTabline
-    set tabline=%!ctrlspace#api#tabline()
+    set tabline=%!ctrlspace#api#Tabline()
 
     if has("gui_running") && (&go =~# "e")
-      set guitablabel=%{ctrlspace#api#guitablabel()}
+      set guitablabel=%{ctrlspace#api#Guitablabel()}
 
       " Fix MacVim issues:
       " http://stackoverflow.com/questions/11595301/controlling-tab-names-in-vim
-      au BufEnter * set guitablabel=%{ctrlspace#api#guitablabel()}
+      au BufEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
     endif
   endif
 
   command! -nargs=* -range CtrlSpace :call ctrlspace#ui#StartAndFeedkeys(<q-args>)
-  command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#ui#GoOutsideList("up")
-  command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#ui#GoOutsideList("down")
+  command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#ui#GoToBufferListPosition("up")
+  command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#ui#GoToBufferListPosition("down")
   command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#ui#NewTabLabel(0)
   command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#ui#RemoveTabLabel(0)
   command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspace(<q-args>)
@@ -37,14 +37,14 @@ function! ctrlspace#init#Initialize()
   call s:initKeyNames()
 
   au BufEnter * call s:addTabBuffer()
-  au BufEnter * call s:add_jump()
+  au BufEnter * call s:addJump()
   au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#context#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
-    au VimLeavePre * if !empty(ctrlspace#context#ActiveWorkspace().Name) | call ctrlspace#ui#SaveWorkspace("") | endif
+    au VimLeavePre * if !empty(ctrlspace#modes#Workspace.Data.Active.Name) | call ctrlspace#ui#SaveWorkspace("") | endif
   endif
 
-  if context.LoadLastWorkspaceOnStart
+  if s:config.LoadLastWorkspaceOnStart
     au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#ui#LoadWorkspace(0, "") | endif
   endif
 endfunction
@@ -69,8 +69,8 @@ function! s:initProjectRootsAndBookmarks()
     endfor
   endif
 
-  call ctrlspace#context#SetProjectRoots(projectRoots)
-  call ctrlspace#context#SetBookmarks(bookmarks)
+  let ctrlspace#context#ProjectRoots = projectRoots
+  let ctrlspace#context#Bookmarks    = bookmarks
 endfunction
 
 function! s:initKeyNames()
@@ -111,38 +111,38 @@ function! s:initKeyNames()
     endfor
   endif
 
-  call ctrlspace#context#SetKeyNames(keyNames)
+  let ctrlspace#context#KeyNames = keyNames
 endfunction
 
 function! s:addTabBuffer()
-  if ctrlspace#context#Modes().Zoom
+  if ctrlspace#modes#Zoom.Enabled
     return
   endif
 
-  if !exists('t:CtrlSpaceList')
+  if !exists("t:CtrlSpaceList")
     let t:CtrlSpaceList = {}
   endif
 
   let current = bufnr('%')
 
   if !exists("t:CtrlSpaceList[" . current . "]") &&
-        \ getbufvar(current, '&modifiable') &&
-        \ getbufvar(current, '&buflisted') &&
-        \ getbufvar(current, '&ft') != "ctrlspace"
+        \ getbufvar(current, "&modifiable") &&
+        \ getbufvar(current, "&buflisted") &&
+        \ getbufvar(current, "&ft") != "ctrlspace"
     let t:CtrlSpaceList[current] = len(t:CtrlSpaceList) + 1
   endif
 endfunction
 
 function! s:addJump()
-  if ctrlspace#context#Modes().Zoom
+  if ctrlspace#modes#Zoom.Enabled
     return
   endif
 
-  let current = bufnr('%')
+  let current = bufnr("%")
 
-  if getbufvar(current, '&modifiable') &&
-        \ getbufvar(current, '&buflisted') &&
-        \ getbufvar(current, '&ft') != "ctrlspace"
+  if getbufvar(current, "&modifiable") &&
+        \ getbufvar(current, "&buflisted") &&
+        \ getbufvar(current, "&ft") != "ctrlspace"
     let b:CtrlSpaceJumpCounter = ctrlspace#context#IncrementJumpCounter()
   endif
 endfunction
