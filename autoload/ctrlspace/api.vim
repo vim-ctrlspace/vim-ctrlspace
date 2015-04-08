@@ -1,24 +1,9 @@
 let s:config = ctrlspace#context#Configuration.Instance()
 
-function! s:compareRawNames(a, b)
-  if a:a.raw < a:b.raw
-    return -1
-  elseif a:a.raw > a:b.raw
-    return 1
-  else
-    return 0
-  endif
-endfunction
-
 function! ctrlspace#api#BufferList(tabnr)
   let bufferList     = []
-  let tabnr          = tabpagenr()
-  let singleList     = gettabvar(tabnr, "CtrlSpaceList")
-  let visibleBuffers = tabpagebuflist(tabnr)
-
-  if type(singleList) != 4
-    return
-  endif
+  let singleList     = ctrlspace#context#Buffers(a:tabnr)
+  let visibleBuffers = tabpagebuflist(a:tabnr)
 
   for i in keys(singleList)
     let i = str2nr(i)
@@ -29,24 +14,20 @@ function! ctrlspace#api#BufferList(tabnr)
       let bufname = '[' . i . '*No Name]'
     endif
 
-    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
-      call add(bufferList, { "number": i, "raw": bufname })
+    if strlen(bufname) && getbufvar(i, '&modifiable')
+      call add(bufferList, { "index": i, "text": bufname })
     endif
   endfor
 
-  call sort(bufferList, function("s:compareRawNames"))
+  call sort(bufferList, function("ctrlspace#engine#CompareByText"))
 
   return bufferList
 endfunction
 
 function! ctrlspace#api#Buffers(tabnr)
   let bufferList     = {}
-  let ctrlspaceList  = gettabvar(a:tabnr, "CtrlSpaceList")
+  let ctrlspaceList  = ctrlspace#context#Buffers(a:tabnr)
   let visibleBuffers = tabpagebuflist(a:tabnr)
-
-  if type(ctrlspaceList) != 4
-    return bufferList
-  endif
 
   for i in keys(ctrlspaceList)
     let i = str2nr(i)
@@ -57,7 +38,7 @@ function! ctrlspace#api#Buffers(tabnr)
       let bufname = '[' . i . '*No Name]'
     endif
 
-    if strlen(bufname) && getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')
+    if strlen(bufname) && getbufvar(i, '&modifiable')
       let bufferList[i] = bufname
     endif
   endfor
@@ -66,7 +47,7 @@ function! ctrlspace#api#Buffers(tabnr)
 endfunction
 
 function! ctrlspace#api#TabModified(tabnr)
-  for b in map(keys(ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(ctrlspace#context#Buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif

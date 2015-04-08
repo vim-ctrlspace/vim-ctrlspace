@@ -1,5 +1,282 @@
 s:config = ctrlspace#context#Configuration.Instance()
 
+function! ctrlspace#window#Toggle(internal)
+  if !a:internal
+    call s:resetWindow()
+  endif
+
+  " if we get called and the list is open --> close it
+  if bufexists(ctrlspace#context#PluginBuffer)
+    if bufwinnr(ctrlspace#context#PluginBuffer) != -1
+      call ctrlspace#window#Kill(ctrlspace#context#PluginBuffer, 1)
+      return
+    else
+      call ctrlspace#window#Kill(ctrlspace#context#PluginBuffer, 0)
+      if !a:internal
+        let t:CtrlSpaceStartWindow = winnr()
+        let t:CtrlSpaceWinrestcmd  = winrestcmd()
+        let t:CtrlSpaceActivebuf   = bufnr("")
+      endif
+    endif
+  elseif !a:internal
+    " make sure zoom window is closed
+    silent! exe "pclose"
+    let t:CtrlSpaceStartWindow = winnr()
+    let t:CtrlSpaceWinrestcmd  = winrestcmd()
+    let t:CtrlSpaceActivebuf   = bufnr("")
+  endif
+
+  if ctrlspace#modes#Zoom.Enabled
+    let t:CtrlSpaceActivebuf = bufnr("")
+  endif
+
+  " create the buffer first & set it up
+  silent! exe "noautocmd botright pedit CtrlSpace"
+  silent! exe "noautocmd wincmd P"
+  silent! exe "resize" s:config.CtrlSpaceHeight
+
+  " zoom start window in Zoom Mode
+  if ctrlspace#modes#Zoom.Enabled
+    silent! exe t:CtrlSpaceStartWindow . "wincmd w"
+    vert resize | resize
+    silent! exe "noautocmd wincmd P"
+  endif
+
+  call s:setUpBuffer()
+
+  if ctrlspace#modes#Help.Enabled
+    call ctrlspace#help#DisplayHelp()
+    call ctrlspace#util#SetStatusline()
+    return
+  endif
+
+  let [b:patterns, b:indices, b:size, b:text] = ctrlspace#engine#Content()
+
+  " set up window height
+  if b:size > s:config.Height
+    let maxHeight = ctrlspace#context#MaxHeight()
+
+    if b:size < maxHeight
+      silent! exe "resize " . b:size
+    else
+      silent! exe "resize " . maxHeight
+    endif
+  endif
+
+  silent! exe "set updatetime=100"
+
+  call s:displayContent()
+  call ctrlspace#util#SetStatusline()
+
+  " display search patterns
+  for pattern in b:patterns
+    " escape ~ sign because of E874: (NFA) Could not pop the stack !
+    call matchadd("CtrlSpaceSearch", "\\c" .substitute(pattern, '\~', '\\~', "g"))
+  endfor
+
+  call s:setActiveLine()
+
+  normal! zb
+endfunction
+
+function! ctrlspace#window#GotoStartWindow()
+  silent! exe t:CtrlSpaceStartWindow . "wincmd w"
+
+  if winrestcmd() != t:CtrlSpaceWinrestcmd
+    silent! exe t:CtrlSpaceWinrestcmd
+
+    if winrestcmd() != t:CtrlSpaceWinrestcmd
+      wincmd =
+    endif
+  endif
+endfunction
+
+function! ctrlspace#window#Kill(pluginBuffer, final)
+  " added workaround for strange Vim behavior when, when kill starts with some delay
+  " (in a wrong buffer). This happens in some Nop modes (in a File List view).
+  if (exists("s:killingNow") && s:killingNow) || (!a:pluginBuffer && &ft != "ctrlspace")
+    return
+  endif
+
+  let s:killingNow = 1
+
+  if exists("b:updatetimeSave")
+    silent! exe "set updatetime=" . b:updatetimeSave
+  endif
+
+  if exists("b:timeoutlenSave")
+    silent! exe "set timeoutlen=" . b:timeoutlenSave
+  endif
+
+  if exists("b:mouseSave")
+    silent! exe "set mouse=" . b:mouseSave
+  endif
+
+  " shellslash support for win32
+  if exists("b:nosslSave") && b:nosslSave
+    set nossl
+  endif
+
+  if a:pluginBuffer
+    silent! exe ':' . a:pluginBuffer . 'bwipeout'
+  else
+    bwipeout
+  endif
+
+  if a:final
+    call ctrlspace#util#HandleVimSettings("stop")
+
+    if ctrlspace#modes#Search.Data.Restored
+      call ctrlspace#history#AppendToSearchHistory()
+    endif
+
+    call ctrlspace#window#GotoStartWindow()
+
+    if ctrlspace#modes#Zoom.Enabled
+      exec ":b " . ctrlspace#modes#Zoom.Data.OriginalBuffer
+      let ctrlspace#modes#Zoom.Data.OriginalBuffer = 0
+      call ctrlspace#modes#Zoom.Disable()
+    endif
+  endif
+
+  unlet s:killingNow
+endfunction
+
+function! ctrlspace#window#MoveSelectionBar(where)
+  if b:size < 1
+    return
+  endif
+
+  let newpos = 0
+
+  if !exists("b:lastline")
+    let b:lastline = 0
+  endif
+
+  setlocal modifiable
+
+  " the mouse was pressed: remember which line
+  " and go back to the original location for now
+  if a:where == "mouse"
+    let newpos = line(".")
+    call s:goto(b:lastline)
+  endif
+
+  " exchange the first char (>) with a space
+  call setline(line("."), " " . strpart(getline(line(".")), 1))
+
+  " go where the user want's us to go
+  if a:where == "up"
+    call s:goto(line(".") - 1)
+  elseif a:where == "down"
+    call s:goto(line(".") + 1)
+  elseif a:where == "mouse"
+    call s:goto(newpos)
+  elseif a:where == "pgup"
+    let newpos = line(".") - winheight(0)
+    if newpos < 1
+      let newpos = 1
+    endif
+    call s:goto(newpos)
+  elseif a:where == "pgdown"
+    let newpos = line(".") + winheight(0)
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call s:goto(newpos)
+  elseif a:where == "half_pgup"
+    let newpos = line(".") - winheight(0) / 2
+    if newpos < 1
+      let newpos = 1
+    endif
+    call s:goto(newpos)
+  elseif a:where == "half_pgdown"
+    let newpos = line(".") + winheight(0) / 2
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call s:goto(newpos)
+  else
+    call s:goto(a:where)
+  endif
+
+  " and mark this line with a >
+  call setline(line("."), ">" . strpart(getline(line(".")), 1))
+
+  " remember this line, in case the mouse is clicked
+  " (which automatically moves the cursor there)
+  let b:lastline = line(".")
+
+  setlocal nomodifiable
+endfunction
+
+function! ctrlspace#window#MoveCursor(where)
+  if a:where == "up"
+    call s:goto(line(".") - 1)
+  elseif a:where == "down"
+    call s:goto(line(".") + 1)
+  elseif a:where == "mouse"
+    call s:goto(line("."))
+  elseif a:where == "pgup"
+    let newpos = line(".") - winheight(0)
+    if newpos < 1
+      let newpos = 1
+    endif
+    call s:goto(newpos)
+  elseif a:where == "pgdown"
+    let newpos = line(".") + winheight(0)
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call s:goto(newpos)
+  elseif a:where == "half_pgup"
+    let newpos = line(".") - winheight(0) / 2
+    if newpos < 1
+      let newpos = 1
+    endif
+    call s:goto(newpos)
+  elseif a:where == "half_pgdown"
+    let newpos = line(".") + winheight(0) / 2
+    if newpos > line("$")
+      let newpos = line("$")
+    endif
+    call s:goto(newpos)
+  else
+    call s:goto(a:where)
+  endif
+endfunction
+
+function! ctrlspace#window#SelectedIndex()
+  return b:indices[line(".") - 1]
+endfunction
+
+function! ctrlspace#window#GotoWindow()
+  let nr = ctrlspace#window#SelectedIndex()
+
+  if bufwinnr(nr) != -1
+    call ctrlspace#window#Kill(0, 1)
+    silent! exe bufwinnr(nr) . "wincmd w"
+    return 1
+  endif
+
+  return 0
+endfunction
+
+" tries to set the cursor to a line of the buffer list
+function! s:goto(line)
+  if b:size < 1
+    return
+  endif
+
+  if a:line < 1
+    call s:goto(b:size - a:line)
+  elseif a:line > b:size
+    call s:goto(a:line - b:size)
+  else
+    call cursor(a:line, 1)
+  endif
+endfunction
+
 function! s:resetWindow()
   call ctrlspace#modes#Help.Disable()
   call ctrlspace#modes#Buffer.Enable()
@@ -37,294 +314,6 @@ function! s:resetWindow()
   call ctrlspace#util#HandleVimSettings("start")
 endfunction
 
-function! ctrlspace#window#Toggle(internal)
-  if !a:internal
-    call s:resetWindow()
-  endif
-
-  " if we get called and the list is open --> close it
-  if bufexists(ctrlspace#context#PluginBuffer)
-    if bufwinnr(ctrlspace#context#PluginBuffer) != -1
-      call <SID>kill(ctrlspace#context#PluginBuffer, 1)
-      return
-    else
-      call <SID>kill(ctrlspace#context#PluginBuffer, 0)
-      if !a:internal
-        let t:CtrlSpaceStartWindow = winnr()
-        let t:CtrlSpaceWinrestcmd  = winrestcmd()
-        let t:CtrlSpaceActivebuf   = bufnr("")
-      endif
-    endif
-  elseif !a:internal
-    " make sure zoom window is closed
-    silent! exe "pclose"
-    let t:CtrlSpaceStartWindow = winnr()
-    let t:CtrlSpaceWinrestcmd  = winrestcmd()
-    let t:CtrlSpaceActivebuf   = bufnr("")
-  endif
-
-  if ctrlspace#modes#Zoom.Enabled
-    let t:CtrlSpaceActivebuf = bufnr("")
-  endif
-
-  " let bufcount      = bufnr("$")
-  " let displayedbufs = 0
-  " let buflist       = []
-
-  " let max_results   = g:ctrlspace_max_search_results
-
-  " if max_results == -1
-  "   let max_results = <SID>max_height()
-  " endif
-
-  " create the buffer first & set it up
-  silent! exe "noautocmd botright pedit CtrlSpace"
-  silent! exe "noautocmd wincmd P"
-  silent! exe "resize" s:config.CtrlSpaceHeight
-
-  " zoom start window in Zoom Mode
-  if ctrlspace#modes#Zoom.Enabled
-    silent! exe t:CtrlSpaceStartWindow . "wincmd w"
-    vert resize | resize
-    silent! exe "noautocmd wincmd P"
-  endif
-
-  call s:setUpBuffer()
-  call ctrlspace
-
-  if s:help_mode
-    call <SID>display_help()
-    call <SID>set_statusline()
-    return
-  endif
-
-  let noises   = []
-  let patterns = []
-
-  if s:file_mode
-    if empty(s:files)
-
-      let s:all_files_cached = []
-
-      " try to pick up files from cache
-      call <SID>load_files_from_cache()
-
-      if empty(s:files)
-        let action = "Collecting files..."
-        call <SID>msg(action)
-
-        let unique_files = {}
-
-        for fname in empty(g:ctrlspace_glob_command) ? split(globpath('.', '**'), '\n') : split(system(g:ctrlspace_glob_command), '\n')
-          let fname_modified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
-
-          if isdirectory(fname_modified) || (fname_modified =~# g:ctrlspace_ignored_files)
-            continue
-          endif
-
-          let unique_files[fname_modified] = 1
-        endfor
-
-        let s:files = keys(unique_files)
-        call <SID>save_files_in_cache()
-      else
-        let action = "Loading files..."
-        call <SID>msg(action)
-      endif
-
-      let s:all_files_cached = map(s:files[0:g:ctrlspace_max_files - 1],
-            \ '{ "number": v:key + 1, "raw": v:val, "search_noise": 0 }')
-
-      call sort(s:all_files_cached, function("s:compare_raw_names"))
-      let s:all_files_buftext = <SID>prepare_buftext_to_display(s:all_files_cached)
-
-      redraw!
-      call <SID>msg(action . " Done (" . len(s:all_files_cached). "/" . len(s:files) . ").")
-    endif
-
-    let bufcount = len(s:files)
-  elseif s:workspace_mode
-    let bufcount = len(s:workspace_names)
-  elseif s:tablist_mode
-    let bufcount = tabpagenr("$")
-  elseif s:bookmark_mode
-    let bufcount = len(s:bookmarks)
-  endif
-
-  if (s:file_mode && empty(s:search_letters)) || (s:file_mode && g:ctrlspace_use_ruby_bindings && has("ruby"))
-    if empty(s:search_letters)
-      let buflist = s:all_files_cached
-    else
-      ruby CtrlSpace.get_file_search_results(VIM.evaluate("max_results"))
-
-      let buflist = b:file_search_results
-      let patterns = b:file_search_patterns
-    endif
-
-    let displayedbufs = len(buflist)
-  else
-    for i in range(1, bufcount)
-      if s:file_mode
-        let bufname = s:files[i - 1]
-      elseif s:workspace_mode
-        let bufname = s:workspace_names[i - 1]
-      elseif s:tablist_mode
-        let tab_winnr       = tabpagewinnr(i)
-        let tab_buflist     = tabpagebuflist(i)
-        let tab_bufnr       = tab_buflist[tab_winnr - 1]
-        let tab_bufname     = bufname(tab_bufnr)
-        let tab_bufs_number = ctrlspace#tab_buffers_number(i)
-        let tab_title       = ctrlspace#tab_title(i, tab_bufnr, tab_bufname)
-
-        if !g:ctrlspace_unicode_font && !empty(tab_bufs_number)
-          let tab_bufs_number = ":" . tab_bufs_number
-        end
-
-        let bufname         = string(i) . tab_bufs_number . " " . tab_title
-      elseif s:bookmark_mode
-        let bufname = s:bookmarks[i - 1].name
-      else
-        if ((s:single_mode == 1) && !exists('t:ctrlspace_list[' . i . ']')) ||
-              \ ((s:single_mode == 2) && (bufwinnr(i) == -1))
-          continue
-        endif
-
-        let bufname = fnamemodify(bufname(i), ":.")
-
-        if !strlen(bufname) && (getbufvar(i, '&modified') || (bufwinnr(i) != -1))
-          let bufname = '[' . i . '*No Name]'
-        endif
-      endif
-
-      if strlen(bufname) && (s:file_mode || s:workspace_mode || s:tablist_mode || s:bookmark_mode ||
-            \ (getbufvar(i, '&modifiable') && getbufvar(i, '&buflisted')))
-        let search_noise = empty(s:search_letters) ? 0 : <SID>find_lowest_search_noise(bufname)
-
-        if search_noise == -1
-          continue
-        elseif !empty(s:search_letters)
-          if !max_results
-            let displayedbufs += 1
-            call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
-            call add(patterns, b:last_search_pattern)
-          elseif displayedbufs < max_results
-            let displayedbufs += 1
-            call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
-            call add(noises, search_noise)
-            call add(patterns, b:last_search_pattern)
-          else
-            let max_index = index(noises, max(noises))
-            if noises[max_index] > search_noise
-              call remove(noises, max_index)
-              call insert(noises, search_noise, max_index)
-              call remove(patterns, max_index)
-              call insert(patterns, b:last_search_pattern, max_index)
-              call remove(buflist, max_index)
-              call insert(buflist, { "number": i, "raw": bufname, "search_noise": search_noise }, max_index)
-            endif
-          endif
-        else
-          let displayedbufs += 1
-          call add(buflist, { "number": i, "raw": bufname, "search_noise": search_noise })
-        endif
-      endif
-    endfor
-  endif
-
-  " set up window height
-  if displayedbufs > g:ctrlspace_height
-    if displayedbufs < <SID>max_height()
-      silent! exe "resize " . displayedbufs
-    else
-      silent! exe "resize " . <SID>max_height()
-    endif
-  endif
-
-  " adjust search timing
-  let search_timing_reference = s:file_mode ? len(s:files) : len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
-
-  if search_timing_reference < g:ctrlspace_search_timing[0]
-    let search_timing = g:ctrlspace_search_timing[0]
-  elseif search_timing_reference > g:ctrlspace_search_timing[1]
-    let search_timing = g:ctrlspace_search_timing[1]
-  else
-    let search_timing = search_timing_reference
-  endif
-
-  silent! exe "set updatetime=" . search_timing
-
-  call <SID>display_list(displayedbufs, buflist)
-  call <SID>set_statusline()
-
-  if !empty(s:search_letters)
-    call <SID>display_search_patterns(patterns)
-  endif
-
-  if s:workspace_mode
-    if s:last_browsed_workspace
-      let activebufline = s:last_browsed_workspace
-    else
-      let activebufline = 1
-
-      if !empty(s:active_workspace_name)
-        let current_workspace = s:active_workspace_name
-      elseif !empty(s:last_active_workspace)
-        let current_workspace = s:last_active_workspace
-      else
-        let current_workspace = ""
-      endif
-
-      if !empty(current_workspace)
-        let active_workspace_line = 0
-
-        for workspace_name in buflist
-          let active_workspace_line += 1
-
-          if current_workspace ==# workspace_name.raw
-            let activebufline = active_workspace_line
-            break
-          endif
-        endfor
-      endif
-    endif
-  elseif s:tablist_mode
-    let activebufline = tabpagenr()
-  elseif s:bookmark_mode
-    let activebufline = 1
-
-    if !empty(s:active_bookmark)
-      let active_bookmark_line = 0
-
-      for bm_name in buflist
-        let active_bookmark_line += 1
-
-        if s:active_bookmark.name ==# bm_name.raw
-          let activebufline = active_bookmark_line
-          break
-        endif
-      endfor
-    endif
-  else
-    let activebufline = s:file_mode ? line("$") : <SID>find_activebufline(t:ctrlspace_activebuf, buflist)
-  endif
-
-  " make the buffer count & the buffer numbers available
-  " for our other functions
-  let b:buflist = buflist
-  let b:bufcount = displayedbufs
-
-  " go to the correct line
-  if !empty(s:search_letters) && s:new_search_performed
-    call<SID>move_selection_bar(line("$"))
-    if !s:search_mode
-      let s:new_search_performed = 0
-    endif
-  else
-    call <SID>move_selection_bar(activebufline)
-  endif
-  normal! zb
-endfunction
-
 function! s:setUpBuffer()
   setlocal noswapfile
   setlocal buftype=nofile
@@ -348,29 +337,27 @@ function! s:setUpBuffer()
     silent! exe "lcd " . ctrlspace#context#ProjectRoot
   endif
 
-  let b:search_patterns = {}
-
   if &timeout
-    let b:timeoutlen_save = &timeoutlen
+    let b:timeoutlenSave = &timeoutlen
     set timeoutlen=10
   endif
 
-  let b:updatetime_save = &updatetime
+  let b:updatetimeSave = &updatetime
 
   " shellslash support for win32
   if has("win32") && !&ssl
-    let b:nossl_save = 1
+    let b:nosslSave = 1
     set ssl
   endif
 
   augroup CtrlSpaceUpdateSearch
     au!
-    au CursorHold <buffer> call <SID>update_search_results()
+    au CursorHold <buffer> call ctrlspace#util#UpdateSearchResults()
   augroup END
 
   augroup CtrlSpaceLeave
     au!
-    au BufLeave <buffer> call <SID>kill(0, 1)
+    au BufLeave <buffer> call ctrlspace#window#Kill(0, 1)
   augroup END
 
   " set up syntax highlighting
@@ -382,125 +369,158 @@ function! s:setUpBuffer()
 
   call clearmatches()
 
-  if !g:ctrlspace_use_mouse_and_arrows_in_term && !has("gui_running")
+  if !s:config.UseMouseAndArrowsInTerm && !has("gui_running")
     " Block unnecessary escape sequences!
-    noremap <silent><buffer><esc>[ :call <SID>mark_key_esc_sequence()<CR>
-    let b:mouse_save = &mouse
+    noremap <silent><buffer><esc>[ :call s:markKeyEscSequence()<CR>
+    let b:mouseSave = &mouse
     set mouse=
   endif
 
-  for key_name in s:key_names
-    let key = strlen(key_name) > 1 ? ("<" . key_name . ">") : key_name
+  for keyName in ctrlspace#context#KeyNames
+    let key = strlen(keyName) > 1 ? ("<" . keyName . ">") : keyName
 
-    if key_name == '"'
-      let key_name = '\' . key_name
+    if keyName == '"'
+      let keyName = '\' . keyName
     endif
 
-    silent! exe "noremap <silent><buffer> " . key . " :call <SID>keypressed(\"" . key_name . "\")<CR>"
+    silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . keyName . "\")<CR>"
   endfor
 endfunction
 
-function! <SID>display_list(displayedbufs, buflist)
-  setlocal modifiable
-  if a:displayedbufs > 0
-    if s:file_mode && empty(s:search_letters)
-      let buftext = s:all_files_buftext
+function! s:markKeyEscSequence()
+  let ctrlspace#context#KeyEscSequence = 1
+endfunction
+
+function! s:setActiveLine()
+  if !empty(ctrlspace#modes#Search.Data.Letters) && ctrlspace#modes#Search.Data.NewSearchPerformed
+    call ctrlspace#window#MoveSelectionBar(line("$"))
+
+    if !ctrlspace#modes#Search.Enabled
+      let ctrlspace#modes#Search.Data.NewSearchPerformed = 0
+    endif
+  elseif ctrlspace#modes#Workspace.Enabled
+    if ctrlspace#modes#Workspace.Data.LastBrowsed
+      let activeLine = ctrlspace#modes#Workspace.Data.LastBrowsed
     else
-      if !empty(s:search_letters)
-        call sort(a:buflist, function("s:compare_raw_names_with_search_noise"))
-      elseif s:tablist_mode
-        call sort(a:buflist, function("s:compare_tab_names"))
+      let activeLine = 1
+
+      if !empty(ctrlspace#modes#Workspace.Data.Active.Name)
+        let currentWorkspace = ctrlspace#modes#Workspace.Data.Active.Name
+      elseif !empty(ctrlspace#modes#Workspace.Data.LastActive)
+        let currentWorkspace = ctrlspace#modes#Workspace.Data.LastActive
       else
-        call sort(a:buflist, function("s:compare_raw_names"))
+        let currentWorkspace = ""
       endif
 
-      " trim the list in search mode
-      let buflist = s:search_mode && (len(a:buflist) > <SID>max_height()) ? a:buflist[-<SID>max_height() : -1] : a:buflist
-      let buftext = <SID>prepare_buftext_to_display(buflist)
+      if !empty(currentWorkspace)
+        for i in range(0, b:size - 1)
+          if currentWorkspace ==# ctrlspace#context#Workspaces[b:indices[i]]
+            let activeLine = i + 1
+            break
+          endif
+        endfor
+      endif
     endif
+  elseif ctrlspace#modes#Tablist.Enabled
+    let activeLine = tabpagenr()
+  elseif ctrlspace#modes#Bookmark.Enabled
+    let activeLine = 1
 
-    silent! put! =buftext
-    normal! GkJ
-    let fill = <SID>make_filler()
-    while winheight(0) > line(".")
-      silent! put =fill
-    endwhile
-
-    let s:nop_mode = 0
+    if !empty(ctrlspace#modes#Bookmark.Data.Active)
+      for i in range(0, b:size - 1)
+        if ctrlspace#modes#Bookmark.Data.Active.Name ==# ctrlspace#context#Bookmarks[b:indices[i]].Name
+          let activeLine = i + 1
+          break
+        endif
+      endfor
+    endif
+  elseif ctrlspace#modes#File.Enabled
+    let activeLine = line("$")
   else
-    let empty_list_message = "  List empty"
+    let activeLine = 0
+    let maxCounter = 0
+    let lastLine   = 0
 
-    if &columns < (strwidth(empty_list_message) + 2)
-      let empty_list_message = strpart(empty_list_message, 0, &columns - 2 - s:symbol_sizes.dots) . g:ctrlspace_symbols.dots
+    for i in range(0, b:size - 1)
+      if b:indices[i] == t:CtrlSpaceActivebuf
+        let activeLine = i + 1
+        break
+      endif
+
+      let currentJumpCounter = ctrlspace#util#GetbufvarWithDefault(b:indices[i], "CtrlSpaceJumpCounter", 0)
+
+      if currentJumpCounter > maxCounter
+        let maxCounter = currentJumpCounter
+        let lastLine = i + 1
+      endif
+    endfor
+
+    if !activeLine
+      let activeLine = (lastLine > 0) ? lastLine : b:size - 1
+    endif
+  endif
+
+  call ctlrspace#window#MoveSelectionBar(activeLine)
+endfunction
+
+function! s:filler()
+  " generate a variable to fill the buffer afterwards
+  " (we need this for "full window" color :)
+  if !exists("s:filler['" . &columns . "']")
+    let fill = "\n"
+    let i    = 0
+
+    while i < &columns
+      let i += 1
+      let fill = ' ' . fill
+    endwhile
+
+    if !exists("s:filler")
+      let s:filler = {}
     endif
 
-    while strwidth(empty_list_message) < &columns
-      let empty_list_message .= ' '
+    let s:filler[string(&columns)] = fill
+  endif
+
+  return s:filler[string(&columns)]
+endfunction
+
+function! s:fillBufferSpace()
+  let fill = s:filler()
+
+  while winheight(0) > line(".")
+    silent! put =fill
+  endwhile
+endfunction
+
+function! s:displayContent()
+  setlocal modifiable
+
+  if b:size > 0
+    silent! put! =b:text
+    normal! GkJ
+    call s:fillBufferSpace()
+    call ctrlspace#modes#Nop.Disable()
+  else
+    let emptyListMessage = "  List empty"
+
+    if &columns < (strwidth(emptyListMessage) + 2)
+      let emptyListMessage = strpart(emptyListMessage, 0, &columns - 2 - ctrlspace#context#SymbolSizes.Dots) . s:config.Symbols.Dots
+    endif
+
+    while strwidth(emptyListMessage) < &columns
+      let emptyListMessage .= ' '
     endwhile
 
-    silent! put! =empty_list_message
+    silent! put! =emptyListMessage
     normal! GkJ
 
-    let fill = <SID>make_filler()
-
-    while winheight(0) > line(".")
-      silent! put =fill
-    endwhile
+    call s:fillBufferSpace()
 
     normal! 0
 
-    let s:nop_mode = 1
+    call ctrlspace#modes#Nop.Enable()
   endif
+
   setlocal nomodifiable
-endfunction
-
-function! ctrlspace#window#Kill(plugin_buffer, final)
-  " added workaround for strange Vim behavior when, when kill starts with some delay
-  " (in a wrong buffer). This happens in some Nop modes (in a File List view).
-  if (exists("s:killing_now") && s:killing_now) || (!a:plugin_buffer && &ft != "ctrlspace")
-    return
-  endif
-
-  let s:killing_now = 1
-
-  if exists("b:updatetime_save")
-    silent! exe "set updatetime=" . b:updatetime_save
-  endif
-
-  if exists("b:timeoutlen_save")
-    silent! exe "set timeoutlen=" . b:timeoutlen_save
-  endif
-
-  if exists("b:mouse_save")
-    silent! exe "set mouse=" . b:mouse_save
-  endif
-
-  " shellslash support for win32
-  if exists("b:nossl_save") && b:nossl_save
-    set nossl
-  endif
-
-  if a:plugin_buffer
-    silent! exe ':' . a:plugin_buffer . 'bwipeout'
-  else
-    bwipeout
-  endif
-
-  if a:final
-    call <SID>handle_vim_settings("stop")
-
-    if s:restored_search_mode
-      call <SID>append_to_search_history()
-    endif
-
-    call <SID>goto_start_window()
-
-    if s:zoom_mode
-      exec ":b " . s:zoom_mode_original_buffer
-      unlet s:zoom_mode_original_buffer
-      let s:zoom_mode = 0
-    endif
-  endif
-
-  unlet s:killing_now
 endfunction

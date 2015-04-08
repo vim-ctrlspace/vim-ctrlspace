@@ -270,7 +270,3 @@ function ctrlspace#ui#SaveWorkspace(name)
   call ctrlspace#util#HandleVimSettings("stop")
   call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
 endfunction
-
-" command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspaceExternally(<q-args>)
-" command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#ui#NewWorkspaceExternally()
-" command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#ui#LoadWorkspaceExternally(<bang>0, <q-args>)

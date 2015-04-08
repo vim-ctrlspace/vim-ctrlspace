@@ -36,8 +36,8 @@ function! ctrlspace#init#Initialize()
   call s:initProjectRootsAndBookmarks()
   call s:initKeyNames()
 
-  au BufEnter * call s:addTabBuffer()
-  au BufEnter * call s:addJump()
+  au BufEnter * call ctrlspace#context#AddBuffer()
+  au VimEnter * call ctrlspace#context#InitializeBuffers()
   au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#context#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
@@ -112,37 +112,4 @@ function! s:initKeyNames()
   endif
 
   let ctrlspace#context#KeyNames = keyNames
-endfunction
-
-function! s:addTabBuffer()
-  if ctrlspace#modes#Zoom.Enabled
-    return
-  endif
-
-  if !exists("t:CtrlSpaceList")
-    let t:CtrlSpaceList = {}
-  endif
-
-  let current = bufnr('%')
-
-  if !exists("t:CtrlSpaceList[" . current . "]") &&
-        \ getbufvar(current, "&modifiable") &&
-        \ getbufvar(current, "&buflisted") &&
-        \ getbufvar(current, "&ft") != "ctrlspace"
-    let t:CtrlSpaceList[current] = len(t:CtrlSpaceList) + 1
-  endif
-endfunction
-
-function! s:addJump()
-  if ctrlspace#modes#Zoom.Enabled
-    return
-  endif
-
-  let current = bufnr("%")
-
-  if getbufvar(current, "&modifiable") &&
-        \ getbufvar(current, "&buflisted") &&
-        \ getbufvar(current, "&ft") != "ctrlspace"
-    let b:CtrlSpaceJumpCounter = ctrlspace#context#IncrementJumpCounter()
-  endif
 endfunction

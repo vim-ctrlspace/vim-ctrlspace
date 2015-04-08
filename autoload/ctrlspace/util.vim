@@ -83,23 +83,3 @@ function! ctrlspace#util#UpdateSearchResults()
     call ctrlspace#window#Toggle(1)
   endif
 endfunction
-
-function! ctrlspace#util#SaveFilesInCache()
-  let filename = ctrlspace#util#FilesCache()
-
-  if empty(filename)
-    return
-  endif
-
-  call writefile(ctrlspace#context#Files, filename)
-endfunction
-
-function! ctrlspace#util#LoadFilesFromCache()
-  let filename = ctrlspace#util#FilesCache()
-
-  if empty(filename) || !filereadable(filename)
-    return
-  endif
-
-  let ctrlspace#context#Files = readfile(filename)
-endfunction
