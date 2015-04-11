@@ -30,14 +30,10 @@
 
 scriptencoding utf-8
 
-if exists('g:ctrlspace_loaded')
+if exists('g:CtrlSpaceLoaded')
   finish
 endif
 
-let g:ctrlspace_loaded = 1
+let g:CtrlSpaceLoaded = 1
 
-
-function! ctrlspace#Toggle(internal)
-endfunction
-
-
+call g:ctrlspace#init#Initialize()

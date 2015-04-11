@@ -1,35 +1,35 @@
-let s:config = ctrlspace#context#Configuration.Instance()
+let s:config = g:ctrlspace#context#Configuration.Instance()
 let s:fileItems = []
 
-function! ctrlspace#files#SaveInCache()
-  let filename = ctrlspace#util#FilesCache()
+function! g:ctrlspace#files#SaveInCache()
+  let filename = g:ctrlspace#util#FilesCache()
 
   if empty(filename)
     return
   endif
 
-  call writefile(ctrlspace#context#Files, filename)
+  call writefile(g:ctrlspace#context#Files, filename)
 endfunction
 
-function! ctrlspace#files#LoadFromCache()
-  let filename = ctrlspace#util#FilesCache()
+function! g:ctrlspace#files#LoadFromCache()
+  let filename = g:ctrlspace#util#FilesCache()
 
   if empty(filename) || !filereadable(filename)
     return
   endif
 
-  let ctrlspace#context#Files = readfile(filename)
+  let g:ctrlspace#context#Files = readfile(filename)
 endfunction
 
-function! ctrlspace#files#Files()
-  if empty(ctrlspace#context#Files)
+function! g:ctrlspace#files#Files()
+  if empty(g:ctrlspace#context#Files)
 
     " try to pick up files from cache
-    call ctrlspace#files#LoadFromCache()
+    call g:ctrlspace#files#LoadFromCache()
 
-    if empty(ctrlspace#context#Files)
+    if empty(g:ctrlspace#context#Files)
       let action = "Collecting files..."
-      call ctrlspace#ui#Msg(action)
+      call g:ctrlspace#ui#Msg(action)
 
       let uniqueFiles = {}
 
@@ -43,23 +43,23 @@ function! ctrlspace#files#Files()
         let uniqueFiles[fnameModified] = 1
       endfor
 
-      let ctrlspace#context#Files = keys(uniqueFiles)
+      let g:ctrlspace#context#Files = keys(uniqueFiles)
 
-      call ctrlspace#files#SaveInCache()
+      call g:ctrlspace#files#SaveInCache()
     else
       let action = "Loading files..."
-      call ctrlspace#ui#Msg(action)
+      call g:ctrlspace#ui#Msg(action)
     endif
 
     redraw!
-    call ctrlspace#ui#Msg(action . " Done (" . len(ctrlspace#context#Files) . " files).")
+    call g:ctrlspace#ui#Msg(action . " Done (" . len(g:ctrlspace#context#Files) . " files).")
   endif
 
-  return ctrlspace#context#Files
+  return g:ctrlspace#context#Files
 endfunction
 
-function! ctrlspace#files#FileItems()
-  let files = ctrlspace#files#Files()
+function! g:ctrlspace#files#FileItems()
+  let files = g:ctrlspace#files#Files()
 
   if !empty(files) && empty(s:fileItems)
     for i in range(0, len(files) - 1)

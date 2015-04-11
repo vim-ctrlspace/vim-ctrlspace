@@ -1,20 +1,20 @@
-let s:config = ctrlspace#context#Configuration.Instance()
+let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
-  let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
+function! g:ctrlspace#bookmarks#AddToBookmarks(directory, name)
+  let directory   = g:ctrlspace#util#NormalizeDirectory(a:directory)
   let jumpCounter = 0
 
-  for i in range(0, len(ctrlspace#context#Bookmarks) - 1)
-    if ctrlspace#context#Bookmarks[i].Directory == directory
-      let jumpCounter = ctrlspace#context#Bookmarks[i].JumpCounter
-      call remove(ctrlspace#context#Bookmarks, i)
+  for i in range(0, len(g:ctrlspace#context#Bookmarks) - 1)
+    if g:ctrlspace#context#Bookmarks[i].Directory == directory
+      let jumpCounter = g:ctrlspace#context#Bookmarks[i].JumpCounter
+      call remove(g:ctrlspace#context#Bookmarks, i)
       break
     endif
   endfor
 
   let bookmark = { "Name": a:name, "Directory": directory, "JumpCounter": jumpCounter }
 
-  call add(ctrlspace#context#Bookmarks, bookmark)
+  call add(g:ctrlspace#context#Bookmarks, bookmark)
 
   let lines     = []
   let bmRoots   = {}
@@ -28,12 +28,12 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
     endfor
   endif
 
-  for bm in ctrlspace#context#Bookmarks
-    call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator . bm.Name)
+  for bm in g:ctrlspace#context#Bookmarks
+    call add(lines, "CS_BOOKMARK: " . bm.Directory . g:ctrlspace#context#Separator . bm.Name)
     let bmRoots[bm.Directory] = 1
   endfor
 
-  for root in keys(ctrlspace#context#ProjectRoots)
+  for root in keys(g:ctrlspace#context#ProjectRoots)
     if !exists("bmRoots[root]")
       call add(lines, "CS_PROJECT_ROOT: " . root)
     endif
@@ -41,17 +41,17 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
 
   call writefile(lines, cacheFile)
 
-  let ctrlspace#context#ProjectRoots[bookmark.Directory] = 1
+  let g:ctrlspace#context#ProjectRoots[bookmark.Directory] = 1
 
   return bookmark
 endfunction
 
-function! ctrlspace#bookmarks#FindActiveBookmark()
-  let projectRoot = ctrlspace#util#NormalizeDirectory(empty(ctrlspace#context#ProjectRoot) ? fnamemodify(".", ":p:h") : ctrlspace#context#ProjectRoot)
+function! g:ctrlspace#bookmarks#FindActiveBookmark()
+  let projectRoot = g:ctrlspace#util#NormalizeDirectory(empty(g:ctrlspace#context#ProjectRoot) ? fnamemodify(".", ":p:h") : g:ctrlspace#context#ProjectRoot)
 
-  for bookmark in ctrlspace#context#Bookmarks
-    if ctrlspace#util#NormalizeDirectory(bookmark.Directory) == projectRoot
-      let bookmark.JumpCounter = ctrlspace#context#IncrementJumpCounter
+  for bookmark in g:ctrlspace#context#Bookmarks
+    if g:ctrlspace#util#NormalizeDirectory(bookmark.Directory) == projectRoot
+      let bookmark.JumpCounter = g:ctrlspace#context#IncrementJumpCounter()
       return bookmark
     endif
   endfor

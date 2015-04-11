@@ -1,33 +1,33 @@
-let s:config            = ctrlspace#context#Configuration.Instance()
+let s:config            = g:ctrlspace#context#Configuration.Instance()
 let s:maxSearchedItems  = 200
 let s:maxDisplayedItems = 500
 
 " returns [patterns, indices, size, text]
-function! ctrlspace#engine#Content()
+function! g:ctrlspace#engine#Content()
   let items = s:contentSource()
 
   if !empty(s:config.Engine)
     return s:contentFromExternalEngine(s:config.Engine, items)
   endif
 
-  if !empty(ctrlspace#modes#Search.Data.Letters)
+  if !empty(g:ctrlspace#modes#Search.Data.Letters)
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
-    call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
+    call sort(items, function("g:ctrlspace#engine#CompareByNoiseAndText"))
   else
     if len(items) > s:maxDisplayedItems
       let items = items[0, s:maxDisplayedItems - 1]
     endif
 
-    if s:tablist_mode
-      call sort(items, function("ctrlspace#engine#CompareByIndex"))
+    if g:ctrlspace#modes#Tablist.Enabled
+      call sort(items, function("g:ctrlspace#engine#CompareByIndex"))
     else
-      call sort(items, function("ctrlspace#engine#CompareByText"))
+      call sort(items, function("g:ctrlspace#engine#CompareByText"))
     endif
   endif
 
   " trim the list in search mode
-  if ctrlspace#modes#Search.Enabled
-    let maxHeight = ctrlspace#context#MaxHeight()
+  if g:ctrlspace#modes#Search.Enabled
+    let maxHeight = g:ctrlspace#context#MaxHeight()
 
     if len(items) > maxHeight
       let items = items[-maxHeight: -1]
@@ -38,10 +38,10 @@ function! ctrlspace#engine#Content()
 endfunction
 
 function! s:contentFromExternalEngine(engine, items)
-  let engineCommand = ctrlspace#context#PluginFolder . "/bin/" . a:engine
+  let engineCommand = g:ctrlspace#context#PluginFolder . "/bin/" . a:engine
   let engineData = [s:vimContextJSON()]
 
-  if ctrlspace#modes#File.Enabled
+  if g:ctrlspace#modes#File.Enabled
     call add(engineData, a:items[0].path])
   else
     for item in a:items
@@ -60,7 +60,7 @@ function! s:contentFromExternalEngine(engine, items)
   return [patterns, indices, size, text]
 endfunction
 
-function! ctrlspace#engine#CompareByText(a, b)
+function! g:ctrlspace#engine#CompareByText(a, b)
   if a:a.text < a:b.text
     return -1
   elseif a:a.text > a:b.text
@@ -70,7 +70,7 @@ function! ctrlspace#engine#CompareByText(a, b)
   endif
 endfunction
 
-function! ctrlspace#engine#CompareByIndex(a, b)
+function! g:ctrlspace#engine#CompareByIndex(a, b)
   if a:a.index < a:b.index
     return -1
   elseif a:a.index > a:b.index
@@ -80,7 +80,7 @@ function! ctrlspace#engine#CompareByIndex(a, b)
   endif
 endfunction
 
-function! ctrlspace#engine#CompareByNoiseAndText(a, b)
+function! g:ctrlspace#engine#CompareByNoiseAndText(a, b)
   if a:a.noise < a:b.noise
     return 1
   elseif a:a.noise > a:b.noise
@@ -139,24 +139,24 @@ function! s:computeLowestNoises(source, maxItems)
 endfunction
 
 function! s:vimContextJSON()
-  '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
-        \ '","SearchModeEnabled":' . ctrlspace#modes#Search.Enabled .
-        \ ',"SearchText":"' . join(ctrlspace#modes#Search.Data.Letters, "") .
-        \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#context#MaxHeight()
+  '{"CurrentListView":"' . g:ctrlspace#modes#CurrentListView() .
+        \ '","SearchModeEnabled":' . g:ctrlspace#modes#Search.Enabled .
+        \ ',"SearchText":"' . join(g:ctrlspace#modes#Search.Data.Letters, "") .
+        \ '","Columns":' . &columns . ',"MaxHeight":' . g:ctrlspace#context#MaxHeight()
         \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
         \  s:maxDisplayedItems . '}'
 endfunction
 
 function! s:contentSource()
-  if ctrlspace#modes#Buffer.Enabled
+  if g:ctrlspace#modes#Buffer.Enabled
     return s:bufferListContent()
-  elseif ctrlspace#modes#File.Enabled
+  elseif g:ctrlspace#modes#File.Enabled
     return s:fileListContent()
-  elseif ctrlspace#modes#Tablist.Enabled
+  elseif g:ctrlspace#modes#Tablist.Enabled
     return s:tabListContent()
-  elseif ctrlspace#modes#Workspace.Enabled
+  elseif g:ctrlspace#modes#Workspace.Enabled
     return s:workspaceListContent()
-  elseif ctrlspace#modes#Bookmark.Enabled
+  elseif g:ctrlspace#modes#Bookmark.Enabled
     return s:bookmarkListContent()
   endif
 endfunction
@@ -164,16 +164,16 @@ endfunction
 function! s:bookmarkListContent()
   let content = []
 
-  for i in range(0, len(ctrlspace#context#Bookmarks) - 1)
-    let name       = ctrlspace#content#Bookmarks[i].Name
+  for i in range(0, len(g:ctrlspace#context#Bookmarks) - 1)
+    let name       = g:ctrlspace#content#Bookmarks[i].Name
     let indicators = ""
 
-    if !empty(ctrlspace#modes#Bookmark.Data.Active) &&
-          \ (ctrlspace#context#Bookmarks[i].Directory == ctrlspace#modes#Bookmarks.Data.Active.Directory)
+    if !empty(g:ctrlspace#modes#Bookmark.Data.Active) &&
+          \ (g:ctrlspace#context#Bookmarks[i].Directory == g:ctrlspace#modes#Bookmarks.Data.Active.Directory)
       let indicators .= s:config.Symbols.IA
     endif
 
-    call add(content, { "index": i, "text": ctrlspace#content#Bookmarks[i].Name, "indicators": indicators })
+    call add(content, { "index": i, "text": g:ctrlspace#content#Bookmarks[i].Name, "indicators": indicators })
   endfor
 
   return content
@@ -182,19 +182,19 @@ endfunction
 function! s:workspaceListContent()
   let content = []
 
-  for i in range(0, len(ctrlspace#context#Workspaces) - 1)
-    let name = ctrlspace#context#Workspaces[i]
+  for i in range(0, len(g:ctrlspace#context#Workspaces) - 1)
+    let name = g:ctrlspace#context#Workspaces[i]
     let indicators = ""
 
-    if name ==# ctrlspace#modes#Workspace.Data.Active.Name
-      let currentDigest = ctrlspace#workspace#CreateDigest()
+    if name ==# g:ctrlspace#modes#Workspace.Data.Active.Name
+      let currentDigest = g:ctrlspace#workspace#CreateDigest()
 
-      if ctrlspace#modes#Workspace.Data.Active.Digest !=# currentDigest
+      if g:ctrlspace#modes#Workspace.Data.Active.Digest !=# currentDigest
         let indicators .= s:config.Symbols.IM
       endif
 
       let indicators .= s:config.Symbols.IA
-    elseif name ==# ctrlspace#modes#Workspace.Data.LastActive
+    elseif name ==# g:ctrlspace#modes#Workspace.Data.LastActive
       let indicators .= s:config.Symbols.IV
     endif
 
@@ -213,8 +213,8 @@ function! s:tabListContent()
     let buflist       = tabpagebuflist(i)
     let bufnr         = buflist[winnr - 1]
     let bufname       = bufname(bufnr)
-    let tabBufsNumber = ctrlspace#api#TabBuffersNumber(i)
-    let title         = ctrlspace#api#TabTitle(i, bufnr, bufname)
+    let tabBufsNumber = g:ctrlspace#api#TabBuffersNumber(i)
+    let title         = g:ctrlspace#api#TabTitle(i, bufnr, bufname)
 
     if !s:config.UnicodeFont && !empty(tabBufsNumber)
       let tabBufsNumber = ":" . tabBufsNumber
@@ -222,7 +222,7 @@ function! s:tabListContent()
 
     let indicators = ""
 
-    if ctrlspace#api#TabModified(i)
+    if g:ctrlspace#api#TabModified(i)
       let indicators .= s:config.Symbols.IM
     endif
 
@@ -238,21 +238,21 @@ endfunction
 
 function! s:fileListContent()
   if !empty(s:config.Engine)
-    call ctrlspace#files#Files()
-    return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
+    call g:ctrlspace#files#Files()
+    return [{ "path": fnamemodify(g:ctrlspace#util#FilesCache(), ":p") }]
   else
-    return copy(ctrlspace#files#FileItems())
+    return copy(g:ctrlspace#files#FileItems())
   endif
 endfunction
 
 function! s:bufferListContent()
   let content = []
 
-  if ctrlspace#modes#Buffer.Data.SubMode ==# "single"
-    let buffers = map(keys(ctrlspace#context#Buffers(tabpagenr())), "str2nr(v:val)")
-  elseif ctrlspace#modes#Buffer.Data.SubMode ==# "all"
-    let buffers = map(keys(ctrlspace#context#Buffers(0)), "str2nr(v:val)")
-  elseif ctrlspace#modes#Buffer.Data.SubMode ==# "visual"
+  if g:ctrlspace#modes#Buffer.Data.SubMode ==# "single"
+    let buffers = map(keys(g:ctrlspace#context#Buffers(tabpagenr())), "str2nr(v:val)")
+  elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "all"
+    let buffers = map(keys(g:ctrlspace#context#Buffers(0)), "str2nr(v:val)")
+  elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "visual"
     let buffers = tabpagebuflist()
   endif
 
@@ -288,7 +288,7 @@ function! s:bufferEntry(bufnr)
       let indicators .= s:config.Symbols.IV
     endif
 
-    return { "index": i, "text": bufname, "indicators": indicators }
+    return { "index": a:bufnr, "text": bufname, "indicators": indicators }
   else
     return {}
   endif
@@ -299,7 +299,7 @@ function! s:findSubsequence(text, offset)
   let noise         = 0
   let currentOffset = a:offset
 
-  for letter in ctrlspace#modes#Search.Data.Letters
+  for letter in g:ctrlspace#modes#Search.Data.Letters
     let matchedPosition = match(a:text, "\\m\\c" . letter, currentOffset)
 
     if matchedPosition == -1
@@ -317,13 +317,13 @@ function! s:findSubsequence(text, offset)
 endfunction
 
 function! s:findLowestSearchNoise(text)
-  let searchLettersCount = len(ctrlspace#modes#Search.Data.Letters)
+  let searchLettersCount = len(g:ctrlspace#modes#Search.Data.Letters)
   let noise              = -1
   let matchedString      = ""
 
   if searchLettersCount == 1
-    let noise          = match(a:text, "\\m\\c" . ctrlspace#modes#Search.Data.Letters[0])
-    let matchedString = ctrlspace#modes#Search.Data.Letters[0]
+    let noise          = match(a:text, "\\m\\c" . g:ctrlspace#modes#Search.Data.Letters[0])
+    let matchedString = g:ctrlspace#modes#Search.Data.Letters[0]
   else
     let offset      = 0
     let text_len = strlen(a:text)
@@ -371,12 +371,12 @@ function! s:findLowestSearchNoise(text)
 endfunction
 
 function! s:prepareContent(items)
-  if ctrlspace#modes#File.Enabled
+  if g:ctrlspace#modes#File.Enabled
     let itemSpace = 5
-  elseif ctrlspace#modes#Bookmark.Enabled
-    let itemSpace = 5 + ctrlspace#context#SymbolSizes.IAV
+  elseif g:ctrlspace#modes#Bookmark.Enabled
+    let itemSpace = 5 + g:ctrlspace#context#SymbolSizes.IAV
   else
-    let itemSpace = 5 + ctrlspace#context#SymbolSizes.IAV + ctrlspace#context#SymbolSizes.IM
+    let itemSpace = 5 + g:ctrlspace#context#SymbolSizes.IAV + g:ctrlspace#context#SymbolSizes.IM
   endif
 
   let content  = ""
@@ -387,7 +387,7 @@ function! s:prepareContent(items)
     let line = item.text
 
     if strwidth(line) + itemSpace > &columns
-      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + ctrlspace#context#SymbolSizes.Dots)
+      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + g:ctrlspace#context#SymbolSizes.Dots)
     endif
 
     if !empty(item.indicators)
@@ -407,5 +407,5 @@ function! s:prepareContent(items)
     call add(indices, item.index)
   endfor
 
-  return [keys(patterns), indices, len(items), content]
+  return [keys(patterns), indices, len(a:items), content]
 endfunction

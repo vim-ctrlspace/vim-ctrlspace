@@ -1,6 +1,6 @@
-let s:config = ctrlspace#context#Configuration.Instance()
+let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! ctrlspace#util#NormalizeDirectory(directory)
+function! g:ctrlspace#util#NormalizeDirectory(directory)
   let directory = resolve(expand(a:directory))
 
   while directory[strlen(directory) - 1] == "/" || directory[strlen(directory) - 1] == "\\"
@@ -10,7 +10,7 @@ function! ctrlspace#util#NormalizeDirectory(directory)
   return directory
 endfunction
 
-function! ctrlspace#util#HandleVimSettings(switch)
+function! g:ctrlspace#util#HandleVimSettings(switch)
   call s:handleSwitchbuf(a:switch)
   call s:handleAutochdir(a:switch)
 endfunction
@@ -35,16 +35,16 @@ function! s:handleAutochdir(switch)
   endif
 endfunction
 
-function! ctrlspace#util#WorkspaceFile()
+function! g:ctrlspace#util#WorkspaceFile()
   return s:internalFilePath("cs_workspaces")
 endfunction
 
-function! ctrlspace#util#FilesCache()
+function! g:ctrlspace#util#FilesCache()
   return s:internalFilePath("cs_files")
 endfunction
 
 function! s:internalFilePath(name)
-  let root = ctrlspace#context#ProjectRoot
+  let root = g:ctrlspace#context#ProjectRoot
   let fullPart = empty(root) ? "" : (root . "/")
 
   if !empty(s:config.ProjectRootMarkers)
@@ -60,26 +60,26 @@ function! s:internalFilePath(name)
   return fullPart . "." . a:name
 endfunction
 
-function! ctrlspace#util#GetbufvarWithDefault(nr, name, default)
+function! g:ctrlspace#util#GetbufvarWithDefault(nr, name, default)
   let value = getbufvar(a:nr, a:name)
   return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
-function! ctrlspace#util#GettabvarWithDefault(nr, name, default)
+function! g:ctrlspace#util#GettabvarWithDefault(nr, name, default)
   let value = gettabvar(a:nr, a:name)
   return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
-function ctrlspace#util#SetStatusline()
+function g:ctrlspace#util#SetStatusline()
   if has("statusline")
     silent! exe "let &l:statusline = " . s:config.StatuslineFunction
   endif
 endfunction
 
-function! ctrlspace#util#UpdateSearchResults()
-  if ctrlspace#context#UpdateSearchResults
-    let ctrlspace#context#UpdateSearchResults = 0
-    call ctrlspace#window#Kill(0, 0)
-    call ctrlspace#window#Toggle(1)
+function! g:ctrlspace#util#UpdateSearchResults()
+  if g:ctrlspace#context#UpdateSearchResults
+    let g:ctrlspace#context#UpdateSearchResults = 0
+    call g:ctrlspace#window#Kill(0, 0)
+    call g:ctrlspace#window#Toggle(1)
   endif
 endfunction

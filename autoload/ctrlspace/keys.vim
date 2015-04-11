@@ -1,6 +1,6 @@
-s:config = ctrlspace#context#Configuration.Instance()
+s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! ctrlspace#keys#Keypressed(key)
-  let termSTab = ctrlspace#context#KeyEscSequence && (a:key ==# "Z")
-  let ctrlspace#context#KeyEscSequence = 0
+function! g:ctrlspace#keys#Keypressed(key)
+  let termSTab = g:ctrlspace#context#KeyEscSequence && (a:key ==# "Z")
+  let g:ctrlspace#context#KeyEscSequence = 0
 endfunction

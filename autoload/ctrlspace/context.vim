@@ -1,22 +1,22 @@
-let ctrlspace#context#PluginFolder        = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-let ctrlspace#context#PluginBuffer        = -1
+let g:ctrlspace#context#PluginFolder        = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+let g:ctrlspace#context#PluginBuffer        = -1
 
-let ctrlspace#context#Files               = []
-let ctrlspace#context#Workspaces          = []
-let ctrlspace#context#Bookmarks           = []
-let ctrlspace#context#ProjectRoots        = {}
-let ctrlspace#context#KeyEscSequence      = 0
-let ctrlspace#context#UpdateSearchResults = 0
-let ctrlspace#context#LastProjectRoot     = ""
-let ctrlspace#context#ProjectRoot         = ""
-let ctrlspace#context#SymbolSizes         = {}
-let ctrlspace#context#Separator           = "|CS_###_CS|"
-let ctrlspace#context#KeyNames            = []
-let ctrlspace#context#JumpCounter         = 0
+let g:ctrlspace#context#Files               = []
+let g:ctrlspace#context#Workspaces          = []
+let g:ctrlspace#context#Bookmarks           = []
+let g:ctrlspace#context#ProjectRoots        = {}
+let g:ctrlspace#context#KeyEscSequence      = 0
+let g:ctrlspace#context#UpdateSearchResults = 0
+let g:ctrlspace#context#LastProjectRoot     = ""
+let g:ctrlspace#context#ProjectRoot         = ""
+let g:ctrlspace#context#SymbolSizes         = {}
+let g:ctrlspace#context#Separator           = "|CS_###_CS|"
+let g:ctrlspace#context#KeyNames            = []
+let g:ctrlspace#context#JumpCounter         = 0
 
 let s:allBuffers                          = {}
 
-let ctrlspace#context#Configuration = {
+let g:ctrlspace#context#Configuration = {
       \ "defaultSymbols": {
         \ "unicode": {
           \ "CS":     "⌗",
@@ -68,7 +68,7 @@ let ctrlspace#context#Configuration = {
         \ "GlobCommand":              "",
         \ "UseTabline":               1,
         \ "UseMouseAndArrowsInTerm":  0,
-        \ "StatuslineFunction":       "ctrlspace#api#statusline()",
+        \ "StatuslineFunction":       "g:ctrlspace#api#Statusline()",
         \ "SaveWorkspaceOnExit":      0,
         \ "SaveWorkspaceOnSwitch":    0,
         \ "LoadLastWorkspaceOnStart": 0,
@@ -80,9 +80,10 @@ let ctrlspace#context#Configuration = {
         \ "MaxSearchResults":         200,
         \ "SearchTiming":             [50, 500],
         \ "SearchResonators":         ['.', '/', '\', '_', '-'],
+        \ "Engine":                   "",
       \ }
 
-function! ctrlspace#context#Configuration.Instance() dict
+function! g:ctrlspace#context#Configuration.Instance() dict
   if !exists("s:configuration")
     let s:configuration = copy(self)
 
@@ -102,7 +103,7 @@ function! ctrlspace#context#Configuration.Instance() dict
   return s:configuration
 endfunction
 
-function! ctrlspace#context#SetDefaultMapping(key, action)
+function! g:ctrlspace#context#SetDefaultMapping(key, action)
   let s:defaultKey = a:key
   if !empty(s:defaultKey)
     if s:defaultKey ==? "<C-Space>" && !has("gui_running") && !has("win32")
@@ -113,21 +114,21 @@ function! ctrlspace#context#SetDefaultMapping(key, action)
   endif
 endfunction
 
-function! ctrlspace#context#IsDefaultKey()
+function! g:ctrlspace#context#IsDefaultKey()
   return exists("s:defaultKey")
 endfunction
 
-function! ctrlspace#context#DefaultKey()
+function! g:ctrlspace#context#DefaultKey()
   return s:defaultKey
 endfunction
 
-function! ctrlspace#context#IncrementJumpCounter()
-  let ctrlspace#context#JumpCounter += 1
-  return ctrlspace#context#JumpCounter
+function! g:ctrlspace#context#IncrementJumpCounter()
+  let g:ctrlspace#context#JumpCounter += 1
+  return g:ctrlspace#context#JumpCounter
 endfunction
 
-function! ctrlspace#context#MaxHeight()
-  let maxFromConfig = ctrlspace#context#Configuration.Instance().MaxHeight
+function! g:ctrlspace#context#MaxHeight()
+  let maxFromConfig = g:ctrlspace#context#Configuration.Instance().MaxHeight
 
   if maxFromConfig
     return maxFromConfig
@@ -136,7 +137,7 @@ function! ctrlspace#context#MaxHeight()
   endif
 endfunction
 
-function! ctrlspace#context#InitializeBuffers()
+function! g:ctrlspace#context#InitializeBuffers()
   for current in range(1, bufnr("$"))
     if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
       break
@@ -148,7 +149,7 @@ function! ctrlspace#context#InitializeBuffers()
   endfor
 endfunction
 
-function! ctrlspace#context#AddBuffer()
+function! g:ctrlspace#context#AddBuffer()
   let current = bufnr('%')
 
   if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
@@ -159,11 +160,11 @@ function! ctrlspace#context#AddBuffer()
     let s:allBuffers[current] = len(s:allBuffers) + 1
   endif
 
-  if ctrlspace#modes#Zoom.Enabled
+  if g:ctrlspace#modes#Zoom.Enabled
     return
   endif
 
-  let b:CtrlSpaceJumpCounter = ctrlspace#context#IncrementJumpCounter()
+  let b:CtrlSpaceJumpCounter = g:ctrlspace#context#IncrementJumpCounter()
 
   if !exists("t:CtrlSpaceList")
     let t:CtrlSpaceList = {}
@@ -174,7 +175,7 @@ function! ctrlspace#context#AddBuffer()
   endif
 endfunction
 
-function! ctrlspace#context#Buffers(tabnr)
+function! g:ctrlspace#context#Buffers(tabnr)
   if a:tabnr
     let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
     if type(buffers) != type({})

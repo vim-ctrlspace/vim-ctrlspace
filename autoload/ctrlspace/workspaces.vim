@@ -1,24 +1,24 @@
-function! ctrlspace#workspaces#SetWorkspaceNames()
-  let filename                                  = ctrlspace#util#WorkspaceFile()
-  let ctrlspace#modes#Workspace.Data.LastActive = ""
-  let ctrlspace#context#Workspaces              = []
+function! g:ctrlspace#workspaces#SetWorkspaceNames()
+  let filename                                  = g:ctrlspace#util#WorkspaceFile()
+  let g:ctrlspace#modes#Workspace.Data.LastActive = ""
+  let g:ctrlspace#context#Workspaces              = []
 
   if filereadable(filename)
     for line in readfile(filename)
       if line =~? "CS_WORKSPACE_BEGIN: "
-        call add(ctrlspace#context#Workspaces, line[20:])
+        call add(g:ctrlspace#context#Workspaces, line[20:])
       elseif line =~? "CS_LAST_WORKSPACE: "
-        let ctrlspace#modes#Workspace.Data.LastActive = line[19:]
+        let g:ctrlspace#modes#Workspace.Data.LastActive = line[19:]
       endif
     endfor
   endif
 endfunction
 
-function! ctrlspace#workspaces#SetActiveWorkspaceName(name)
-  let ctrlspace#modes#Workspace.Data.Active.Name = a:name
-  let ctrlspace#modes#Workspace.Data.LastActive  = a:name
+function! g:ctrlspace#workspaces#SetActiveWorkspaceName(name)
+  let g:ctrlspace#modes#Workspace.Data.Active.Name = a:name
+  let g:ctrlspace#modes#Workspace.Data.LastActive  = a:name
 
-  let filename = ctrlspace#util#WorkspaceFile()
+  let filename = g:ctrlspace#util#WorkspaceFile()
   let lines    = []
 
   if filereadable(filename)
@@ -29,18 +29,18 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name)
     endfor
   endif
 
-  if !empty(ctrlspace#modes#Workspace.Data.Active.Name)
-    call insert(lines, "CS_LAST_WORKSPACE: " . ctrlspace#modes#Workspace.Data.Active.Name)
+  if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name)
+    call insert(lines, "CS_LAST_WORKSPACE: " . g:ctrlspace#modes#Workspace.Data.Active.Name)
   endif
 
   call writefile(lines, filename)
 endfunction
 
-function! ctrlspace#workspaces#GetSelectedWorkspaceName()
-  return ctrlspace#context#Workspaces[ctrlspace#window#SelectedIndex()]
+function! g:ctrlspace#workspaces#GetSelectedWorkspaceName()
+  return g:ctrlspace#context#Workspaces[g:ctrlspace#window#SelectedIndex()]
 endfunction
 
-function! ctrlspace#workspaces#CreateDigest()
+function! g:ctrlspace#workspaces#CreateDigest()
   let useNossl = exists("b:nosslSave") && b:nosslSave
 
   if useNossl
@@ -58,7 +58,7 @@ function! ctrlspace#workspaces#CreateDigest()
     let bufs     = []
     let visibles = []
 
-    let tabBuffers = ctrlspace#api#Buffers(t)
+    let tabBuffers = g:ctrlspace#api#Buffers(t)
 
     for bname in values(tabBuffers)
       let bufname = fnamemodify(bname, ":p")

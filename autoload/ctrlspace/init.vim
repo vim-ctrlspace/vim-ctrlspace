@@ -1,28 +1,28 @@
-let s:config = ctrlspace#context#Configuration.Instance()
+let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! ctrlspace#init#Initialize()
+function! g:ctrlspace#init#Initialize()
   if s:config.UseTabline
-    set tabline=%!ctrlspace#api#Tabline()
+    set tabline=%!g:ctrlspace#api#Tabline()
 
     if has("gui_running") && (&go =~# "e")
-      set guitablabel=%{ctrlspace#api#Guitablabel()}
+      set guitablabel=%{g:ctrlspace#api#Guitablabel()}
 
       " Fix MacVim issues:
       " http://stackoverflow.com/questions/11595301/controlling-tab-names-in-vim
-      au BufEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
+      au BufEnter * set guitablabel=%{g:ctrlspace#api#Guitablabel()}
     endif
   endif
 
-  command! -nargs=* -range CtrlSpace :call ctrlspace#ui#StartAndFeedkeys(<q-args>)
-  command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#ui#GoToBufferListPosition("up")
-  command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#ui#GoToBufferListPosition("down")
-  command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#ui#NewTabLabel(0)
-  command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#ui#RemoveTabLabel(0)
-  command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspace(<q-args>)
-  command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#ui#NewWorkspace()
-  command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#ui#LoadWorkspace(<bang>0, <q-args>)
-  command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#ui#AddProjectRoot(<q-args>)
-  command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#ui#RemoveProjectRoot(<q-args>)
+  command! -nargs=* -range CtrlSpace :call g:ctrlspace#ui#StartAndFeedkeys(<q-args>)
+  command! -nargs=0 -range CtrlSpaceGoUp :call g:ctrlspace#ui#GoToBufferListPosition("up")
+  command! -nargs=0 -range CtrlSpaceGoDown :call g:ctrlspace#ui#GoToBufferListPosition("down")
+  command! -nargs=0 -range CtrlSpaceTabLabel :call g:ctrlspace#ui#NewTabLabel(0)
+  command! -nargs=0 -range CtrlSpaceClearTabLabel :call g:ctrlspace#ui#RemoveTabLabel(0)
+  command! -nargs=* -range CtrlSpaceSaveWorkspace :call g:ctrlspace#ui#SaveWorkspace(<q-args>)
+  command! -nargs=0 -range CtrlSpaceNewWorkspace :call g:ctrlspace#ui#NewWorkspace()
+  command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call g:ctrlspace#ui#LoadWorkspace(<bang>0, <q-args>)
+  command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call g:ctrlspace#ui#AddProjectRoot(<q-args>)
+  command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call g:ctrlspace#ui#RemoveProjectRoot(<q-args>)
 
   hi def link CtrlSpaceNormal   Normal
   hi def link CtrlSpaceSelected Visual
@@ -30,22 +30,22 @@ function! ctrlspace#init#Initialize()
   hi def link CtrlSpaceStatus   StatusLine
 
   if s:config.SetDefaultMapping
-    call ctrlspace#context#SetDefaultMapping(s:config.DefaultMappingKey, ":CtrlSpace<CR>")
+    call g:ctrlspace#context#SetDefaultMapping(s:config.DefaultMappingKey, ":CtrlSpace<CR>")
   endif
 
   call s:initProjectRootsAndBookmarks()
   call s:initKeyNames()
 
-  au BufEnter * call ctrlspace#context#AddBuffer()
-  au VimEnter * call ctrlspace#context#InitializeBuffers()
-  au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#context#IncrementJumpCounter()
+  au BufEnter * call g:ctrlspace#context#AddBuffer()
+  au VimEnter * call g:ctrlspace#context#InitializeBuffers()
+  au TabEnter * let t:CtrlSpaceTablistJumpCounter = g:ctrlspace#context#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
-    au VimLeavePre * if !empty(ctrlspace#modes#Workspace.Data.Active.Name) | call ctrlspace#ui#SaveWorkspace("") | endif
+    au VimLeavePre * if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) | call g:ctrlspace#ui#SaveWorkspace("") | endif
   endif
 
   if s:config.LoadLastWorkspaceOnStart
-    au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#ui#LoadWorkspace(0, "") | endif
+    au VimEnter * nested if (argc() == 0) && !empty(g:ctrlspace#roots#FindProjectRoot()) | call g:ctrlspace#ui#LoadWorkspace(0, "") | endif
   endif
 endfunction
 
@@ -61,7 +61,7 @@ function! s:initProjectRootsAndBookmarks()
       endif
 
       if line =~# "CS_BOOKMARK: "
-        let parts = split(line[13:], s:CS_SEP)
+        let parts = split(line[13:], g:ctrlspace#context#Separator)
         let bookmark = { "Name": ((len(parts) > 1) ? parts[1] : parts[0]), "Directory": parts[0], "JumpCounter": 0 }
         call add(bookmarks, bookmark)
         let projectRoots[bookmark.Directory] = 1
@@ -69,8 +69,8 @@ function! s:initProjectRootsAndBookmarks()
     endfor
   endif
 
-  let ctrlspace#context#ProjectRoots = projectRoots
-  let ctrlspace#context#Bookmarks    = bookmarks
+  let g:ctrlspace#context#ProjectRoots = projectRoots
+  let g:ctrlspace#context#Bookmarks    = bookmarks
 endfunction
 
 function! s:initKeyNames()
@@ -100,16 +100,16 @@ function! s:initKeyNames()
   let keyNames = split(join([lowercase, uppercase, controls, numbers, specials], " "), " ")
 
   " won't work with leader mappings
-  if ctrlspace#context#IsDefaultKey()
+  if g:ctrlspace#context#IsDefaultKey()
     for i in range(0, len(keyNames) - 1)
       let fullKeyName = (strlen(keyNames[i]) > 1) ? ("<" . keyNames[i] . ">") : keyNames[i]
 
-      if fullKeyName ==# ctrlspace#context#DefaultKey()
+      if fullKeyName ==# g:ctrlspace#context#DefaultKey()
         call remove(keyNames, i)
         break
       endif
     endfor
   endif
 
-  let ctrlspace#context#KeyNames = keyNames
+  let g:ctrlspace#context#KeyNames = keyNames
 endfunction
