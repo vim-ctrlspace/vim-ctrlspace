@@ -127,7 +127,7 @@ function! g:ctrlspace#window#Kill(pluginBuffer, final)
     call g:ctrlspace#util#HandleVimSettings("stop")
 
     if g:ctrlspace#modes#Search.Data.Restored
-      call g:ctrlspace#history#AppendToSearchHistory()
+      call g:ctrlspace#search#AppendToSearchHistory()
     endif
 
     call g:ctrlspace#window#GoToStartWindow()
