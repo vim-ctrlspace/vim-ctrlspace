@@ -103,50 +103,26 @@ of buffers related to some concrete topic.
 
 ### Vim-CtrlSpace Concept
 
-The ability of collecting buffers in tab pages is the root of Vim-CtrlSpace
-plugin. Split windows are not so good in that role. You can have a finite number
-of split windows. Each new window leads to harder navigation. Each new window is
-also smaller (thus they split larger windows, right?). 
+`Ctrl + Space` and all the magic starts.
 
-Given with those facts Vim-CtrlSpace provides a solution. In Vim-CtrlSpace, each
-tab page, besides being a viewport is also a separate list of buffers.
-Technically, each tab page has its own buffer list. In that way, you can easily
-split your buffers to number of sublists. You can create new ones, remove them,
-move, copy, add and remove items, finally give them meaningful names.
+In Vim you can have a **finite** number of split windows (have you ever split a window more than 5 times?), but Vim-CtrlSpace has a **solution** for that!
 
-The whole set of lists - tab pages - can be saved permanently as a workspace.
-In one project directory you can have plenty of saved workspaces. And again, you
-can add new ones, remove, rename them or even merge. Workspaces behaves similar
-to Vim sessions. 
+* each **tab** besides being a viewport is also a **separate list of buffers**
+* you can split your buffers to number of sublists
+* you can add / remove / move / copy / rename your tabs!
 
-The last but not least feature is that you can easily navigate between your
-favorite projects with bookmarks - a permanent list of your favorite locations
-(directory paths). Each project directory contains different workspaces.
+Suppose you are working on 2 **different** projects. While working on *Feature A* for *Project 1* you have to switch to *Project 2* to do *Hotfix A*. With Vim-CtrlSpace **Workspaces** and **Bookmarks** you can save the current state of **Project 1** and get back to it after fixing stuff on *Project 2*.
 
-Summarizing, in the plugin window you have access to 5 different lists:
-Buffer List, File List, Tab List, Workspace List, and Bookmark List.
-Each list displays items you can use and modify. Moreover, each list
-provides a fuzzy Search Mode to narrow displayed items. Some of lists provides
-also various modes depending on context.
+* Workspace List  (`w`) - is a session list for the current project
+* Bookmarks List (`b`)  - is basically a list for your projects
 
-Here's the short description of each list:
+Other lists.
 
-* Buffer List - displays buffers from current list - tab page. It has also
-  a mode to display all available buffers. Buffer List allows you also to
-  manipulate windows of the current tab page.
-* File List - displays all files of the current project. You can easily find and
-  open them, therefore it's shortcut is `o` - for _Open_.
-* Tab List - displays tab pages - and since they are also separate buffer lists,
-  the shortcut here is `l` - for _Lists_. You can operate on them as on other
-  items. Managing tab pages has never been so easy!
-* Workspace List - shows your stored workspaces - sessions for the current
-  project (`w`).
-* Bookmark List - shows your favorite projects (`b`). You can easily jump to given
-  locations. This is extremely useful combined with other lists.
+* Buffer List - displays buffers from current tab
+* File List (`o`) - displays all files of the current project
+* Tab List (`l`) - displays tab pages
 
-The plugin name follows the convention of naming similar plugins after their
-default mappings (like _Command-T_ or _CtrlP_). Obviously, the plugin mapping is
-by default `Ctrl + Space`. 
+Each list can be opened in **search mode** using **capital** letter like `O`, or `B`.
 
 If you like the plugin please don't forget to add a star (:star:)! This will
 help me to estimate the plugin popularity and that way I will proceed better its
