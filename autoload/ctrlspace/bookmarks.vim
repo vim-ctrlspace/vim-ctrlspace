@@ -1,7 +1,7 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! g:ctrlspace#bookmarks#AddToBookmarks(directory, name)
-  let directory   = g:ctrlspace#util#NormalizeDirectory(a:directory)
+function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
+  let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
   let jumpCounter = 0
 
   for i in range(0, len(g:ctrlspace#context#Bookmarks) - 1)
@@ -46,12 +46,12 @@ function! g:ctrlspace#bookmarks#AddToBookmarks(directory, name)
   return bookmark
 endfunction
 
-function! g:ctrlspace#bookmarks#FindActiveBookmark()
-  let projectRoot = g:ctrlspace#util#NormalizeDirectory(empty(g:ctrlspace#context#ProjectRoot) ? fnamemodify(".", ":p:h") : g:ctrlspace#context#ProjectRoot)
+function! ctrlspace#bookmarks#FindActiveBookmark()
+  let projectRoot = ctrlspace#util#NormalizeDirectory(empty(g:ctrlspace#context#ProjectRoot) ? fnamemodify(".", ":p:h") : g:ctrlspace#context#ProjectRoot)
 
   for bookmark in g:ctrlspace#context#Bookmarks
-    if g:ctrlspace#util#NormalizeDirectory(bookmark.Directory) == projectRoot
-      let bookmark.JumpCounter = g:ctrlspace#context#IncrementJumpCounter()
+    if ctrlspace#util#NormalizeDirectory(bookmark.Directory) == projectRoot
+      let bookmark.JumpCounter = ctrlspace#context#IncrementJumpCounter()
       return bookmark
     endif
   endfor

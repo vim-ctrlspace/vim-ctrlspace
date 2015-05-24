@@ -1,4 +1,4 @@
-function! g:ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
-  call settabvar(a:tabnr, "g:ctrlspaceLabel", a:label)
-  call settabvar(a:tabnr, "g:ctrlspaceAutotab", a:auto)
+function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
+  call settabvar(a:tabnr, "CtrlSpaceLabel", a:label)
+  call settabvar(a:tabnr, "CtrlSpaceAutotab", a:auto)
 endfunction

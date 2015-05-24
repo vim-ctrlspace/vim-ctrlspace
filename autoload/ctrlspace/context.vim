@@ -68,7 +68,7 @@ let g:ctrlspace#context#Configuration = {
         \ "GlobCommand":              "",
         \ "UseTabline":               1,
         \ "UseMouseAndArrowsInTerm":  0,
-        \ "StatuslineFunction":       "g:ctrlspace#api#Statusline()",
+        \ "StatuslineFunction":       "ctrlspace#api#Statusline()",
         \ "SaveWorkspaceOnExit":      0,
         \ "SaveWorkspaceOnSwitch":    0,
         \ "LoadLastWorkspaceOnStart": 0,
@@ -103,7 +103,7 @@ function! g:ctrlspace#context#Configuration.Instance() dict
   return s:configuration
 endfunction
 
-function! g:ctrlspace#context#SetDefaultMapping(key, action)
+function! ctrlspace#context#SetDefaultMapping(key, action)
   let s:defaultKey = a:key
   if !empty(s:defaultKey)
     if s:defaultKey ==? "<C-Space>" && !has("gui_running") && !has("win32")
@@ -114,20 +114,20 @@ function! g:ctrlspace#context#SetDefaultMapping(key, action)
   endif
 endfunction
 
-function! g:ctrlspace#context#IsDefaultKey()
+function! ctrlspace#context#IsDefaultKey()
   return exists("s:defaultKey")
 endfunction
 
-function! g:ctrlspace#context#DefaultKey()
+function! ctrlspace#context#DefaultKey()
   return s:defaultKey
 endfunction
 
-function! g:ctrlspace#context#IncrementJumpCounter()
+function! ctrlspace#context#IncrementJumpCounter()
   let g:ctrlspace#context#JumpCounter += 1
   return g:ctrlspace#context#JumpCounter
 endfunction
 
-function! g:ctrlspace#context#MaxHeight()
+function! ctrlspace#context#MaxHeight()
   let maxFromConfig = g:ctrlspace#context#Configuration.Instance().MaxHeight
 
   if maxFromConfig
@@ -137,7 +137,7 @@ function! g:ctrlspace#context#MaxHeight()
   endif
 endfunction
 
-function! g:ctrlspace#context#InitializeBuffers()
+function! ctrlspace#context#InitializeBuffers()
   for current in range(1, bufnr("$"))
     if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
       break
@@ -149,7 +149,7 @@ function! g:ctrlspace#context#InitializeBuffers()
   endfor
 endfunction
 
-function! g:ctrlspace#context#AddBuffer()
+function! ctrlspace#context#AddBuffer()
   let current = bufnr('%')
 
   if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
@@ -164,7 +164,7 @@ function! g:ctrlspace#context#AddBuffer()
     return
   endif
 
-  let b:CtrlSpaceJumpCounter = g:ctrlspace#context#IncrementJumpCounter()
+  let b:CtrlSpaceJumpCounter = ctrlspace#context#IncrementJumpCounter()
 
   if !exists("t:CtrlSpaceList")
     let t:CtrlSpaceList = {}
@@ -175,7 +175,7 @@ function! g:ctrlspace#context#AddBuffer()
   endif
 endfunction
 
-function! g:ctrlspace#context#Buffers(tabnr)
+function! ctrlspace#context#Buffers(tabnr)
   if a:tabnr
     let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
     if type(buffers) != type({})

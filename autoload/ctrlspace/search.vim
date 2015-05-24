@@ -1,12 +1,6 @@
 s:config = g:ctrlspace#context#Configuration.Instance()
 
-call <SID>clear_search_mode()
-call <SID>switch_search_mode(1)
-call <SID>restore_search_letters("next")
-call <SID>remove_search_letter()
-call <SID>add_search_letter(a:key)
-
-function! g:ctlrspace#search#ClearSearchMode()
+function! ctrlspace#search#ClearSearchMode()
   call g:ctrlspace#modes#Search.Disable()
   let g:ctrlspace#modes#Search.Data.Letters = []
   let t:CtrlSpaceSearchHistoryIndex = -1
@@ -16,19 +10,19 @@ function! g:ctlrspace#search#ClearSearchMode()
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
   endif
 
-  call g:ctrlspace#window#Kill(0, 0)
-  call g:ctrlspace#window#Toggle(1)
+  call ctrlspace#window#Kill(0, 0)
+  call ctrlspace#window#Toggle(1)
 endfunction
 
-function! g:ctrlspace#search#UpdateSearchResults()
+function! ctrlspace#search#UpdateSearchResults()
   if g:ctrlspace#context#UpdateSearchResults
     let g:ctrlspace#context#UpdateSearchResults = 0
-    call g:ctrlspace#window#Kill(0, 0)
-    call g:ctrlspace#window#Toggle(1)
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
   endif
 endfunction
 
-function! g:ctrlspace#search#AddSearchLetter(letter)
+function! ctrlspace#search#AddSearchLetter(letter)
   call add(g:ctrlspace#modes#Search.Data.Letters, a:letter)
   let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
   let g:ctrlspace#context#UpdateSearchResults = 1
@@ -37,11 +31,11 @@ function! g:ctrlspace#search#AddSearchLetter(letter)
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
   endif
 
-  call g:ctrlspace#util#SetStatusline()
+  call ctrlspace#util#SetStatusline()
   redraws
 endfunction
 
-function! g:ctrlspace#search#RemoveSearchLetter()
+function! ctrlspace#search#RemoveSearchLetter()
   call remove(g:ctrlspace#modes#Search.Data.Letters, -1)
   let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
   let g:ctrlspace#context#UpdateSearchResults = 1
@@ -50,11 +44,11 @@ function! g:ctrlspace#search#RemoveSearchLetter()
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
   endif
 
-  call g:ctrlspace#util#SetStatusline()
+  call ctrlspace#util#SetStatusline()
   redraws
 endfunction
 
-function! g:ctrlspace#search#ClearSearchLetters()
+function! ctrlspace#search#ClearSearchLetters()
   if !empty(g:ctrlspace#modes#Search.Data.Letters)
     let g:ctrlspace#modes#Search.Data.Letters = []
     let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
@@ -64,12 +58,12 @@ function! g:ctrlspace#search#ClearSearchLetters()
       unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
     endif
 
-    call g:ctrlspace#util#SetStatusline()
+    call ctrlspace#util#SetStatusline()
     redraws
   endif
 endfunction
 
-function! g:ctrlspace#search#SwitchSearchMode(switch)
+function! ctrlspace#search#SwitchSearchMode(switch)
   if (a:switch == 0) && !empty(g:ctrlspace#modes#Search.Data.Letters)
     call g:ctrlspace#search#AppendToSearchHistory()
   endif
@@ -81,10 +75,10 @@ function! g:ctrlspace#search#SwitchSearchMode(switch)
   endif
 
   let g:ctrlspace#context#UpdateSearchResults = 1
-  call g:ctrlspace#search#UpdateSearchResults()
+  call ctrlspace#search#UpdateSearchResults()
 endfunction
 
-function! g:ctrlspace#search#InsertSearchText(text)
+function! ctrlspace#search#InsertSearchText(text)
   let letters = []
 
   for i in range(0, strlen(a:text) - 1)
@@ -95,18 +89,18 @@ function! g:ctrlspace#search#InsertSearchText(text)
 
   if !empty(letters)
     let g:ctrlspace#modes#Search.Data.Letters = letters
-    call g:ctrlspace#search#AppendToSearchHistory()
+    call ctrlspace#search#AppendToSearchHistory()
     let t:CtrlSpaceSearchHistoryIndex = 0
     let g:ctrlspace#modes#Search.Data.HistoryIndex = 0
     let g:ctrlspace#context#UpdateSearchResults = 1
-    call g:ctrlspace#search#UpdateSearchResults()
+    call ctrlspace#search#UpdateSearchResults()
     return 1
   endif
 
   return 0
 endfunction
 
-function! g:ctrlspace#search#SearchHistoryIndex()
+function! ctrlspace#search#SearchHistoryIndex()
   if !g:ctrlspace#modes#Buffer.Enabled
     if !exists("g:ctrlspace#modes#Search.Data.HistoryIndex")
       let g:ctrlspace#modes#Search.Data.HistoryIndex = -1
@@ -122,7 +116,7 @@ function! g:ctrlspace#search#SearchHistoryIndex()
   endif
 endfunction
 
-function! g:ctrlspace#search#SetSearchHistoryIndex(value)
+function! ctrlspace#search#SetSearchHistoryIndex(value)
   if !g:ctrlspace#modes#Buffer.Enabled
     let g:ctrlspace#modes#Search.Data.HistoryIndex = a:value
   else
@@ -130,7 +124,7 @@ function! g:ctrlspace#search#SetSearchHistoryIndex(value)
   endif
 endfunction
 
-function! g:ctrlspace#search#AppendToSearchHistory()
+function! ctrlspace#search#AppendToSearchHistory()
   if empty(g:ctrlspace#modes#Search.Data.Letters)
     return
   endif
@@ -149,76 +143,93 @@ function! g:ctrlspace#search#AppendToSearchHistory()
     let historyStore = t:CtrlSpaceSearchHistory
   endif
 
-  let historyStore[join(g:ctrlspace#modes#Search.Data.Letters)] = g:ctrlspace#context#IncrementJumpCounter()
+  let historyStore[join(g:ctrlspace#modes#Search.Data.Letters)] = ctrlspace#context#IncrementJumpCounter()
 endfunction
 
-function! g:ctrlspace#search#RestoreSearchLetters(direction)
-  let history_stores = []
+function! ctrlspace#search#RestoreSearchLetters(direction)
+  let historyStores = []
 
-  if exists("s:search_history") && !empty(s:search_history)
-    call add(history_stores, s:search_history)
+  if exists("g:ctrlspace#modes#Search.Data.History") && !empty(g:ctrlspace#modes#Search.Data.History)
+    call add(historyStores, g:ctrlspace#modes#Search.Data.History)
   endif
 
-  if !s:file_mode && !s:workspace_mode && !s:tablist_mode && !s:bookmark_mode
-    let tab_range = s:single_mode ? range(tabpagenr(), tabpagenr()) : range(1, tabpagenr("$"))
+  if g:ctrlspace#modes#Buffer.Enabled
+    if g:ctrlspace#modes#Buffer.Data.SubMode ==? "single"
+      let currentTab = tabpagenr()
+      let tabRange = range(currentTab, currentTab)
+    else
+      let tabRange = range(1, tabpagenr("$"))
+    endif
 
-    for t in tab_range
-      let tab_store = <SID>gettabvar_with_default(t, "ctrlspace_search_history", {})
-      if !empty(tab_store)
-        call add(history_stores, tab_store)
+    for t in tabRange
+      let tabStore = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceSearchHistory", {})
+
+      if !empty(tabStore)
+        call add(historyStores, tabStore)
       endif
     endfor
   endif
 
-  let history_store = {}
+  let historyStore = {}
 
-  for store in history_stores
+  for store in historyStores
     for [letters, counter] in items(store)
-      if exists("history_store." . letters) && history_store[letters] >= counter
+      if exists("historyStore." . letters) && historyStore[letters] >= counter
         continue
       endif
 
-      let history_store[letters] = counter
+      let historyStore[letters] = counter
     endfor
   endfor
 
-  if empty(history_store)
+  if empty(historyStore)
     return
   endif
 
-  let history_entries = []
+  let historyEntries = []
 
-  for [letters, counter] in items(history_store)
-    call add(history_entries, { "letters": letters, "counter": counter })
-    endfor
+  for [letters, counter] in items(historyStore)
+    call add(historyEntries, { "letters": letters, "counter": counter })
+  endfor
 
-  call sort(history_entries, function("s:compare_jumps"))
+  call sort(historyEntries, function("s:compareEntries"))
 
-  let history_index = <SID>get_search_history_index()
+
+  let historyIndex = ctrlspace#search#SearchHistoryIndex()
 
   if a:direction == "previous"
-    let history_index += 1
+    let historyIndex += 1
 
-    if history_index == len(history_entries)
-      let history_index = len(history_entries) - 1
+    if historyIndex == len(historyEntries)
+      let historyIndex = len(historyEntries) - 1
     endif
   elseif a:direction == "next"
-    let history_index -= 1
+    let historyIndex -= 1
 
-    if history_index < -1
-      let history_index = -1
+    if historyIndex < -1
+      let historyIndex = -1
     endif
   endif
 
-  if history_index < 0
-    let s:search_letters = []
+  if historyIndex < 0
+    let g:ctrlspace#modes#Search.Data.Letters = []
   else
-    let s:search_letters = split(history_entries[history_index]["letters"])
-    let s:restored_search_mode = 1
+    let g:ctrlspace#modes#Search.Data.Letters = split(historyEntries[historyIndex]["letters"])
+    let g:ctrlspace#modes#Search.Data.Restored = 1
   endif
 
-  call <SID>set_search_history_index(history_index)
+  call ctrlspace#search#SetSearchHistoryIndex(historyIndex)
 
-  call <SID>kill(0, 0)
-  call <SID>ctrlspace_toggle(1)
+  call ctrlspace#window#Kill(0, 0)
+  call ctrlspace#window#Toggle(1)
+endfunction
+
+function! s:compareEntries(a, b)
+  if a:a.counter > a:b.counter
+    return -1
+  elseif a:a.counter < a:b.counter
+    return 1
+  else
+    return 0
+  endif
 endfunction

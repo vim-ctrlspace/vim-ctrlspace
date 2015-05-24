@@ -1,10 +1,10 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! g:ctrlspace#ui#AddProjectRoot(directory)
-  let directory = g:ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
+function! ctrlspace#ui#AddProjectRoot(directory)
+  let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
 
   if !isdirectory(directory)
-    call g:ctrlspace#ui#Msg("Invalid directory: '" . directory . "'")
+    call ctrlspace#ui#Msg("Invalid directory: '" . directory . "'")
     return
   endif
 
@@ -15,49 +15,49 @@ function! g:ctrlspace#ui#AddProjectRoot(directory)
   endfor
 
   if exists("roots[directory]")
-    call g:ctrlspace#ui#Msg("Directory is already a permanent project root!")
+    call ctrlspace#ui#Msg("Directory is already a permanent project root!")
     return
   endif
 
-  call g:ctrlspace#roots#AddProjectRoot(directory)
-  call g:ctrlspace#ui#Msg("Directory '" . directory . "' has been added as a permanent project root.")
+  call ctrlspace#roots#AddProjectRoot(directory)
+  call ctrlspace#ui#Msg("Directory '" . directory . "' has been added as a permanent project root.")
 endfunction
 
-function! g:ctrlspace#ui#RemoveProjectRoot(directory)
-  let directory = g:ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
+function! ctrlspace#ui#RemoveProjectRoot(directory)
+  let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
 
   if !exists("g:ctrlspace#context#ProjectRoots[directory]")
-    call g:ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
+    call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
     return
   endif
 
-  call g:ctrlspace#roots#RemoveProjectRoot(directory)
-  call g:ctrlspace#ui#Msg("The project root '" . directory . "' has been removed.")
+  call ctrlspace#roots#RemoveProjectRoot(directory)
+  call ctrlspace#ui#Msg("The project root '" . directory . "' has been removed.")
 endfunction
 
-function! g:ctrlspace#ui#Msg(message)
+function! ctrlspace#ui#Msg(message)
   echo s:config.Symbols.CS . "  " . a:message
 endfunction
 
-function! g:ctrlspace#ui#DelayedMsg(...)
+function! ctrlspace#ui#DelayedMsg(...)
   if !empty(a:000)
     let s:delayedMessage = a:1
   elseif exists("s:delayedMessage") && !empty(s:delayedMessage)
     redraw
-    call g:ctrlspace#ui#Msg(s:delayedMessage)
+    call ctrlspace#ui#Msg(s:delayedMessage)
     unlet s:delayedMessage
   endif
 endfunction
 
-function! g:ctrlspace#ui#StartAndFeedkeys(keys)
-  call g:ctrlspace#window#Toggle(0)
+function! ctrlspace#ui#StartAndFeedkeys(keys)
+  call ctrlspace#window#Toggle(0)
 
   if !empty(a:keys)
     call feedkeys(a:keys)
   endif
 endfunction
 
-function! g:ctrlspace#ui#GetInput(msg, ...)
+function! ctrlspace#ui#GetInput(msg, ...)
   let msg = s:config.Symbols.CS . "  " . a:msg
 
   call inputsave()
@@ -76,12 +76,12 @@ function! g:ctrlspace#ui#GetInput(msg, ...)
   return answer
 endfunction
 
-function! g:ctrlspace#ui#Confirmed(msg)
-  return g:ctrlspace#ui#GetInput(a:msg . " (yN): ") =~? "y"
+function! ctrlspace#ui#Confirmed(msg)
+  return ctrlspace#ui#GetInput(a:msg . " (yN): ") =~? "y"
 endfunction
 
-function! g:ctrlspace#ui#GoToBufferListPosition(direction)
-  let bufferList    = g:ctrlspace#api#BufferList(tabpagenr())
+function! ctrlspace#ui#GoToBufferListPosition(direction)
+  let bufferList    = ctrlspace#api#BufferList(tabpagenr())
   let currentBuffer = bufnr("%")
   let currentIndex  = -1
   let bufferListLen = len(bufferList)
@@ -114,25 +114,25 @@ function! g:ctrlspace#ui#GoToBufferListPosition(direction)
   silent! exe ":b " . bufferList[targetIndex]["number"]
 endfunction
 
-function! g:ctrlspace#ui#NewTabLabel(tabnr)
+function! ctrlspace#ui#NewTabLabel(tabnr)
   let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
-  let label = g:ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", gettabvar(tabnr, "CtrlSpaceLabel"))
+  let label = ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", gettabvar(tabnr, "CtrlSpaceLabel"))
   if !empty(label)
-    call g:ctrlspace#tabs#SetTabLabel(tabnr, label, 0)
+    call ctrlspace#tabs#SetTabLabel(tabnr, label, 0)
   endif
 endfunction
 
-function! g:ctrlspace#ui#RemoveTabLabel(tabnr)
+function! ctrlspace#ui#RemoveTabLabel(tabnr)
   let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
-  call g:ctrlspace#tabs#SetTabLabel(tabnr, "", 0)
+  call ctrlspace#tabs#SetTabLabel(tabnr, "", 0)
 endfunction
 
-function g:ctrlspace#ui#SaveWorkspace(name)
-  if !g:ctrlspace#roots#ProjectRootFound()
+function! ctrlspace#ui#SaveWorkspace(name)
+  if !ctrlspace#roots#ProjectRootFound()
     return
   endif
 
-  call g:ctrlspace#util#HandleVimSettings("start")
+  call ctrlspace#util#HandleVimSettings("start")
 
   let cwdSave = fnamemodify(".", ":p:h")
   silent! exe "cd " . g:ctrlspace#context#ProjectRoot
@@ -142,14 +142,14 @@ function g:ctrlspace#ui#SaveWorkspace(name)
       let name = g:ctrlspace#modes#Workspace.Data.Active.Name
     else
       silent! exe "cd " . cwdSave
-      call g:ctrlspace#util#HandleVimSettings("stop")
+      call ctrlspace#util#HandleVimSettings("stop")
       return
     endif
   else
     let name = a:name
   endif
 
-  let filename = g:ctrlspace#util#WorkspaceFile()
+  let filename = ctrlspace#util#WorkspaceFile()
   let lastTab  = tabpagenr("$")
 
   let lines       = []
@@ -184,10 +184,10 @@ function g:ctrlspace#ui#SaveWorkspace(name)
   for t in range(1, lastTab)
     let data = {
           \ "label": gettabvar(t, "CtrlSpaceLabel"),
-          \ "autotab": g:ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
+          \ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
           \ }
 
-    let ctrlspaceList = g:ctrlspace#api#Buffers(t)
+    let ctrlspaceList = ctrlspace#api#Buffers(t)
 
     let bufs = []
 
@@ -211,8 +211,8 @@ function g:ctrlspace#ui#SaveWorkspace(name)
     silent! exe "cd " . cwdSave
     silent! exe "set ssop=" . ssopSave
 
-    call g:ctrlspace#util#HandleVimSettings("stop")
-    call g:ctrlspace#ui#Msg("The workspace '" . name . "' cannot be saved at this moment.")
+    call ctrlspace#util#HandleVimSettings("stop")
+    call ctrlspace#ui#Msg("The workspace '" . name . "' cannot be saved at this moment.")
     return
   endif
 
@@ -259,14 +259,14 @@ function g:ctrlspace#ui#SaveWorkspace(name)
   call writefile(lines, filename)
   call delete("CS_SESSION")
 
-  call g:ctrlspace#workspaces#SetActiveWorkspaceName(name)
-  let g:ctrlspace#mode#Workspace.Data.Active.Digest = g:ctrlspace#workspaces#CreateWorkspaceDigest()
+  call ctrlspace#workspaces#SetActiveWorkspaceName(name)
+  let g:ctrlspace#mode#Workspace.Data.Active.Digest = ctrlspace#workspaces#CreateWorkspaceDigest()
 
-  call g:ctrlspace#workspaces#SetWorkspaceNames()
+  call ctrlspace#workspaces#SetWorkspaceNames()
 
   silent! exe "cd " . cwdSave
   silent! exe "set ssop=" . ssopSave
 
-  call g:ctrlspace#util#HandleVimSettings("stop")
-  call g:ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
+  call ctrlspace#util#HandleVimSettings("stop")
+  call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
 endfunction

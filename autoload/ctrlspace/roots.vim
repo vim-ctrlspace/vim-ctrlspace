@@ -1,7 +1,7 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! g:ctrlspace#roots#RemoveProjectRoot(directory)
-  let directory = g:ctrlspace#util#NormalizeDirectory(a:directory)
+function! ctrlspace#roots#RemoveProjectRoot(directory)
+  let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
   if exists("g:ctrlspace#context#ProjectRoots[directory]")
     unlet g:ctrlspace#context#ProjectRoots[directory]
@@ -25,8 +25,8 @@ function! g:ctrlspace#roots#RemoveProjectRoot(directory)
   call writefile(lines, cacheFile)
 endfunction
 
-function! g:ctrlspace#roots#AddProjectRoot(directory)
-  let directory = g:ctrlspace#util#NormalizeDirectory(a:directory)
+function! ctrlspace#roots#AddProjectRoot(directory)
+  let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
   let g:ctrlspace#context#ProjectRoots[directory] = 1
 
@@ -55,7 +55,7 @@ function! g:ctrlspace#roots#AddProjectRoot(directory)
   call writefile(lines, cacheFile)
 endfunction
 
-function! g:ctrlspace#roots#FindProjectRoot()
+function! ctrlspace#roots#FindProjectRoot()
   let projectRoot = fnamemodify(".", ":p:h")
 
   if !empty(s:config.ProjectRootMarkers)
@@ -91,18 +91,18 @@ function! g:ctrlspace#roots#FindProjectRoot()
   return projectRoot
 endfunction
 
-function! g:ctrlspace#roots#ProjectRootFound()
+function! ctrlspace#roots#ProjectRootFound()
   if empty(g:ctrlspace#context#ProjectRoot)
-    let g:ctrlspace#context#ProjectRoot = g:ctrlspace#roots#FindProjectRoot()
+    let g:ctrlspace#context#ProjectRoot = ctrlspace#roots#FindProjectRoot()
 
     if empty(g:ctrlspace#context#ProjectRoot)
-      let projectRoot = g:ctrlspace#ui#GetInput("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
+      let projectRoot = ctrlspace#ui#GetInput("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
 
       if !empty(projectRoot) && isdirectory(projectRoot)
         let g:ctrlspace#context#Files = [] " clear current files - force reload
-        call g:ctrlspace#roots#AddProjectRoot(project_root)
+        call ctrlspace#roots#AddProjectRoot(project_root)
       else
-        call g:ctrlspace#ui#Msg("Cannot continue with the project root not set.")
+        call ctrlspace#ui#Msg("Cannot continue with the project root not set.")
         return 0
       endif
     endif

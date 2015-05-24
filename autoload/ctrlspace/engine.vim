@@ -3,7 +3,7 @@ let s:maxSearchedItems  = 200
 let s:maxDisplayedItems = 500
 
 " returns [patterns, indices, size, text]
-function! g:ctrlspace#engine#Content()
+function! ctrlspace#engine#Content()
   let items = s:contentSource()
 
   if !empty(s:config.Engine)
@@ -12,22 +12,22 @@ function! g:ctrlspace#engine#Content()
 
   if !empty(g:ctrlspace#modes#Search.Data.Letters)
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
-    call sort(items, function("g:ctrlspace#engine#CompareByNoiseAndText"))
+    call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
     if len(items) > s:maxDisplayedItems
       let items = items[0, s:maxDisplayedItems - 1]
     endif
 
     if g:ctrlspace#modes#Tablist.Enabled
-      call sort(items, function("g:ctrlspace#engine#CompareByIndex"))
+      call sort(items, function("ctrlspace#engine#CompareByIndex"))
     else
-      call sort(items, function("g:ctrlspace#engine#CompareByText"))
+      call sort(items, function("ctrlspace#engine#CompareByText"))
     endif
   endif
 
   " trim the list in search mode
   if g:ctrlspace#modes#Search.Enabled
-    let maxHeight = g:ctrlspace#context#MaxHeight()
+    let maxHeight = ctrlspace#context#MaxHeight()
 
     if len(items) > maxHeight
       let items = items[-maxHeight: -1]
@@ -60,7 +60,7 @@ function! s:contentFromExternalEngine(engine, items)
   return [patterns, indices, size, text]
 endfunction
 
-function! g:ctrlspace#engine#CompareByText(a, b)
+function! ctrlspace#engine#CompareByText(a, b)
   if a:a.text < a:b.text
     return -1
   elseif a:a.text > a:b.text
@@ -70,7 +70,7 @@ function! g:ctrlspace#engine#CompareByText(a, b)
   endif
 endfunction
 
-function! g:ctrlspace#engine#CompareByIndex(a, b)
+function! ctrlspace#engine#CompareByIndex(a, b)
   if a:a.index < a:b.index
     return -1
   elseif a:a.index > a:b.index
@@ -80,7 +80,7 @@ function! g:ctrlspace#engine#CompareByIndex(a, b)
   endif
 endfunction
 
-function! g:ctrlspace#engine#CompareByNoiseAndText(a, b)
+function! ctrlspace#engine#CompareByNoiseAndText(a, b)
   if a:a.noise < a:b.noise
     return 1
   elseif a:a.noise > a:b.noise
@@ -139,10 +139,10 @@ function! s:computeLowestNoises(source, maxItems)
 endfunction
 
 function! s:vimContextJSON()
-  '{"CurrentListView":"' . g:ctrlspace#modes#CurrentListView() .
+  '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
         \ '","SearchModeEnabled":' . g:ctrlspace#modes#Search.Enabled .
         \ ',"SearchText":"' . join(g:ctrlspace#modes#Search.Data.Letters, "") .
-        \ '","Columns":' . &columns . ',"MaxHeight":' . g:ctrlspace#context#MaxHeight()
+        \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#context#MaxHeight()
         \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
         \  s:maxDisplayedItems . '}'
 endfunction
@@ -187,7 +187,7 @@ function! s:workspaceListContent()
     let indicators = ""
 
     if name ==# g:ctrlspace#modes#Workspace.Data.Active.Name
-      let currentDigest = g:ctrlspace#workspace#CreateDigest()
+      let currentDigest = ctrlspace#workspace#CreateDigest()
 
       if g:ctrlspace#modes#Workspace.Data.Active.Digest !=# currentDigest
         let indicators .= s:config.Symbols.IM
@@ -213,8 +213,8 @@ function! s:tabListContent()
     let buflist       = tabpagebuflist(i)
     let bufnr         = buflist[winnr - 1]
     let bufname       = bufname(bufnr)
-    let tabBufsNumber = g:ctrlspace#api#TabBuffersNumber(i)
-    let title         = g:ctrlspace#api#TabTitle(i, bufnr, bufname)
+    let tabBufsNumber = ctrlspace#api#TabBuffersNumber(i)
+    let title         = ctrlspace#api#TabTitle(i, bufnr, bufname)
 
     if !s:config.UnicodeFont && !empty(tabBufsNumber)
       let tabBufsNumber = ":" . tabBufsNumber
@@ -222,7 +222,7 @@ function! s:tabListContent()
 
     let indicators = ""
 
-    if g:ctrlspace#api#TabModified(i)
+    if ctrlspace#api#TabModified(i)
       let indicators .= s:config.Symbols.IM
     endif
 
@@ -238,10 +238,10 @@ endfunction
 
 function! s:fileListContent()
   if !empty(s:config.Engine)
-    call g:ctrlspace#files#Files()
-    return [{ "path": fnamemodify(g:ctrlspace#util#FilesCache(), ":p") }]
+    call ctrlspace#files#Files()
+    return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
   else
-    return copy(g:ctrlspace#files#FileItems())
+    return copy(ctrlspace#files#FileItems())
   endif
 endfunction
 
@@ -249,9 +249,9 @@ function! s:bufferListContent()
   let content = []
 
   if g:ctrlspace#modes#Buffer.Data.SubMode ==# "single"
-    let buffers = map(keys(g:ctrlspace#context#Buffers(tabpagenr())), "str2nr(v:val)")
+    let buffers = map(keys(ctrlspace#context#Buffers(tabpagenr())), "str2nr(v:val)")
   elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "all"
-    let buffers = map(keys(g:ctrlspace#context#Buffers(0)), "str2nr(v:val)")
+    let buffers = map(keys(ctrlspace#context#Buffers(0)), "str2nr(v:val)")
   elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "visual"
     let buffers = tabpagebuflist()
   endif

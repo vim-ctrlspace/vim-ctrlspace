@@ -55,7 +55,7 @@ let g:ctrlspace#modes#Tablist   = g:ctrlspace#modes#Mode.new("Tablist", 1, {})
 let g:ctrlspace#modes#Workspace = g:ctrlspace#modes#Mode.new("Workspace", 1, { "SubMode": "load", "Active": { "Name": "", "Digest": "" }, "LastActive": "", "LastBrowsed": 0 })
 let g:ctrlspace#modes#Bookmark  = g:ctrlspace#modes#Mode.new("Bookmark", 1, { "Active": {} })
 
-function! g:ctrlspace#modes#Enabled()
+function! ctrlspace#modes#Enabled()
   let result = []
 
   for mode in values(g:ctrlspace#modes#Collection)
@@ -67,10 +67,10 @@ function! g:ctrlspace#modes#Enabled()
   return result
 endfunction
 
-function! g:ctrlspace#modes#ListViews()
+function! ctrlspace#modes#ListViews()
   return s:lists
 endfunction
 
-function! g:ctrlspace#modes#CurrentListView()
+function! ctrlspace#modes#CurrentListView()
   return s:currentListView
 endfunction

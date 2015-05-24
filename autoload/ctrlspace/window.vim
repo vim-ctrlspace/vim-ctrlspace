@@ -1,6 +1,6 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! g:ctrlspace#window#Toggle(internal)
+function! ctrlspace#window#Toggle(internal)
   if !a:internal
     call s:resetWindow()
   endif
@@ -8,10 +8,10 @@ function! g:ctrlspace#window#Toggle(internal)
   " if we get called and the list is open --> close it
   if bufexists(g:ctrlspace#context#PluginBuffer)
     if bufwinnr(g:ctrlspace#context#PluginBuffer) != -1
-      call g:ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 1)
+      call ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 1)
       return
     else
-      call g:ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 0)
+      call ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 0)
       if !a:internal
         let t:CtrlSpaceStartWindow = winnr()
         let t:CtrlSpaceWinrestcmd  = winrestcmd()
@@ -45,16 +45,16 @@ function! g:ctrlspace#window#Toggle(internal)
   call s:setUpBuffer()
 
   if g:ctrlspace#modes#Help.Enabled
-    call g:ctrlspace#help#DisplayHelp()
-    call g:ctrlspace#util#SetStatusline()
+    call ctrlspace#help#DisplayHelp()
+    call ctrlspace#util#SetStatusline()
     return
   endif
 
-  let [b:patterns, b:indices, b:size, b:text] = g:ctrlspace#engine#Content()
+  let [b:patterns, b:indices, b:size, b:text] = ctrlspace#engine#Content()
 
   " set up window height
   if b:size > s:config.Height
-    let maxHeight = g:ctrlspace#context#MaxHeight()
+    let maxHeight = ctrlspace#context#MaxHeight()
 
     if b:size < maxHeight
       silent! exe "resize " . b:size
@@ -66,7 +66,7 @@ function! g:ctrlspace#window#Toggle(internal)
   silent! exe "set updatetime=100"
 
   call s:displayContent()
-  call g:ctrlspace#util#SetStatusline()
+  call ctrlspace#util#SetStatusline()
 
   " display search patterns
   for pattern in b:patterns
@@ -79,7 +79,7 @@ function! g:ctrlspace#window#Toggle(internal)
   normal! zb
 endfunction
 
-function! g:ctrlspace#window#GoToStartWindow()
+function! ctrlspace#window#GoToStartWindow()
   silent! exe t:CtrlSpaceStartWindow . "wincmd w"
 
   if winrestcmd() != t:CtrlSpaceWinrestcmd
@@ -91,7 +91,7 @@ function! g:ctrlspace#window#GoToStartWindow()
   endif
 endfunction
 
-function! g:ctrlspace#window#Kill(pluginBuffer, final)
+function! ctrlspace#window#Kill(pluginBuffer, final)
   " added workaround for strange Vim behavior when, when kill starts with some delay
   " (in a wrong buffer). This happens in some Nop modes (in a File List view).
   if (exists("s:killingNow") && s:killingNow) || (!a:pluginBuffer && &ft != "ctrlspace")
@@ -124,13 +124,13 @@ function! g:ctrlspace#window#Kill(pluginBuffer, final)
   endif
 
   if a:final
-    call g:ctrlspace#util#HandleVimSettings("stop")
+    call ctrlspace#util#HandleVimSettings("stop")
 
     if g:ctrlspace#modes#Search.Data.Restored
-      call g:ctrlspace#search#AppendToSearchHistory()
+      call ctrlspace#search#AppendToSearchHistory()
     endif
 
-    call g:ctrlspace#window#GoToStartWindow()
+    call ctrlspace#window#GoToStartWindow()
 
     if g:ctrlspace#modes#Zoom.Enabled
       exec ":b " . g:ctrlspace#modes#Zoom.Data.OriginalBuffer
@@ -142,7 +142,7 @@ function! g:ctrlspace#window#Kill(pluginBuffer, final)
   unlet s:killingNow
 endfunction
 
-function! g:ctrlspace#window#MoveSelectionBar(where)
+function! ctrlspace#window#MoveSelectionBar(where)
   if b:size < 1
     return
   endif
@@ -210,7 +210,7 @@ function! g:ctrlspace#window#MoveSelectionBar(where)
   setlocal nomodifiable
 endfunction
 
-function! g:ctrlspace#window#MoveCursor(where)
+function! ctrlspace#window#MoveCursor(where)
   if a:where == "up"
     call s:goto(line(".") - 1)
   elseif a:where == "down"
@@ -246,15 +246,15 @@ function! g:ctrlspace#window#MoveCursor(where)
   endif
 endfunction
 
-function! g:ctrlspace#window#SelectedIndex()
+function! ctrlspace#window#SelectedIndex()
   return b:indices[line(".") - 1]
 endfunction
 
-function! g:ctrlspace#window#GoToWindow()
-  let nr = g:ctrlspace#window#SelectedIndex()
+function! ctrlspace#window#GoToWindow()
+  let nr = ctrlspace#window#SelectedIndex()
 
   if bufwinnr(nr) != -1
-    call g:ctrlspace#window#Kill(0, 1)
+    call ctrlspace#window#Kill(0, 1)
     silent! exe bufwinnr(nr) . "wincmd w"
     return 1
   endif
@@ -293,8 +293,8 @@ function! s:resetWindow()
 
   let t:CtrlSpaceSearchHistoryIndex = -1
 
-  let g:ctrlspace#context#ProjectRoot       = g:ctrlspace#roots#FindProjectRoot()
-  let g:ctrlspace#modes#Bookmark.Data.Active = g:ctrlspace#bookmarks#FindActiveBookmark()
+  let g:ctrlspace#context#ProjectRoot       = ctrlspace#roots#FindProjectRoot()
+  let g:ctrlspace#modes#Bookmark.Data.Active = ctrlspace#bookmarks#FindActiveBookmark()
 
   if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
@@ -304,7 +304,7 @@ function! s:resetWindow()
     let g:ctrlspace#context#Files           = []
     let g:ctrlspace#context#LastProjectRoot = g:ctrlspace#context#ProjectRoot
 
-    call g:ctrlspace#workspaces#SetWorkspaceNames()
+    call ctrlspace#workspaces#SetWorkspaceNames()
   endif
 
   if empty(g:ctrlspace#context#SymbolSizes)
@@ -313,7 +313,7 @@ function! s:resetWindow()
     let g:ctrlspace#context#SymbolSizes.Dots = strwidth(s:config.Symbols.Dots)
   endif
 
-  call g:ctrlspace#util#HandleVimSettings("start")
+  call ctrlspace#util#HandleVimSettings("start")
 endfunction
 
 function! s:setUpBuffer()
@@ -354,12 +354,12 @@ function! s:setUpBuffer()
 
   augroup CtrlSpaceUpdateSearch
     au!
-    au CursorHold <buffer> call g:ctrlspace#util#UpdateSearchResults()
+    au CursorHold <buffer> call ctrlspace#util#UpdateSearchResults()
   augroup END
 
   augroup CtrlSpaceLeave
     au!
-    au BufLeave <buffer> call g:ctrlspace#window#Kill(0, 1)
+    au BufLeave <buffer> call ctrlspace#window#Kill(0, 1)
   augroup END
 
   " set up syntax highlighting
@@ -385,7 +385,7 @@ function! s:setUpBuffer()
       let keyName = '\' . keyName
     endif
 
-    silent! exe "noremap <silent><buffer> " . key . " :call g:ctrlspace#keys#Keypressed(\"" . keyName . "\")<CR>"
+    silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . keyName . "\")<CR>"
   endfor
 endfunction
 
@@ -395,7 +395,7 @@ endfunction
 
 function! s:setActiveLine()
   if !empty(g:ctrlspace#modes#Search.Data.Letters) && g:ctrlspace#modes#Search.Data.NewSearchPerformed
-    call g:ctrlspace#window#MoveSelectionBar(line("$"))
+    call ctrlspace#window#MoveSelectionBar(line("$"))
 
     if !g:ctrlspace#modes#Search.Enabled
       let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 0
@@ -449,7 +449,7 @@ function! s:setActiveLine()
         break
       endif
 
-      let currentJumpCounter = g:ctrlspace#util#GetbufvarWithDefault(b:indices[i], "CtrlSpaceJumpCounter", 0)
+      let currentJumpCounter = ctrlspace#util#GetbufvarWithDefault(b:indices[i], "CtrlSpaceJumpCounter", 0)
 
       if currentJumpCounter > maxCounter
         let maxCounter = currentJumpCounter
@@ -462,7 +462,7 @@ function! s:setActiveLine()
     endif
   endif
 
-  call g:ctrlspace#window#MoveSelectionBar(activeLine)
+  call ctrlspace#window#MoveSelectionBar(activeLine)
 endfunction
 
 function! s:filler()

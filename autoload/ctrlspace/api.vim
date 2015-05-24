@@ -1,8 +1,8 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
-function! g:ctrlspace#api#BufferList(tabnr)
+function! ctrlspace#api#BufferList(tabnr)
   let bufferList     = []
-  let singleList     = g:ctrlspace#context#Buffers(a:tabnr)
+  let singleList     = ctrlspace#context#Buffers(a:tabnr)
   let visibleBuffers = tabpagebuflist(a:tabnr)
 
   for i in keys(singleList)
@@ -19,14 +19,14 @@ function! g:ctrlspace#api#BufferList(tabnr)
     endif
   endfor
 
-  call sort(bufferList, function("g:ctrlspace#engine#CompareByText"))
+  call sort(bufferList, function("ctrlspace#engine#CompareByText"))
 
   return bufferList
 endfunction
 
-function! g:ctrlspace#api#Buffers(tabnr)
+function! ctrlspace#api#Buffers(tabnr)
   let bufferList     = {}
-  let ctrlspaceList  = g:ctrlspace#context#Buffers(a:tabnr)
+  let ctrlspaceList  = ctrlspace#context#Buffers(a:tabnr)
   let visibleBuffers = tabpagebuflist(a:tabnr)
 
   for i in keys(ctrlspaceList)
@@ -46,8 +46,8 @@ function! g:ctrlspace#api#Buffers(tabnr)
   return bufferList
 endfunction
 
-function! g:ctrlspace#api#TabModified(tabnr)
-  for b in map(keys(g:ctrlspace#context#Buffers(a:tabnr)), "str2nr(v:val)")
+function! ctrlspace#api#TabModified(tabnr)
+  for b in map(keys(ctrlspace#context#Buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
@@ -55,26 +55,26 @@ function! g:ctrlspace#api#TabModified(tabnr)
   return 0
 endfunction
 
-function! g:ctrlspace#api#Statusline()
+function! ctrlspace#api#Statusline()
   hi def link User1 CtrlSpaceStatus
 
-  let statusline = "%1*" . s:config.Symbols.CS . "    " . g:ctrlspace#api#StatuslineModeSegment("    ")
+  let statusline = "%1*" . s:config.Symbols.CS . "    " . ctrlspace#api#StatuslineModeSegment("    ")
 
   if !&showtabline
-    let statusline .= " %=%1* %<" . g:ctrlspace#api#StatuslineTabSegment()
+    let statusline .= " %=%1* %<" . ctrlspace#api#StatuslineTabSegment()
   endif
 
   return statusline
 endfunction
 
-function! g:ctrlspace#api#StatuslineTabSegment()
+function! ctrlspace#api#StatuslineTabSegment()
   let currentTab = tabpagenr()
   let winnr      = tabpagewinnr(currentTab)
   let buflist    = tabpagebuflist(currentTab)
   let bufnr      = buflist[winnr - 1]
   let bufname    = bufname(bufnr)
-  let bufsNumber = g:ctrlspace#api#TabBuffersNumber(currentTab)
-  let title      = g:ctrlspace#api#TabTitle(currentTab, bufnr, bufname)
+  let bufsNumber = ctrlspace#api#TabBuffersNumber(currentTab)
+  let title      = ctrlspace#api#TabTitle(currentTab, bufnr, bufname)
 
   if !s:config.UnicodeFont && !empty(bufsNumber)
     let bufsNumber = ":" . bufsNumber
@@ -82,7 +82,7 @@ function! g:ctrlspace#api#StatuslineTabSegment()
 
   let tabinfo = string(currentTab) . bufsNumber . " "
 
-  if g:ctrlspace#api#TabModified(currentTab)
+  if ctrlspace#api#TabModified(currentTab)
     let tabinfo .= "+ "
   endif
 
@@ -102,7 +102,7 @@ function! s:createStatusTabline()
   return line
 endfunction
 
-function! g:ctrlspace#api#StatuslineModeSegment(...)
+function! ctrlspace#api#StatuslineModeSegment(...)
   let statuslineElements = []
 
   if g:ctrlspace#modes#Workspace.Enabled
@@ -129,7 +129,7 @@ function! g:ctrlspace#api#StatuslineModeSegment(...)
     endif
 
     if g:ctrlspace#modes#NextTab.Enabled
-      let symbol .= s:config.Symbols.NTM . g:ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
+      let symbol .= s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
     endif
 
     call add(statuslineElements, symbol)
@@ -160,8 +160,8 @@ function! g:ctrlspace#api#StatuslineModeSegment(...)
   return join(statuslineElements, separator)
 endfunction
 
-function! g:ctrlspace#api#TabBuffersNumber(tabnr)
-  let buffersNumber = len(g:ctrlspace#api#Buffers(a:tabnr))
+function! ctrlspace#api#TabBuffersNumber(tabnr)
+  let buffersNumber = len(ctrlspace#api#Buffers(a:tabnr))
   let numberToShow  = ""
 
   if buffersNumber > 1
@@ -180,7 +180,7 @@ function! g:ctrlspace#api#TabBuffersNumber(tabnr)
   return numberToShow
 endfunction
 
-function! g:ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
+function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
   let bufname = a:bufname
   let bufnr   = a:bufnr
   let title   = gettabvar(a:tabnr, "CtrlSpaceLabel")
@@ -206,13 +206,13 @@ function! g:ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
   return title
 endfunction
 
-function! g:ctrlspace#api#Guitablabel()
+function! ctrlspace#api#Guitablabel()
   let winnr      = tabpagewinnr(v:lnum)
   let buflist    = tabpagebuflist(v:lnum)
   let bufnr      = buflist[winnr - 1]
   let bufname    = bufname(bufnr)
-  let title      = g:ctrlspace#api#TabTitle(v:lnum, bufnr, bufname)
-  let bufsNumber = g:ctrlspace#api#TabBuffersNumber(v:lnum)
+  let title      = ctrlspace#api#TabTitle(v:lnum, bufnr, bufname)
+  let bufsNumber = ctrlspace#api#TabBuffersNumber(v:lnum)
 
   if !s:config.UnicodeFont && !empty(bufsNumber)
     let bufsNumber = ":" . bufsNumber
@@ -220,7 +220,7 @@ function! g:ctrlspace#api#Guitablabel()
 
   let label = '' . v:lnum . bufsNumber . ' '
 
-  if g:ctrlspace#api#TabModified(v:lnum)
+  if ctrlspace#api#TabModified(v:lnum)
     let label .= '+ '
   endif
 
@@ -229,7 +229,7 @@ function! g:ctrlspace#api#Guitablabel()
   return label
 endfunction
 
-function! g:ctrlspace#api#Tabline()
+function! ctrlspace#api#Tabline()
   let lastTab    = tabpagenr("$")
   let currentTab = tabpagenr()
   let tabline    = ''
@@ -239,8 +239,8 @@ function! g:ctrlspace#api#Tabline()
     let buflist    = tabpagebuflist(t)
     let bufnr      = buflist[winnr - 1]
     let bufname    = bufname(bufnr)
-    let bufsNumber = g:ctrlspace#api#TabBuffersNumber(t)
-    let title      = g:ctrlspace#api#TabTitle(t, bufnr, bufname)
+    let bufsNumber = ctrlspace#api#TabBuffersNumber(t)
+    let title      = ctrlspace#api#TabTitle(t, bufnr, bufname)
 
     if !s:config.UnicodeFont && !empty(bufsNumber)
       let bufsNumber = ":" . bufsNumber
@@ -250,7 +250,7 @@ function! g:ctrlspace#api#Tabline()
     let tabline .= (t == currentTab ? '%#TabLineSel#' : '%#TabLine#')
     let tabline .= ' ' . t . bufsNumber . ' '
 
-    if g:ctrlspace#api#TabModified(t)
+    if ctrlspace#api#TabModified(t)
       let tabline .= '+ '
     endif
 
@@ -267,12 +267,12 @@ function! g:ctrlspace#api#Tabline()
   return tabline
 endfunction
 
-function! g:ctrlspace#api#BufNr()
+function! ctrlspace#api#BufNr()
   return bufexists(g:ctrlspace#context#PluginBuffer) ? g:ctrlspace#context#PluginBuffer : -1
 endfunction
 
-function! g:ctrlspace#api#TabModified(tabnr)
-  for b in map(keys(g:ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
+function! ctrlspace#api#TabModified(tabnr)
+  for b in map(keys(ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
