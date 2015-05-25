@@ -142,6 +142,21 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
   unlet s:killingNow
 endfunction
 
+function! ctrlspace#window#QuitVim()
+  if !s:config.SaveWorkspaceOnExit && !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) &&
+        \ (g:ctrlspace#modes#Workspace.Data.Active.Digest !=# ctrlspace#workspaces#CreateDigest()) &&
+        \ !ctrlspace#ui#Confirmed("Current workspace ('" . g:ctrlspace#modes#Workspace.Data.Active.Name . "') not saved. Proceed anyway?")
+    return
+  endif
+
+  if !ctrlspace#ui#ProceedIfModified()
+    return
+  endif
+
+  call ctrlspace#window#Kill(0, 1)
+  qa!
+endfunction
+
 function! ctrlspace#window#MoveSelectionBar(where)
   if b:size < 1
     return

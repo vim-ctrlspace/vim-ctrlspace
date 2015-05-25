@@ -80,6 +80,16 @@ function! ctrlspace#ui#Confirmed(msg)
   return ctrlspace#ui#GetInput(a:msg . " (yN): ") =~? "y"
 endfunction
 
+function! ctrlspace#ui#ProceedIfModified()
+  for i in range(1, bufnr("$"))
+    if getbufvar(i, "&modified")
+      return ctrlspace#ui#Confirmed("Some buffers not saved. Proceed anyway?")
+    endif
+  endfor
+
+  return 1
+endfunction
+
 function! ctrlspace#ui#GoToBufferListPosition(direction)
   let bufferList    = ctrlspace#api#BufferList(tabpagenr())
   let currentBuffer = bufnr("%")

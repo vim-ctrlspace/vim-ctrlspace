@@ -1,7 +1,6 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
 function! ctrlspace#init#Initialize()
-  echo "test"
   if s:config.UseTabline
     set tabline=%!ctrlspace#api#Tabline()
 
