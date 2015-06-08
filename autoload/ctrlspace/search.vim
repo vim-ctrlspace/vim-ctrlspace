@@ -1,4 +1,13 @@
-s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:updateSearchResults = 0
+
+function! ctrlspace#search#UpdateSearchResults()
+  if s:updateSearchResults
+    let s:updateSearchResults = 0
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
+  endif
+endfunction
 
 function! ctrlspace#search#ClearSearchMode()
   call g:ctrlspace#modes#Search.Disable()
@@ -14,18 +23,10 @@ function! ctrlspace#search#ClearSearchMode()
   call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#search#UpdateSearchResults()
-  if g:ctrlspace#context#UpdateSearchResults
-    let g:ctrlspace#context#UpdateSearchResults = 0
-    call ctrlspace#window#Kill(0, 0)
-    call ctrlspace#window#Toggle(1)
-  endif
-endfunction
-
 function! ctrlspace#search#AddSearchLetter(letter)
   call add(g:ctrlspace#modes#Search.Data.Letters, a:letter)
   let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
-  let g:ctrlspace#context#UpdateSearchResults = 1
+  let s:updateSearchResults = 1
 
   if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
@@ -38,7 +39,7 @@ endfunction
 function! ctrlspace#search#RemoveSearchLetter()
   call remove(g:ctrlspace#modes#Search.Data.Letters, -1)
   let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
-  let g:ctrlspace#context#UpdateSearchResults = 1
+  let s:updateSearchResults = 1
 
   if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
@@ -52,7 +53,7 @@ function! ctrlspace#search#ClearSearchLetters()
   if !empty(g:ctrlspace#modes#Search.Data.Letters)
     let g:ctrlspace#modes#Search.Data.Letters = []
     let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 1
-    let g:ctrlspace#context#UpdateSearchResults = 1
+    let s:updateSearchResults = 1
 
     if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
       unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
@@ -74,7 +75,7 @@ function! ctrlspace#search#SwitchSearchMode(switch)
     call g:ctrlspace#modes#Search.Disable()
   endif
 
-  let g:ctrlspace#context#UpdateSearchResults = 1
+  let s:updateSearchResults = 1
   call ctrlspace#search#UpdateSearchResults()
 endfunction
 
@@ -92,7 +93,7 @@ function! ctrlspace#search#InsertSearchText(text)
     call ctrlspace#search#AppendToSearchHistory()
     let t:CtrlSpaceSearchHistoryIndex = 0
     let g:ctrlspace#modes#Search.Data.HistoryIndex = 0
-    let g:ctrlspace#context#UpdateSearchResults = 1
+    let s:updateSearchResults = 1
     call ctrlspace#search#UpdateSearchResults()
     return 1
   endif
@@ -143,7 +144,7 @@ function! ctrlspace#search#AppendToSearchHistory()
     let historyStore = t:CtrlSpaceSearchHistory
   endif
 
-  let historyStore[join(g:ctrlspace#modes#Search.Data.Letters)] = ctrlspace#context#IncrementJumpCounter()
+  let historyStore[join(g:ctrlspace#modes#Search.Data.Letters)] = ctrlspace#jumps#IncrementJumpCounter()
 endfunction
 
 function! ctrlspace#search#RestoreSearchLetters(direction)

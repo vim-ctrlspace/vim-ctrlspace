@@ -1,5 +1,15 @@
 let s:config = g:ctrlspace#context#Configuration.Instance()
 
+function! ctrlspace#window#MaxHeight()
+  let maxFromConfig = s:config.MaxHeight
+
+  if maxFromConfig
+    return maxFromConfig
+  else
+    return &lines / 3
+  endif
+endfunction
+
 function! ctrlspace#window#Toggle(internal)
   if !a:internal
     call s:resetWindow()
@@ -54,7 +64,7 @@ function! ctrlspace#window#Toggle(internal)
 
   " set up window height
   if b:size > s:config.Height
-    let maxHeight = ctrlspace#context#MaxHeight()
+    let maxHeight = ctrlspace#window#MaxHeight()
 
     if b:size < maxHeight
       silent! exe "resize " . b:size
@@ -77,6 +87,48 @@ function! ctrlspace#window#Toggle(internal)
   call s:setActiveLine()
 
   normal! zb
+endfunction
+
+function! ctrlspace#window#StartAndFeedkeys(keys)
+  call ctrlspace#window#Toggle(0)
+
+  if !empty(a:keys)
+    call feedkeys(a:keys)
+  endif
+endfunction
+
+function! ctrlspace#window#GoToBufferListPosition(direction)
+  let bufferList    = ctrlspace#api#BufferList(tabpagenr())
+  let currentBuffer = bufnr("%")
+  let currentIndex  = -1
+  let bufferListLen = len(bufferList)
+
+  for index in range(0, bufferListLen - 1)
+    if bufferList[index]["number"] == currentBuffer
+      let currentIndex = index
+      break
+    endif
+  endfor
+
+  if currentIndex == -1
+    return
+  endif
+
+  if a:direction == "down"
+    let targetIndex = currentIndex + 1
+
+    if targetIndex == bufferListLen
+      let targetIndex = 0
+    endif
+  else
+    let targetIndex = currentIndex - 1
+
+    if targetIndex < 0
+      let targetIndex = bufferListLen - 1
+    endif
+  endif
+
+  silent! exe ":b " . bufferList[targetIndex]["number"]
 endfunction
 
 function! ctrlspace#window#GoToStartWindow()
@@ -308,16 +360,16 @@ function! s:resetWindow()
 
   let t:CtrlSpaceSearchHistoryIndex = -1
 
-  let g:ctrlspace#context#ProjectRoot       = ctrlspace#roots#FindProjectRoot()
+  let g:ctrlspace#roots#ProjectRoot       = ctrlspace#roots#FindProjectRoot()
   let g:ctrlspace#modes#Bookmark.Data.Active = ctrlspace#bookmarks#FindActiveBookmark()
 
   if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
     unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
   endif
 
-  if g:ctrlspace#context#LastProjectRoot != g:ctrlspace#context#ProjectRoot
-    let g:ctrlspace#context#Files           = []
-    let g:ctrlspace#context#LastProjectRoot = g:ctrlspace#context#ProjectRoot
+  if g:ctrlspace#roots#LastProjectRoot != g:ctrlspace#roots#ProjectRoot
+    let g:ctrlspace#files#Files           = []
+    let g:ctrlspace#roots#LastProjectRoot = g:ctrlspace#roots#ProjectRoot
 
     call ctrlspace#workspaces#SetWorkspaceNames()
   endif
@@ -350,8 +402,8 @@ function! s:setUpBuffer()
 
   let g:ctrlspace#context#PluginBuffer = bufnr("%")
 
-  if !empty(g:ctrlspace#context#ProjectRoot)
-    silent! exe "lcd " . g:ctrlspace#context#ProjectRoot
+  if !empty(g:ctrlspace#roots#ProjectRoot)
+    silent! exe "lcd " . g:ctrlspace#roots#ProjectRoot
   endif
 
   if &timeout
@@ -369,7 +421,7 @@ function! s:setUpBuffer()
 
   augroup CtrlSpaceUpdateSearch
     au!
-    au CursorHold <buffer> call ctrlspace#util#UpdateSearchResults()
+    au CursorHold <buffer> call ctrlspace#search#UpdateSearchResults()
   augroup END
 
   augroup CtrlSpaceLeave
@@ -388,12 +440,12 @@ function! s:setUpBuffer()
 
   if !s:config.UseMouseAndArrowsInTerm && !has("gui_running")
     " Block unnecessary escape sequences!
-    noremap <silent><buffer><esc>[ :call s:markKeyEscSequence()<CR>
+    noremap <silent><buffer><esc>[ :call ctrlspace#keys#MarkKeyEscSequence()<CR>
     let b:mouseSave = &mouse
     set mouse=
   endif
 
-  for keyName in g:ctrlspace#context#KeyNames
+  for keyName in g:ctrlspace#keys#KeyNames
     let key = strlen(keyName) > 1 ? ("<" . keyName . ">") : keyName
 
     if keyName == '"'
@@ -402,10 +454,6 @@ function! s:setUpBuffer()
 
     silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . keyName . "\")<CR>"
   endfor
-endfunction
-
-function! s:markKeyEscSequence()
-  let g:ctrlspace#context#KeyEscSequence = 1
 endfunction
 
 function! s:setActiveLine()
@@ -431,7 +479,7 @@ function! s:setActiveLine()
 
       if !empty(currentWorkspace)
         for i in range(0, b:size - 1)
-          if currentWorkspace ==# g:ctrlspace#context#Workspaces[b:indices[i]]
+          if currentWorkspace ==# g:ctrlspace#workspaces#Workspaces[b:indices[i]]
             let activeLine = i + 1
             break
           endif
@@ -445,7 +493,7 @@ function! s:setActiveLine()
 
     if !empty(g:ctrlspace#modes#Bookmark.Data.Active)
       for i in range(0, b:size - 1)
-        if g:ctrlspace#modes#Bookmark.Data.Active.Name ==# g:ctrlspace#context#Bookmarks[b:indices[i]].Name
+        if g:ctrlspace#modes#Bookmark.Data.Active.Name ==# g:ctrlspace#bookmarks#Bookmarks[b:indices[i]].Name
           let activeLine = i + 1
           break
         endif

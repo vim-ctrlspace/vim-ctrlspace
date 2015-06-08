@@ -27,7 +27,7 @@ function! ctrlspace#engine#Content()
 
   " trim the list in search mode
   if g:ctrlspace#modes#Search.Enabled
-    let maxHeight = ctrlspace#context#MaxHeight()
+    let maxHeight = ctrlspace#window#MaxHeight()
 
     if len(items) > maxHeight
       let items = items[-maxHeight: -1]
@@ -142,7 +142,7 @@ function! s:vimContextJSON()
   '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
         \ '","SearchModeEnabled":' . g:ctrlspace#modes#Search.Enabled .
         \ ',"SearchText":"' . join(g:ctrlspace#modes#Search.Data.Letters, "") .
-        \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#context#MaxHeight()
+        \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight()
         \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
         \  s:maxDisplayedItems . '}'
 endfunction
@@ -164,12 +164,12 @@ endfunction
 function! s:bookmarkListContent()
   let content = []
 
-  for i in range(0, len(g:ctrlspace#context#Bookmarks) - 1)
+  for i in range(0, len(g:ctrlspace#bookmarks#Bookmarks) - 1)
     let name       = g:ctrlspace#content#Bookmarks[i].Name
     let indicators = ""
 
     if !empty(g:ctrlspace#modes#Bookmark.Data.Active) &&
-          \ (g:ctrlspace#context#Bookmarks[i].Directory == g:ctrlspace#modes#Bookmarks.Data.Active.Directory)
+          \ (g:ctrlspace#bookmarks#Bookmarks[i].Directory == g:ctrlspace#modes#Bookmarks.Data.Active.Directory)
       let indicators .= s:config.Symbols.IA
     endif
 
@@ -182,8 +182,8 @@ endfunction
 function! s:workspaceListContent()
   let content = []
 
-  for i in range(0, len(g:ctrlspace#context#Workspaces) - 1)
-    let name = g:ctrlspace#context#Workspaces[i]
+  for i in range(0, len(g:ctrlspace#workspaces#Workspaces) - 1)
+    let name = g:ctrlspace#workspaces#Workspaces[i]
     let indicators = ""
 
     if name ==# g:ctrlspace#modes#Workspace.Data.Active.Name
@@ -249,9 +249,9 @@ function! s:bufferListContent()
   let content = []
 
   if g:ctrlspace#modes#Buffer.Data.SubMode ==# "single"
-    let buffers = map(keys(ctrlspace#context#Buffers(tabpagenr())), "str2nr(v:val)")
+    let buffers = map(keys(ctrlspace#buffers#Buffers(tabpagenr())), "str2nr(v:val)")
   elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "all"
-    let buffers = map(keys(ctrlspace#context#Buffers(0)), "str2nr(v:val)")
+    let buffers = map(keys(ctrlspace#buffers#Buffers(0)), "str2nr(v:val)")
   elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "visual"
     let buffers = tabpagebuflist()
   endif

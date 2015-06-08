@@ -1,12 +1,15 @@
+let s:config = g:ctrlspace#context#Configuration.Instance()
+let g:ctrlspace#workspaces#Workspaces = []
+
 function! ctrlspace#workspaces#SetWorkspaceNames()
   let filename                                  = ctrlspace#util#WorkspaceFile()
   let g:ctrlspace#modes#Workspace.Data.LastActive = ""
-  let g:ctrlspace#context#Workspaces              = []
+  let g:ctrlspace#workspaces#Workspaces              = []
 
   if filereadable(filename)
     for line in readfile(filename)
       if line =~? "CS_WORKSPACE_BEGIN: "
-        call add(g:ctrlspace#context#Workspaces, line[20:])
+        call add(g:ctrlspace#workspaces#Workspaces, line[20:])
       elseif line =~? "CS_LAST_WORKSPACE: "
         let g:ctrlspace#modes#Workspace.Data.LastActive = line[19:]
       endif
@@ -37,7 +40,151 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name)
 endfunction
 
 function! ctrlspace#workspaces#GetSelectedWorkspaceName()
-  return g:ctrlspace#context#Workspaces[ctrlspace#window#SelectedIndex()]
+  return g:ctrlspace#workspaces#Workspaces[ctrlspace#window#SelectedIndex()]
+endfunction
+
+function! ctrlspace#workspaces#SaveWorkspace(name)
+  if !ctrlspace#roots#ProjectRootFound()
+    return
+  endif
+
+  call ctrlspace#util#HandleVimSettings("start")
+
+  let cwdSave = fnamemodify(".", ":p:h")
+  silent! exe "cd " . g:ctrlspace#roots#ProjectRoot
+
+  if empty(a:name)
+    if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name)
+      let name = g:ctrlspace#modes#Workspace.Data.Active.Name
+    else
+      silent! exe "cd " . cwdSave
+      call ctrlspace#util#HandleVimSettings("stop")
+      return
+    endif
+  else
+    let name = a:name
+  endif
+
+  let filename = ctrlspace#util#WorkspaceFile()
+  let lastTab  = tabpagenr("$")
+
+  let lines       = []
+  let inWorkspace = 0
+
+  let workspaceStartMarker = "CS_WORKSPACE_BEGIN: " . name
+  let workspaceEndMarker   = "CS_WORKSPACE_END: " . name
+
+  if filereadable(filename)
+    for oldLine in readfile(filename)
+      if oldLine ==# workspaceStartMarker
+        let inWorkspace = 1
+      endif
+
+      if !inWorkspace
+        call add(lines, oldLine)
+      endif
+
+      if oldLine ==# workspaceEndMarker
+        let inWorkspace = 0
+      endif
+    endfor
+  endif
+
+  call add(lines, workspaceStartMarker)
+
+  let ssopSave = &ssop
+  set ssop=winsize,tabpages,buffers,sesdir
+
+  let tabData = []
+
+  for t in range(1, lastTab)
+    let data = {
+          \ "label": gettabvar(t, "CtrlSpaceLabel"),
+          \ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
+          \ }
+
+    let ctrlspaceList = ctrlspace#api#Buffers(t)
+
+    let bufs = []
+
+    for [nr, bname] in items(ctrlspaceList)
+      let bufname = fnamemodify(bname, ":.")
+
+      if !filereadable(bufname)
+        continue
+      endif
+
+      call add(bufs, bufname)
+    endfor
+
+    let data.bufs = bufs
+    call add(tabData, data)
+  endfor
+
+  silent! exe "mksession! CS_SESSION"
+
+  if !filereadable("CS_SESSION")
+    silent! exe "cd " . cwdSave
+    silent! exe "set ssop=" . ssopSave
+
+    call ctrlspace#util#HandleVimSettings("stop")
+    call ctrlspace#ui#Msg("The workspace '" . name . "' cannot be saved at this moment.")
+    return
+  endif
+
+  let tabIndex = 0
+
+  for cmd in readfile("CS_SESSION")
+    if ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+      let data = tabData[tabIndex]
+
+      if tabIndex > 0
+        call add(lines, cmd)
+      endif
+
+      for b in data.bufs
+        call add(lines, "edit " . b)
+      endfor
+
+      if !empty(data.label)
+        call add(lines, "let t:CtrlSpaceLabel = '" . substitute(data.label, "'", "''","g") . "'")
+      endif
+
+      if !empty(data.autotab)
+        call add(lines, "let t:CtrlSpaceAutotab = " . data.autotab)
+      endif
+
+      if tabIndex == 0
+        call add(lines, cmd)
+      elseif cmd =~# "^tabedit"
+        call add(lines, cmd[3:]) "make edit from tabedit
+      endif
+
+      let tabIndex += 1
+    else
+      let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
+
+      if !(exists("baddList[1]") && !empty(baddList[1]) && !filereadable(baddList[1]))
+        call add(lines, cmd)
+      endif
+    endif
+  endfor
+
+  call add(lines, workspaceEndMarker)
+
+  call writefile(lines, filename)
+  call delete("CS_SESSION")
+
+  call ctrlspace#workspaces#SetActiveWorkspaceName(name)
+  let g:ctrlspace#mode#Workspace.Data.Active.Digest = ctrlspace#workspaces#CreateWorkspaceDigest()
+
+  call ctrlspace#workspaces#SetWorkspaceNames()
+
+  silent! exe "cd " . cwdSave
+  silent! exe "set ssop=" . ssopSave
+
+  call ctrlspace#util#HandleVimSettings("stop")
+  call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
 endfunction
 
 function! ctrlspace#workspaces#CreateDigest()

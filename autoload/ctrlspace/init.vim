@@ -13,16 +13,16 @@ function! ctrlspace#init#Initialize()
     endif
   endif
 
-  command! -nargs=* -range CtrlSpace :call ctrlspace#ui#StartAndFeedkeys(<q-args>)
-  command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#ui#GoToBufferListPosition("up")
-  command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#ui#GoToBufferListPosition("down")
-  command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#ui#NewTabLabel(0)
-  command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#ui#RemoveTabLabel(0)
-  command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#ui#SaveWorkspace(<q-args>)
-  command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#ui#NewWorkspace()
-  command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#ui#LoadWorkspace(<bang>0, <q-args>)
-  command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#ui#AddProjectRoot(<q-args>)
-  command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#ui#RemoveProjectRoot(<q-args>)
+  command! -nargs=* -range CtrlSpace :call ctrlspace#window#StartAndFeedkeys(<q-args>)
+  command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#window#GoToBufferListPosition("up")
+  command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#window#GoToBufferListPosition("down")
+  command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#tabs#NewTabLabel(0)
+  command! -nargs=0 -range CtrlSpaceClearTabLabel :call ctrlspace#tabs#RemoveTabLabel(0)
+  command! -nargs=* -range CtrlSpaceSaveWorkspace :call ctrlspace#workspaces#SaveWorkspace(<q-args>)
+  command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#workspaces#NewWorkspace()
+  command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#workspaces#LoadWorkspace(<bang>0, <q-args>)
+  command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#roots#AddProjectRoot(<q-args>)
+  command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#roots#RemoveProjectRoot(<q-args>)
 
   hi def link CtrlSpaceNormal   Normal
   hi def link CtrlSpaceSelected Visual
@@ -30,22 +30,22 @@ function! ctrlspace#init#Initialize()
   hi def link CtrlSpaceStatus   StatusLine
 
   if s:config.SetDefaultMapping
-    call ctrlspace#context#SetDefaultMapping(s:config.DefaultMappingKey, ":CtrlSpace<CR>")
+    call ctrlspace#keys#SetDefaultMapping(s:config.DefaultMappingKey, ":CtrlSpace<CR>")
   endif
 
   call s:initProjectRootsAndBookmarks()
-  call s:initKeyNames()
+  call ctrlspace#keys#InitKeyNames()
 
-  au BufEnter * call ctrlspace#context#AddBuffer()
-  au VimEnter * call ctrlspace#context#InitializeBuffers()
-  au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#context#IncrementJumpCounter()
+  au BufEnter * call ctrlspace#buffers#AddBuffer()
+  au VimEnter * call ctrlspace#buffers#Initialize()
+  au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
-    au VimLeavePre * if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) | call ctrlspace#ui#SaveWorkspace("") | endif
+    au VimLeavePre * if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
   endif
 
   if s:config.LoadLastWorkspaceOnStart
-    au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#ui#LoadWorkspace(0, "") | endif
+    au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#workspaces#LoadWorkspace(0, "") | endif
   endif
 endfunction
 
@@ -73,47 +73,7 @@ function! s:initProjectRootsAndBookmarks()
     endfor
   endif
 
-  let g:ctrlspace#context#ProjectRoots = projectRoots
-  let g:ctrlspace#context#Bookmarks    = bookmarks
+  let g:ctrlspace#roots#ProjectRoots  = projectRoots
+  let g:ctrlspace#bookmarks#Bookmarks = bookmarks
 endfunction
 
-function! s:initKeyNames()
-  let lowercase = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
-  let uppercase = toupper(lowercase)
-
-  let controlList = []
-
-  for l in split(lowercase, " ")
-    call add(controlList, "C-" . l)
-  endfor
-
-  let controls = join(controlList, " ")
-
-  let numbers  = "1 2 3 4 5 6 7 8 9 0"
-  let specials = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " .
-               \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
-               \ "Down Up Home End Left Right PageUp PageDown " .
-               \ 'F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 "'
-
-  if !s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    let specials .= " Esc"
-  endif
-
-  let specials .= (has("gui_running") || has("win32")) ? " C-Space" : " Nul"
-
-  let keyNames = split(join([lowercase, uppercase, controls, numbers, specials], " "), " ")
-
-  " won't work with leader mappings
-  if ctrlspace#context#IsDefaultKey()
-    for i in range(0, len(keyNames) - 1)
-      let fullKeyName = (strlen(keyNames[i]) > 1) ? ("<" . keyNames[i] . ">") : keyNames[i]
-
-      if fullKeyName ==# ctrlspace#context#DefaultKey()
-        call remove(keyNames, i)
-        break
-      endif
-    endfor
-  endif
-
-  let g:ctrlspace#context#KeyNames = keyNames
-endfunction

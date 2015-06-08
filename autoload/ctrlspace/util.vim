@@ -44,7 +44,7 @@ function! ctrlspace#util#FilesCache()
 endfunction
 
 function! s:internalFilePath(name)
-  let root = g:ctrlspace#context#ProjectRoot
+  let root = g:ctrlspace#roots#ProjectRoot
   let fullPart = empty(root) ? "" : (root . "/")
 
   if !empty(s:config.ProjectRootMarkers)
@@ -73,13 +73,5 @@ endfunction
 function! ctrlspace#util#SetStatusline()
   if has("statusline")
     silent! exe "let &l:statusline = " . s:config.StatuslineFunction
-  endif
-endfunction
-
-function! ctrlspace#util#UpdateSearchResults()
-  if g:ctrlspace#context#UpdateSearchResults
-    let g:ctrlspace#context#UpdateSearchResults = 0
-    call ctrlspace#window#Kill(0, 0)
-    call ctrlspace#window#Toggle(1)
   endif
 endfunction

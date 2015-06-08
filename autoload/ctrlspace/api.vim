@@ -2,7 +2,7 @@ let s:config = g:ctrlspace#context#Configuration.Instance()
 
 function! ctrlspace#api#BufferList(tabnr)
   let bufferList     = []
-  let singleList     = ctrlspace#context#Buffers(a:tabnr)
+  let singleList     = ctrlspace#buffers#Buffers(a:tabnr)
   let visibleBuffers = tabpagebuflist(a:tabnr)
 
   for i in keys(singleList)
@@ -26,7 +26,7 @@ endfunction
 
 function! ctrlspace#api#Buffers(tabnr)
   let bufferList     = {}
-  let ctrlspaceList  = ctrlspace#context#Buffers(a:tabnr)
+  let ctrlspaceList  = ctrlspace#buffers#Buffers(a:tabnr)
   let visibleBuffers = tabpagebuflist(a:tabnr)
 
   for i in keys(ctrlspaceList)
@@ -47,7 +47,7 @@ function! ctrlspace#api#Buffers(tabnr)
 endfunction
 
 function! ctrlspace#api#TabModified(tabnr)
-  for b in map(keys(ctrlspace#context#Buffers(a:tabnr)), "str2nr(v:val)")
+  for b in map(keys(ctrlspace#buffers#Buffers(a:tabnr)), "str2nr(v:val)")
     if getbufvar(b, '&modified')
       return 1
     endif
