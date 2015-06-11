@@ -183,9 +183,10 @@ endfunction
 
 function! s:workspaceListContent(clv)
   let content    = []
+  let workspaces = ctrlspace#workspaces#Workspaces()
 
-  for i in range(0, len(ctrlspace#workspaces#Workspaces()) - 1)
-    let name = ctrlspace#workspaces#Workspaces(i)
+  for i in range(0, len(workspaces) - 1)
+    let name = workspaces[i]
     let indicators = ""
 
     if name ==# a:clv.Data.Active.Name
