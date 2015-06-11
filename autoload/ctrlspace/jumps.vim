@@ -56,7 +56,7 @@ function! ctrlspace#jumps#Jump(direction)
     elseif clv.Name ==# "Bookmark"
       call s:createBookmarkJumps()
     else
-      call createBufferJumps()
+      call s:createBufferJumps()
     endif
 
     call sort(b:jumplines, function("s:compareJumps"))
