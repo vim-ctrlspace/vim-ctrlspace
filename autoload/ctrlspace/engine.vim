@@ -1,4 +1,4 @@
-let s:config            = g:ctrlspace#context#Configuration.Instance()
+let s:config            = ctrlspace#context#Configuration()
 let s:maxSearchedItems  = 200
 let s:maxDisplayedItems = 500
 
@@ -10,7 +10,7 @@ function! ctrlspace#engine#Content()
     return s:contentFromExternalEngine(s:config.Engine, items)
   endif
 
-  if !empty(g:ctrlspace#modes#Search.Data.Letters)
+  if !empty(ctrlspace#modes#Search("Letters"))
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
     call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
@@ -18,7 +18,7 @@ function! ctrlspace#engine#Content()
       let items = items[0, s:maxDisplayedItems - 1]
     endif
 
-    if g:ctrlspace#modes#Tablist.Enabled
+    if ctrlspace#modes#Tablist().Enabled
       call sort(items, function("ctrlspace#engine#CompareByIndex"))
     else
       call sort(items, function("ctrlspace#engine#CompareByText"))
@@ -26,7 +26,7 @@ function! ctrlspace#engine#Content()
   endif
 
   " trim the list in search mode
-  if g:ctrlspace#modes#Search.Enabled
+  if ctrlspace#modes#Search().Enabled
     let maxHeight = ctrlspace#window#MaxHeight()
 
     if len(items) > maxHeight
@@ -38,10 +38,10 @@ function! ctrlspace#engine#Content()
 endfunction
 
 function! s:contentFromExternalEngine(engine, items)
-  let engineCommand = g:ctrlspace#context#PluginFolder . "/bin/" . a:engine
+  let engineCommand = ctrlspace#context#PluginFolder() . "/bin/" . a:engine
   let engineData = [s:vimContextJSON()]
 
-  if g:ctrlspace#modes#File.Enabled
+  if ctrlspace#modes#File().Enabled
     call add(engineData, a:items[0].path])
   else
     for item in a:items
@@ -139,62 +139,62 @@ function! s:computeLowestNoises(source, maxItems)
 endfunction
 
 function! s:vimContextJSON()
-  '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
-        \ '","SearchModeEnabled":' . g:ctrlspace#modes#Search.Enabled .
-        \ ',"SearchText":"' . join(g:ctrlspace#modes#Search.Data.Letters, "") .
+  let sm = ctrlspace#modes#Search()
+  return '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
+        \ '","SearchModeEnabled":' . sm.Enabled .
+        \ ',"SearchText":"' . join(sm.Data.Letters, "") .
         \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight()
         \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
         \  s:maxDisplayedItems . '}'
 endfunction
 
 function! s:contentSource()
-  if g:ctrlspace#modes#Buffer.Enabled
-    return s:bufferListContent()
-  elseif g:ctrlspace#modes#File.Enabled
-    return s:fileListContent()
-  elseif g:ctrlspace#modes#Tablist.Enabled
-    return s:tabListContent()
-  elseif g:ctrlspace#modes#Workspace.Enabled
-    return s:workspaceListContent()
-  elseif g:ctrlspace#modes#Bookmark.Enabled
-    return s:bookmarkListContent()
+  let clv = ctrlspace#modes#CurrentListView()
+
+  if clv.Name ==# "Buffer"
+    return s:bufferListContent(clv)
+  elseif clv.Name ==# "File"
+    return s:fileListContent(clv)
+  elseif clv.Name ==# "Tablist"
+    return s:tabListContent(clv)
+  elseif clv.Name ==# "Workspace"
+    return s:workspaceListContent(clv)
+  elseif clv.Name ==# "Bookmark"
+    return s:bookmarkListContent(clv)
   endif
 endfunction
 
-function! s:bookmarkListContent()
+function! s:bookmarkListContent(clv)
   let content = []
 
-  for i in range(0, len(g:ctrlspace#bookmarks#Bookmarks) - 1)
-    let name       = g:ctrlspace#content#Bookmarks[i].Name
+  for i in range(0, len(ctrlspace#bookmarks#Bookmarks()) - 1)
+    let bm         = ctrlspace#content#Bookmarks(i)
     let indicators = ""
 
-    if !empty(g:ctrlspace#modes#Bookmark.Data.Active) &&
-          \ (g:ctrlspace#bookmarks#Bookmarks[i].Directory == g:ctrlspace#modes#Bookmarks.Data.Active.Directory)
+    if !empty(a:clv.Data.Active) && (bm.Directory ==# a:clv.Data.Active.Directory)
       let indicators .= s:config.Symbols.IA
     endif
 
-    call add(content, { "index": i, "text": g:ctrlspace#content#Bookmarks[i].Name, "indicators": indicators })
+    call add(content, { "index": i, "text": bm.Name, "indicators": indicators })
   endfor
 
   return content
 endfunction
 
-function! s:workspaceListContent()
-  let content = []
+function! s:workspaceListContent(clv)
+  let content    = []
 
-  for i in range(0, len(g:ctrlspace#workspaces#Workspaces) - 1)
-    let name = g:ctrlspace#workspaces#Workspaces[i]
+  for i in range(0, len(ctrlspace#workspaces#Workspaces()) - 1)
+    let name = ctrlspace#workspaces#Workspaces(i)
     let indicators = ""
 
-    if name ==# g:ctrlspace#modes#Workspace.Data.Active.Name
-      let currentDigest = ctrlspace#workspace#CreateDigest()
-
-      if g:ctrlspace#modes#Workspace.Data.Active.Digest !=# currentDigest
+    if name ==# a:clv.Data.Active.Name
+      if a:clv.Data.Active.Digest !=# ctrlspace#workspaces#CreateDigest()
         let indicators .= s:config.Symbols.IM
       endif
 
       let indicators .= s:config.Symbols.IA
-    elseif name ==# g:ctrlspace#modes#Workspace.Data.LastActive
+    elseif name ==# a:clv.Data.LastActive
       let indicators .= s:config.Symbols.IV
     endif
 
@@ -204,7 +204,7 @@ function! s:workspaceListContent()
   return content
 endfunction
 
-function! s:tabListContent()
+function! s:tabListContent(clv)
   let content    = []
   let currentTab = tabpagenr()
 
@@ -236,7 +236,7 @@ function! s:tabListContent()
   return content
 endfunction
 
-function! s:fileListContent()
+function! s:fileListContent(clv)
   if !empty(s:config.Engine)
     call ctrlspace#files#Files()
     return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
@@ -245,14 +245,14 @@ function! s:fileListContent()
   endif
 endfunction
 
-function! s:bufferListContent()
+function! s:bufferListContent(clv)
   let content = []
 
-  if g:ctrlspace#modes#Buffer.Data.SubMode ==# "single"
+  if a:clv.Data.SubMode ==# "single"
     let buffers = map(keys(ctrlspace#buffers#Buffers(tabpagenr())), "str2nr(v:val)")
-  elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "all"
+  elseif a:clv.Data.SubMode ==# "all"
     let buffers = map(keys(ctrlspace#buffers#Buffers(0)), "str2nr(v:val)")
-  elseif g:ctrlspace#modes#Buffer.Data.SubMode ==# "visual"
+  elseif a:clv.Data.SubMode ==# "visual"
     let buffers = tabpagebuflist()
   endif
 
@@ -294,12 +294,12 @@ function! s:bufferEntry(bufnr)
   endif
 endfunction
 
-function! s:findSubsequence(text, offset)
+function! s:findSubsequence(searchLetters, text, offset)
   let positions     = []
   let noise         = 0
   let currentOffset = a:offset
 
-  for letter in g:ctrlspace#modes#Search.Data.Letters
+  for letter in a:searchLetters
     let matchedPosition = match(a:text, "\\m\\c" . letter, currentOffset)
 
     if matchedPosition == -1
@@ -317,19 +317,20 @@ function! s:findSubsequence(text, offset)
 endfunction
 
 function! s:findLowestSearchNoise(text)
-  let searchLettersCount = len(g:ctrlspace#modes#Search.Data.Letters)
+  let searchLetters      = ctrlspace#modes#Search("Letters")
+  let searchLettersCount = len(searchLetters)
   let noise              = -1
   let matchedString      = ""
 
   if searchLettersCount == 1
-    let noise          = match(a:text, "\\m\\c" . g:ctrlspace#modes#Search.Data.Letters[0])
-    let matchedString = g:ctrlspace#modes#Search.Data.Letters[0]
+    let noise         = match(a:text, "\\m\\c" . searchLetters[0])
+    let matchedString = searchLetters[0]
   else
-    let offset      = 0
+    let offset   = 0
     let text_len = strlen(a:text)
 
     while offset < text_len
-      let subseq = s:findSubsequence(a:text, offset)
+      let subseq = s:findSubsequence(searchLetters, a:text, offset)
 
       if subseq[0] == -1
         break
@@ -371,12 +372,12 @@ function! s:findLowestSearchNoise(text)
 endfunction
 
 function! s:prepareContent(items)
-  if g:ctrlspace#modes#File.Enabled
+  if ctrlspace#modes#File().Enabled
     let itemSpace = 5
-  elseif g:ctrlspace#modes#Bookmark.Enabled
-    let itemSpace = 5 + g:ctrlspace#context#SymbolSizes.IAV
+  elseif ctrlspace#modes#Bookmark().Enabled
+    let itemSpace = 5 + ctrlspace#context#SymbolSizes("IAV")
   else
-    let itemSpace = 5 + g:ctrlspace#context#SymbolSizes.IAV + g:ctrlspace#context#SymbolSizes.IM
+    let itemSpace = 5 + ctrlspace#context#SymbolSizes("IAV") + ctrlspace#context#SymbolSizes("IM")
   endif
 
   let content  = ""
@@ -387,7 +388,7 @@ function! s:prepareContent(items)
     let line = item.text
 
     if strwidth(line) + itemSpace > &columns
-      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + g:ctrlspace#context#SymbolSizes.Dots)
+      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + ctrlspace#context#SymbolSizes("Dots"))
     endif
 
     if !empty(item.indicators)

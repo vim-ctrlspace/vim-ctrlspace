@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
 function! ctrlspace#window#MaxHeight()
   let maxFromConfig = s:config.MaxHeight
@@ -16,12 +16,14 @@ function! ctrlspace#window#Toggle(internal)
   endif
 
   " if we get called and the list is open --> close it
-  if bufexists(g:ctrlspace#context#PluginBuffer)
-    if bufwinnr(g:ctrlspace#context#PluginBuffer) != -1
-      call ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 1)
+  let pbuf = ctrlspace#context#PluginBuffer()
+
+  if bufexists(pbuf)
+    if bufwinnr(pbuf) != -1
+      call ctrlspace#window#Kill(pbuf, 1)
       return
     else
-      call ctrlspace#window#Kill(g:ctrlspace#context#PluginBuffer, 0)
+      call ctrlspace#window#Kill(pbuf, 0)
       if !a:internal
         let t:CtrlSpaceStartWindow = winnr()
         let t:CtrlSpaceWinrestcmd  = winrestcmd()
@@ -36,7 +38,9 @@ function! ctrlspace#window#Toggle(internal)
     let t:CtrlSpaceActivebuf   = bufnr("")
   endif
 
-  if g:ctrlspace#modes#Zoom.Enabled
+  let zoom = ctrlspace#modes#Zoom()
+
+  if zoom.Enabled
     let t:CtrlSpaceActivebuf = bufnr("")
   endif
 
@@ -46,7 +50,7 @@ function! ctrlspace#window#Toggle(internal)
   silent! exe "resize" s:config.Height
 
   " zoom start window in Zoom Mode
-  if g:ctrlspace#modes#Zoom.Enabled
+  if zoom.Enabled
     silent! exe t:CtrlSpaceStartWindow . "wincmd w"
     vert resize | resize
     silent! exe "noautocmd wincmd P"
@@ -54,7 +58,7 @@ function! ctrlspace#window#Toggle(internal)
 
   call s:setUpBuffer()
 
-  if g:ctrlspace#modes#Help.Enabled
+  if ctrlspace#modes#Help().Enabled
     call ctrlspace#help#DisplayHelp()
     call ctrlspace#util#SetStatusline()
     return
@@ -178,16 +182,18 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
   if a:final
     call ctrlspace#util#HandleVimSettings("stop")
 
-    if g:ctrlspace#modes#Search.Data.Restored
+    if ctrlspace#modes#Search("Restored")
       call ctrlspace#search#AppendToSearchHistory()
     endif
 
     call ctrlspace#window#GoToStartWindow()
 
-    if g:ctrlspace#modes#Zoom.Enabled
-      exec ":b " . g:ctrlspace#modes#Zoom.Data.OriginalBuffer
-      let g:ctrlspace#modes#Zoom.Data.OriginalBuffer = 0
-      call g:ctrlspace#modes#Zoom.Disable()
+    let zoom = ctrlspace#modes#Zoom()
+
+    if zoom.Enabled
+      exec ":b " . zoom.Data.OriginalBuffer
+      call zoom.SetData("OriginalBuffer", 0)
+      call zoom.Disable()
     endif
   endif
 
@@ -195,9 +201,11 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
 endfunction
 
 function! ctrlspace#window#QuitVim()
-  if !s:config.SaveWorkspaceOnExit && !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) &&
-        \ (g:ctrlspace#modes#Workspace.Data.Active.Digest !=# ctrlspace#workspaces#CreateDigest()) &&
-        \ !ctrlspace#ui#Confirmed("Current workspace ('" . g:ctrlspace#modes#Workspace.Data.Active.Name . "') not saved. Proceed anyway?")
+  if !s:config.SaveWorkspaceOnExit
+    let aw = ctrlspace#modes#Workspace("Active")
+
+    if !empty(aw.Name) && aw.Digest !=# ctrlspace#workspaces#CreateDigest() &&
+        \ !ctrlspace#ui#Confirmed("Current workspace ('" . aw.Name . "') not saved. Proceed anyway?")
     return
   endif
 
@@ -345,39 +353,44 @@ function! s:goto(line)
 endfunction
 
 function! s:resetWindow()
-  call g:ctrlspace#modes#Help.Disable()
-  call g:ctrlspace#modes#Buffer.Enable()
-  call g:ctrlspace#modes#Nop.Disable()
-  call g:ctrlspace#modes#Search.Disable()
-  call g:ctrlspace#modes#NextTab.Disable()
+  call ctrlspace#modes#Help().Disable()
+  call ctrlspace#modes#Nop().Disable()
+  call ctrlspace#modes#Search().Disable()
+  call ctrlspace#modes#NextTab().Disable()
 
-  let g:ctrlspace#modes#Buffer.Data.SubMode            = "single"
-  let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 0
-  let g:ctrlspace#modes#Search.Data.Restored           = 0
-  let g:ctrlspace#modes#Search.Data.Letters            = []
-  let g:ctrlspace#modes#Search.Data.HistoryIndex       = -1
-  let g:ctrlspace#modes#Workspace.Data.LastBrowsed     = 0
+  let bmode = ctrlspace#modes#Buffer()
+
+  call bmode.Enable()
+  call bmode.SetData("SubMode", "single")
+
+  let smode = ctrlspace#modes#Search()
+
+  call smode.SetData("NewSearchPerformed", 0)
+  call smode.SetData("Restored", 0)
+  call smode.SetData("Letters", [])
+  call smode.SetData("HistoryIndex", -1)
+
+  call ctrlspace#modes#Workspace().SetData("LastBrowsed", 0)
 
   let t:CtrlSpaceSearchHistoryIndex = -1
 
-  let g:ctrlspace#roots#ProjectRoot       = ctrlspace#roots#FindProjectRoot()
-  let g:ctrlspace#modes#Bookmark.Data.Active = ctrlspace#bookmarks#FindActiveBookmark()
+  call ctrlspace#roots#SetCurrentProjectRoot(ctrlspace#roots#FindProjectRoot())
+  call ctrlspace#modes#Bookmark().SetData("Active", ctrlspace#bookmarks#FindActiveBookmark())
 
-  if exists("g:ctrlspace#modes#Search.Data.LastSearchedDirectory")
-    unlet! g:ctrlspace#modes#Search.Data.LastSearchedDirectory
-  endif
+  call smode.RemoveData("LastSearchedDirectory")
 
-  if g:ctrlspace#roots#LastProjectRoot != g:ctrlspace#roots#ProjectRoot
-    let g:ctrlspace#files#Files           = []
-    let g:ctrlspace#roots#LastProjectRoot = g:ctrlspace#roots#ProjectRoot
-
+  if ctrlspace#roots#LastProjectRoot() != ctrlspace#roots#CurrentProjectRoot()
+    call ctrlspace#files#ClearAll()
+    call ctrlspace#roots#SetLastProjectRoot(ctrlspace#roots#CurrentProjectRoot())
     call ctrlspace#workspaces#SetWorkspaceNames()
   endif
 
-  if empty(g:ctrlspace#context#SymbolSizes)
-    let g:ctrlspace#context#SymbolSizes.IAV  = max([strwidth(s:config.Symbols.IV), strwidth(s:config.Symbols.IA)])
-    let g:ctrlspace#context#SymbolSizes.IM   = strwidth(s:config.Symbols.IM)
-    let g:ctrlspace#context#SymbolSizes.Dots = strwidth(s:config.Symbols.Dots)
+  if empty(ctrlspace#context#SymbolSizes())
+    call ctrlspace#context#SetSymbolSizes({
+          \ "IAV":  max([strwidth(s:config.Symbols.IV), strwidth(s:config.Symbols.IA)]),
+          \ "IM":   strwidth(s:config.Symbols.IM),
+          \ "Dots": strwidth(s:config.Symbols.Dots)
+          \ })
   endif
 
   call ctrlspace#util#HandleVimSettings("start")
@@ -400,10 +413,12 @@ function! s:setUpBuffer()
   setlocal cc=
   setlocal filetype=ctrlspace
 
-  let g:ctrlspace#context#PluginBuffer = bufnr("%")
+  call ctrlspace#context#SetPluginBuffer(bufnr("%"))
 
-  if !empty(g:ctrlspace#roots#ProjectRoot)
-    silent! exe "lcd " . g:ctrlspace#roots#ProjectRoot
+  let root = ctrlspace#roots#CurrentProjectRoot()
+
+  if !empty(root)
+    silent! exe "lcd " . root
   endif
 
   if &timeout
@@ -445,83 +460,93 @@ function! s:setUpBuffer()
     set mouse=
   endif
 
-  for keyName in g:ctrlspace#keys#KeyNames
-    let key = strlen(keyName) > 1 ? ("<" . keyName . ">") : keyName
+  for k in ctrlspace#keys#KeyNames()
+    let key = strlen(k) > 1 ? ("<" . k . ">") : k
 
-    if keyName == '"'
-      let keyName = '\' . keyName
+    if k == '"'
+      let k = '\' . k
     endif
 
-    silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . keyName . "\")<CR>"
+    silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . k . "\")<CR>"
   endfor
 endfunction
 
 function! s:setActiveLine()
-  if !empty(g:ctrlspace#modes#Search.Data.Letters) && g:ctrlspace#modes#Search.Data.NewSearchPerformed
+  let sm = ctrlspace#modes#Search()
+
+  if !empty(sm.Data.Letters) && sm.Data.NewSearchPerformed
     call ctrlspace#window#MoveSelectionBar(line("$"))
 
-    if !g:ctrlspace#modes#Search.Enabled
-      let g:ctrlspace#modes#Search.Data.NewSearchPerformed = 0
+    if !sm.Enabled
+      call sm.SetData("NewSearchPerformed", 0)
     endif
-  elseif g:ctrlspace#modes#Workspace.Enabled
-    if g:ctrlspace#modes#Workspace.Data.LastBrowsed
-      let activeLine = g:ctrlspace#modes#Workspace.Data.LastBrowsed
-    else
+  else
+    let clv = ctrlspace#modes#CurrentListView()
+
+    if clv.Name ==# "Workspace"
+      if clv.Data.LastBrowsed
+        let activeLine = clv.Data.LastBrowsed
+      else
+        let activeLine = 1
+
+        if !empty(clv.Data.Active.Name)
+          let currWsp = clv.Data.Active.Name
+        elseif !empty(clv.Data.LastActive)
+          let currWsp = clv.Data.LastActive
+        else
+          let currWsp = ""
+        endif
+
+        if !empty(currWsp)
+          let workspaces = ctrlspace#workspaces#Workspaces()
+
+          for i in range(0, b:size - 1)
+            if currWsp ==# workspaces[b:indices[i]]
+              let activeLine = i + 1
+              break
+            endif
+          endfor
+        endif
+      endif
+    elseif clv.Name ==# "Tablist"
+      let activeLine = tabpagenr()
+    elseif clv.Name ==# "Bookmark"
       let activeLine = 1
 
-      if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name)
-        let currentWorkspace = g:ctrlspace#modes#Workspace.Data.Active.Name
-      elseif !empty(g:ctrlspace#modes#Workspace.Data.LastActive)
-        let currentWorkspace = g:ctrlspace#modes#Workspace.Data.LastActive
-      else
-        let currentWorkspace = ""
-      endif
+      if !empty(clv.Data.Active)
+        let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
-      if !empty(currentWorkspace)
         for i in range(0, b:size - 1)
-          if currentWorkspace ==# g:ctrlspace#workspaces#Workspaces[b:indices[i]]
+          if clv.Data.Active.Name ==# bookmarks[b:indices[i]].Name
             let activeLine = i + 1
             break
           endif
         endfor
       endif
-    endif
-  elseif g:ctrlspace#modes#Tablist.Enabled
-    let activeLine = tabpagenr()
-  elseif g:ctrlspace#modes#Bookmark.Enabled
-    let activeLine = 1
+    elseif clv.Name ==# "File"
+      let activeLine = line("$")
+    else
+      let activeLine = 0
+      let maxCounter = 0
+      let lastLine   = 0
 
-    if !empty(g:ctrlspace#modes#Bookmark.Data.Active)
       for i in range(0, b:size - 1)
-        if g:ctrlspace#modes#Bookmark.Data.Active.Name ==# g:ctrlspace#bookmarks#Bookmarks[b:indices[i]].Name
+        if b:indices[i] == t:CtrlSpaceActivebuf
           let activeLine = i + 1
           break
         endif
+
+        let currentJumpCounter = ctrlspace#util#GetbufvarWithDefault(b:indices[i], "CtrlSpaceJumpCounter", 0)
+
+        if currentJumpCounter > maxCounter
+          let maxCounter = currentJumpCounter
+          let lastLine = i + 1
+        endif
       endfor
-    endif
-  elseif g:ctrlspace#modes#File.Enabled
-    let activeLine = line("$")
-  else
-    let activeLine = 0
-    let maxCounter = 0
-    let lastLine   = 0
 
-    for i in range(0, b:size - 1)
-      if b:indices[i] == t:CtrlSpaceActivebuf
-        let activeLine = i + 1
-        break
+      if !activeLine
+        let activeLine = (lastLine > 0) ? lastLine : b:size - 1
       endif
-
-      let currentJumpCounter = ctrlspace#util#GetbufvarWithDefault(b:indices[i], "CtrlSpaceJumpCounter", 0)
-
-      if currentJumpCounter > maxCounter
-        let maxCounter = currentJumpCounter
-        let lastLine = i + 1
-      endif
-    endfor
-
-    if !activeLine
-      let activeLine = (lastLine > 0) ? lastLine : b:size - 1
     endif
   endif
 
@@ -565,12 +590,12 @@ function! s:displayContent()
     silent! put! =b:text
     normal! GkJ
     call s:fillBufferSpace()
-    call g:ctrlspace#modes#Nop.Disable()
+    call ctrlspace#modes#Nop().Disable()
   else
     let emptyListMessage = "  List empty"
 
     if &columns < (strwidth(emptyListMessage) + 2)
-      let emptyListMessage = strpart(emptyListMessage, 0, &columns - 2 - g:ctrlspace#context#SymbolSizes.Dots) . s:config.Symbols.Dots
+      let emptyListMessage = strpart(emptyListMessage, 0, &columns - 2 - ctrlspace#context#SymbolSizes("Dots")) . s:config.Symbols.Dots
     endif
 
     while strwidth(emptyListMessage) < &columns
@@ -584,7 +609,7 @@ function! s:displayContent()
 
     normal! 0
 
-    call g:ctrlspace#modes#Nop.Enable()
+    call ctrlspace#modes#Nop().Enable()
   endif
 
   setlocal nomodifiable

@@ -1,25 +1,39 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
-let g:ctrlspace#workspaces#Workspaces = []
+let s:config = ctrlspace#context#Configuration()
+let s:workspaces = []
+
+function! ctrlspace#workspaces#Workspaces(...)
+  return ctrlspace#util#GetWithOptionalIndex(s:workspaces, a:000)
+endfunction
 
 function! ctrlspace#workspaces#SetWorkspaceNames()
-  let filename                                  = ctrlspace#util#WorkspaceFile()
-  let g:ctrlspace#modes#Workspace.Data.LastActive = ""
-  let g:ctrlspace#workspaces#Workspaces              = []
+  let filename     = ctrlspace#util#WorkspaceFile()
+  let s:workspaces = []
+  let wm           = ctrlspace#modes#Workspace()
+
+  call wm.SetData("LastActive", "")
 
   if filereadable(filename)
     for line in readfile(filename)
       if line =~? "CS_WORKSPACE_BEGIN: "
-        call add(g:ctrlspace#workspaces#Workspaces, line[20:])
+        call add(s:workspaces, line[20:])
       elseif line =~? "CS_LAST_WORKSPACE: "
-        let g:ctrlspace#modes#Workspace.Data.LastActive = line[19:]
+        call wm.SetData("LastActive", line[19:])
       endif
     endfor
   endif
 endfunction
 
-function! ctrlspace#workspaces#SetActiveWorkspaceName(name)
-  let g:ctrlspace#modes#Workspace.Data.Active.Name = a:name
-  let g:ctrlspace#modes#Workspace.Data.LastActive  = a:name
+function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
+  let wm = ctrlspace#modes#Workspace()
+
+  if a:0 > 0
+    let digest = a:1
+  else
+    let digest = ctrlspace#modes#Workspace("Active").Digest
+  end
+
+  call wm.SetData("Active", { "Name": a:name, "Digest": digest })
+  call wm.SetData("LastActive", a:name)
 
   let filename = ctrlspace#util#WorkspaceFile()
   let lines    = []
@@ -32,15 +46,15 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name)
     endfor
   endif
 
-  if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name)
-    call insert(lines, "CS_LAST_WORKSPACE: " . g:ctrlspace#modes#Workspace.Data.Active.Name)
+  if !empty(a:name)
+    call insert(lines, "CS_LAST_WORKSPACE: " . a:name)
   endif
 
   call writefile(lines, filename)
 endfunction
 
 function! ctrlspace#workspaces#GetSelectedWorkspaceName()
-  return g:ctrlspace#workspaces#Workspaces[ctrlspace#window#SelectedIndex()]
+  return s:workspaces[ctrlspace#window#SelectedIndex()]
 endfunction
 
 function! ctrlspace#workspaces#SaveWorkspace(name)
@@ -51,11 +65,14 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
   call ctrlspace#util#HandleVimSettings("start")
 
   let cwdSave = fnamemodify(".", ":p:h")
-  silent! exe "cd " . g:ctrlspace#roots#ProjectRoot
+
+  silent! exe "cd " . ctrlspace#roots#CurrentProjectRoot()
+
+  let wm = ctrlspace#modes#Workspace()
 
   if empty(a:name)
-    if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name)
-      let name = g:ctrlspace#modes#Workspace.Data.Active.Name
+    if !empty(wm.Data.Active.Name)
+      let name = wm.Data.Active.Name
     else
       silent! exe "cd " . cwdSave
       call ctrlspace#util#HandleVimSettings("stop")
@@ -175,9 +192,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
   call writefile(lines, filename)
   call delete("CS_SESSION")
 
-  call ctrlspace#workspaces#SetActiveWorkspaceName(name)
-  let g:ctrlspace#mode#Workspace.Data.Active.Digest = ctrlspace#workspaces#CreateWorkspaceDigest()
-
+  call ctrlspace#workspaces#SetActiveWorkspaceName(name, ctrlspace#workspaces#CreateDigest())
   call ctrlspace#workspaces#SetWorkspaceNames()
 
   silent! exe "cd " . cwdSave

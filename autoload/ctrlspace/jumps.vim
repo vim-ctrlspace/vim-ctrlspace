@@ -1,10 +1,9 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
-
-let g:ctrlspace#jumps#JumpCounter = 0
+let s:config      = ctrlspace#context#Configuration()
+let s:jumpCounter = 0
 
 function! ctrlspace#jumps#IncrementJumpCounter()
-  let g:ctrlspace#context#JumpCounter += 1
-  return g:ctrlspace#context#JumpCounter
+  let s:jumpCounter += 1
+  return s:jumpCounter
 endfunction
 
 function! s:compareJumps(a, b)
@@ -22,7 +21,7 @@ function! s:createTabJumps()
   let b:jumplinesLen = tabpagenr("$")
 
   for t in range(1, b:jumplinesLen)
-    let counter = ctrlspace#util#GettabvarWithDefault(t, "ctrlspace_tablist_jump_counter", 0)
+    let counter = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceTablistJumpCounter", 0)
     call add(b:jumplines, { "line": t, "counter": counter })
   endfor
 endfunction
@@ -30,9 +29,10 @@ endfunction
 function! s:createBookmarkJumps()
   let b:jumplines    = []
   let b:jumplinesLen = b:size
+  let bookmarks      = ctrlspace#bookmarks#Bookmarks()
 
   for l in range(1, b:jumplinesLen)
-    let counter = g:ctrlspace#bookmarks#Bookmarks[b:indices[l - 1]].JumpCounter
+    let counter = bookmarks[b:indices[l - 1]].JumpCounter
     call add(b:jumplines, { "line": l, "counter": counter })
   endfor
 endfunction
@@ -49,9 +49,11 @@ endfunction
 
 function! ctrlspace#jumps#Jump(direction)
   if !exists("b:jumplines")
-    if g:ctrlspace#modes#Tablist.Enabled
+    let clv = ctrlspace#modes#CurrentListView()
+
+    if clv.Name ==# "Tablist"
       call s:createTabJumps()
-    elseif g:ctrlspace#modes#Bookmark.Enabled
+    elseif clv.Name ==# "Bookmark"
       call s:createBookmarkJumps()
     else
       call createBufferJumps()

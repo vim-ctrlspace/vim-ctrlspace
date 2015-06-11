@@ -1,23 +1,22 @@
-let g:ctrlspace#modes#Collection = {}
-
+let s:collection      = {}
 let s:noLists         = []
 let s:lists           = []
 let s:currentListView = {}
 
-let g:ctrlspace#modes#Mode = {
+let s:mode = {
       \ "Name":     "",
       \ "Enabled":  0,
       \ "Data":     {},
       \ "ListView": 0
       \ }
 
-function! g:ctrlspace#modes#Mode.new(name, listView, data) dict
+function! s:mode.new(name, listView, data) dict
   let instance          = copy(self)
   let instance.Name     = a:name
   let instance.Data     = a:data
   let instance.ListView = a:listView
 
-  let g:ctrlspace#modes#Collection[a:name] = instance
+  let s:collection[a:name] = instance
 
   if a:listView
     call add(s:lists, instance)
@@ -28,10 +27,27 @@ function! g:ctrlspace#modes#Mode.new(name, listView, data) dict
   return instance
 endfunction
 
-function! g:ctrlspace#modes#Mode.Enable() dict
+function! s:mode.SetData(key, value) dict
+  let self.Data[a:key] = a:value
+  return a:value
+endfunction
+
+function! s:mode.HasData(key) dict
+  return has_key(self.Data, a:key)
+endfunction
+
+function! s:mode.RemoveData(key) dict
+  if self.HasData(a:key)
+    call remove(self.Data, a:key)
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:mode.Enable() dict
   if self.ListView
-    for mode in s:lists
-      call mode.Disable()
+    for m in s:lists
+      call m.Disable()
     endfor
 
     let s:currentListView = self
@@ -40,27 +56,79 @@ function! g:ctrlspace#modes#Mode.Enable() dict
   let self.Enabled = 1
 endfunction
 
-function! g:ctrlspace#modes#Mode.Disable() dict
+function! s:mode.Disable() dict
   let self.Enabled = 0
 endfunction
 
-let g:ctrlspace#modes#Zoom      = g:ctrlspace#modes#Mode.new("Zoom", 0, { "OriginalBuffer": 0 })
-let g:ctrlspace#modes#NextTab   = g:ctrlspace#modes#Mode.new("NextTab", 0, {})
-let g:ctrlspace#modes#Search    = g:ctrlspace#modes#Mode.new("Search", 0, { "Letters": [], "NewSearchPerformed": 0, "Restored": 0, "HistoryIndex": -1 })
-let g:ctrlspace#modes#Help      = g:ctrlspace#modes#Mode.new("Help", 0, {})
-let g:ctrlspace#modes#Nop       = g:ctrlspace#modes#Mode.new("Nop", 0, {})
-let g:ctrlspace#modes#Buffer    = g:ctrlspace#modes#Mode.new("Buffer", 1, { "SubMode": "single" })
-let g:ctrlspace#modes#File      = g:ctrlspace#modes#Mode.new("File", 1, {})
-let g:ctrlspace#modes#Tablist   = g:ctrlspace#modes#Mode.new("Tablist", 1, {})
-let g:ctrlspace#modes#Workspace = g:ctrlspace#modes#Mode.new("Workspace", 1, { "SubMode": "load", "Active": { "Name": "", "Digest": "" }, "LastActive": "", "LastBrowsed": 0 })
-let g:ctrlspace#modes#Bookmark  = g:ctrlspace#modes#Mode.new("Bookmark", 1, { "Active": {} })
+function! s:initialize()
+  call s:mode.new("Zoom", 0, { "OriginalBuffer": 0 })
+  call s:mode.new("NextTab", 0, {})
+  call s:mode.new("Search", 0, { "Letters": [], "NewSearchPerformed": 0, "Restored": 0, "HistoryIndex": -1 })
+  call s:mode.new("Help", 0, {})
+  call s:mode.new("Nop", 0, {})
+  call s:mode.new("Buffer", 1, { "SubMode": "single" })
+  call s:mode.new("File", 1, {})
+  call s:mode.new("Tablist", 1, {})
+  call s:mode.new("Workspace", 1, { "SubMode": "load", "Active": { "Name": "", "Digest": "" }, "LastActive": "", "LastBrowsed": 0 })
+  call s:mode.new("Bookmark", 1, { "Active": {} })
+endfunction
+
+call s:initialize()
+
+function! s:modeOrData(mode, args)
+  if !empty(a:args)
+    return s:collection[a:mode]["Data"][a:args[0]]
+  else
+    return s:collection[a:mode]
+  endif
+endfunction
+
+function! ctrlspace#modes#Zoom(...)
+  return s:modeOrData("Zoom", a:000)
+endfunction
+
+function! ctrlspace#modes#NextTab(...)
+  return s:modeOrData("NextTab", a:000)
+endfunction
+
+function! ctrlspace#modes#Search(...)
+  return s:modeOrData("Search", a:000)
+endfunction
+
+function! ctrlspace#modes#Help(...)
+  return s:modeOrData("Help", a:000)
+endfunction
+
+function! ctrlspace#modes#Nop(...)
+  return s:modeOrData("Nop", a:000)
+endfunction
+
+function! ctrlspace#modes#Buffer(...)
+  return s:modeOrData("Buffer", a:000)
+endfunction
+
+function! ctrlspace#modes#File(...)
+  return s:modeOrData("File", a:000)
+endfunction
+
+function! ctrlspace#modes#Tablist(...)
+  return s:modeOrData("Tablist", a:000)
+endfunction
+
+function! ctrlspace#modes#Workspace(...)
+  return s:modeOrData("Workspace", a:000)
+endfunction
+
+function! ctrlspace#modes#Bookmark(...)
+  return s:modeOrData("Bookmark", a:000)
+endfunction
 
 function! ctrlspace#modes#Enabled()
   let result = []
 
-  for mode in values(g:ctrlspace#modes#Collection)
-    if mode.Enabled
-      call add(result, mode)
+  for m in values(s:collection)
+    if m.Enabled
+      call add(result, m)
     endif
   endfor
 

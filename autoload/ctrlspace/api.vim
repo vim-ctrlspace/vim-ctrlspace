@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
 function! ctrlspace#api#BufferList(tabnr)
   let bufferList     = []
@@ -105,40 +105,45 @@ endfunction
 function! ctrlspace#api#StatuslineModeSegment(...)
   let statuslineElements = []
 
-  if g:ctrlspace#modes#Workspace.Enabled
-    if g:ctrlspace#modes#Workspace.Data.SubMode == "load"
+  let clv = ctrlspace#modes#CurrentListView()
+
+  if clv.Name ==# "Workspace"
+    if clv.Data.SubMode ==# "load"
       call add(statuslineElements, s:config.Symbols.WLoad)
-    elseif currentList.Data.SubMode == "save"
+    elseif clv.Data.SubMode ==# "save"
       call add(statuslineElements, s:config.Symbols.WSave)
     endif
-  elseif g:ctrlspace#modes#Tablist.Enabled
+  elseif clv.Name ==# "Tablist"
     call add(statuslineElements, s:createStatusTabline())
-  elseif g:ctrlspace#modes#Bookmark.Enabled
+  elseif clv.Name ==# "Bookmark"
     call add(statuslineElements, s:config.Symbols.BM)
   else
-    if g:ctrlspace#modes#File.Enabled
+    if clv.Name ==# "File"
       let symbol = s:config.Symbols.File
-    elseif g:ctrlspace#modes#Buffer.Enabled
-      if g:ctrlspace#modes#Buffer.Data.SubMode == "visual"
+    elseif clv.Name ==# "Buffer"
+      if clv.Data.SubMode == "visual"
         let symbol = s:config.Symbols.Vis
-      elseif g:ctrlspace#modes#Buffer.Data.SubMode == "single"
+      elseif clv.Data.SubMode == "single"
         let symbol = s:config.Symbols.Sin
-      elseif g:ctrlspace#modes#Buffer.Data.SubMode == "all"
+      elseif clv.Data.SubMode == "all"
         let symbol = s:config.Symbols.All
       endif
     endif
 
-    if g:ctrlspace#modes#NextTab.Enabled
+    if ctrlspace#modes#NextTab().Enabled
       let symbol .= s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
     endif
 
     call add(statuslineElements, symbol)
   endif
 
-  if !empty(g:ctrlspace#modes#Search.Data.Letters) || g:ctrlspace#modes#Search.Enabled
-    let searchElement = s:config.Symbols.SLeft . join(g:ctrlspace#modes#Search.Data.Letters, "")
+  let searchLetters = ctrlspace#modes#Search("Letters")
+  let searchEnabled = ctrlspace#modes#Search().Enabled
 
-    if g:ctrlspace#modes#Search.Enabled
+  if !empty(searchLetters) || searchEnabled
+    let searchElement = s:config.Symbols.SLeft . join(searchLetters, "")
+
+    if searchEnabled
       let searchElement .= "_"
     endif
 
@@ -147,11 +152,11 @@ function! ctrlspace#api#StatuslineModeSegment(...)
     call add(statuslineElements, searchElement)
   endif
 
-  if g:ctrlspace#modes#Zoom.Enabled
+  if ctrlspace#modes#Zoom().Enabled
     call add(statuslineElements, s:config.Symbols.Zoom)
   endif
 
-  if g:ctrlspace#modes#Help.Enabled
+  if ctrlspace#modes#Help().Enabled
     call add(statuslineElements, s:config.Symbols.Help)
   endif
 
@@ -187,8 +192,12 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 
   if empty(title)
     if getbufvar(bufnr, "&ft") == "ctrlspace"
-      if g:ctrlspace#modes#Zoom.Enabled && g:ctrlspace#modes#Zoom.Data.OriginalBuffer
-        let bufnr = g:ctrlspace#modes#Zoom.Data.OriginalBuffer
+      if ctrlspace#modes#Zoom().Enabled
+        let ob = ctrlspace#modes#Zoom("OriginalBuffer")
+
+        if ob
+          let bufnr = ob
+        endif
       else
         let bufnr = winbufnr(t:CtrlSpaceStartWindow)
       endif
@@ -268,7 +277,7 @@ function! ctrlspace#api#Tabline()
 endfunction
 
 function! ctrlspace#api#BufNr()
-  return bufexists(g:ctrlspace#context#PluginBuffer) ? g:ctrlspace#context#PluginBuffer : -1
+  return bufexists(ctrlspace#context#PluginBuffer()) ? ctrlspace#context#PluginBuffer() : -1
 endfunction
 
 function! ctrlspace#api#TabModified(tabnr)

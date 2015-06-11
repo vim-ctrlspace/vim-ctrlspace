@@ -1,10 +1,38 @@
-let g:ctrlspace#context#PluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-let g:ctrlspace#context#PluginBuffer = -1
+function! ctrlspace#context#PluginFolder()
+  if !exists("s:pluginFolder")
+    let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+  endif
 
-let g:ctrlspace#context#SymbolSizes  = {}
-let g:ctrlspace#context#Separator    = "|CS_###_CS|"
+  return s:pluginFolder
+endfunction
 
-let g:ctrlspace#context#Configuration = {
+function! ctrlspace#context#Separator()
+  return "|CS_###_CS|"
+endfunction
+
+let s:symbolSizes = {}
+
+function! ctrlspace#context#SymbolSizes(...)
+  return ctrlspace#util#GetWithOptionalIndex(s:symbolSizes, a:000)
+endfunction
+
+function! ctrlspace#context#SetSymbolSizes(value)
+  let s:symbolSizes = a:value
+  return s:symbolSizes
+endfunction
+
+let s:pluginBuffer = -1
+
+function! ctrlspace#context#PluginBuffer()
+  return s:pluginBuffer
+endfunction
+
+function! ctrlspace#context#SetPluginBuffer(value)
+  let s:pluginBuffer = a:value
+  return s:pluginBuffer
+endfunction
+
+let s:configuration = {
       \ "defaultSymbols": {
         \ "unicode": {
           \ "CS":     "⌗",
@@ -71,9 +99,9 @@ let g:ctrlspace#context#Configuration = {
         \ "Engine":                   "",
       \ }
 
-function! g:ctrlspace#context#Configuration.Instance() dict
+function! ctrlspace#context#Configuration()
   if !exists("s:conf")
-    let s:conf = copy(self)
+    let s:conf = copy(s:configuration)
 
     for name in keys(s:conf)
       if exists("g:CtrlSpace" . name)

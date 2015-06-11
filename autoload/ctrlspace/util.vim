@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
 function! ctrlspace#util#NormalizeDirectory(directory)
   let directory = resolve(expand(a:directory))
@@ -8,6 +8,14 @@ function! ctrlspace#util#NormalizeDirectory(directory)
   endwhile
 
   return directory
+endfunction
+
+function! ctrlspace#util#GetWithOptionalIndex(source, args)
+  if len(a:args) > 0
+    return a:source[a:args[0]]
+  else
+    return a:source
+  endif
 endfunction
 
 function! ctrlspace#util#HandleVimSettings(switch)
@@ -44,7 +52,7 @@ function! ctrlspace#util#FilesCache()
 endfunction
 
 function! s:internalFilePath(name)
-  let root = g:ctrlspace#roots#ProjectRoot
+  let root = ctrlspace#roots#CurrentProjectRoot()
   let fullPart = empty(root) ? "" : (root . "/")
 
   if !empty(s:config.ProjectRootMarkers)

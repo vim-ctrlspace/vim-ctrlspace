@@ -1,7 +1,10 @@
-let g:ctrlspace#keys#KeyNames = []
-let s:keyEscSequence          = 0
+let s:config         = ctrlspace#context#Configuration()
+let s:keyNames       = []
+let s:keyEscSequence = 0
 
-let s:config = g:ctrlspace#context#Configuration.Instance()
+function! ctrlspace#keys#KeyNames()
+  return s:keyNames
+endfunction
 
 function! ctrlspace#keys#MarkKeyEscSequence()
   let s:keyEscSequence = 1
@@ -45,7 +48,7 @@ function! ctrlspace#keys#InitKeyNames()
     endfor
   endif
 
-  let g:ctrlspace#keys#KeyNames = keyNames
+  let s:keyNames = keyNames
 endfunction
 
 function! ctrlspace#keys#Keypressed(key)
@@ -66,7 +69,7 @@ function! ctrlspace#keys#Keypressed(key)
 endfunction
 
 function! s:handleHelpKey(key)
-  if !g:ctrlspace#modes#Help.Enabled
+  if !ctrlspace#modes#Help().Enabled
     return 0
   endif
 
@@ -74,7 +77,7 @@ function! s:handleHelpKey(key)
 endfunction
 
 function! s:handleNopKey(key)
-  if !g:ctrlspace#modes#Nop.Enabled
+  if !ctrlspace#modes#Nop().Enabled
     return 0
   endif
 
@@ -82,7 +85,7 @@ function! s:handleNopKey(key)
 endfunction
 
 function! s:handleSearchKey(key)
-  if !g:ctrlspace#modes#Search.Enabled
+  if !ctrlspace#modes#Search().Enabled
     return 0
   endif
 
@@ -90,8 +93,10 @@ function! s:handleSearchKey(key)
 endfunction
 
 function! s:handleCommonKeys(key)
-  if g:ctrlspace#modes#Workspace.Enabled
-    let g:ctrlspace#modes#Workspace.Data.LastBrowsed = line(".")
+  let wm = ctrlspace#modes#Workspace()
+
+  if wm.Enabled
+    call wm.SetData("LastBrowsed", line("."))
   endif
 
   if a:key ==# "j"
@@ -99,38 +104,35 @@ function! s:handleCommonKeys(key)
   elseif a:key ==# "k"
     call ctrlspace#window#MoveSelectionBar("up")
   elseif a:key ==# "p"
-    call <SID>jump("previous")
-  elseif a:key ==# "P"
-    call <SID>jump("previous")
-    " call <SID>load_buffer()
+    call ctrlspace#jumps#Jump("previous")
   elseif a:key ==# "n"
-    call <SID>jump("next")
-  elseif (a:key ==# "MouseDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move_selection_bar("up")
-    elseif (a:key ==# "MouseUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move_selection_bar("down")
-    elseif (a:key ==# "LeftRelease") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move_selection_bar("mouse")
-    elseif (a:key ==# "2-LeftMouse") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call <SID>move_selection_bar("mouse")
-      call <SID>load_buffer()
-    elseif (a:key ==# "Down") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call feedkeys("j")
-    elseif (a:key ==# "Up") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))
-      call feedkeys("k")
-    elseif ((a:key ==# "Home") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "K")
-      call <SID>move_selection_bar(1)
-    elseif ((a:key ==# "End") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "J")
-      call <SID>move_selection_bar(line("$"))
-    elseif ((a:key ==# "PageDown") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-f")
-      call <SID>move_selection_bar("pgdown")
-    elseif ((a:key ==# "PageUp") && (g:ctrlspace_use_mouse_and_arrows_in_term || has("gui_running"))) || (a:key ==# "C-b")
-      call <SID>move_selection_bar("pgup")
-    elseif a:key ==# "C-d"
-      call <SID>move_selection_bar("half_pgdown")
-    elseif a:key ==# "C-u"
-      call <SID>move_selection_bar("half_pgup")
-  if (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
+    call ctrlspace#jumps#Jump("next")
+  elseif (a:key ==# "MouseDown") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call ctrlspace#window#MoveSelectionBar("up")
+  elseif (a:key ==# "MouseUp") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call ctrlspace#window#MoveSelectionBar("down")
+  elseif (a:key ==# "LeftRelease") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call ctrlspace#window#MoveSelectionBar("mouse")
+  elseif (a:key ==# "2-LeftMouse") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call ctrlspace#window#MoveSelectionBar("mouse")
+    " call <SID>load_buffer()
+  elseif (a:key ==# "Down") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call feedkeys("j")
+  elseif (a:key ==# "Up") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
+    call feedkeys("k")
+  elseif ((a:key ==# "Home") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "K")
+    call ctrlspace#window#MoveSelectionBar(1)
+  elseif ((a:key ==# "End") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "J")
+    call ctrlspace#window#MoveSelectionBar(line("$"))
+  elseif ((a:key ==# "PageDown") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "C-f")
+    call ctrlspace#window#MoveSelectionBar("pgdown")
+  elseif ((a:key ==# "PageUp") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "C-b")
+    call ctrlspace#window#MoveSelectionBar("pgup")
+  elseif a:key ==# "C-d"
+    call ctrlspace#window#MoveSelectionBar("half_pgdown")
+  elseif a:key ==# "C-u"
+    call ctrlspace#window#MoveSelectionBar("half_pgup")
+  elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
     call ctrlspace#window#Kill(0, 1)
   elseif a:key ==# "Q"
     call ctrlspace#window#QuitVim()

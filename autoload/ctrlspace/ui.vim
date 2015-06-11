@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
 function! ctrlspace#ui#Msg(message)
   echo s:config.Symbols.CS . "  " . a:message

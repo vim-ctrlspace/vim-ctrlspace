@@ -1,8 +1,35 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
-let g:ctrlspace#roots#ProjectRoots    = {}
-let g:ctrlspace#roots#LastProjectRoot = ""
-let g:ctrlspace#roots#ProjectRoot     = ""
+let s:projectRoots       = {}
+let s:lastProjectRoot    = ""
+let s:currentProjectRoot = ""
+
+function! ctrlspace#roots#ProjectRoots()
+  return s:projectRoots
+endfunction
+
+function! ctrlspace#roots#SetProjectRoots(value)
+  let s:projectRoots = a:value
+  return s:projectRoots
+endfunction
+
+function! ctrlspace#roots#CurrentProjectRoot()
+  return s:currentProjectRoot
+endfunction
+
+function! ctrlspace#roots#SetCurrentProjectRoot(value)
+  let s:currentProjectRoot = a:value
+  return s:currentProjectRoot
+endfunction
+
+function! ctrlspace#roots#LastProjectRoot()
+  return s:lastProjectRoot
+endfunction
+
+function! ctrlspace#roots#SetLastProjectRoot(value)
+  let s:lastProjectRoot = a:value
+  return s:lastProjectRoot
+endfunction
 
 function! ctrlspace#roots#AddProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
@@ -12,9 +39,9 @@ function! ctrlspace#roots#AddProjectRoot(directory)
     return
   endif
 
-  let roots = copy(g:ctrlspace#roots#ProjectRoots)
+  let roots = copy(s:projectRoots)
 
-  for bookmark in g:ctrlspace#bookmarks#Bookmarks
+  for bookmark in ctrlspace#bookmarks#Bookmarks()
     let roots[bookmark.directory] = 1
   endfor
 
@@ -30,7 +57,7 @@ endfunction
 function! ctrlspace#roots#RemoveProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
 
-  if !exists("g:ctrlspace#roots#ProjectRoots[directory]")
+  if !exists("s:projectRoots[directory]")
     call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
     return
   endif
@@ -42,8 +69,8 @@ endfunction
 function! s:removeProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
-  if exists("g:ctrlspace#roots#ProjectRoots[directory]")
-    unlet g:ctrlspace#roots#ProjectRoots[directory]
+  if exists("s:projectRoots[directory]")
+    unlet s:projectRoots[directory]
   endif
 
   let lines     = []
@@ -57,7 +84,7 @@ function! s:removeProjectRoot(directory)
     endfor
   endif
 
-  for root in keys(g:ctrlspace#roots#ProjectRoots)
+  for root in keys(s:projectRoots)
     call add(lines, "CS_PROJECT_ROOT: " . root)
   endfor
 
@@ -67,13 +94,13 @@ endfunction
 function! s:addProjectRoot(directory)
   let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
-  let g:ctrlspace#roots#ProjectRoots[directory] = 1
+  let s:projectRoots[directory] = 1
 
   let lines     = []
   let bmRoots   = {}
   let cacheFile = s:config.CacheDir . "/.cs_cache"
 
-  for bookmark in g:ctrlspace#bookmarks#Bookmarks
+  for bookmark in ctrlspace#bookmarks#Bookmarks()
     let bmRoots[bookmark.Directory] = 1
   endfor
 
@@ -85,7 +112,7 @@ function! s:addProjectRoot(directory)
     endfor
   endif
 
-  for root in keys(g:ctrlspace#roots#ProjectRoots)
+  for root in keys(s:projectRoots)
     if !exists("bmRoots[root]")
       call add(lines, "CS_PROJECT_ROOT: " . root)
     endif
@@ -112,7 +139,7 @@ function! ctrlspace#roots#FindProjectRoot()
       endfor
 
       if !rootFound
-        let rootFound = exists("g:ctrlspace#roots#ProjectRoots[candidate]")
+        let rootFound = exists("s:projectRoots[candidate]")
       endif
 
       if rootFound
@@ -131,14 +158,14 @@ function! ctrlspace#roots#FindProjectRoot()
 endfunction
 
 function! ctrlspace#roots#ProjectRootFound()
-  if empty(g:ctrlspace#roots#ProjectRoot)
-    let g:ctrlspace#roots#ProjectRoot = ctrlspace#roots#FindProjectRoot()
+  if empty(s:currentProjectRoot)
+    let s:currentProjectRoot = ctrlspace#roots#FindProjectRoot()
 
-    if empty(g:ctrlspace#roots#ProjectRoot)
+    if empty(s:currentProjectRoot)
       let projectRoot = ctrlspace#ui#GetInput("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
 
       if !empty(projectRoot) && isdirectory(projectRoot)
-        let g:ctrlspace#files#Files = [] " clear current files - force reload
+        call ctrlspace#files#ClearAll() " clear current files - force reload
         call s:addProjectRoot(project_root)
       else
         call ctrlspace#ui#Msg("Cannot continue with the project root not set.")

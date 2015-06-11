@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 
 function! ctrlspace#init#Initialize()
   if s:config.UseTabline
@@ -41,7 +41,7 @@ function! ctrlspace#init#Initialize()
   au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
-    au VimLeavePre * if !empty(g:ctrlspace#modes#Workspace.Data.Active.Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
+    au VimLeavePre * if !empty(ctrlspace#modes#Workspace("Active").Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
   endif
 
   if s:config.LoadLastWorkspaceOnStart
@@ -61,7 +61,7 @@ function! s:initProjectRootsAndBookmarks()
       endif
 
       if line =~# "CS_BOOKMARK: "
-        let parts = split(line[13:], g:ctrlspace#context#Separator)
+        let parts = split(line[13:], ctrlspace#context#Separator())
         let bookmark = {
               \ "Name": ((len(parts) > 1) ? parts[1] : parts[0]),
               \ "Directory": parts[0],
@@ -73,7 +73,6 @@ function! s:initProjectRootsAndBookmarks()
     endfor
   endif
 
-  let g:ctrlspace#roots#ProjectRoots  = projectRoots
-  let g:ctrlspace#bookmarks#Bookmarks = bookmarks
+  call ctrlspace#roots#SetProjectRoots(projectRoots)
+  call ctrlspace#bookmarks#SetBookmarks(bookmarks)
 endfunction
-

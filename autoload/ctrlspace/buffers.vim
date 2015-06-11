@@ -1,4 +1,4 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
 let s:allBuffers = {}
 
 function! ctrlspace#buffers#Initialize()
@@ -7,7 +7,7 @@ function! ctrlspace#buffers#Initialize()
       break
     endif
 
-    if !exists("s:allBuffers[current]")
+    if !has_key(s:allBuffers, current)
       let s:allBuffers[current] = len(s:allBuffers) + 1
     endif
   endfor
@@ -20,11 +20,11 @@ function! ctrlspace#buffers#AddBuffer()
     return
   endif
 
-  if !exists("s:allBuffers[current]")
+  if !has_key(s:allBuffers, current)
     let s:allBuffers[current] = len(s:allBuffers) + 1
   endif
 
-  if g:ctrlspace#modes#Zoom.Enabled
+  if ctrlspace#modes#Zoom().Enabled
     return
   endif
 
@@ -34,7 +34,7 @@ function! ctrlspace#buffers#AddBuffer()
     let t:CtrlSpaceList = {}
   endif
 
-  if !exists("t:CtrlSpaceList[current]")
+  if !has_key(t:CtrlSpaceList, current)
     let t:CtrlSpaceList[current] = len(t:CtrlSpaceList) + 1
   endif
 endfunction
