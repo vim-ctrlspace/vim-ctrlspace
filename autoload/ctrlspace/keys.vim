@@ -1,10 +1,15 @@
 let s:config         = ctrlspace#context#Configuration()
 let s:keyNames       = []
 let s:keyMap         = {}
+let s:characters     = {}
 let s:keyEscSequence = 0
 
 function! ctrlspace#keys#KeyNames()
   return s:keyNames
+endfunction
+
+function! ctrlspace#keys#CharacterClasses(...)
+  return ctrlspace#util#GetWithOptionalIndex(s:characters, a:000)
 endfunction
 
 function! ctrlspace#keys#KeyMap()
@@ -19,6 +24,15 @@ function! ctrlspace#keys#Init()
   call s:initKeyNames()
   call s:initKeyMap()
   call ctrlspace#keys#common#Init()
+  call s:initCustomMappings()
+endfunction
+
+function! s:initCustomMappings()
+  for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    if has_key(s:config.KeyMap, m)
+      call extend(s:keyMap[m], s:config.KeyMap[m])
+    endif
+  endfor
 endfunction
 
 function! s:initKeyNames()
@@ -60,24 +74,27 @@ function! s:initKeyNames()
   endif
 
   let s:keyNames  = keyNames
-  let s:lowercase = split(lowercase, " ")
-  let s:uppercase = split(uppercase, " ")
-  let s:controls  = split(controls, " ")
-  let s:numbers   = split(numbers, " ")
-  let s:specials  = split(specials, " ")
+  let s:characters.lowercase = split(lowercase, " ")
+  let s:characters.uppercase = split(uppercase, " ")
+  let s:characters.controls  = split(controls, " ")
+  let s:characters.numbers   = split(numbers, " ")
+  let s:characters.specials  = split(specials, " ")
 endfunction
 
-function! s:undefined(key, termSTab)
+function! ctrlspace#keys#Undefined(key, termSTab)
   call ctrlspace#ui#Msg("Undefined key '" . a:key . "' for current list.")
 endfunction
 
 function! s:initKeyMap()
-  for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
-    let s:keyMap[m] = {}
+  let Undefined = function("ctrlspace#keys#Undefined")
+  let blankMap  = {}
 
-    for k in s:keyNames
-      let s:keyMap[m][k] = function("s:undefined")
-    endfor
+  for k in s:keyNames
+    let blankMap[k] = Undefined
+  endfor
+
+  for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    let s:keyMap[m] = copy(blankMap)
   endfor
 endfunction
 
@@ -85,23 +102,17 @@ function! ctrlspace#keys#AddMapping(mapName, keys, funcName)
   let keys = []
 
   for entry in a:keys
-    if entry ==# "lowercase"
-      call extend(keys, s:lowercase)
-    elseif entry ==# "uppercase"
-      call extend(keys, s:uppercase)
-    elseif entry ==# "controls"
-      call extend(keys, s:controls)
-    elseif entry ==# "numbers"
-      call extend(keys, s:numbers)
-    elseif entry ==# "specials"
-      call extend(keys, s:specials)
+    if has_key(s:characters, entry)
+      call extend(keys, s:characters[entry])
     else
       call add(keys, entry)
     endif
   endfor
 
+  let FuncRef = function(a:funcName)
+
   for k in keys
-    let s:keyMap[a:mapName][k] = function(a:funcName)
+    let s:keyMap[a:mapName][k] = FuncRef
   endfor
 endfunction
 

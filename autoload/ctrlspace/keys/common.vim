@@ -1,4 +1,5 @@
-let s:config = ctrlspace#context#Configuration()
+let s:config    = ctrlspace#context#Configuration()
+let s:commonMap = {}
 
 function! ctrlspace#keys#common#Init()
   call s:map("j", "Down")
@@ -26,12 +27,16 @@ function! ctrlspace#keys#common#Init()
   call s:map("Esc", "Close")
   call s:map("C-c", "Close")
   call s:map("Q", "Quit")
+
+  let keyMap = ctrlspace#keys#KeyMap()
+
+  for m in ["Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    call extend(keyMap[m], s:commonMap)
+  endfor
 endfunction
 
 function s:map(key, func)
-  for m in ["Buffer", "File", "Tablist", "Workspace", "Bookmark"]
-    call ctrlspace#keys#AddMapping(m, [a:key], "ctrlspace#keys#common#" . a:func)
-  endfor
+  let s:commonMap[a:key] = function("ctrlspace#keys#common#" . a:func)
 endfunction
 
 function! ctrlspace#keys#common#Up(k, t)

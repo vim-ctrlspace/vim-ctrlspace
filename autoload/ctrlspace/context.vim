@@ -81,6 +81,7 @@ let s:configuration = {
         \ "MaxHeight":                0,
         \ "SetDefaultMapping":        1,
         \ "DefaultMappingKey":        "<C-Space>",
+        \ "KeyMap":                   {},
         \ "GlobCommand":              "",
         \ "UseTabline":               1,
         \ "UseMouseAndArrowsInTerm":  0,
