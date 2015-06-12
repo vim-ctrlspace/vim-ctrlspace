@@ -1,9 +1,14 @@
 let s:config         = ctrlspace#context#Configuration()
 let s:keyNames       = []
+let s:keyMap         = {}
 let s:keyEscSequence = 0
 
 function! ctrlspace#keys#KeyNames()
   return s:keyNames
+endfunction
+
+function! ctrlspace#keys#KeyMap()
+  return s:keyMap
 endfunction
 
 function! ctrlspace#keys#MarkKeyEscSequence()
@@ -67,8 +72,6 @@ function! s:undefined(key, termSTab)
 endfunction
 
 function! s:initKeyMap()
-  let s:keyMap = {}
-
   for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
     let s:keyMap[m] = {}
 

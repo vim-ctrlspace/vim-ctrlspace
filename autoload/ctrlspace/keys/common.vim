@@ -4,6 +4,7 @@ function! ctrlspace#keys#common#Init()
   call s:map("j", "Down")
   call s:map("k", "Up")
   call s:map("p", "Previous")
+  call s:map("P", "PreviousCR")
   call s:map("n", "Next")
   call s:map("MouseDown", "MouseDown")
   call s:map("MouseUp", "MouseUp")
@@ -45,6 +46,11 @@ function! ctrlspace#keys#common#Previous(k, t)
   call ctrlspace#jumps#Jump("previous")
 endfunction
 
+function! ctrlspace#keys#common#PreviousCR(k, t)
+  call ctrlspace#jumps#Jump("previous")
+  call feedkeys("\<CR>")
+endfunction
+
 function! ctrlspace#keys#common#Next(k, t)
   call ctrlspace#jumps#Jump("next")
 endfunction
@@ -70,25 +76,25 @@ endfunction
 function! ctrlspace#keys#common#LeftMouse2(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveSelectionBar("mouse")
-    call feedkeys("CR")
+    call feedkeys("\<CR>")
   endif
 endfunction
 
 function! ctrlspace#keys#common#DownArrow(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#Down(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar("down")
   endif
 endfunction
 
 function! ctrlspace#keys#common#UpArrow(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#Up(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar("up")
   endif
 endfunction
 
 function! ctrlspace#keys#common#Home(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#Top(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar(1)
   endif
 endfunction
 
@@ -98,7 +104,7 @@ endfunction
 
 function! ctrlspace#keys#common#End(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#Bottom(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar(line("$"))
   endif
 endfunction
 
@@ -108,7 +114,7 @@ endfunction
 
 function! ctrlspace#keys#common#PageDown(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#ScrollDown(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar("pgdown")
   endif
 endfunction
 
@@ -118,7 +124,7 @@ endfunction
 
 function! ctrlspace#keys#common#PageUp(k, t)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
-    call ctrlspace#keys#common#ScrollUp(a:k, a:t)
+    call ctrlspace#window#MoveSelectionBar("pgup")
   endif
 endfunction
 
