@@ -1,4 +1,5 @@
 let s:config            = ctrlspace#context#Configuration()
+let s:modes             = ctrlspace#modes#Modes()
 let s:maxSearchedItems  = 200
 let s:maxDisplayedItems = 500
 
@@ -10,7 +11,7 @@ function! ctrlspace#engine#Content()
     return s:contentFromExternalEngine(s:config.Engine, items)
   endif
 
-  if !empty(ctrlspace#modes#Search("Letters"))
+  if !empty(s:modes.Search.Data.Letters)
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
     call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
@@ -18,7 +19,7 @@ function! ctrlspace#engine#Content()
       let items = items[0, s:maxDisplayedItems - 1]
     endif
 
-    if ctrlspace#modes#Tablist().Enabled
+    if s:modes.Tablist.Enabled
       call sort(items, function("ctrlspace#engine#CompareByIndex"))
     else
       call sort(items, function("ctrlspace#engine#CompareByText"))
@@ -26,7 +27,7 @@ function! ctrlspace#engine#Content()
   endif
 
   " trim the list in search mode
-  if ctrlspace#modes#Search().Enabled
+  if s:modes.Search.Enabled
     let maxHeight = ctrlspace#window#MaxHeight()
 
     if len(items) > maxHeight
@@ -41,7 +42,7 @@ function! s:contentFromExternalEngine(engine, items)
   let engineCommand = ctrlspace#context#PluginFolder() . "/bin/" . a:engine
   let engineData = [s:vimContextJSON()]
 
-  if ctrlspace#modes#File().Enabled
+  if s:modes.File.Enabled
     call add(engineData, a:items[0].path])
   else
     for item in a:items
@@ -139,10 +140,9 @@ function! s:computeLowestNoises(source, maxItems)
 endfunction
 
 function! s:vimContextJSON()
-  let sm = ctrlspace#modes#Search()
   return '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
-        \ '","SearchModeEnabled":' . sm.Enabled .
-        \ ',"SearchText":"' . join(sm.Data.Letters, "") .
+        \ '","SearchModeEnabled":' . s:modes.Search.Enabled .
+        \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
         \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight()
         \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
         \  s:maxDisplayedItems . '}'
@@ -295,12 +295,12 @@ function! s:bufferEntry(bufnr)
   endif
 endfunction
 
-function! s:findSubsequence(searchLetters, text, offset)
+function! s:findSubsequence(letters, text, offset)
   let positions     = []
   let noise         = 0
   let currentOffset = a:offset
 
-  for letter in a:searchLetters
+  for letter in a:letters
     let matchedPosition = match(a:text, "\\m\\c" . letter, currentOffset)
 
     if matchedPosition == -1
@@ -318,20 +318,19 @@ function! s:findSubsequence(searchLetters, text, offset)
 endfunction
 
 function! s:findLowestSearchNoise(text)
-  let searchLetters      = ctrlspace#modes#Search("Letters")
-  let searchLettersCount = len(searchLetters)
-  let noise              = -1
-  let matchedString      = ""
+  let letters       = s:modes.Search.Data.Letters
+  let noise         = -1
+  let matchedString = ""
 
-  if searchLettersCount == 1
-    let noise         = match(a:text, "\\m\\c" . searchLetters[0])
-    let matchedString = searchLetters[0]
+  if len(letters) == 1
+    let noise         = match(a:text, "\\m\\c" . letters[0])
+    let matchedString = letters[0]
   else
     let offset   = 0
     let text_len = strlen(a:text)
 
     while offset < text_len
-      let subseq = s:findSubsequence(searchLetters, a:text, offset)
+      let subseq = s:findSubsequence(letters, a:text, offset)
 
       if subseq[0] == -1
         break
@@ -375,9 +374,9 @@ endfunction
 function! s:prepareContent(items)
   let sizes = ctrlspace#context#SymbolSizes()
 
-  if ctrlspace#modes#File().Enabled
+  if s:modes.File.Enabled
     let itemSpace = 5
-  elseif ctrlspace#modes#Bookmark().Enabled
+  elseif s:modes.Bookmark.Enabled
     let itemSpace = 5 + sizes.IAV
   else
     let itemSpace = 5 + sizes.IAV + sizes.IM

@@ -1,4 +1,5 @@
-let s:config = g:ctrlspace#context#Configuration.Instance()
+let s:config = ctrlspace#context#Configuration()
+let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
   call settabvar(a:tabnr, "CtrlSpaceLabel", a:label)

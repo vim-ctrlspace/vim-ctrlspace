@@ -75,52 +75,8 @@ endfunction
 
 call s:init()
 
-function! s:modeOrData(mode, args)
-  if !empty(a:args)
-    return s:collection[a:mode]["Data"][a:args[0]]
-  else
-    return s:collection[a:mode]
-  endif
-endfunction
-
-function! ctrlspace#modes#Zoom(...)
-  return s:modeOrData("Zoom", a:000)
-endfunction
-
-function! ctrlspace#modes#NextTab(...)
-  return s:modeOrData("NextTab", a:000)
-endfunction
-
-function! ctrlspace#modes#Search(...)
-  return s:modeOrData("Search", a:000)
-endfunction
-
-function! ctrlspace#modes#Help(...)
-  return s:modeOrData("Help", a:000)
-endfunction
-
-function! ctrlspace#modes#Nop(...)
-  return s:modeOrData("Nop", a:000)
-endfunction
-
-function! ctrlspace#modes#Buffer(...)
-  return s:modeOrData("Buffer", a:000)
-endfunction
-
-function! ctrlspace#modes#File(...)
-  return s:modeOrData("File", a:000)
-endfunction
-
-function! ctrlspace#modes#Tablist(...)
-  return s:modeOrData("Tablist", a:000)
-endfunction
-
-function! ctrlspace#modes#Workspace(...)
-  return s:modeOrData("Workspace", a:000)
-endfunction
-
-function! ctrlspace#modes#Bookmark(...)
-  return s:modeOrData("Bookmark", a:000)
+function! ctrlspace#modes#Modes()
+  return s:collection
 endfunction
 
 function! ctrlspace#modes#Enabled()

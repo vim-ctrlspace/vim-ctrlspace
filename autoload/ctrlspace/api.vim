@@ -1,4 +1,5 @@
 let s:config = ctrlspace#context#Configuration()
+let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#api#BufferList(tabnr)
   let bufferList     = []
@@ -130,20 +131,17 @@ function! ctrlspace#api#StatuslineModeSegment(...)
       endif
     endif
 
-    if ctrlspace#modes#NextTab().Enabled
+    if s:modes.NextTab.Enabled
       let symbol .= s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
     endif
 
     call add(statuslineElements, symbol)
   endif
 
-  let searchLetters = ctrlspace#modes#Search("Letters")
-  let searchEnabled = ctrlspace#modes#Search().Enabled
+  if !empty(s:modes.Search.Data.Letters) || s:modes.Search.Enabled
+    let searchElement = s:config.Symbols.SLeft . join(s:modes.Search.Data.Letters, "")
 
-  if !empty(searchLetters) || searchEnabled
-    let searchElement = s:config.Symbols.SLeft . join(searchLetters, "")
-
-    if searchEnabled
+    if s:modes.Search.Enabled
       let searchElement .= "_"
     endif
 
@@ -152,11 +150,11 @@ function! ctrlspace#api#StatuslineModeSegment(...)
     call add(statuslineElements, searchElement)
   endif
 
-  if ctrlspace#modes#Zoom().Enabled
+  if s:modes.Zoom.Enabled
     call add(statuslineElements, s:config.Symbols.Zoom)
   endif
 
-  if ctrlspace#modes#Help().Enabled
+  if s:modes.Help.Enabled
     call add(statuslineElements, s:config.Symbols.Help)
   endif
 
@@ -192,11 +190,9 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 
   if empty(title)
     if getbufvar(bufnr, "&ft") == "ctrlspace"
-      if ctrlspace#modes#Zoom().Enabled
-        let ob = ctrlspace#modes#Zoom("OriginalBuffer")
-
-        if ob
-          let bufnr = ob
+      if s:modes.Zoom.Enabled
+        if s:modes.Zoom.Data.OriginalBuffer
+          let bufnr = s:modes.Zoom.Data.OriginalBuffer
         endif
       else
         let bufnr = winbufnr(t:CtrlSpaceStartWindow)

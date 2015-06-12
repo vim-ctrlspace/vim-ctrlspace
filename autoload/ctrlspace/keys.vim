@@ -1,4 +1,5 @@
 let s:config         = ctrlspace#context#Configuration()
+let s:modes          = ctrlspace#modes#Modes()
 let s:keyNames       = []
 let s:keyMap         = {}
 let s:characters     = {}
@@ -121,68 +122,22 @@ function! ctrlspace#keys#Keypressed(key)
   let s:keyEscSequence = 0
 
 
-  if ctrlspace#modes#Help().Enabled
+  if s:modes.Help.Enabled
     let mapName = "Help"
-  elseif ctrlspace#modes#Nop().Enabled
+  elseif s:modes.Nop.Enabled
     let mapName = "Nop"
-  elseif ctrlspace#modes#Search().Enabled
+  elseif s:modes.Search.Enabled
     let mapName = "Search"
   else
     let mapName = ctrlspace#modes#CurrentListView().Name
 
+    " TODO Think about expanding this to all modes
     if mapName ==# "Workspace"
-      call wm.SetData("LastBrowsed", line("."))
+      call s:modes.Workspace.SetData("LastBrowsed", line("."))
     endif
   endif
 
   call s:keyMap[mapName][a:key](a:key, termSTab)
-endfunction
-
-function! s:handleCommonKeys(key)
-  let wm = ctrlspace#modes#Workspace()
-
-  if wm.Enabled
-    call wm.SetData("LastBrowsed", line("."))
-  endif
-
-  if a:key ==# "j"
-    call ctrlspace#window#MoveSelectionBar("down")
-  elseif a:key ==# "k"
-    call ctrlspace#window#MoveSelectionBar("up")
-  elseif a:key ==# "p"
-    call ctrlspace#jumps#Jump("previous")
-  elseif a:key ==# "n"
-    call ctrlspace#jumps#Jump("next")
-  elseif (a:key ==# "MouseDown") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call ctrlspace#window#MoveSelectionBar("up")
-  elseif (a:key ==# "MouseUp") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call ctrlspace#window#MoveSelectionBar("down")
-  elseif (a:key ==# "LeftRelease") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call ctrlspace#window#MoveSelectionBar("mouse")
-  elseif (a:key ==# "2-LeftMouse") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call ctrlspace#window#MoveSelectionBar("mouse")
-    " call <SID>load_buffer()
-  elseif (a:key ==# "Down") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call feedkeys("j")
-  elseif (a:key ==# "Up") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))
-    call feedkeys("k")
-  elseif ((a:key ==# "Home") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "K")
-    call ctrlspace#window#MoveSelectionBar(1)
-  elseif ((a:key ==# "End") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "J")
-    call ctrlspace#window#MoveSelectionBar(line("$"))
-  elseif ((a:key ==# "PageDown") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "C-f")
-    call ctrlspace#window#MoveSelectionBar("pgdown")
-  elseif ((a:key ==# "PageUp") && (s:config.UseMouseAndArrowsInTerm || has("gui_running"))) || (a:key ==# "C-b")
-    call ctrlspace#window#MoveSelectionBar("pgup")
-  elseif a:key ==# "C-d"
-    call ctrlspace#window#MoveSelectionBar("half_pgdown")
-  elseif a:key ==# "C-u"
-    call ctrlspace#window#MoveSelectionBar("half_pgup")
-  elseif (a:key ==# "q") || (a:key ==# "Esc") || (a:key ==# "C-c")
-    call ctrlspace#window#Kill(0, 1)
-  elseif a:key ==# "Q"
-    call ctrlspace#window#QuitVim()
-  endif
 endfunction
 
 function! ctrlspace#keys#SetDefaultMapping(key, action)

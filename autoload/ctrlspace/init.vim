@@ -1,4 +1,5 @@
 let s:config = ctrlspace#context#Configuration()
+let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#init#Init()
   if s:config.UseTabline
@@ -41,7 +42,7 @@ function! ctrlspace#init#Init()
   au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
-    au VimLeavePre * if !empty(ctrlspace#modes#Workspace("Active").Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
+    au VimLeavePre * if !empty(s:modes.Workspace.Data.Active.Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
   endif
 
   if s:config.LoadLastWorkspaceOnStart

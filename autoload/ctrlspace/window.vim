@@ -1,4 +1,5 @@
 let s:config = ctrlspace#context#Configuration()
+let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#window#MaxHeight()
   let maxFromConfig = s:config.MaxHeight
@@ -38,9 +39,7 @@ function! ctrlspace#window#Toggle(internal)
     let t:CtrlSpaceActivebuf   = bufnr("")
   endif
 
-  let zoom = ctrlspace#modes#Zoom()
-
-  if zoom.Enabled
+  if s:modes.Zoom.Enabled
     let t:CtrlSpaceActivebuf = bufnr("")
   endif
 
@@ -50,7 +49,7 @@ function! ctrlspace#window#Toggle(internal)
   silent! exe "resize" s:config.Height
 
   " zoom start window in Zoom Mode
-  if zoom.Enabled
+  if s:modes.Zoom.Enabled
     silent! exe t:CtrlSpaceStartWindow . "wincmd w"
     vert resize | resize
     silent! exe "noautocmd wincmd P"
@@ -58,7 +57,7 @@ function! ctrlspace#window#Toggle(internal)
 
   call s:setUpBuffer()
 
-  if ctrlspace#modes#Help().Enabled
+  if s:modes.Help.Enabled
     call ctrlspace#help#DisplayHelp()
     call ctrlspace#util#SetStatusline()
     return
@@ -182,18 +181,16 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
   if a:final
     call ctrlspace#util#HandleVimSettings("stop")
 
-    if ctrlspace#modes#Search("Restored")
+    if s:modes.Search.Data.Restored
       call ctrlspace#search#AppendToSearchHistory()
     endif
 
     call ctrlspace#window#GoToStartWindow()
 
-    let zoom = ctrlspace#modes#Zoom()
-
-    if zoom.Enabled
-      exec ":b " . zoom.Data.OriginalBuffer
-      call zoom.SetData("OriginalBuffer", 0)
-      call zoom.Disable()
+    if s:modes.Zoom.Enabled
+      exec ":b " . s:modes.Zoom.Data.OriginalBuffer
+      call s:modes.Zoom.SetData("OriginalBuffer", 0)
+      call s:modes.Zoom.Disable()
     endif
   endif
 
@@ -202,7 +199,7 @@ endfunction
 
 function! ctrlspace#window#QuitVim()
   if !s:config.SaveWorkspaceOnExit
-    let aw = ctrlspace#modes#Workspace("Active")
+    let aw = s:modes.Workspace.Data.Active
 
     if !empty(aw.Name) && aw.Digest !=# ctrlspace#workspaces#CreateDigest() &&
         \ !ctrlspace#ui#Confirmed("Current workspace ('" . aw.Name . "') not saved. Proceed anyway?")
@@ -353,31 +350,27 @@ function! s:goto(line)
 endfunction
 
 function! s:resetWindow()
-  call ctrlspace#modes#Help().Disable()
-  call ctrlspace#modes#Nop().Disable()
-  call ctrlspace#modes#Search().Disable()
-  call ctrlspace#modes#NextTab().Disable()
+  call s:modes.Help.Disable()
+  call s:modes.Nop.Disable()
+  call s:modes.Search.Disable()
+  call s:modes.NextTab.Disable()
 
-  let bmode = ctrlspace#modes#Buffer()
+  call s:modes.Buffer.Enable()
+  call s:modes.Buffer.SetData("SubMode", "single")
 
-  call bmode.Enable()
-  call bmode.SetData("SubMode", "single")
+  call s:modes.Search.SetData("NewSearchPerformed", 0)
+  call s:modes.Search.SetData("Restored", 0)
+  call s:modes.Search.SetData("Letters", [])
+  call s:modes.Search.SetData("HistoryIndex", -1)
 
-  let smode = ctrlspace#modes#Search()
-
-  call smode.SetData("NewSearchPerformed", 0)
-  call smode.SetData("Restored", 0)
-  call smode.SetData("Letters", [])
-  call smode.SetData("HistoryIndex", -1)
-
-  call ctrlspace#modes#Workspace().SetData("LastBrowsed", 0)
+  call s:modes.Workspace.SetData("LastBrowsed", 0)
 
   let t:CtrlSpaceSearchHistoryIndex = -1
 
   call ctrlspace#roots#SetCurrentProjectRoot(ctrlspace#roots#FindProjectRoot())
-  call ctrlspace#modes#Bookmark().SetData("Active", ctrlspace#bookmarks#FindActiveBookmark())
+  call s:modes.Bookmark.SetData("Active", ctrlspace#bookmarks#FindActiveBookmark())
 
-  call smode.RemoveData("LastSearchedDirectory")
+  call s:modes.Search.RemoveData("LastSearchedDirectory")
 
   if ctrlspace#roots#LastProjectRoot() != ctrlspace#roots#CurrentProjectRoot()
     call ctrlspace#files#ClearAll()
@@ -464,13 +457,11 @@ function! s:setUpBuffer()
 endfunction
 
 function! s:setActiveLine()
-  let sm = ctrlspace#modes#Search()
-
-  if !empty(sm.Data.Letters) && sm.Data.NewSearchPerformed
+  if !empty(s:modes.Search.Data.Letters) && s:modes.Search.Data.NewSearchPerformed
     call ctrlspace#window#MoveSelectionBar(line("$"))
 
-    if !sm.Enabled
-      call sm.SetData("NewSearchPerformed", 0)
+    if !s:modes.Search.Enabled
+      call s:modes.Search.SetData("NewSearchPerformed", 0)
     endif
   else
     let clv = ctrlspace#modes#CurrentListView()
@@ -582,7 +573,7 @@ function! s:displayContent()
     silent! put! =b:text
     normal! GkJ
     call s:fillBufferSpace()
-    call ctrlspace#modes#Nop().Disable()
+    call s:modes.Nop.Disable()
   else
     let emptyListMessage = "  List empty"
 
@@ -603,7 +594,7 @@ function! s:displayContent()
 
     normal! 0
 
-    call ctrlspace#modes#Nop().Enable()
+    call s:modes.Nop.Enable()
   endif
 
   setlocal nomodifiable

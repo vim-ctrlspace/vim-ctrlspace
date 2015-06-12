@@ -1,4 +1,5 @@
-let s:config = ctrlspace#context#Configuration()
+let s:config     = ctrlspace#context#Configuration()
+let s:modes      = ctrlspace#modes#Modes()
 let s:allBuffers = {}
 
 function! ctrlspace#buffers#Init()
@@ -24,7 +25,7 @@ function! ctrlspace#buffers#AddBuffer()
     let s:allBuffers[current] = len(s:allBuffers) + 1
   endif
 
-  if ctrlspace#modes#Zoom().Enabled
+  if s:modes.Zoom.Enabled
     return
   endif
 

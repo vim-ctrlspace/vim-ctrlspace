@@ -1,4 +1,5 @@
-let s:config = ctrlspace#context#Configuration()
+let s:config              = ctrlspace#context#Configuration()
+let s:modes               = ctrlspace#modes#Modes()
 let s:updateSearchResults = 0
 
 function! ctrlspace#search#UpdateSearchResults()
@@ -10,58 +11,50 @@ function! ctrlspace#search#UpdateSearchResults()
 endfunction
 
 function! ctrlspace#search#ClearSearchMode()
-  let sm = ctrlspace#modes#Search()
-
-  call sm.Disable()
-  call sm.SetData("Letters", [])
+  call s:modes.Search.Disable()
+  call s:modes.Search.SetData("Letters", [])
 
   let t:CtrlSpaceSearchHistoryIndex = -1
 
-  call sm.SetData("HistoryIndex", -1)
-  call sm.RemoveData("LastSearchedDirectory")
+  call s:modes.Search.SetData("HistoryIndex", -1)
+  call s:modes.Search.RemoveData("LastSearchedDirectory")
 
   call ctrlspace#window#Kill(0, 0)
   call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#search#AddSearchLetter(letter)
-  let sm = ctrlspace#modes#Search()
-
-  call add(sm.Data.Letters, a:letter)
-  call sm.SetData("NewSearchPerformed", 1)
+  call add(s:modes.Search.Data.Letters, a:letter)
+  call s:modes.Search.SetData("NewSearchPerformed", 1)
 
   let s:updateSearchResults = 1
 
-  call sm.RemoveData("LastSearchedDirectory")
+  call s:modes.Search.RemoveData("LastSearchedDirectory")
 
   call ctrlspace#util#SetStatusline()
   redraws
 endfunction
 
 function! ctrlspace#search#RemoveSearchLetter()
-  let sm = ctrlspace#modes#Search()
-
-  call remove(sm.Data.Letters, -1)
-  call sm.SetData("NewSearchPerformed", 1)
+  call remove(s:modes.Search.Data.Letters, -1)
+  call s:modes.Search.SetData("NewSearchPerformed", 1)
 
   let s:updateSearchResults = 1
 
-  call sm.RemoveData("LastSearchedDirectory")
+  call s:modes.Search.RemoveData("LastSearchedDirectory")
 
   call ctrlspace#util#SetStatusline()
   redraws
 endfunction
 
 function! ctrlspace#search#ClearSearchLetters()
-  let sm = ctrlspace#modes#Search()
-
-  if !empty(sm.Data.Letters)
-    call sm.SetData("Letters", [])
-    call sm.SetData("NewSearchPerformed", 1)
+  if !empty(s:modes.Search.Data.Letters)
+    call s:modes.Search.SetData("Letters", [])
+    call s:modes.Search.SetData("NewSearchPerformed", 1)
 
     let s:updateSearchResults = 1
 
-    call sm.RemoveData("LastSearchedDirectory")
+    call s:modes.Search.RemoveData("LastSearchedDirectory")
 
     call ctrlspace#util#SetStatusline()
     redraws
@@ -69,16 +62,14 @@ function! ctrlspace#search#ClearSearchLetters()
 endfunction
 
 function! ctrlspace#search#SwitchSearchMode(switch)
-  let sm = ctrlspace#modes#Search()
-
-  if (a:switch == 0) && !empty(sm.Data.Letters)
+  if (a:switch == 0) && !empty(s:modes.Search.Data.Letters)
     call ctrlspace#search#AppendToSearchHistory()
   endif
 
   if a:switch
-    call sm.Enable()
+    call s:modes.Search.Enable()
   else
-    call sm.Disable()
+    call s:modes.Search.Disable()
   endif
 
   let s:updateSearchResults = 1
@@ -95,11 +86,10 @@ function! ctrlspace#search#InsertSearchText(text)
   endfor
 
   if !empty(letters)
-    let sm = ctrlspace#modes#Search()
-    call sm.SetData("Letters", letters)
+    call s:modes.Search.SetData("Letters", letters)
     call ctrlspace#search#AppendToSearchHistory()
     let t:CtrlSpaceSearchHistoryIndex = 0
-    call sm.SetData("HistoryIndex", 0)
+    call s:modes.Search.SetData("HistoryIndex", 0)
     let s:updateSearchResults = 1
     call ctrlspace#search#UpdateSearchResults()
     return 1
@@ -109,14 +99,12 @@ function! ctrlspace#search#InsertSearchText(text)
 endfunction
 
 function! ctrlspace#search#SearchHistoryIndex()
-  let sm = ctrlspace#modes#Search()
-
-  if !ctrlspace#modes#Buffer().Enabled
-    if !sm.HasData("HistoryIndex")
-      call sm.SetData("HistoryIndex", -1)
+  if !s:modes.Buffer.Enabled
+    if !s:modes.Search.HasData("HistoryIndex")
+      call s:modes.Search.SetData("HistoryIndex", -1)
     endif
 
-    return sm.Data.HistoryIndex
+    return s:modes.Search.Data.HistoryIndex
   else
     if !exists("t:CtrlSpaceSearchHistoryIndex")
       let t:CtrlSpaceSearchHistoryIndex = -1
@@ -127,26 +115,24 @@ function! ctrlspace#search#SearchHistoryIndex()
 endfunction
 
 function! ctrlspace#search#SetSearchHistoryIndex(value)
-  if !ctrlspace#modes#Buffer().Enabled
-    call ctrlspace#modes#Search().SetData("HistoryIndex", a:value)
+  if !s:modes.Buffer.Enabled
+    call s:modes.Search.SetData("HistoryIndex", a:value)
   else
     let t:CtrlSpaceSearchHistoryIndex = a:value
   endif
 endfunction
 
 function! ctrlspace#search#AppendToSearchHistory()
-  let sm = ctrlspace#modes#Search()
-
-  if empty(sm.Data.Letters)
+  if empty(s:modes.Search.Data.Letters)
     return
   endif
 
-  if !ctrlspace#modes#Buffer().Enabled
-    if !sm.HasData("History")
-      call sm.SetData("History", {})
+  if !s:modes.Buffer.Enabled
+    if !s:modes.Search.HasData("History")
+      call s:modes.Search.SetData("History", {})
     endif
 
-    let historyStore = sm.Data.History
+    let historyStore = s:modes.Search.Data.History
   else
     if !exists("t:CtrlSpaceSearchHistory")
       let t:CtrlSpaceSearchHistory = {}
@@ -155,22 +141,21 @@ function! ctrlspace#search#AppendToSearchHistory()
     let historyStore = t:CtrlSpaceSearchHistory
   endif
 
-  let historyStore[join(sm.Data.Letters)] = ctrlspace#jumps#IncrementJumpCounter()
+  let historyStore[join(s:modes.Search.Data.Letters)] = ctrlspace#jumps#IncrementJumpCounter()
 endfunction
 
 function! ctrlspace#search#RestoreSearchLetters(direction)
-  let sm = ctrlspace#modes#Search()
   let historyStores = []
 
-  if sm.HasData("History")
-    let history = sm.Data.History
+  if s:modes.Search.HasData("History")
+    let history = s:modes.Search.Data.History
     if !empty(history)
       call add(historyStores, history)
     endif
   endif
 
-  if ctrlspace#modes#Buffer().Enabled
-    if ctrlspace#modes#Buffer("SubMode") ==? "single"
+  if s:modes.Buffer.Enabled
+    if s:modes.Buffer.Data.SubMode ==? "single"
       let currentTab = tabpagenr()
       let tabRange = range(currentTab, currentTab)
     else
@@ -227,10 +212,10 @@ function! ctrlspace#search#RestoreSearchLetters(direction)
   endif
 
   if historyIndex < 0
-    call sm.SetData("Letters", [])
+    call s:modes.Search.SetData("Letters", [])
   else
-    call sm.SetData("Letters", split(historyEntries[historyIndex]["letters"]))
-    call sm.SetData("Restored", 1)
+    call s:modes.Search.SetData("Letters", split(historyEntries[historyIndex]["letters"]))
+    call s:modes.Search.SetData("Restored", 1)
   endif
 
   call ctrlspace#search#SetSearchHistoryIndex(historyIndex)
