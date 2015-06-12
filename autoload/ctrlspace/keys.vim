@@ -10,7 +10,13 @@ function! ctrlspace#keys#MarkKeyEscSequence()
   let s:keyEscSequence = 1
 endfunction
 
-function! ctrlspace#keys#InitKeyNames()
+function! ctrlspace#keys#Init()
+  call s:initKeyNames()
+  call s:initKeyMap()
+  call ctrlspace#keys#common#Init()
+endfunction
+
+function! s:initKeyNames()
   let lowercase = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
   let uppercase = toupper(lowercase)
 
@@ -48,48 +54,74 @@ function! ctrlspace#keys#InitKeyNames()
     endfor
   endif
 
-  let s:keyNames = keyNames
+  let s:keyNames  = keyNames
+  let s:lowercase = split(lowercase, " ")
+  let s:uppercase = split(uppercase, " ")
+  let s:controls  = split(controls, " ")
+  let s:numbers   = split(numbers, " ")
+  let s:specials  = split(specials, " ")
+endfunction
+
+function! s:undefined(key, termSTab)
+  call ctrlspace#ui#Msg("Undefined key '" . a:key . "' for current list.")
+endfunction
+
+function! s:initKeyMap()
+  let s:keyMap = {}
+
+  for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    let s:keyMap[m] = {}
+
+    for k in s:keyNames
+      let s:keyMap[m][k] = function("s:undefined")
+    endfor
+  endfor
+endfunction
+
+function! ctrlspace#keys#AddMapping(mapName, keys, funcName)
+  let keys = []
+
+  for entry in a:keys
+    if entry ==# "lowercase"
+      call extend(keys, s:lowercase)
+    elseif entry ==# "uppercase"
+      call extend(keys, s:uppercase)
+    elseif entry ==# "controls"
+      call extend(keys, s:controls)
+    elseif entry ==# "numbers"
+      call extend(keys, s:numbers)
+    elseif entry ==# "specials"
+      call extend(keys, s:specials)
+    else
+      call add(keys, entry)
+    endif
+  endfor
+
+  for k in keys
+    let s:keyMap[a:mapName][k] = function(a:funcName)
+  endfor
 endfunction
 
 function! ctrlspace#keys#Keypressed(key)
   let termSTab = s:keyEscSequence && (a:key ==# "Z")
   let s:keyEscSequence = 0
 
-  if s:handleHelpKey(a:key)
-    return 1
-  elseif s:handleNopKey(a:key)
-    return 1
-  elseif s:handleSearchKey(a:key)
-    return 1
-  elseif s:handleCommonKeys(a:key)
-    return 1
+
+  if ctrlspace#modes#Help().Enabled
+    let mapName = "Help"
+  elseif ctrlspace#modes#Nop().Enabled
+    let mapName = "Nop"
+  elseif ctrlspace#modes#Search().Enabled
+    let mapName = "Search"
   else
-    return 0
-  endif
-endfunction
+    let mapName = ctrlspace#modes#CurrentListView().Name
 
-function! s:handleHelpKey(key)
-  if !ctrlspace#modes#Help().Enabled
-    return 0
+    if mapName ==# "Workspace"
+      call wm.SetData("LastBrowsed", line("."))
+    endif
   endif
 
-  return 1
-endfunction
-
-function! s:handleNopKey(key)
-  if !ctrlspace#modes#Nop().Enabled
-    return 0
-  endif
-
-  return 1
-endfunction
-
-function! s:handleSearchKey(key)
-  if !ctrlspace#modes#Search().Enabled
-    return 0
-  endif
-
-  return 1
+  call s:keyMap[mapName][a:key](a:key, termSTab)
 endfunction
 
 function! s:handleCommonKeys(key)

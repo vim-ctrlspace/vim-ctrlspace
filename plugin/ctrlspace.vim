@@ -36,4 +36,4 @@ endif
 
 let g:CtrlSpaceLoaded = 1
 
-call ctrlspace#init#Initialize()
+call ctrlspace#init#Init()

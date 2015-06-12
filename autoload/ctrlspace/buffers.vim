@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:allBuffers = {}
 
-function! ctrlspace#buffers#Initialize()
+function! ctrlspace#buffers#Init()
   for current in range(1, bufnr("$"))
     if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
       break

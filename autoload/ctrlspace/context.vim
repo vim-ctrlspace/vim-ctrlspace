@@ -36,15 +36,15 @@ let s:configuration = {
       \ "defaultSymbols": {
         \ "unicode": {
           \ "CS":     "⌗",
-          \ "Sin":    "∙",
+          \ "Sin":    "•",
           \ "All":    "፨",
           \ "Vis":    "★",
           \ "File":   "⊚",
           \ "Tabs":   "○",
           \ "CTab":   "●",
           \ "NTM":    "⁺",
-          \ "WLoad":  "|∷|",
-          \ "WSave":  "[∷]",
+          \ "WLoad":  "⬆",
+          \ "WSave":  "⬇",
           \ "Zoom":   "⌕",
           \ "SLeft":  "›",
           \ "SRight": "‹",
@@ -57,7 +57,7 @@ let s:configuration = {
           \ },
         \ "ascii": {
           \ "CS":     "#",
-          \ "Sin":    "SIN",
+          \ "Sin":    "BUF",
           \ "All":    "ALL",
           \ "Vis":    "VIS",
           \ "File":   "FILE",

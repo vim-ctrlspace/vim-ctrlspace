@@ -1,6 +1,6 @@
 let s:config = ctrlspace#context#Configuration()
 
-function! ctrlspace#init#Initialize()
+function! ctrlspace#init#Init()
   if s:config.UseTabline
     set tabline=%!ctrlspace#api#Tabline()
 
@@ -34,10 +34,10 @@ function! ctrlspace#init#Initialize()
   endif
 
   call s:initProjectRootsAndBookmarks()
-  call ctrlspace#keys#InitKeyNames()
+  call ctrlspace#keys#Init()
 
   au BufEnter * call ctrlspace#buffers#AddBuffer()
-  au VimEnter * call ctrlspace#buffers#Initialize()
+  au VimEnter * call ctrlspace#buffers#Init()
   au TabEnter * let t:CtrlSpaceTablistJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
   if s:config.SaveWorkspaceOnExit
