@@ -10,14 +10,6 @@ function! ctrlspace#util#NormalizeDirectory(directory)
   return directory
 endfunction
 
-function! ctrlspace#util#GetWithOptionalIndex(source, args)
-  if len(a:args) > 0
-    return a:source[a:args[0]]
-  else
-    return a:source
-  endif
-endfunction
-
 function! ctrlspace#util#HandleVimSettings(switch)
   call s:handleSwitchbuf(a:switch)
   call s:handleAutochdir(a:switch)

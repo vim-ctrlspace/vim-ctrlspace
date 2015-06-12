@@ -41,8 +41,8 @@ function! ctrlspace#roots#AddProjectRoot(directory)
 
   let roots = copy(s:projectRoots)
 
-  for bookmark in ctrlspace#bookmarks#Bookmarks()
-    let roots[bookmark.directory] = 1
+  for bm in ctrlspace#bookmarks#Bookmarks()
+    let roots[bm.directory] = 1
   endfor
 
   if exists("roots[directory]")
@@ -100,8 +100,8 @@ function! s:addProjectRoot(directory)
   let bmRoots   = {}
   let cacheFile = s:config.CacheDir . "/.cs_cache"
 
-  for bookmark in ctrlspace#bookmarks#Bookmarks()
-    let bmRoots[bookmark.Directory] = 1
+  for bm in ctrlspace#bookmarks#Bookmarks()
+    let bmRoots[bm.Directory] = 1
   endfor
 
   if filereadable(cacheFile)

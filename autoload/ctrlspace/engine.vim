@@ -165,17 +165,17 @@ function! s:contentSource()
 endfunction
 
 function! s:bookmarkListContent(clv)
-  let content = []
+  let content   = []
+  let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
-  for i in range(0, len(ctrlspace#bookmarks#Bookmarks()) - 1)
-    let bm         = ctrlspace#content#Bookmarks(i)
+  for i in range(0, len(bookmarks) - 1)
     let indicators = ""
 
-    if !empty(a:clv.Data.Active) && (bm.Directory ==# a:clv.Data.Active.Directory)
+    if !empty(a:clv.Data.Active) && (bookmarks[i].Directory ==# a:clv.Data.Active.Directory)
       let indicators .= s:config.Symbols.IA
     endif
 
-    call add(content, { "index": i, "text": bm.Name, "indicators": indicators })
+    call add(content, { "index": i, "text": bookmarks[i].Name, "indicators": indicators })
   endfor
 
   return content
@@ -373,12 +373,14 @@ function! s:findLowestSearchNoise(text)
 endfunction
 
 function! s:prepareContent(items)
+  let sizes = ctrlspace#context#SymbolSizes()
+
   if ctrlspace#modes#File().Enabled
     let itemSpace = 5
   elseif ctrlspace#modes#Bookmark().Enabled
-    let itemSpace = 5 + ctrlspace#context#SymbolSizes("IAV")
+    let itemSpace = 5 + sizes.IAV
   else
-    let itemSpace = 5 + ctrlspace#context#SymbolSizes("IAV") + ctrlspace#context#SymbolSizes("IM")
+    let itemSpace = 5 + sizes.IAV + sizes.IM
   endif
 
   let content  = ""
@@ -389,7 +391,7 @@ function! s:prepareContent(items)
     let line = item.text
 
     if strwidth(line) + itemSpace > &columns
-      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + ctrlspace#context#SymbolSizes("Dots"))
+      let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + sizes.Dots)
     endif
 
     if !empty(item.indicators)

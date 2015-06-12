@@ -1,8 +1,8 @@
-let s:config = ctrlspace#context#Configuration()
+let s:config    = ctrlspace#context#Configuration()
 let s:bookmarks = []
 
-function! ctrlspace#bookmarks#Bookmarks(...)
-  return ctrlspace#util#GetWithOptionalIndex(s:bookmarks, a:000)
+function! ctrlspace#bookmarks#Bookmarks()
+  return s:bookmarks
 endfunction
 
 function! ctrlspace#bookmarks#SetBookmarks(value)

@@ -1,36 +1,4 @@
-function! ctrlspace#context#PluginFolder()
-  if !exists("s:pluginFolder")
-    let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-  endif
-
-  return s:pluginFolder
-endfunction
-
-function! ctrlspace#context#Separator()
-  return "|CS_###_CS|"
-endfunction
-
-let s:symbolSizes = {}
-
-function! ctrlspace#context#SymbolSizes(...)
-  return ctrlspace#util#GetWithOptionalIndex(s:symbolSizes, a:000)
-endfunction
-
-function! ctrlspace#context#SetSymbolSizes(value)
-  let s:symbolSizes = a:value
-  return s:symbolSizes
-endfunction
-
 let s:pluginBuffer = -1
-
-function! ctrlspace#context#PluginBuffer()
-  return s:pluginBuffer
-endfunction
-
-function! ctrlspace#context#SetPluginBuffer(value)
-  let s:pluginBuffer = a:value
-  return s:pluginBuffer
-endfunction
 
 let s:configuration = {
       \ "defaultSymbols": {
@@ -100,22 +68,55 @@ let s:configuration = {
         \ "Engine":                   "",
       \ }
 
-function! ctrlspace#context#Configuration()
-  if !exists("s:conf")
-    let s:conf = copy(s:configuration)
+function! s:init()
+  let s:conf = copy(s:configuration)
 
-    for name in keys(s:conf)
-      if exists("g:CtrlSpace" . name)
-        let s:conf[name] = g:{"CtrlSpace" . name}
-      endif
-    endfor
-
-    let s:conf.Symbols = copy(s:conf.UnicodeFont ? s:conf.defaultSymbols.unicode : s:conf.defaultSymbols.ascii)
-
-    if exists("g:CtrlSpaceSymbols")
-      call extend(s:conf.Symbols, g:CtrlSpaceSymbols)
+  for name in keys(s:conf)
+    if exists("g:CtrlSpace" . name)
+      let s:conf[name] = g:{"CtrlSpace" . name}
     endif
+  endfor
+
+  let s:conf.Symbols = copy(s:conf.UnicodeFont ? s:conf.defaultSymbols.unicode : s:conf.defaultSymbols.ascii)
+
+  if exists("g:CtrlSpaceSymbols")
+    call extend(s:conf.Symbols, g:CtrlSpaceSymbols)
   endif
 
+  let s:symbolSizes = {
+            \ "IAV":  max([strwidth(s:conf.Symbols.IV), strwidth(s:conf.Symbols.IA)]),
+            \ "IM":   strwidth(s:conf.Symbols.IM),
+            \ "Dots": strwidth(s:conf.Symbols.Dots)
+            \ }
+endfunction
+
+call s:init()
+
+function! ctrlspace#context#PluginFolder()
+  if !exists("s:pluginFolder")
+    let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+  endif
+
+  return s:pluginFolder
+endfunction
+
+function! ctrlspace#context#Separator()
+  return "|CS_###_CS|"
+endfunction
+
+function! ctrlspace#context#PluginBuffer()
+  return s:pluginBuffer
+endfunction
+
+function! ctrlspace#context#SetPluginBuffer(value)
+  let s:pluginBuffer = a:value
+  return s:pluginBuffer
+endfunction
+
+function! ctrlspace#context#SymbolSizes()
+  return s:symbolSizes
+endfunction
+
+function! ctrlspace#context#Configuration()
   return s:conf
 endfunction

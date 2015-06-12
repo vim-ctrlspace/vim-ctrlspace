@@ -8,8 +8,8 @@ function! ctrlspace#keys#KeyNames()
   return s:keyNames
 endfunction
 
-function! ctrlspace#keys#CharacterClasses(...)
-  return ctrlspace#util#GetWithOptionalIndex(s:characters, a:000)
+function! ctrlspace#keys#CharacterClasses()
+  return s:characters
 endfunction
 
 function! ctrlspace#keys#KeyMap()

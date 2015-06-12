@@ -385,14 +385,6 @@ function! s:resetWindow()
     call ctrlspace#workspaces#SetWorkspaceNames()
   endif
 
-  if empty(ctrlspace#context#SymbolSizes())
-    call ctrlspace#context#SetSymbolSizes({
-          \ "IAV":  max([strwidth(s:config.Symbols.IV), strwidth(s:config.Symbols.IA)]),
-          \ "IM":   strwidth(s:config.Symbols.IM),
-          \ "Dots": strwidth(s:config.Symbols.Dots)
-          \ })
-  endif
-
   call ctrlspace#util#HandleVimSettings("start")
 endfunction
 
@@ -594,8 +586,10 @@ function! s:displayContent()
   else
     let emptyListMessage = "  List empty"
 
+    let sizes = ctrlspace#context#SymbolSizes()
+
     if &columns < (strwidth(emptyListMessage) + 2)
-      let emptyListMessage = strpart(emptyListMessage, 0, &columns - 2 - ctrlspace#context#SymbolSizes("Dots")) . s:config.Symbols.Dots
+      let emptyListMessage = strpart(emptyListMessage, 0, &columns - 2 - sizes.Dots) . s:config.Symbols.Dots
     endif
 
     while strwidth(emptyListMessage) < &columns

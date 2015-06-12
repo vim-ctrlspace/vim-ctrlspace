@@ -1,8 +1,8 @@
-let s:config = ctrlspace#context#Configuration()
+let s:config     = ctrlspace#context#Configuration()
 let s:workspaces = []
 
-function! ctrlspace#workspaces#Workspaces(...)
-  return ctrlspace#util#GetWithOptionalIndex(s:workspaces, a:000)
+function! ctrlspace#workspaces#Workspaces()
+  return s:workspaces
 endfunction
 
 function! ctrlspace#workspaces#SetWorkspaceNames()
