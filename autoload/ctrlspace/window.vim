@@ -58,7 +58,7 @@ function! ctrlspace#window#Toggle(internal)
   call s:setUpBuffer()
 
   if s:modes.Help.Enabled
-    call ctrlspace#help#DisplayHelp()
+    call ctrlspace#help#DisplayHelp(s:filler())
     call ctrlspace#util#SetStatusline()
     return
   endif

@@ -50,6 +50,7 @@ let s:configuration = {
         \ "SetDefaultMapping":        1,
         \ "DefaultMappingKey":        "<C-Space>",
         \ "KeyMap":                   {},
+        \ "FunctionHelp":             {},
         \ "GlobCommand":              "",
         \ "UseTabline":               1,
         \ "UseMouseAndArrowsInTerm":  0,

@@ -1,8 +1,10 @@
 let s:config    = ctrlspace#context#Configuration()
 let s:modes     = ctrlspace#modes#Modes()
 let s:commonMap = {}
+let s:helpMap   = {}
 
 function! ctrlspace#keys#common#Init()
+  call s:map("?", "ToggleHelp")
   call s:map("j", "Down")
   call s:map("k", "Up")
   call s:map("p", "Previous")
@@ -29,15 +31,31 @@ function! ctrlspace#keys#common#Init()
   call s:map("C-c", "Close")
   call s:map("Q", "Quit")
 
-  let keyMap = ctrlspace#keys#KeyMap()
+  let keyMap  = ctrlspace#keys#KeyMap()
+  let helpMap = ctrlspace#help#HelpMap()
 
   for m in ["Buffer", "File", "Tablist", "Workspace", "Bookmark"]
     call extend(keyMap[m], s:commonMap)
+    call extend(helpMap[m], s:helpMap)
   endfor
 endfunction
 
-function s:map(key, func)
-  let s:commonMap[a:key] = function("ctrlspace#keys#common#" . a:func)
+function! s:map(key, func)
+  let fn = "ctrlspace#keys#common#" . a:func
+  let s:helpMap[a:key] = fn
+  let s:commonMap[a:key] = function(fn)
+endfunction
+
+function! ctrlspace#keys#common#ToggleHelp(k, t)
+  call ctrlspace#window#Kill(0, 0)
+
+  if s:modes.Help.Enabled
+    call s:modes.Help.Disable()
+  else
+    call s:modes.Help.Enable()
+  endif
+
+  call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#keys#common#Up(k, t)
