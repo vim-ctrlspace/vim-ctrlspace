@@ -40,10 +40,10 @@ let s:functionHelp = {
       \ "ctrlspace#keys#common#Quit":           "Quit Vim with a prompt if unsaved changes found",
       \ }
 
-function! ctrlspace#help#AddMapping(mapName, entry, funcName)
+function! ctrlspace#help#AddMapping(funcNAme, mapName, entry)
   if has_key(s:helpMap, a:mapName)
     let s:helpMap[a:mapName][a:entry] = a:funcName
-  endfunction
+  endif
 endfunction
 
 function! ctrlspace#help#HelpMap()

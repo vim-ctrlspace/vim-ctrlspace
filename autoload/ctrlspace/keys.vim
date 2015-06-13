@@ -100,7 +100,7 @@ function! s:initKeyMap()
   endfor
 endfunction
 
-function! ctrlspace#keys#AddMapping(mapName, keys, funcName)
+function! ctrlspace#keys#AddMapping(funcName, mapName, keys)
   let keys = []
 
   for entry in a:keys
@@ -110,7 +110,7 @@ function! ctrlspace#keys#AddMapping(mapName, keys, funcName)
       call add(keys, entry)
     endif
 
-    call ctrlspace#help#AddMapping(a:mapName, entry, a:funcName)
+    call ctrlspace#help#AddMapping(a:funcName, a:mapName, entry)
   endfor
 
   let FuncRef = function(a:funcName)

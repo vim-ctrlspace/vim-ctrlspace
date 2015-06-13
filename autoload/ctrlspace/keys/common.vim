@@ -1,35 +1,36 @@
-let s:config    = ctrlspace#context#Configuration()
-let s:modes     = ctrlspace#modes#Modes()
-let s:commonMap = {}
-let s:helpMap   = {}
+let s:config       = ctrlspace#context#Configuration()
+let s:modes        = ctrlspace#modes#Modes()
+let s:commonMap    = {}
+let s:helpMap      = {}
+let s:lastListView = {}
 
 function! ctrlspace#keys#common#Init()
-  call s:map("?", "ToggleHelp")
-  call s:map("j", "Down")
-  call s:map("k", "Up")
-  call s:map("p", "Previous")
-  call s:map("P", "PreviousCR")
-  call s:map("n", "Next")
+  call s:map("ToggleHelp", "?")
+  call s:map("PreviousListView", "BS")
+  call s:map("ToggleFileMode", "o")
+  call s:map("Down", "j")
+  call s:map("Up", "k")
+  call s:map("Previous", "p")
+  call s:map("PreviousCR", "P")
+  call s:map("Next", "n")
   call s:map("MouseDown", "MouseDown")
   call s:map("MouseUp", "MouseUp")
   call s:map("LeftRelease", "LeftRelease")
-  call s:map("2-LeftMouse", "LeftMouse2")
-  call s:map("Down", "DownArrow")
-  call s:map("Up", "UpArrow")
+  call s:map("LeftMouse2", '2-LeftMouse')
+  call s:map("DownArrow", "Down")
+  call s:map("UpArrow", "Up")
   call s:map("Home", "Home")
-  call s:map("K", "Top")
+  call s:map("Top", "K")
   call s:map("End", "End")
-  call s:map("J", "Bottom")
+  call s:map("Bottom", "J")
   call s:map("PageDown", "PageDown")
-  call s:map("C-f", "ScrollDown")
+  call s:map("ScrollDown", 'C-f')
   call s:map("PageUp", "PageUp")
-  call s:map("C-b", "ScrollUp")
-  call s:map("C-d", "HalfScrollDown")
-  call s:map("C-u", "HalfScrollUp")
-  call s:map("q", "Close")
-  call s:map("Esc", "Close")
-  call s:map("C-c", "Close")
-  call s:map("Q", "Quit")
+  call s:map("ScrollUp", 'C-b')
+  call s:map("HalfScrollDown", 'C-d')
+  call s:map("HalfScrollUp", 'C-u')
+  call s:map("Close", "q", "Esc", 'C-c')
+  call s:map("Quit", "Q")
 
   let keyMap  = ctrlspace#keys#KeyMap()
   let helpMap = ctrlspace#help#HelpMap()
@@ -40,10 +41,14 @@ function! ctrlspace#keys#common#Init()
   endfor
 endfunction
 
-function! s:map(key, func)
+function! s:map(func, ...)
   let fn = "ctrlspace#keys#common#" . a:func
-  let s:helpMap[a:key] = fn
-  let s:commonMap[a:key] = function(fn)
+  let Ref = function(fn)
+
+  for k in a:000
+    let s:helpMap[k] = fn
+    let s:commonMap[k] = Ref
+  endfor
 endfunction
 
 function! ctrlspace#keys#common#ToggleHelp(k, t)
@@ -170,4 +175,69 @@ endfunction
 
 function! ctrlspace#keys#common#Quit(k, t)
   call ctrlspace#window#QuitVim()
+endfunction
+
+function! ctrlspace#keys#common#EnableFileModeAndSearch(k, t)
+  if a:k ==# "O"
+    call ctrlspace#search#SwitchSearchMode(1)
+    return
+  endif
+endfunction
+
+function! ctrlspace#keys#common#ToggleFileMode(k, t)
+  if !ctrlspace#roots#ProjectRootFound()
+    return
+  endif
+
+  let clv = ctrlspace#modes#CurrentListView()
+
+  if clv.Name ==# "File"
+    if empty(s:lastListView)
+      return
+    else
+      let nextListView = s:lastListView
+    endif
+  else
+    let nextListView = s:modes.File
+  endif
+
+  let s:lastListView = clv
+
+  call ctrlspace#window#Kill(0, 0)
+  call nextListView.Enable()
+  call ctrlspace#window#Toggle(1)
+endfunction
+
+" function! ctrlspace#keys#common#ToggleWorkspaceMode(k, t)
+"   if s:workspace_mode
+"     call <SID>kill(0, 0)
+"     let s:workspace_mode = 0
+"     call <SID>ctrlspace_toggle(1)
+"   elseif empty(s:workspace_names)
+"     call <SID>save_first_workspace()
+"   else
+"     call <SID>kill(0, 0)
+"     let s:file_mode      = 0
+"     let s:tablist_mode   = 0
+"     let s:bookmark_mode  = 0
+"     let s:workspace_mode = 1
+"     call <SID>ctrlspace_toggle(1)
+"   endif
+" endfunction
+
+function! ctrlspace#keys#common#PreviousListView(k, t)
+  if !empty(s:lastListView)
+    let clv = ctrlspace#modes#CurrentListView()
+
+    if clv == s:lastListView
+      return
+    endif
+
+    let nextListView = s:lastListView
+    let s:lastListView = clv
+
+    call ctrlspace#window#Kill(0, 0)
+    call nextListView.Enable()
+    call ctrlspace#window#Toggle(1)
+  endif
 endfunction

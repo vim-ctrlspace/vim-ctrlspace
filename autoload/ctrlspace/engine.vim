@@ -15,9 +15,7 @@ function! ctrlspace#engine#Content()
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
     call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
-    if len(items) > s:maxDisplayedItems
-      let items = items[0, s:maxDisplayedItems - 1]
-    endif
+    let items = items[0: s:maxDisplayedItems - 1]
 
     if s:modes.Tablist.Enabled
       call sort(items, function("ctrlspace#engine#CompareByIndex"))
@@ -238,11 +236,12 @@ function! s:tabListContent(clv)
 endfunction
 
 function! s:fileListContent(clv)
+  call ctrlspace#files#LoadFiles()
+
   if !empty(s:config.Engine)
-    call ctrlspace#files#Files()
     return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
   else
-    return copy(ctrlspace#files#FileItems())
+    return ctrlspace#files#Items()
   endif
 endfunction
 
