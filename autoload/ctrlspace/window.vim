@@ -531,9 +531,9 @@ function! s:setActiveLine()
         let activeLine = (lastLine > 0) ? lastLine : b:size - 1
       endif
     endif
-  endif
 
-  call ctrlspace#window#MoveSelectionBar(activeLine)
+    call ctrlspace#window#MoveSelectionBar(activeLine)
+  endif
 endfunction
 
 function! s:filler()

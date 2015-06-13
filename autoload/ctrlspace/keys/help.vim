@@ -30,95 +30,95 @@ function! s:map(fn, ...)
   call ctrlspace#keys#AddMapping("ctrlspace#keys#help#" . a:fn, "Help", a:000)
 endfunction
 
-function! ctrlspace#keys#help#Up(k, t)
+function! ctrlspace#keys#help#Up(k)
   call ctrlspace#window#MoveCursor("up")
 endfunction
 
-function! ctrlspace#keys#help#Down(k, t)
+function! ctrlspace#keys#help#Down(k)
   call ctrlspace#window#MoveCursor("down")
 endfunction
 
-function! ctrlspace#keys#help#MouseUp(k, t)
+function! ctrlspace#keys#help#MouseUp(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("down")
   endif
 endfunction
 
-function! ctrlspace#keys#help#MouseDown(k, t)
+function! ctrlspace#keys#help#MouseDown(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("up")
   endif
 endfunction
 
-function! ctrlspace#keys#help#LeftRelease(k, t)
+function! ctrlspace#keys#help#LeftRelease(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("mouse")
   endif
 endfunction
 
-function! ctrlspace#keys#help#LeftMouse2(k, t)
+function! ctrlspace#keys#help#LeftMouse2(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("mouse")
     call feedkeys("\<CR>")
   endif
 endfunction
 
-function! ctrlspace#keys#help#DownArrow(k, t)
+function! ctrlspace#keys#help#DownArrow(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("down")
   endif
 endfunction
 
-function! ctrlspace#keys#help#UpArrow(k, t)
+function! ctrlspace#keys#help#UpArrow(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("up")
   endif
 endfunction
 
-function! ctrlspace#keys#help#Home(k, t)
+function! ctrlspace#keys#help#Home(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor(1)
   endif
 endfunction
 
-function! ctrlspace#keys#help#Top(k, t)
+function! ctrlspace#keys#help#Top(k)
   call ctrlspace#window#MoveCursor(1)
 endfunction
 
-function! ctrlspace#keys#help#End(k, t)
+function! ctrlspace#keys#help#End(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor(line("$"))
   endif
 endfunction
 
-function! ctrlspace#keys#help#Bottom(k, t)
+function! ctrlspace#keys#help#Bottom(k)
   call ctrlspace#window#MoveCursor(line("$"))
 endfunction
 
-function! ctrlspace#keys#help#PageDown(k, t)
+function! ctrlspace#keys#help#PageDown(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("pgdown")
   endif
 endfunction
 
-function! ctrlspace#keys#help#ScrollDown(k, t)
+function! ctrlspace#keys#help#ScrollDown(k)
   call ctrlspace#window#MoveCursor("pgdown")
 endfunction
 
-function! ctrlspace#keys#help#PageUp(k, t)
+function! ctrlspace#keys#help#PageUp(k)
   if s:config.UseMouseAndArrowsInTerm || has("gui_running")
     call ctrlspace#window#MoveCursor("pgup")
   endif
 endfunction
 
-function! ctrlspace#keys#help#ScrollUp(k, t)
+function! ctrlspace#keys#help#ScrollUp(k)
   call ctrlspace#window#MoveCursor("pgup")
 endfunction
 
-function! ctrlspace#keys#help#HalfScrollDown(k, t)
+function! ctrlspace#keys#help#HalfScrollDown(k)
   call ctrlspace#window#MoveCursor("half_pgdown")
 endfunction
 
-function! ctrlspace#keys#help#HalfScrollUp(k, t)
+function! ctrlspace#keys#help#HalfScrollUp(k)
   call ctrlspace#window#MoveCursor("half_pgup")
 endfunction

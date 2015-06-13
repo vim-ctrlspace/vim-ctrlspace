@@ -26,6 +26,7 @@ function! ctrlspace#keys#Init()
   call s:initKeyMap()
   call ctrlspace#keys#common#Init()
   call ctrlspace#keys#help#Init()
+  call ctrlspace#keys#search#Init()
   call s:initCustomMappings()
 endfunction
 
@@ -83,7 +84,7 @@ function! s:initKeyNames()
   let s:characters.specials  = split(specials, " ")
 endfunction
 
-function! ctrlspace#keys#Undefined(k, t)
+function! ctrlspace#keys#Undefined(k)
   call ctrlspace#ui#Msg("Undefined key '" . a:k . "' for current view.")
 endfunction
 
@@ -121,7 +122,7 @@ function! ctrlspace#keys#AddMapping(funcName, mapName, keys)
 endfunction
 
 function! ctrlspace#keys#Keypressed(key)
-  let termSTab = s:keyEscSequence && (a:key ==# "Z")
+  let key = (s:keyEscSequence && (a:key ==# "Z")) ? "S-Tab" : a:key
   let s:keyEscSequence = 0
 
   if s:modes.Help.Enabled
@@ -139,7 +140,7 @@ function! ctrlspace#keys#Keypressed(key)
     endif
   endif
 
-  call s:keyMap[mapName][a:key](a:key, termSTab)
+  call s:keyMap[mapName][key](key)
 endfunction
 
 function! ctrlspace#keys#SetDefaultMapping(key, action)

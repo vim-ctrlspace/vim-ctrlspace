@@ -24,20 +24,23 @@ let s:titles = {
       \ }
 
 let s:functionHelp = {
-      \ "ctrlspace#keys#common#ToggleHelp":     "Toggle the help view",
-      \ "ctrlspace#keys#common#Down":           "Move the selection bar down",
-      \ "ctrlspace#keys#common#Up":             "Move the selection bar up",
-      \ "ctrlspace#keys#common#Previous":       "Move the selection bar to the previously opened item",
-      \ "ctrlspace#keys#common#PreviousCR":     "Move the selection bar to the previously opened item and open it",
-      \ "ctrlspace#keys#common#Next":           "Move the selection bar to the next opened item",
-      \ "ctrlspace#keys#common#Top":            "Move the selection bar to the top of the list",
-      \ "ctrlspace#keys#common#Bottom":         "Move the selection bar to the bottom of the list",
-      \ "ctrlspace#keys#common#ScrollDown":     "Move the selection bar one screen down",
-      \ "ctrlspace#keys#common#ScrollUp":       "Move the selection bar one screen up",
-      \ "ctrlspace#keys#common#HalfScrollDown": "Move the selection bar a half screen down",
-      \ "ctrlspace#keys#common#HalfScrollUp":   "Move the selection bar a half screen up",
-      \ "ctrlspace#keys#common#Close":          "Close the list",
-      \ "ctrlspace#keys#common#Quit":           "Quit Vim with a prompt if unsaved changes found",
+      \ "ctrlspace#keys#common#ToggleHelp":         "Toggle the Help view",
+      \ "ctrlspace#keys#common#Down":               "Move the selection bar down",
+      \ "ctrlspace#keys#common#Up":                 "Move the selection bar up",
+      \ "ctrlspace#keys#common#Previous":           "Move the selection bar to the previously opened item",
+      \ "ctrlspace#keys#common#PreviousCR":         "Move the selection bar to the previously opened item and open it",
+      \ "ctrlspace#keys#common#Next":               "Move the selection bar to the next opened item",
+      \ "ctrlspace#keys#common#Top":                "Move the selection bar to the top of the list",
+      \ "ctrlspace#keys#common#Bottom":             "Move the selection bar to the bottom of the list",
+      \ "ctrlspace#keys#common#ScrollDown":         "Move the selection bar one screen down",
+      \ "ctrlspace#keys#common#ScrollUp":           "Move the selection bar one screen up",
+      \ "ctrlspace#keys#common#HalfScrollDown":     "Move the selection bar a half screen down",
+      \ "ctrlspace#keys#common#HalfScrollUp":       "Move the selection bar a half screen up",
+      \ "ctrlspace#keys#common#Close":              "Close the list",
+      \ "ctrlspace#keys#common#Quit":               "Quit Vim with a prompt if unsaved changes found",
+      \ "ctrlspace#keys#common#PreviousListView":   "Return to the previous list (if any)",
+      \ "ctrlspace#keys#common#ToggleFileMode":     "Toggle File List view",
+      \ "ctrlspace#keys#common#FileModeWithSearch": "Open File List in Search Mode"
       \ }
 
 function! ctrlspace#help#AddMapping(funcNAme, mapName, entry)

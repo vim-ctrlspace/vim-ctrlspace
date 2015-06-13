@@ -15,7 +15,7 @@ function! ctrlspace#engine#Content()
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
     call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
-    let items = items[0: s:maxDisplayedItems - 1]
+    let items = items[0 : s:maxDisplayedItems - 1]
 
     if s:modes.Tablist.Enabled
       call sort(items, function("ctrlspace#engine#CompareByIndex"))
@@ -29,7 +29,7 @@ function! ctrlspace#engine#Content()
     let maxHeight = ctrlspace#window#MaxHeight()
 
     if len(items) > maxHeight
-      let items = items[-maxHeight: -1]
+      let items = items[-maxHeight : -1]
     endif
   endif
 
