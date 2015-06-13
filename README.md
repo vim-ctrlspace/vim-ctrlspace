@@ -33,28 +33,45 @@ src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo.png" />
 * [Authors and License](#authors-and-license)
 
 
-# Overview
+**Vim-CtrlSpace** is a Vim plug-in to control and organize workspaces in Vim
+with *buffer*, *file*, *tab*, *session*, and *bookmark* (fuzzy-searched) lists.
 
-**Vim-CtrlSpace** is a Vim plugin to control and organize your working space in
-Vim. Including managing buffers, files, tabs, sessions, and finally projects. 
-Its approach is somewhat unique, but certainly you will feel at home, 
-especially if you use already split windows, tabs, buffers, etc.
+## What problem does it solve?
 
-You can think of it as a buffer/file/tab explorer mixed with a fuzzy finder like
-[CtrlP](https://github.com/kien/ctrlp.vim), and a session and project explorer.
-Pretty wide, isn't it? With Vim-CtrlSpace you gain a good view of what is open
-and where it is, together with good categorization through various lists. 
+This chapter is supposed to be more down-to-earth. More advanced topics like API
+can be found on the project wiki.
 
-This idea seems to work very well and the plugin may become your coolest
-companion. It can help you to manage your Vim workspace and increase your usage
-of core Vim features like multiple buffers, tabs, and windows in a great degree.
-The plugin can also provide you with some new concepts, like workspaces, named
-tabs, or separate buffer lists. 
+In vanilla Vim you can't split window infinitely (have you ever split a window
+more than 5 times?). Of course, you can open a new buffer and split some windows
+there, but Vim buffers were not supposed to serve as tabs in Firefox or any
+desktop app. At least for now treat Vim tab as a custom workspace (arrangements
+of files, windows, configurations).
 
-It is worth to say, for many users including myself, Vim-CtrlSpace became
-the most important tool in the Vim toolbox and a strong improvement of the
-existing workflow.
+Let me give you a simple example. You're working on a *How to conquer the world*
+project, and pondering how to style the *Drop A-bomb button*. On the left you
+have `red_button.css` and on the right `red_button.html` file in vertically
+split window.
 
+Out of the sudden you have to switch to the *How to succeed in everything* blog
+to fix typo in the *8 sure-fire ways to be fit without sacrificing anything*
+title as a friend of yours on Facebook just found another two solutions.
+
+There's a rule of thumb to leave breadcrumbs – short information / bookmark of
+where you have stopped – to not lose time after you get back to the project in a
+while.
+
+With Vim-Ctrlspace you're leaving *A-bomb feature* tab and switch to the *notes*
+tab. As Notes tab is a new workspace – the window is not split – it represents a
+new window arrangement.
+
+After jotting the note down, you think that it'd be a bad idea to lose all the
+workspaces, arrangements as it takes time to set it up again. Fortunately with
+Vim-Ctrlspace you can save them all as a named session.
+
+From the list of the projects (bookmarks) you can select *How to succeed in
+everything* blog and fix what needs to be fixed ASAP! The problem is that the
+list is lengthy and it'd take you at least ten seconds to get there. Be no
+surprised – you can use fuzzy search that lets you find the project right away.
 
 ## The Idea
 
