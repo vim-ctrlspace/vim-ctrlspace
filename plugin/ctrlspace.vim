@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Workspace Controller
-" Maintainer:   Szymon Wrozynski
-" Version:      5.0.0
+" Maintainer: Szymon Wrozynski
+" Version:    5.0.0
 "
 " The MIT License (MIT)
 
@@ -31,7 +31,7 @@
 scriptencoding utf-8
 
 if exists('g:CtrlSpaceLoaded')
-  finish
+    finish
 endif
 
 let g:CtrlSpaceLoaded = 1

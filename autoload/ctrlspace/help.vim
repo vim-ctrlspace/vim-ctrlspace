@@ -44,118 +44,118 @@ let s:functionHelp = {
       \ }
 
 function! ctrlspace#help#AddMapping(funcName, mapName, entry)
-  if has_key(s:helpMap, a:mapName)
-    let s:helpMap[a:mapName][a:entry] = a:funcName
-  endif
+    if has_key(s:helpMap, a:mapName)
+        let s:helpMap[a:mapName][a:entry] = a:funcName
+    endif
 endfunction
 
 function! ctrlspace#help#HelpMap()
-  return s:helpMap
+    return s:helpMap
 endfunction
 
 function! ctrlspace#help#FunctionHelp()
-  return s:functionHelp
+    return s:functionHelp
 endfunction
 
 function! s:init()
-  call extend(s:functionHelp, s:config.FunctionHelp)
+    call extend(s:functionHelp, s:config.FunctionHelp)
 endfunction
 
 call s:init()
 
 function! ctrlspace#help#DisplayHelp(fill)
-  if s:modes.Nop.Enabled
-    let mapName = "Nop"
-  elseif s:modes.Search.Enabled
-    let mapName = "Search"
-  else
-    let mapName = ctrlspace#modes#CurrentListView().Name
-  endif
-
-  call s:collectKeysInfo(mapName)
-
-  call s:puts("Context help for " . s:titles[mapName])
-  call s:puts("")
-
-  for info in b:helpKeyDescriptions
-    call s:puts(info.key . " | " . info.description)
-  endfor
-
-  call s:puts("")
-  call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0 (c) 2013-2015 Szymon Wrozynski and Contributors")
-
-  setlocal modifiable
-
-  let b:size = len(s:textBuffer)
-
-  if b:size > s:config.Height
-    let maxHeight = ctrlspace#window#MaxHeight()
-
-    if b:size < maxHeight
-      silent! exe "resize " . b:size
+    if s:modes.Nop.Enabled
+        let mapName = "Nop"
+    elseif s:modes.Search.Enabled
+        let mapName = "Search"
     else
-      silent! exe "resize " . maxHeight
+        let mapName = ctrlspace#modes#CurrentListView().Name
     endif
-  endif
 
-  silent! put! =s:flushTextBuffer()
-  normal! GkJ
+    call s:collectKeysInfo(mapName)
 
-  while winheight(0) > line(".")
-    silent! put =a:fill
-  endwhile
+    call s:puts("Context help for " . s:titles[mapName])
+    call s:puts("")
 
-  normal! 0
-  normal! gg
+    for info in b:helpKeyDescriptions
+        call s:puts(info.key . " | " . info.description)
+    endfor
 
-  setlocal nomodifiable
+    call s:puts("")
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0 (c) 2013-2015 Szymon Wrozynski and Contributors")
+
+    setlocal modifiable
+
+    let b:size = len(s:textBuffer)
+
+    if b:size > s:config.Height
+        let maxHeight = ctrlspace#window#MaxHeight()
+
+        if b:size < maxHeight
+            silent! exe "resize " . b:size
+        else
+            silent! exe "resize " . maxHeight
+        endif
+    endif
+
+    silent! put! =s:flushTextBuffer()
+    normal! GkJ
+
+    while winheight(0) > line(".")
+        silent! put =a:fill
+    endwhile
+
+    normal! 0
+    normal! gg
+
+    setlocal nomodifiable
 endfunction
 
 function! s:puts(str)
-  let str = "  " . a:str
+    let str = "  " . a:str
 
-  if &columns < (strwidth(str) + 2)
-    let str = strpart(str, 0, &columns - 2 - s:sizes.Dots) . s:config.Symbols.Dots
-  endif
+    if &columns < (strwidth(str) + 2)
+        let str = strpart(str, 0, &columns - 2 - s:sizes.Dots) . s:config.Symbols.Dots
+    endif
 
-  while strwidth(str) < &columns
-    let str .= " "
-  endwhile
+    while strwidth(str) < &columns
+        let str .= " "
+    endwhile
 
-  call add(s:textBuffer, str)
+    call add(s:textBuffer, str)
 endfunction
 
 function! s:flushTextBuffer()
-  let text = join(s:textBuffer, "\n")
-  let s:textBuffer = []
-  return text
+    let text = join(s:textBuffer, "\n")
+    let s:textBuffer = []
+    return text
 endfunction
 
 function! s:keyHelp(key, description)
-  if !exists("b:helpKeyDescriptions")
-    let b:helpKeyDescriptions = []
-    let b:helpKeyWidth = 0
-  endif
+    if !exists("b:helpKeyDescriptions")
+        let b:helpKeyDescriptions = []
+        let b:helpKeyWidth = 0
+    endif
 
-  call add(b:helpKeyDescriptions, { "key": a:key, "description": a:description })
+    call add(b:helpKeyDescriptions, { "key": a:key, "description": a:description })
 
-  if strwidth(a:key) > b:helpKeyWidth
-    let b:helpKeyWidth = strwidth(a:key)
-  else
-    for keyInfo in b:helpKeyDescriptions
-      while strwidth(keyInfo.key) < b:helpKeyWidth
-        let keyInfo.key .= " "
-      endwhile
-    endfor
-  endif
+    if strwidth(a:key) > b:helpKeyWidth
+        let b:helpKeyWidth = strwidth(a:key)
+    else
+        for keyInfo in b:helpKeyDescriptions
+            while strwidth(keyInfo.key) < b:helpKeyWidth
+                let keyInfo.key .= " "
+            endwhile
+        endfor
+    endif
 endfunction
 
 function! s:collectKeysInfo(mapName)
-  for key in sort(keys(s:helpMap[a:mapName]))
-    let fn = s:helpMap[a:mapName][key]
+    for key in sort(keys(s:helpMap[a:mapName]))
+        let fn = s:helpMap[a:mapName][key]
 
-    if has_key(s:functionHelp, fn) && !empty(s:functionHelp[fn])
-      call s:keyHelp(key, s:functionHelp[fn])
-    endif
-  endfor
+        if has_key(s:functionHelp, fn) && !empty(s:functionHelp[fn])
+            call s:keyHelp(key, s:functionHelp[fn])
+        endif
+    endfor
 endfunction
