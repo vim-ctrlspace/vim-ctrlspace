@@ -2,6 +2,10 @@ let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
 let s:allBuffers = {}
 
+function! ctrlspace#buffers#SelectedBufferName()
+    return s:modes.Buffer.Enabled ? bufname(ctrlspace#window#SelectedIndex()) : ""
+endfunction
+
 function! ctrlspace#buffers#Init()
     for current in range(1, bufnr("$"))
         if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"

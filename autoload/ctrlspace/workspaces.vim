@@ -51,21 +51,21 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
     call writefile(lines, filename)
 endfunction
 
-function! ctrlspace#workspaces#GetSelectedWorkspaceName()
-    return s:workspaces[ctrlspace#window#SelectedIndex()]
+function! ctrlspace#workspaces#SelectedWorkspaceName()
+    return s:modes.Workspace.Enabled ? s:workspaces[ctrlspace#window#SelectedIndex()] : ""
 endfunction
 
 function! ctrlspace#workspaces#SaveFirstWorkspace()
-  let labels = []
+    let labels = []
 
-  for t in range(1, tabpagenr("$"))
-    let label = gettabvar(t, "CtrlSpaceLabel")
-    if !empty(label)
-      call add(labels, gettabvar(t, "CtrlSpaceLabel"))
-    endif
-  endfor
+    for t in range(1, tabpagenr("$"))
+        let label = gettabvar(t, "CtrlSpaceLabel")
+        if !empty(label)
+            call add(labels, gettabvar(t, "CtrlSpaceLabel"))
+        endif
+    endfor
 
-  call ctrlspace#workspaces#SaveWorkspace(join(labels, " "))
+    call ctrlspace#workspaces#SaveWorkspace(join(labels, " "))
 endfunction
 
 function! ctrlspace#workspaces#SaveWorkspace(name)

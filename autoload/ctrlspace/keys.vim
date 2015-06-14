@@ -28,6 +28,11 @@ function! ctrlspace#keys#Init()
     call ctrlspace#keys#help#Init()
     call ctrlspace#keys#nop#Init()
     call ctrlspace#keys#search#Init()
+    call ctrlspace#keys#buffer#Init()
+    call ctrlspace#keys#file#Init()
+    call ctrlspace#keys#tab#Init()
+    call ctrlspace#keys#workspace#Init()
+    call ctrlspace#keys#bookmark#Init()
     call s:initCustomMappings()
 endfunction
 

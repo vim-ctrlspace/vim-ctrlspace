@@ -16,6 +16,10 @@ function! ctrlspace#files#Items()
     return s:items
 endfunction
 
+function! ctrlspace#files#SelectedFileName()
+    return s:modes.File.Enabled ? s:files[ctrlspace#window#SelectedIndex()] : ""
+endfunction
+
 function! ctrlspace#files#LoadFiles()
     if empty(s:files)
         let s:items = []
