@@ -106,7 +106,7 @@ function! ctrlspace#window#GoToBufferListPosition(direction)
     let currentIndex  = -1
     let bufferListLen = len(bufferList)
 
-    for index in range(0, bufferListLen - 1)
+    for index in range(bufferListLen)
         if bufferList[index]["number"] == currentBuffer
             let currentIndex = index
             break
@@ -483,7 +483,7 @@ function! s:setActiveLine()
                 if !empty(currWsp)
                     let workspaces = ctrlspace#workspaces#Workspaces()
 
-                    for i in range(0, b:size - 1)
+                    for i in range(b:size)
                         if currWsp ==# workspaces[b:indices[i]]
                             let activeLine = i + 1
                             break
@@ -491,7 +491,7 @@ function! s:setActiveLine()
                     endfor
                 endif
             endif
-        elseif clv.Name ==# "Tablist"
+        elseif clv.Name ==# "Tab"
             let activeLine = tabpagenr()
         elseif clv.Name ==# "Bookmark"
             let activeLine = 1
@@ -499,7 +499,7 @@ function! s:setActiveLine()
             if !empty(clv.Data.Active)
                 let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
-                for i in range(0, b:size - 1)
+                for i in range(b:size)
                     if clv.Data.Active.Name ==# bookmarks[b:indices[i]].Name
                         let activeLine = i + 1
                         break
@@ -513,7 +513,7 @@ function! s:setActiveLine()
             let maxCounter = 0
             let lastLine   = 0
 
-            for i in range(0, b:size - 1)
+            for i in range(b:size)
                 if b:indices[i] == t:CtrlSpaceActivebuf
                     let activeLine = i + 1
                     break

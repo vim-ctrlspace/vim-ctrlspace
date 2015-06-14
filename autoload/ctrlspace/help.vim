@@ -8,7 +8,7 @@ let s:helpMap = {
       \ "Nop":       {},
       \ "Buffer":    {},
       \ "File":      {},
-      \ "Tablist":   {},
+      \ "Tab":       {},
       \ "Workspace": {},
       \ "Bookmark":  {}
       \ }
@@ -18,7 +18,7 @@ let s:titles = {
       \ "Nop":       "NOP MODE",
       \ "Buffer":    "BUFFER LIST",
       \ "File":      "FILE LIST",
-      \ "Tablist":   "TAB LIST",
+      \ "Tab":       "TAB LIST",
       \ "Workspace": "WORKSPACE LIST",
       \ "Bookmark":  "BOOKMARK LIST"
       \ }

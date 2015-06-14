@@ -19,7 +19,7 @@ function! ctrlspace#engine#Content()
             let items = items[0 : s:maxDisplayedItems - 1]
         endif
 
-        if s:modes.Tablist.Enabled
+        if s:modes.Tab.Enabled
             call sort(items, function("ctrlspace#engine#CompareByIndex"))
         else
             call sort(items, function("ctrlspace#engine#CompareByText"))
@@ -106,7 +106,7 @@ function! s:computeLowestNoises(source, maxItems)
     let maxNoiseValue = -1
     let maxNoiseIndex = -1
 
-    for index in range(0, len(a:source) - 1)
+    for index in range(len(a:source))
         let item = a:source[index]
         let [noise, pattern] = s:findLowestSearchNoise(item.text)
 
@@ -152,8 +152,8 @@ function! s:contentSource()
         return s:bufferListContent(clv)
     elseif clv.Name ==# "File"
         return s:fileListContent(clv)
-    elseif clv.Name ==# "Tablist"
-        return s:tabListContent(clv)
+    elseif clv.Name ==# "Tab"
+        return s:tabContent(clv)
     elseif clv.Name ==# "Workspace"
         return s:workspaceListContent(clv)
     elseif clv.Name ==# "Bookmark"
@@ -165,7 +165,7 @@ function! s:bookmarkListContent(clv)
     let content   = []
     let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
-    for i in range(0, len(bookmarks) - 1)
+    for i in range(len(bookmarks))
         let indicators = ""
 
         if !empty(a:clv.Data.Active) && (bookmarks[i].Directory ==# a:clv.Data.Active.Directory)
@@ -182,7 +182,7 @@ function! s:workspaceListContent(clv)
     let content    = []
     let workspaces = ctrlspace#workspaces#Workspaces()
 
-    for i in range(0, len(workspaces) - 1)
+    for i in range(len(workspaces))
         let name = workspaces[i]
         let indicators = ""
 
@@ -202,7 +202,7 @@ function! s:workspaceListContent(clv)
     return content
 endfunction
 
-function! s:tabListContent(clv)
+function! s:tabContent(clv)
     let content    = []
     let currentTab = tabpagenr()
 

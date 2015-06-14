@@ -22,7 +22,7 @@ function! s:createTabJumps()
     let b:jumplinesLen = tabpagenr("$")
 
     for t in range(1, b:jumplinesLen)
-        let counter = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceTablistJumpCounter", 0)
+        let counter = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceTabJumpCounter", 0)
         call add(b:jumplines, { "line": t, "counter": counter })
     endfor
 endfunction
@@ -52,7 +52,7 @@ function! ctrlspace#jumps#Jump(direction)
     if !exists("b:jumplines")
         let clv = ctrlspace#modes#CurrentListView()
 
-        if clv.Name ==# "Tablist"
+        if clv.Name ==# "Tab"
             call s:createTabJumps()
         elseif clv.Name ==# "Bookmark"
             call s:createBookmarkJumps()

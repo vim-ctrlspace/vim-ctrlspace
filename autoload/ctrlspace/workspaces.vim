@@ -55,6 +55,19 @@ function! ctrlspace#workspaces#GetSelectedWorkspaceName()
     return s:workspaces[ctrlspace#window#SelectedIndex()]
 endfunction
 
+function! ctrlspace#workspaces#SaveFirstWorkspace()
+  let labels = []
+
+  for t in range(1, tabpagenr("$"))
+    let label = gettabvar(t, "CtrlSpaceLabel")
+    if !empty(label)
+      call add(labels, gettabvar(t, "CtrlSpaceLabel"))
+    endif
+  endfor
+
+  call ctrlspace#workspaces#SaveWorkspace(join(labels, " "))
+endfunction
+
 function! ctrlspace#workspaces#SaveWorkspace(name)
     if !ctrlspace#roots#ProjectRootFound()
         return

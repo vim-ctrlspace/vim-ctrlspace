@@ -114,7 +114,7 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         elseif clv.Data.SubMode ==# "save"
             call add(statuslineElements, s:config.Symbols.WSave)
         endif
-    elseif clv.Name ==# "Tablist"
+    elseif clv.Name ==# "Tab"
         call add(statuslineElements, s:createStatusTabline())
     elseif clv.Name ==# "Bookmark"
         call add(statuslineElements, s:config.Symbols.BM)
@@ -172,7 +172,7 @@ function! ctrlspace#api#TabBuffersNumber(tabnr)
             let smallNumbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
             let numberStr    = string(buffersNumber)
 
-            for i in range(0, len(numberStr) - 1)
+            for i in range(len(numberStr))
                 let numberToShow .= smallNumbers[str2nr(numberStr[i])]
             endfor
         else

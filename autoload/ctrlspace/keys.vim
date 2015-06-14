@@ -31,7 +31,7 @@ function! ctrlspace#keys#Init()
 endfunction
 
 function! s:initCustomMappings()
-    for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    for m in ["Search", "Help", "Nop", "Buffer", "File", "Tab", "Workspace", "Bookmark"]
         if has_key(s:config.KeyMap, m)
             call extend(s:keyMap[m], s:config.KeyMap[m])
         endif
@@ -50,11 +50,11 @@ function! s:initKeyNames()
 
     let controls = join(controlList, " ")
 
-    let numbers    = "1 2 3 4 5 6 7 8 9 0"
+    let numbers  = "1 2 3 4 5 6 7 8 9 0"
     let specials = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " .
-                             \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
-                             \ "Down Up Home End Left Right PageUp PageDown " .
-                             \ 'F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 "'
+                \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
+                \ "Down Up Home End Left Right PageUp PageDown " .
+                \ 'F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 "'
 
     if !s:config.UseMouseAndArrowsInTerm || has("gui_running")
         let specials .= " Esc"
@@ -66,7 +66,7 @@ function! s:initKeyNames()
 
     " won't work with leader mappings
     if ctrlspace#keys#IsDefaultKey()
-        for i in range(0, len(keyNames) - 1)
+        for i in range(len(keyNames))
             let fullKeyName = (strlen(keyNames[i]) > 1) ? ("<" . keyNames[i] . ">") : keyNames[i]
 
             if fullKeyName ==# ctrlspace#keys#DefaultKey()
@@ -96,7 +96,7 @@ function! s:initKeyMap()
         let blankMap[k] = Undefined
     endfor
 
-    for m in ["Search", "Help", "Nop", "Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    for m in ["Search", "Help", "Nop", "Buffer", "File", "Tab", "Workspace", "Bookmark"]
         let s:keyMap[m] = copy(blankMap)
     endfor
 endfunction

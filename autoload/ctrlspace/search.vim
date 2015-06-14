@@ -79,7 +79,7 @@ endfunction
 function! ctrlspace#search#InsertSearchText(text)
     let letters = []
 
-    for i in range(0, strlen(a:text) - 1)
+    for i in range(strlen(a:text))
         if a:text[i] =~? "^[A-Z0-9]$"
             call add(letters, a:text[i])
         endif

@@ -2,44 +2,53 @@ let s:config       = ctrlspace#context#Configuration()
 let s:modes        = ctrlspace#modes#Modes()
 let s:commonMap    = {}
 let s:helpMap      = {}
-let s:lastListView = {}
+let s:lastListView = "Buffer"
 
 function! ctrlspace#keys#common#Init()
-    call s:map("ToggleHelp",              "?")
-    call s:map("PreviousListView",        "BS")
-    call s:map("Down",                    "j")
-    call s:map("Up",                      "k")
-    call s:map("Previous",                "p")
-    call s:map("PreviousCR",              "P")
-    call s:map("Next",                    "n")
-    call s:map("MouseDown",               "MouseDown")
-    call s:map("MouseUp",                 "MouseUp")
-    call s:map("LeftRelease",             "LeftRelease")
-    call s:map("LeftMouse2",              '2-LeftMouse')
-    call s:map("DownArrow",               "Down")
-    call s:map("UpArrow",                 "Up")
-    call s:map("Home",                    "Home")
-    call s:map("Top",                     "K")
-    call s:map("End",                     "End")
-    call s:map("Bottom",                  "J")
-    call s:map("PageDown",                "PageDown")
-    call s:map("ScrollDown",              'C-f')
-    call s:map("PageUp",                  "PageUp")
-    call s:map("ScrollUp",                'C-b')
-    call s:map("HalfScrollDown",          'C-d')
-    call s:map("HalfScrollUp",            'C-u')
-    call s:map("Close",                   "q", "Esc", 'C-c')
-    call s:map("Quit",                    "Q")
-    call s:map("EnterSearchMode",         "/")
-    call s:map("RestorePreviousSearch",   'C-p')
-    call s:map("RestoreNextSearch",       'C-n')
-    call s:map("ToggleFileMode",          "o")
-    call s:map("ToggleFileModeAndSearch", "O")
+    call s:map("ToggleHelp",            "?")
+    call s:map("Down",                  "j")
+    call s:map("Up",                    "k")
+    call s:map("Previous",              "p")
+    call s:map("PreviousCR",            "P")
+    call s:map("Next",                  "n")
+    call s:map("MouseDown",             "MouseDown")
+    call s:map("MouseUp",               "MouseUp")
+    call s:map("LeftRelease",           "LeftRelease")
+    call s:map("LeftMouse2",            '2-LeftMouse')
+    call s:map("DownArrow",             "Down")
+    call s:map("UpArrow",               "Up")
+    call s:map("Home",                  "Home")
+    call s:map("Top",                   "K")
+    call s:map("End",                   "End")
+    call s:map("Bottom",                "J")
+    call s:map("PageDown",              "PageDown")
+    call s:map("ScrollDown",            'C-f')
+    call s:map("PageUp",                "PageUp")
+    call s:map("ScrollUp",              'C-b')
+    call s:map("HalfScrollDown",        'C-d')
+    call s:map("HalfScrollUp",          'C-u')
+    call s:map("Close",                 "q", "Esc", 'C-c')
+    call s:map("Quit",                  "Q")
+    call s:map("EnterSearchMode",       "/")
+    call s:map("RestorePreviousSearch", 'C-p')
+    call s:map("RestoreNextSearch",     'C-n')
+
+    call s:map("BackOrClearSearch",            "BS")
+    call s:map("ToggleFileMode",               "o")
+    call s:map("ToggleFileModeAndSearch",      "O")
+    call s:map("ToggleBufferMode",             "h")
+    call s:map("ToggleBufferModeAndSearch",    "H")
+    call s:map("ToggleWorkspaceMode",          "w")
+    call s:map("ToggleWorkspaceModeAndSearch", "W")
+    call s:map("ToggleTabMode",                "l")
+    call s:map("ToggleTabModeAndSearch",       "L")
+    call s:map("ToggleBookmarkMode",           "b")
+    call s:map("ToggleBookmarkModeAndSearch",  "B")
 
     let keyMap  = ctrlspace#keys#KeyMap()
     let helpMap = ctrlspace#help#HelpMap()
 
-    for m in ["Buffer", "File", "Tablist", "Workspace", "Bookmark"]
+    for m in ["Buffer", "File", "Tab", "Workspace", "Bookmark"]
         call extend(keyMap[m], s:commonMap)
         call extend(helpMap[m], s:helpMap)
     endfor
@@ -204,73 +213,86 @@ function! s:toggleListViewAndSearch(k, mode)
     return 1
 endfunction
 
-function! s:toggleListView(mode)
-    let clv = ctrlspace#modes#CurrentListView()
-
-    if clv.Name ==# a:mode
-        if empty(s:lastListView)
+function! s:toggleListView(k, mode)
+    if s:modes[a:mode].Enabled
+        if s:lastListView ==# a:mode
             return 0
         else
-            let nextListView = s:lastListView
+            return function("ctrlspace#keys#common#Toggle" . s:lastListView . "Mode")(a:k)
         endif
-    else
-        let nextListView = s:modes[a:mode]
     endif
 
-    let s:lastListView = clv
+    let s:lastListView = ctrlspace#modes#CurrentListView().Name
 
     call ctrlspace#window#Kill(0, 0)
-    call nextListView.Enable()
+    call s:modes[a:mode].Enable()
     call ctrlspace#window#Toggle(1)
 
     return 1
+endfunction
+
+function! ctrlspace#keys#common#BackOrClearSearch(k)
+    if !empty(s:modes.Search.Data.Letters)
+        call ctrlspace#search#ClearSearchMode()
+    elseif !empty(s:lastListView)
+        if ctrlspace#modes#CurrentListView().Name ==# s:lastListView
+            return 0
+        else
+            return function("ctrlspace#keys#common#Toggle" . s:lastListView . "Mode")(a:k)
+        endif
+    endif
 endfunction
 
 function! ctrlspace#keys#common#ToggleFileModeAndSearch(k)
     return s:toggleListViewAndSearch(a:k, "File")
 endfunction
 
-
 function! ctrlspace#keys#common#ToggleFileMode(k)
     if !ctrlspace#roots#ProjectRootFound()
         return 0
     endif
 
-    return s:toggleListView("File")
+    return s:toggleListView(a:k, "File")
+endfunction
+
+function! ctrlspace#keys#common#ToggleBufferModeAndSearch(k)
+    return s:toggleListViewAndSearch(a:k, "Buffer")
+endfunction
+
+function! ctrlspace#keys#common#ToggleBufferMode(k)
+    return s:toggleListView(a:k, "Buffer")
+endfunction
+
+function! ctrlspace#keys#common#ToggleWorkspaceModeAndSearch(k)
+    return s:toggleListViewAndSearch(a:k, "Workspace")
 endfunction
 
 function! ctrlspace#keys#common#ToggleWorkspaceMode(k)
-    if s:workspace_mode
-        call <SID>kill(0, 0)
-        let s:workspace_mode = 0
-        call <SID>ctrlspace_toggle(1)
-    elseif empty(s:workspace_names)
-        call <SID>save_first_workspace()
+    if empty(ctrlspace#workspaces#Workspaces())
+        call ctrlspace#workspaces#SaveFirstWorkspace()
+        return 0
     else
-        call <SID>kill(0, 0)
-        let s:file_mode      = 0
-        let s:tablist_mode   = 0
-        let s:bookmark_mode  = 0
-        let s:workspace_mode = 1
-        call <SID>ctrlspace_toggle(1)
+        return s:toggleListView(a:k, "Workspace")
     endif
 endfunction
 
-function! ctrlspace#keys#common#PreviousListView(k)
-    if !empty(s:modes.Search.Data.Letters)
-        call ctrlspace#search#ClearSearchMode()
-    elseif !empty(s:lastListView)
-        let clv = ctrlspace#modes#CurrentListView()
+function! ctrlspace#keys#common#ToggleTabModeAndSearch(k)
+    return s:toggleListViewAndSearch(a:k, "Tab")
+endfunction
 
-        if clv == s:lastListView
-            return
-        endif
+function! ctrlspace#keys#common#ToggleTabMode(k)
+    return s:toggleListView(a:k, "Tab")
+endfunction
 
-        let nextListView = s:lastListView
-        let s:lastListView = clv
+function! ctrlspace#keys#common#ToggleBookmarkModeAndSearch(k)
+    return s:toggleListViewAndSearch(a:k, "Bookmark")
+endfunction
 
-        call ctrlspace#window#Kill(0, 0)
-        call nextListView.Enable()
-        call ctrlspace#window#Toggle(1)
+function! ctrlspace#keys#common#ToggleBookmarkMode(k)
+    if empty(ctrlspace#bookmarks#Bookmarks())
+        call ctrlspace#bookmarks#AddFirstBookmark()
+        return 0
+    else
+        return s:toggleListView(a:k, "Bookmark")
     endif
 endfunction
