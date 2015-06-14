@@ -26,6 +26,7 @@ function! ctrlspace#keys#Init()
     call s:initKeyMap()
     call ctrlspace#keys#common#Init()
     call ctrlspace#keys#help#Init()
+    call ctrlspace#keys#nop#Init()
     call ctrlspace#keys#search#Init()
     call s:initCustomMappings()
 endfunction
