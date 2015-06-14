@@ -43,7 +43,7 @@ let s:functionHelp = {
       \ "ctrlspace#keys#common#FileModeWithSearch": "Open File List in Search Mode"
       \ }
 
-function! ctrlspace#help#AddMapping(funcNAme, mapName, entry)
+function! ctrlspace#help#AddMapping(funcName, mapName, entry)
   if has_key(s:helpMap, a:mapName)
     let s:helpMap[a:mapName][a:entry] = a:funcName
   endif

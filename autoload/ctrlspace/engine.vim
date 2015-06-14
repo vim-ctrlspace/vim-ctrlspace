@@ -15,7 +15,9 @@ function! ctrlspace#engine#Content()
     let items = s:computeLowestNoises(items, s:maxSearchedItems)
     call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
   else
-    let items = items[0 : s:maxDisplayedItems - 1]
+    if len(items) > s:maxDisplayedItems
+      let items = items[0 : s:maxDisplayedItems - 1]
+    endif
 
     if s:modes.Tablist.Enabled
       call sort(items, function("ctrlspace#engine#CompareByIndex"))
@@ -115,21 +117,18 @@ function! s:computeLowestNoises(source, maxItems)
       let item.pattern = pattern
 
       if resultsCount < a:maxItems
-        call insert(results, item, resultsCount)
-        call insert(noises, noise, resultsCount)
-
-        if noise > maxNoiseValue
-          let maxNoiseValue = noise
-          let maxNoiseIndex = resultsCount
-        endif
-
         let resultsCount += 1
-      elseif noise < maxNoiseValue
-        call insert(results, item, maxNoiseIndex)
-        call insert(noises, noise, maxNoiseIndex)
+        call add(results, item)
+        call add(noises, noise)
+      else
+        let maxIndex = index(noises, max(noises))
 
-        let maxNoiseValue = max(noises)
-        let maxNoiseIndex = index(noises, maxNoiseValue)
+        if noise[maxIndex] > noise
+          call remove(noises, maxIndex)
+          call insert(noises, noise, maxIndex)
+          call remove(results, maxIndex)
+          call insert(results, item, maxIndex)
+        endif
       endif
     endif
   endfor
@@ -241,7 +240,7 @@ function! s:fileListContent(clv)
   if !empty(s:config.Engine)
     return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
   else
-    return ctrlspace#files#Items()
+    return deepcopy(ctrlspace#files#Items())
   endif
 endfunction
 
@@ -402,7 +401,7 @@ function! s:prepareContent(items)
 
     let content .= "  " . line . "\n"
 
-    if exists("item.pattern")
+    if has_key(item, "pattern")
       let patterns[item.pattern] = 1
     endif
 

@@ -227,7 +227,9 @@ endfunction
 " endfunction
 
 function! ctrlspace#keys#common#PreviousListView(k)
-  if !empty(s:lastListView)
+  if !empty(s:modes.Search.Data.Letters)
+    call ctrlspace#search#ClearSearchMode()
+  elseif !empty(s:lastListView)
     let clv = ctrlspace#modes#CurrentListView()
 
     if clv == s:lastListView
