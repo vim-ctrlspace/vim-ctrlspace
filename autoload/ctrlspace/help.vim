@@ -23,7 +23,7 @@ let s:titles = {
       \ "Bookmark":  "BOOKMARK LIST"
       \ }
 
-let s:functionHelp = {
+let s:descriptions = {
       \ "ctrlspace#keys#common#ToggleHelp":                   "Toggle the Help view",
       \ "ctrlspace#keys#common#Down":                         "Move the selection bar down",
       \ "ctrlspace#keys#common#Up":                           "Move the selection bar up",
@@ -85,12 +85,12 @@ function! ctrlspace#help#HelpMap()
     return s:helpMap
 endfunction
 
-function! ctrlspace#help#FunctionHelp()
-    return s:functionHelp
+function! ctrlspace#help#Descriptions()
+    return s:descriptions
 endfunction
 
 function! s:init()
-    call extend(s:functionHelp, s:config.FunctionHelp)
+    call extend(s:descriptions, s:config.Help)
 endfunction
 
 call s:init()
@@ -186,8 +186,8 @@ function! s:collectKeysInfo(mapName)
     for key in sort(keys(s:helpMap[a:mapName]))
         let fn = s:helpMap[a:mapName][key]
 
-        if has_key(s:functionHelp, fn) && !empty(s:functionHelp[fn])
-            call s:keyHelp(key, s:functionHelp[fn])
+        if has_key(s:descriptions, fn) && !empty(s:descriptions[fn])
+            call s:keyHelp(key, s:descriptions[fn])
         endif
     endfor
 endfunction

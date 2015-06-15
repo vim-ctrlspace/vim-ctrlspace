@@ -38,8 +38,10 @@ endfunction
 
 function! s:initCustomMappings()
     for m in ["Search", "Help", "Nop", "Buffer", "File", "Tab", "Workspace", "Bookmark"]
-        if has_key(s:config.KeyMap, m)
-            call extend(s:keyMap[m], s:config.KeyMap[m])
+        if has_key(s:config.Keys, m)
+            for [k, fn] in items(s:config.Keys[m])
+                call ctrlspace#keys#AddMapping(fn, m, [k])
+            endfor
         endif
     endfor
 endfunction
