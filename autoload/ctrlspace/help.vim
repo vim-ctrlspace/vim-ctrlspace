@@ -13,16 +13,6 @@ let s:helpMap = {
       \ "Bookmark":  {}
       \ }
 
-let s:titles = {
-      \ "Search":    "SEARCH MODE",
-      \ "Nop":       "NOP MODE",
-      \ "Buffer":    "BUFFER LIST",
-      \ "File":      "FILE LIST",
-      \ "Tab":       "TAB LIST",
-      \ "Workspace": "WORKSPACE LIST",
-      \ "Bookmark":  "BOOKMARK LIST"
-      \ }
-
 let s:descriptions = {
       \ "ctrlspace#keys#common#ToggleHelp":                   "Toggle the Help view",
       \ "ctrlspace#keys#common#Down":                         "Move the selection bar down",
@@ -106,7 +96,9 @@ function! ctrlspace#help#DisplayHelp(fill)
 
     call s:collectKeysInfo(mapName)
 
-    call s:puts("Context help for " . s:titles[mapName])
+    let mi = s:modeInfo()
+
+    call s:puts("Context help for " . mi[0] . " list (modes: " . join(mi[1:], ", ") . ")")
     call s:puts("")
 
     for info in b:helpKeyDescriptions
@@ -190,4 +182,49 @@ function! s:collectKeysInfo(mapName)
             call s:keyHelp(key, s:descriptions[fn])
         endif
     endfor
+endfunction
+
+function! s:modeInfo()
+    let info = []
+    let clv  = ctrlspace#modes#CurrentListView()
+
+    if clv.Name ==# "Workspace"
+        call add(info, "WORKSPACE")
+        if clv.Data.SubMode ==# "load"
+            call add(info, "LOAD")
+        elseif clv.Data.SubMode ==# "save"
+            call add(info, "SAVE")
+        endif
+    elseif clv.Name ==# "Tab"
+        call add(info, "TAB LIST")
+    elseif clv.Name ==# "Bookmark"
+        call add(info, "BOOKMARK")
+    else
+        if clv.Name ==# "File"
+            call add(info, "FILE")
+        elseif clv.Name ==# "Buffer"
+            call add(info, "BUFFER")
+            if clv.Data.SubMode == "visual"
+                call add(info, "VISUAL")
+            elseif clv.Data.SubMode == "single"
+                call add(info, "SINGLE")
+            elseif clv.Data.SubMode == "all"
+                call add(info, "ALL")
+            endif
+        endif
+
+        if s:modes.NextTab.Enabled
+            call add(info, "NEXT TAB")
+        endif
+    endif
+
+    if s:modes.Search.Enabled
+        call add(info, "SEARCH")
+    endif
+
+    if s:modes.Zoom.Enabled
+        call add(info, "ZOOM")
+    endif
+
+    return info
 endfunction
