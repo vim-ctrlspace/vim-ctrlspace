@@ -54,7 +54,7 @@ function! ctrlspace#files#LoadFiles()
 
         redraw!
 
-        call ctrlspace#ui#Msg(action . " Done (" . len(s:items). "/" . len(s:files) . ").")
+        call ctrlspace#ui#Msg(action . " Done (" . len(s:files) . ").")
     endif
 
     return s:files
