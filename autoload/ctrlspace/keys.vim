@@ -141,11 +141,6 @@ function! ctrlspace#keys#Keypressed(key)
         let mapName = "Search"
     else
         let mapName = ctrlspace#modes#CurrentListView().Name
-
-        " TODO Think about expanding this to all modes
-        if mapName ==# "Workspace"
-            call s:modes.Workspace.SetData("LastBrowsed", line("."))
-        endif
     endif
 
     call s:keyMap[mapName][key](key)

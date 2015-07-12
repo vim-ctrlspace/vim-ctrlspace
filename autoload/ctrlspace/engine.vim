@@ -235,7 +235,7 @@ function! s:tabContent(clv)
 endfunction
 
 function! s:fileListContent(clv)
-    call ctrlspace#files#LoadFiles()
+    call ctrlspace#files#CollectFiles()
 
     if !empty(s:config.Engine)
         return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]

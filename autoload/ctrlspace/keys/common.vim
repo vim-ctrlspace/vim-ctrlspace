@@ -213,6 +213,11 @@ function! s:toggleListViewAndSearch(k, mode)
 endfunction
 
 function! s:toggleListView(k, mode)
+    " TODO Temporary place
+    if s:modes.Workspace.Enabled
+        call s:modes.Workspace.SetData("LastBrowsed", line("."))
+    endif
+
     if s:modes[a:mode].Enabled
         if s:lastListView ==# a:mode
             return 0
@@ -268,8 +273,7 @@ endfunction
 
 function! ctrlspace#keys#common#ToggleWorkspaceMode(k)
     if empty(ctrlspace#workspaces#Workspaces())
-        call ctrlspace#workspaces#SaveFirstWorkspace()
-        return 0
+        return s:saveFirstWorkspace()
     else
         return s:toggleListView(a:k, "Workspace")
     endif
@@ -294,4 +298,17 @@ function! ctrlspace#keys#common#ToggleBookmarkMode(k)
     else
         return s:toggleListView(a:k, "Bookmark")
     endif
+endfunction
+
+function! s:saveFirstWorkspace()
+    let labels = []
+
+    for t in range(1, tabpagenr("$"))
+        let label = gettabvar(t, "CtrlSpaceLabel")
+        if !empty(label)
+            call add(labels, gettabvar(t, "CtrlSpaceLabel"))
+        endif
+    endfor
+
+    return ctrlspace#keys#workspace#SaveWorkspace(join(labels, " "))
 endfunction
