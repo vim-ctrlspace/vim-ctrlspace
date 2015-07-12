@@ -25,8 +25,8 @@ function! ctrlspace#init#Init()
     command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#roots#AddProjectRoot(<q-args>)
     command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#roots#RemoveProjectRoot(<q-args>)
 
-    hi def link CtrlSpaceNormal   Normal
-    hi def link CtrlSpaceSelected Visual
+    hi def link CtrlSpaceNormal   PMenu
+    hi def link CtrlSpaceSelected PMenuSel
     hi def link CtrlSpaceSearch   IncSearch
     hi def link CtrlSpaceStatus   StatusLine
 
