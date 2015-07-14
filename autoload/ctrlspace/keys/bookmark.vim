@@ -15,9 +15,9 @@ function! ctrlspace#keys#bookmark#GoToBookmark(k)
     call ctrlspace#window#Kill(0, 1)
     call ctrlspace#bookmarks#GoToBookmark(nr)
 
-    elseif a:key ==# "CR"
+    if a:k ==# "CR"
         call ctrlspace#window#Toggle(0)
-    elseif a:key ==# "Space"
+    elseif a:k ==# "Space"
         call ctrlspace#window#Toggle(0)
         call ctrlspace#window#Kill(0, 0)
         call s:modes.Bookmark.Enable()
