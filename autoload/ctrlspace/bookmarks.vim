@@ -11,14 +11,95 @@ function! ctrlspace#bookmarks#SetBookmarks(value)
     return s:bookmarks
 endfunction
 
+function! ctrlspace#bookmarks#GoToBookmark(nr)
+    let newBookmark = s:bookmarks[a:nr]
+
+    if !empty(s:modes.Bookmark.Data.Active) && s:modes.Bookmark.Data.Active.Directory ==# newBookmark.Directory
+        return
+    endif
+
+    silent! exe "cd " . newBookmark.Directory
+    call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
+endfunction
+
+function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
+    let bookmark = s:bookmarks[a:nr]
+    let newName = ctrlspace#ui#GetInput("New bookmark name: ", bookmark.Name)
+
+    if !empty(newName)
+        call ctrlspace#bookmarks#AddToBookmarks(bookmark.Directory, newName)
+    endif
+endfunction
+
+function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr)
+    let bookmark  = s:bookmarks[a:nr]
+    let current   = bookmark.Directory
+    let name      = bookmark.Name
+    let directory = ctrlspace#ui#GetInput("Edit directory for bookmark '" . name . "': ", current, "dir")
+
+    if empty(directory)
+        return 0
+    endif
+
+    let directory = ctrlspace#util#NormalizeDirectory(directory)
+
+    if !isdirectory(directory)
+        call ctrlspace#ui#Msg("Directory incorrect.")
+        return 0
+    endif
+
+    for bookmark in s:bookmarks
+        if bookmark.Directory ==# directory
+            call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . name . "'.")
+            return 0
+        endif
+    endfor
+
+    call remove(s:bookmarks, a:nr)
+
+    call ctrlspace#bookmarks#AddToBookmarks(directory, name)
+    call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
+
+    return 1
+endfunction
+
+function! ctrlspace#bookmarks#RemoveBookmark(nr)
+    let name = s:bookmarks[a:nr].Name
+
+    if !ctrlspace#ui#Confirmed("Delete bookmark '" . name . "'?")
+        return
+    endif
+
+    call remove(s:bookmarks, a:nr)
+
+    let lines     = []
+    let cacheFile = s:config.CacheDir . "/.cs_cache"
+
+    if filereadable(cacheFile)
+        for oldLine in readfile(cacheFile)
+            if oldLine !~# "CS_BOOKMARK: "
+                call add(lines, oldLine)
+            endif
+        endfor
+    endif
+
+    for bm in s:bookmarks
+        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
+    endfor
+
+    call writefile(lines, cacheFile)
+
+    call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
+endfunction
+
 function! ctrlspace#bookmarks#AddFirstBookmark()
-  if ctrlspace#bookmarks#AddNewBookmark()
-    call ctrlspace#window#Kill(0, 1)
-    call ctrlspace#window#Toggle(0)
-    call ctrlspace#window#Kill(0, 0)
-    call s:modes.Bookmarks.Enable()
-    call ctrlspace#window#Toggle(1)
-  endif
+    if ctrlspace#bookmarks#AddNewBookmark()
+        call ctrlspace#window#Kill(0, 1)
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.Bookmarks.Enable()
+        call ctrlspace#window#Toggle(1)
+    endif
 endfunction
 
 function! ctrlspace#bookmarks#AddNewBookmark(...)
