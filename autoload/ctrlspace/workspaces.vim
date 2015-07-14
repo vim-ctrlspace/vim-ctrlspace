@@ -221,7 +221,7 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
 
     if !a:bang
         call ctrlspace#ui#Msg("The workspace '" . name . "' has been loaded.")
-        let.active.Digest = ctrlspace#workspaces#CreateDigest()
+        let active.Digest = ctrlspace#workspaces#CreateDigest()
     else
         let active.Digest = ""
         call ctrlspace#ui#Msg("The workspace '" . name . "' has been appended.")
