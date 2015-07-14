@@ -34,13 +34,13 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DeleteForeignBuffers", "Buffer", ["F"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseBuffer", "Buffer", ["c"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseTab", "Buffer", ["C"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#EditFile", "Buffer", ["e"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#ExploreDirectory", "Buffer", ["E"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToDirectoryNext", "Buffer", ["i"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToDirectoryPrev", "Buffer", ["I"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#RemoveFile", "Buffer", ["R"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#RenameFileOrBuffer", "Buffer", ["m"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CopyFileOrBuffer", "Buffer", ["y"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#EditFile", "Buffer", ["e"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#ExploreDirectory", "Buffer", ["E"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryNext", "Buffer", ["i"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryPrev", "Buffer", ["I"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RemoveFile", "Buffer", ["R"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RenameFileOrBuffer", "Buffer", ["m"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#CopyFileOrBuffer", "Buffer", ["y"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFileNext", "Buffer", ["g"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFilePrev", "Buffer", ["G"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CollectUnsavedBuffers", "Buffer", ["U"])
@@ -250,7 +250,7 @@ function! ctrlspace#keys#buffer#DeleteForeignBuffers(k)
 endfunction
 
 function! ctrlspace#keys#buffer#CloseBuffer(k)
-    call <SID>close_buffer()
+    call ctrlspace#buffers#CloseBuffer()
 endfunction
 
 function! ctrlspace#keys#buffer#CloseTab(k)
@@ -266,34 +266,6 @@ function! ctrlspace#keys#buffer#ToggleAllModeAndSearch(k)
         call s:toggleAllMode()
     endif
     call ctrlspace#search#SwitchSearchMode(1)
-endfunction
-
-function! ctrlspace#keys#buffer#EditFile(k)
-    call ctrlspace#files#EditFile()
-endfunction
-
-function! ctrlspace#keys#buffer#ExploreDirectory(k)
-    call ctrlspace#files#ExploreDirectory()
-endfunction
-
-function! ctrlspace#keys#buffer#GoToDirectoryNext(k)
-    call ctrlspace#files#GoToDirectory(0)
-endfunction
-
-function! ctrlspace#keys#buffer#GoToDirectoryPrev(k)
-    call ctrlspace#files#GoToDirectory(1)
-endfunction
-
-function! ctrlspace#keys#buffer#RemoveFile(k)
-    call ctrlspace#files#RemoveFile()
-endfunction
-
-function! ctrlspace#keys#buffer#RenameFileOrBuffer(k)
-    call ctrlspace#files#RenameFileOrBuffer()
-endfunction
-
-function! ctrlspace#keys#buffer#CopyFileOrBuffer(k)
-    call ctrlspace#files#CopyFileOrBuffer()
 endfunction
 
 function! ctrlspace#keys#buffer#GoToBufferOrFileNext(k)
