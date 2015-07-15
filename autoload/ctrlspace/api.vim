@@ -122,7 +122,7 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         if clv.Name ==# "File"
             let symbol = s:config.Symbols.File
         elseif clv.Name ==# "Buffer"
-            if clv.Data.SubMode == "visual"
+            if clv.Data.SubMode == "visible"
                 let symbol = s:config.Symbols.Vis
             elseif clv.Data.SubMode == "single"
                 let symbol = s:config.Symbols.Sin

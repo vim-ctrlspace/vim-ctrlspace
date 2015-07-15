@@ -8,7 +8,7 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadManyBuffers", "Buffer", ["Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToWindow", "Buffer", ["Tab"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToWindowAndBack", "Buffer", ["S-Tab"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#VisualMode", "Buffer", ["*"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#VisibleMode", "Buffer", ["*"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#ZoomMode", "Buffer", ["z"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadBufferVS", "Buffer", ["v"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadManyBuffersVS", "Buffer", ["V"])
@@ -81,11 +81,11 @@ function! ctrlspace#keys#buffer#GoToWindowAndBack(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#VisualMode(k)
-    if s:modes.Buffer.Data.SubMode ==# "visual"
+function! ctrlspace#keys#buffer#VisibleMode(k)
+    if s:modes.Buffer.Data.SubMode ==# "visible"
         call s:modes.Buffer.SetData("SubMode", "single")
     else
-        call s:modes.Buffer.SetData("SubMode", "visual")
+        call s:modes.Buffer.SetData("SubMode", "visible")
     endif
 
     call ctrlspace#window#Kill(0, 0)

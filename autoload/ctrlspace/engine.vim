@@ -251,7 +251,7 @@ function! s:bufferListContent(clv)
         let buffers = map(keys(ctrlspace#buffers#Buffers(tabpagenr())), "str2nr(v:val)")
     elseif a:clv.Data.SubMode ==# "all"
         let buffers = map(keys(ctrlspace#buffers#Buffers(0)), "str2nr(v:val)")
-    elseif a:clv.Data.SubMode ==# "visual"
+    elseif a:clv.Data.SubMode ==# "visible"
         let buffers = tabpagebuflist()
     endif
 
