@@ -364,6 +364,7 @@ function! s:resetWindow()
     call s:modes.Search.SetData("HistoryIndex", -1)
 
     call s:modes.Workspace.SetData("LastBrowsed", 0)
+    call s:modes.Workspace.SetData("SubMode", "load")
 
     let t:CtrlSpaceSearchHistoryIndex = -1
 
