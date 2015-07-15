@@ -19,13 +19,11 @@ function! ctrlspace#keys#file#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseTab", "File", ["C"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#EditFile", "File", ["e"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#ExploreDirectory", "File", ["E"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryNext", "File", ["i"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryPrev", "File", ["I"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectory", "File", ["i", "I"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RemoveFile", "File", ["R"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RenameFileOrBuffer", "File", ["m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#CopyFileOrBuffer", "File", ["y"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFileNext", "File", ["g"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFilePrev", "File", ["G"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFile", "File", ["g", "G"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CollectUnsavedBuffers", "File", ["U"])
 endfunction
 
@@ -82,12 +80,8 @@ function! ctrlspace#keys#file#ExploreDirectory(k)
     call ctrlspace#files#ExploreDirectory()
 endfunction
 
-function! ctrlspace#keys#file#GoToDirectoryNext(k)
-    call ctrlspace#files#GoToDirectory(0)
-endfunction
-
-function! ctrlspace#keys#file#GoToDirectoryPrev(k)
-    call ctrlspace#files#GoToDirectory(1)
+function! ctrlspace#keys#file#GoToDirectory(k)
+    call ctrlspace#files#GoToDirectory(a:k ==# "I")
 endfunction
 
 function! ctrlspace#keys#file#RemoveFile(k)

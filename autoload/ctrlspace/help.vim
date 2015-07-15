@@ -63,6 +63,74 @@ let s:descriptions = {
       \ "ctrlspace#keys#search#SwitchOff":                    "Exit Search Mode",
       \ "ctrlspace#keys#search#SwitchOffCR":                  "Exit Search Mode and go to first result",
       \ "ctrlspace#keys#search#ClearLetters":                 "Clear search phrase",
+      \ "ctrlspace#keys#buffer#SearchParentDirectory":        "Cyclic search through parent directories",
+      \ "ctrlspace#keys#buffer#SearchParentDirectoryInFile":  "Cyclic search through parent directories in File Mode",
+      \ "ctrlspace#keys#buffer#LoadBuffer":                   "Open selected buffer",
+      \ "ctrlspace#keys#buffer#LoadManyBuffers":              "Open selected buffer and stay in the plugin window",
+      \ "ctrlspace#keys#buffer#GoToWindow":                   "Jump to the window containing selected buffer",
+      \ "ctrlspace#keys#buffer#GoToWindowAndBack":            "Change the target window to one containing selected buffer",
+      \ "ctrlspace#keys#buffer#VisibleMode":                  "Toggle Visible Mode",
+      \ "ctrlspace#keys#buffer#ZoomMode":                     "Toggle Zoom Mode",
+      \ "ctrlspace#keys#buffer#LoadBufferVS":                 "Open selected buffer in a new vertical split",
+      \ "ctrlspace#keys#buffer#LoadManyBuffersVS":            "Open selected buffer in a new vertical split but stay in the plugin window",
+      \ "ctrlspace#keys#buffer#LoadBufferSP":                 "Open selected buffer in a new horizontal split",
+      \ "ctrlspace#keys#buffer#LoadManyBuffersSP":            "Open selected buffer in a new horizontal split but stay in the plugin window",
+      \ "ctrlspace#keys#buffer#CloseWindow":                  "Close the split window containing selected buffer",
+      \ "ctrlspace#keys#buffer#CloseManyWindows":             "Leave the window containing selected buffer - close all others",
+      \ "ctrlspace#keys#buffer#LoadBufferT":                  "Open selected buffer in a new tab",
+      \ "ctrlspace#keys#buffer#LoadManyBuffersT":             "Open selected buffer in a new (or next) tab but stay in the plugin window",
+      \ "ctrlspace#keys#buffer#NewTabLabel":                  "Change the tab name",
+      \ "ctrlspace#keys#buffer#RemoveTabLabel":               "Remove a custom tab name",
+      \ "ctrlspace#keys#buffer#MoveTab":                      "Move the current tab",
+      \ "ctrlspace#keys#buffer#SwitchTab":                    "Go to the previous/next tab",
+      \ "ctrlspace#keys#buffer#CopyBufferToTab":              "Copy the selected buffer to to the previous/next tab",
+      \ "ctrlspace#keys#buffer#MoveBufferToTab":              "Move the selected buffer to to the previous/next tab",
+      \ "ctrlspace#keys#buffer#DeleteBuffer":                 "Delete the selected buffer (close it)",
+      \ "ctrlspace#keys#buffer#DeleteHiddenNonameBuffers":    "Close all empty noname buffers",
+      \ "ctrlspace#keys#buffer#ToggleAllMode":                "Enter the All Mode",
+      \ "ctrlspace#keys#buffer#ToggleAllModeAndSearch":       "Enter the Search Mode combined with the All mode",
+      \ "ctrlspace#keys#buffer#DetachBuffer":                 "Forget the current buffer (make it a unrelated to the current tab)",
+      \ "ctrlspace#keys#buffer#DeleteForeignBuffers":         "Delete (close) all forgotten buffers (unrelated to any tab)",
+      \ "ctrlspace#keys#buffer#CloseBuffer":                  "Try to close selected buffer (delete if possible, forget otherwise)",
+      \ "ctrlspace#keys#buffer#CloseTab":                     "Close the current tab, then perform F, and then D",
+      \ "ctrlspace#keys#file#EditFile":                       "Edit a new file or a sibling of selected buffer",
+      \ "ctrlspace#keys#file#ExploreDirectory":               "Explore a directory of selected buffer",
+      \ "ctrlspace#keys#file#GoToDirectory":                  "Change CWD to a directory having the selected buffer (i) or go back (I)",
+      \ "ctrlspace#keys#file#RemoveFile":                     "Remove the selected buffer (file) entirely (from the disk too)",
+      \ "ctrlspace#keys#file#RenameFileOrBuffer":             "Move or rename the selected buffer (together with its file)",
+      \ "ctrlspace#keys#file#CopyFileOrBuffer":               "Copy selected file",
+      \ "ctrlspace#keys#buffer#GoToBufferOrFile":             "Jump to a previous/next (G/g) tab containing the selected buffer",
+      \ "ctrlspace#keys#buffer#CollectUnsavedBuffers":        "Create a new tab with all unsaved buffers",
+      \ "ctrlspace#keys#file#SearchParentDirectory":          "Cyclic search through parent directories",
+      \ "ctrlspace#keys#file#LoadFile":                       "Open selected file",
+      \ "ctrlspace#keys#file#LoadManyFiles":                  "Open selected file but stays in the plugin window",
+      \ "ctrlspace#keys#file#LoadFileVS":                     "Open selected file in a new vertical split",
+      \ "ctrlspace#keys#file#LoadManyFilesVS":                "Open selected file in a new vertical split but stay in the plugin window",
+      \ "ctrlspace#keys#file#LoadFileSP":                     "Open selected file in a new horizontal split",
+      \ "ctrlspace#keys#file#LoadManyFilesSP":                "Open selected file in a new horizontal split but stay in the plugin window",
+      \ "ctrlspace#keys#file#LoadFileT":                      "Open selected file in a new tab",
+      \ "ctrlspace#keys#file#LoadManyFilesT":                 "Open selected file in a new (or next) tab but stay in the plugin window",
+      \ "ctrlspace#keys#file#Refresh":                        "Refresh the file list (force reloading)",
+      \ "ctrlspace#keys#bookmark#GoToBookmark":               "Jump to selected bookmark (Tab - close, Space - stay)",
+      \ "ctrlspace#keys#bookmark#Rename":                     "Change selected bookmark name",
+      \ "ctrlspace#keys#bookmark#Edit":                       "Edit selected bookmark directory",
+      \ "ctrlspace#keys#bookmark#Add":                        "Add a new bookmark (A - with CWD)",
+      \ "ctrlspace#keys#bookmark#Delete":                     "Delete selected bookmark",
+      \ "ctrlspace#keys#tab#GoToTab":                         "Open a selected tab (Tab - close, Space - stay)",
+      \ "ctrlspace#keys#tab#CloseTab":                        "Close the selected tab, then forgotten buffers and nonames",
+      \ "ctrlspace#keys#tab#AddTab":                          "Create a new tab",
+      \ "ctrlspace#keys#tab#CopyTab":                         "Make a copy of the current tab",
+      \ "ctrlspace#keys#tab#SwitchTab":                       "Go to the previous/next tab",
+      \ "ctrlspace#keys#tab#MoveTab":                         "Move the selected tab backward/forward",
+      \ "ctrlspace#keys#tab#NewTabLabel":                     "Change the selected tab name",
+      \ "ctrlspace#keys#tab#RemoveTabLabel":                  "Remove the selected tab name",
+      \ "ctrlspace#keys#tab#CollectUnsavedBuffers":           "Create a new tab with all unsaved buffers",
+      \ "ctrlspace#keys#workspace#LoadOrSave":                "Load (or save) selected workspace (Tab - close, Space - stay)",
+      \ "ctrlspace#keys#workspace#Append":                    "Append a selected workspace to the current one",
+      \ "ctrlspace#keys#workspace#NewWorkspace":              "Make a new workspace - close all buffers (N - stay)",
+      \ "ctrlspace#keys#workspace#ToggleSubmode":             "Toggle the mode from Load to Save or vice-versa",
+      \ "ctrlspace#keys#workspace#Delete":                    "Delete selected workspace",
+      \ "ctrlspace#keys#workspace#Rename":                    "Rename selected workspace",
       \ }
 
 function! ctrlspace#help#AddMapping(funcName, mapName, entry)
@@ -204,11 +272,11 @@ function! s:modeInfo()
             call add(info, "FILE")
         elseif clv.Name ==# "Buffer"
             call add(info, "BUFFER")
-            if clv.Data.SubMode == "visual"
-                call add(info, "VISUAL")
-            elseif clv.Data.SubMode == "single"
+            if clv.Data.SubMode ==# "visible"
+                call add(info, "VISIBLE")
+            elseif clv.Data.SubMode ==# "single"
                 call add(info, "SINGLE")
-            elseif clv.Data.SubMode == "all"
+            elseif clv.Data.SubMode ==# "all"
                 call add(info, "ALL")
             endif
         endif

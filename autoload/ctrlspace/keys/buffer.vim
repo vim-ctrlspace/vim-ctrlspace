@@ -22,10 +22,8 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#RemoveTabLabel", "Buffer", ["_"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveTab", "Buffer", ["+", "-"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#SwitchTab", "Buffer", ["[", "]"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CopyBufferToPreviousTab", "Buffer", ["<"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CopyBufferToNextTab", "Buffer", [">"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveBufferToPreviousTab", "Buffer", ["{"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveBufferToNextTab", "Buffer", ["}"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CopyBufferToTab", "Buffer", ["<", ">"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveBufferToTab", "Buffer", ["{", "}"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DeleteBuffer", "Buffer", ["d"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DeleteHiddenNonameBuffers", "Buffer", ["D"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#ToggleAllMode", "Buffer", ["a"])
@@ -36,13 +34,11 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseTab", "Buffer", ["C"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#EditFile", "Buffer", ["e"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#ExploreDirectory", "Buffer", ["E"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryNext", "Buffer", ["i"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectoryPrev", "Buffer", ["I"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#GoToDirectory", "Buffer", ["i", "I"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RemoveFile", "Buffer", ["R"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RenameFileOrBuffer", "Buffer", ["m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#CopyFileOrBuffer", "Buffer", ["y"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFileNext", "Buffer", ["g"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFilePrev", "Buffer", ["G"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFile", "Buffer", ["g", "G"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CollectUnsavedBuffers", "Buffer", ["U"])
 endfunction
 
@@ -183,51 +179,39 @@ function! ctrlspace#keys#buffer#SwitchTab(k)
     call ctrlspace#window#Toggle(0)
 endfunction
 
-function! ctrlspace#keys#buffer#CopyBufferToPreviousTab(k)
+function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
 
     let curTab = tabpagenr()
 
-    if curTab > 1
-        call ctrlspace#buffer#CopyBufferToTab(curTab - 1)
+    if a:k ==# "<"
+        if curTab > 1
+            call ctrlspace#buffer#CopyBufferToTab(curTab - 1)
+        endif
+    elseif a:k ==# ">"
+        if curTab < tabpagenr("$")
+            call ctrlspace#buffer#CopyBufferToTab(curTab + 1)
+        endif
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#CopyBufferToNextTab(k)
+function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
 
     let curTab = tabpagenr()
 
-    if curTab < tabpagenr("$")
-        call ctrlspace#buffer#CopyBufferToTab(curTab + 1)
-    endif
-endfunction
-
-function! ctrlspace#keys#buffer#MoveBufferToPreviousTab(k)
-    if s:modes.Buffer.Data.SubMode ==# "all"
-        return 0
-    endif
-
-    let curTab = tabpagenr()
-
-    if curTab > 1
-        call ctrlspace#buffer#MoveBufferToTab(curTab - 1)
-    endif
-endfunction
-
-function! ctrlspace#keys#buffer#MoveBufferToNextTab(k)
-    if s:modes.Buffer.Data.SubMode ==# "all"
-        return 0
-    endif
-
-    let curTab = tabpagenr()
-
-    if curTab < tabpagenr("$")
-        call ctrlspace#buffer#MoveBufferToTab(curTab + 1)
+    if a:k ==# "{"
+        if curTab > 1
+            call ctrlspace#buffer#MoveBufferToTab(curTab - 1)
+        endif
+    elseif a:k ==# "}"
+        if curTab < tabpagenr("$")
+            call ctrlspace#buffer#MoveBufferToTab(curTab + 1)
+        endif
     endif
 endfunction
 
@@ -268,12 +252,8 @@ function! ctrlspace#keys#buffer#ToggleAllModeAndSearch(k)
     call ctrlspace#search#SwitchSearchMode(1)
 endfunction
 
-function! ctrlspace#keys#buffer#GoToBufferOrFileNext(k)
-    call ctrlspace#buffers#GoToBufferOrFile("next")
-endfunction
-
-function! ctrlspace#keys#buffer#GoToBufferOrFilePrev(k)
-    call ctrlspace#buffers#GoToBufferOrFile("previous")
+function! ctrlspace#keys#buffer#GoToBufferOrFile(k)
+    call ctrlspace#buffers#GoToBufferOrFile(a:k ==# "g" ? "next" : "previous")
 endfunction
 
 function! ctrlspace#keys#buffer#CollectUnsavedBuffers(k)
