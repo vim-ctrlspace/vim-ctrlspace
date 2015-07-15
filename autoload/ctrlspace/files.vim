@@ -29,7 +29,7 @@ function! ctrlspace#files#CollectFiles()
 
         if empty(s:files)
             let action = "Collecting files..."
-            call ctrlspace#uiMsg(action)
+            call ctrlspace#ui#Msg(action)
 
             let uniqueFiles = {}
 
