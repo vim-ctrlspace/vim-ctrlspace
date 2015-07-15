@@ -164,9 +164,14 @@ function! ctrlspace#help#DisplayHelp(fill)
 
     call s:collectKeysInfo(mapName)
 
-    let mi = s:modeInfo()
+    let mi     = s:modeInfo()
+    let header = "Context help for " . mi[0] . " list"
 
-    call s:puts("Context help for " . mi[0] . " list (modes: " . join(mi[1:], ", ") . ")")
+    if len(mi) > 1
+        let header .= " (modes: " . join(mi[1:], ", ") . ")")
+    endif
+
+    call s:puts(header)
     call s:puts("")
 
     for info in b:helpKeyDescriptions
@@ -292,6 +297,10 @@ function! s:modeInfo()
 
     if s:modes.Zoom.Enabled
         call add(info, "ZOOM")
+    endif
+
+    if s:modes.Nop.Enabled
+        call add(info, "NOP")
     endif
 
     return info
