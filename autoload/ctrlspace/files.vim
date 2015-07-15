@@ -243,10 +243,8 @@ function! ctrlspace#files#GoToDirectory(back)
         let path = s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr))
     endif
 
-    let oldFileMode   = deepcopy(s:modes.File)
-    let oldBufferMode = deepcopy(s:modes.Buffer)
-
-    let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(path, ":p:h"))
+    let oldBufferSubMode = s:modes.Buffer.Data.SubMode
+    let directory        = ctrlspace#util#NormalizeDirectory(fnamemodify(path, ":p:h"))
 
     if !isdirectory(directory)
         return
@@ -271,8 +269,7 @@ function! ctrlspace#files#GoToDirectory(back)
     call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 0)
 
-    let s:modes.File   = oldFileMode
-    let s:modes.Buffer = oldBufferMode
+    call s:modes.Buffer.SetData("SubMode", oldBufferSubMode)
 
     call ctrlspace#window#Toggle(1)
     call ctrlspace#ui#DelayedMsg()
