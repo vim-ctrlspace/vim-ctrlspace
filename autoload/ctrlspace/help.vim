@@ -168,7 +168,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     let header = "Context help for " . mi[0] . " list"
 
     if len(mi) > 1
-        let header .= " (modes: " . join(mi[1:], ", ") . ")")
+        let header .= " (modes: " . join(mi[1:], ", ") . ")"
     endif
 
     call s:puts(header)
