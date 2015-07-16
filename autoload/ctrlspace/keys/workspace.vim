@@ -58,7 +58,7 @@ function! ctrlspace#keys#workspace#NewWorkspace(k)
         call ctrlspace#workspaces#SaveWorkspace("")
     endif
 
-    call ctrlspace#workspace#NewWorkspace()
+    call ctrlspace#workspaces#NewWorkspace()
 
     if a:k ==# "N"
         call ctrlspace#window#StartAndFeedkeys("w")
