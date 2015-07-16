@@ -54,8 +54,8 @@ endfunction
 function! ctrlspace#workspaces#NewWorkspace()
     tabe
     tabo!
-    call ctrlspace#buffers#DeleteHiddenNonameBuffers(1))
-    call ctrlspace#buffers#DeleteForeignBuffers(1))
+    call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
+    call ctrlspace#buffers#DeleteForeignBuffers(1)
     call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "" })
 endfunction
 
