@@ -43,11 +43,11 @@ function! s:contentFromExternalEngine(engine, items)
     let engineData = [s:vimContextJSON()]
 
     if s:modes.File.Enabled
-        call add(engineData, a:items[0].path])
+        call add(engineData, a:items[0].path)
     else
         for item in a:items
-            call add(engineData, '{"Index":' . item.index, ',"Text":"' .
-                        \ escape(item.text, '"') '", "Indicators": "' .
+            call add(engineData, '{"Index":' . item.index . ',"Text":"' .
+                        \ escape(item.text, '"') . '","Indicators":"' .
                         \ escape(item.indicators, '"') . '"}')
         endfor
     endif
@@ -103,8 +103,6 @@ function! s:computeLowestNoises(source, maxItems)
     let results       = []
     let noises        = []
     let resultsCount  = 0
-    let maxNoiseValue = -1
-    let maxNoiseIndex = -1
 
     for index in range(len(a:source))
         let item = a:source[index]
@@ -123,7 +121,7 @@ function! s:computeLowestNoises(source, maxItems)
             else
                 let maxIndex = index(noises, max(noises))
 
-                if noise[maxIndex] > noise
+                if noises[maxIndex] > noise
                     call remove(noises, maxIndex)
                     call insert(noises, noise, maxIndex)
                     call remove(results, maxIndex)
@@ -137,12 +135,15 @@ function! s:computeLowestNoises(source, maxItems)
 endfunction
 
 function! s:vimContextJSON()
-    return '{"CurrentListView":"' . ctrlspace#modes#CurrentListView() .
+    let sizes = ctrlspace#context#SymbolSizes()
+    let sizesJson = '{"IAV":' . sizes.IAV . ', "IM":' . sizes.IM . ',"Dots":' . sizes.Dots . '}'
+    return '{"CurrentListView":"' . ctrlspace#modes#CurrentListView().Name .
                 \ '","SearchModeEnabled":' . s:modes.Search.Enabled .
                 \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
+                \ '","SearchResonators":"' . escape(join(s:config.SearchResonators, ""), '\"') .
                 \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight() .
                 \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
-                \ s:maxDisplayedItems . '}'
+                \ s:maxDisplayedItems . ',"Dots":"' . s:config.Symbols.Dots . '","Sizes":' . sizesJson . '}'
 endfunction
 
 function! s:contentSource()
@@ -321,13 +322,16 @@ function! s:findLowestSearchNoise(text)
     let matchedString = ""
 
     if len(letters) == 1
-        let noise         = match(a:text, "\\m\\c" . letters[0])
-        let matchedString = letters[0]
+        let noise = match(a:text, "\\m\\c" . letters[0])
+
+        if noise > -1
+            let matchedString = letters[0]
+        endif
     else
         let offset   = 0
-        let text_len = strlen(a:text)
+        let textLen = strlen(a:text)
 
-        while offset < text_len
+        while offset < textLen
             let subseq = s:findSubsequence(letters, a:text, offset)
 
             if subseq[0] == -1
@@ -346,7 +350,7 @@ function! s:findLowestSearchNoise(text)
                         endif
                     endif
 
-                    if subseq[1][-1] != text_len - 1
+                    if subseq[1][-1] != textLen - 1
                         let noise += 1
 
                         if index(s:config.SearchResonators, a:text[subseq[1][-1] + 1]) == -1

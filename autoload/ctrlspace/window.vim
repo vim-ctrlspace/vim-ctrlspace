@@ -76,7 +76,7 @@ function! ctrlspace#window#Toggle(internal)
         endif
     endif
 
-    set updatetime=100
+    silent! exe "set updatetime=" . s:config.SearchTiming
 
     call s:displayContent()
     call ctrlspace#util#SetStatusline()

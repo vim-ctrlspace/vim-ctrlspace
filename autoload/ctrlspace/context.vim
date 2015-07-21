@@ -1,4 +1,5 @@
 let s:pluginBuffer = -1
+let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h')
 
 let s:configuration = {
             \ "defaultSymbols": {
@@ -62,7 +63,7 @@ let s:configuration = {
                 \ "ProjectRootMarkers":       [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"],
                 \ "UnicodeFont":              1,
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
-                \ "SearchTiming":             [50, 500],
+                \ "SearchTiming":             250,
                 \ "SearchResonators":         ['.', '/', '\', '_', '-'],
                 \ "Engine":                   "",
             \ }
@@ -92,10 +93,6 @@ endfunction
 call s:init()
 
 function! ctrlspace#context#PluginFolder()
-    if !exists("s:pluginFolder")
-        let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
-    endif
-
     return s:pluginFolder
 endfunction
 
