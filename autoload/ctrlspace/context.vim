@@ -88,6 +88,9 @@ function! s:init()
           \ "IM":   strwidth(s:conf.Symbols.IM),
           \ "Dots": strwidth(s:conf.Symbols.Dots)
           \ }
+
+    let engine = s:pluginFolder . "/bin/" . s:conf.Engine
+    let s:conf.Engine = executable(engine) ? engine : ""
 endfunction
 
 call s:init()

@@ -5,11 +5,11 @@ let s:maxDisplayedItems = 500
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
-    let items = s:contentSource()
-
-    if !empty(s:config.Engine)
-        return s:contentFromExternalEngine(s:config.Engine, items)
+    if !empty(s:config.Engine) && s:modes.File.Enabled
+        return s:contentFromFileEngine()
     endif
+
+    let items = s:contentSource()
 
     if !empty(s:modes.Search.Data.Letters)
         let items = s:computeLowestNoises(items, s:maxSearchedItems)
@@ -38,21 +38,19 @@ function! ctrlspace#engine#Content()
     return s:prepareContent(items)
 endfunction
 
-function! s:contentFromExternalEngine(engine, items)
-    let engineCommand = ctrlspace#context#PluginFolder() . "/bin/" . a:engine
-    let engineData = [s:vimContextJSON()]
+function! s:contentFromFileEngine()
+    call ctrlspace#files#CollectFiles()
 
-    if s:modes.File.Enabled
-        call add(engineData, a:items[0].path)
-    else
-        for item in a:items
-            call add(engineData, '{"Index":' . item.index . ',"Text":"' .
-                        \ escape(item.text, '"') . '","Indicators":"' .
-                        \ escape(item.indicators, '"') . '"}')
-        endfor
-    endif
+    let context = '{"SearchModeEnabled":' . s:modes.Search.Enabled .
+                \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
+                \ '","SearchResonators":"' . escape(join(s:config.SearchResonators, ""), '\"') .
+                \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight() .
+                \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
+                \ s:maxDisplayedItems . ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
+                \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
-    let results  = split(system(engineCommand, engineData), "\n")
+
+    let results  = split(system(s:config.Engine, [context]), "\n")
     let patterns = eval(results[0])
     let indices  = eval(results[1])
     let size     = str2nr(results[2])
@@ -132,18 +130,6 @@ function! s:computeLowestNoises(source, maxItems)
     endfor
 
     return results
-endfunction
-
-function! s:vimContextJSON()
-    let sizes = ctrlspace#context#SymbolSizes()
-    let sizesJson = '{"IAV":' . sizes.IAV . ', "IM":' . sizes.IM . ',"Dots":' . sizes.Dots . '}'
-    return '{"CurrentListView":"' . ctrlspace#modes#CurrentListView().Name .
-                \ '","SearchModeEnabled":' . s:modes.Search.Enabled .
-                \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
-                \ '","SearchResonators":"' . escape(join(s:config.SearchResonators, ""), '\"') .
-                \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight() .
-                \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
-                \ s:maxDisplayedItems . ',"Dots":"' . s:config.Symbols.Dots . '","Sizes":' . sizesJson . '}'
 endfunction
 
 function! s:contentSource()
@@ -237,12 +223,7 @@ endfunction
 
 function! s:fileListContent(clv)
     call ctrlspace#files#CollectFiles()
-
-    if !empty(s:config.Engine)
-        return [{ "path": fnamemodify(ctrlspace#util#FilesCache(), ":p") }]
-    else
-        return deepcopy(ctrlspace#files#Items())
-    endif
+    return deepcopy(ctrlspace#files#Items())
 endfunction
 
 function! s:bufferListContent(clv)
