@@ -5,7 +5,7 @@ let s:maxDisplayedItems = 500
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
-    if !empty(s:config.Engine) && s:modes.File.Enabled
+    if !empty(s:config.FileEngine) && s:modes.File.Enabled
         return s:contentFromFileEngine()
     endif
 
@@ -50,7 +50,7 @@ function! s:contentFromFileEngine()
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
 
-    let results  = split(system(s:config.Engine, [context]), "\n")
+    let results  = split(system(s:config.FileEngine, [context]), "\n")
     let patterns = eval(results[0])
     let indices  = eval(results[1])
     let size     = str2nr(results[2])

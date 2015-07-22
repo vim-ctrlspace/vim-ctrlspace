@@ -65,7 +65,7 @@ let s:configuration = {
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
                 \ "SearchTiming":             500,
                 \ "SearchResonators":         ['.', '/', '\', '_', '-'],
-                \ "Engine":                   "",
+                \ "FileEngine":               "",
             \ }
 
 function! s:init()
@@ -89,8 +89,8 @@ function! s:init()
           \ "Dots": strwidth(s:conf.Symbols.Dots)
           \ }
 
-    let engine = s:pluginFolder . "/bin/" . s:conf.Engine
-    let s:conf.Engine = executable(engine) ? engine : ""
+    let engine = s:pluginFolder . "/bin/" . s:conf.FileEngine
+    let s:conf.FileEngine = executable(engine) ? engine : ""
 endfunction
 
 call s:init()
