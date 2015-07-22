@@ -63,7 +63,7 @@ let s:configuration = {
                 \ "ProjectRootMarkers":       [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"],
                 \ "UnicodeFont":              1,
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
-                \ "SearchTiming":             250,
+                \ "SearchTiming":             500,
                 \ "SearchResonators":         ['.', '/', '\', '_', '-'],
                 \ "Engine":                   "",
             \ }
