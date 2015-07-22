@@ -40,6 +40,8 @@ var (
 	items   []*FileItem
 )
 
+const itemSpace int = 5
+
 func Init(input *os.File) error {
 	r := bufio.NewReader(input)
 	line, _, err := r.ReadLine()
@@ -125,7 +127,7 @@ func findSubsequence(item *FileItem, offset int) (int, []int) {
 	return noise, positions
 }
 
-func findLowestSearchNoise(item *FileItem) (int, string) {
+func computeItemNoise(item *FileItem) {
 	noise := -1
 	matched := ""
 
@@ -192,53 +194,42 @@ func findLowestSearchNoise(item *FileItem) (int, string) {
 		}
 	}
 
-	pattern := ""
-
 	if noise > -1 && matched != "" {
-		pattern = matched
+		item.Pattern = matched
 	}
 
-	return noise, pattern
+	item.Noise = noise
 }
 
-func maxNoise() (index int, noise int) {
-	index = -1
-	noise = -1
+func trimItemsByNoise() {
+	results := make([]*FileItem, 0, context.MaxSearchedItems)
 
-	for i, item := range items {
-		if item.Noise >= noise {
-			noise = item.Noise
-			index = i
-		}
-	}
+	for _, item := range items {
+		computeItemNoise(item)
 
-	return
-}
-
-func computeLowestNoises() {
-	unprocessed := items
-	items = make([]*FileItem, 0, context.MaxSearchedItems)
-
-	for _, item := range unprocessed {
-		noise, pattern := findLowestSearchNoise(item)
-
-		if noise == -1 {
+		if item.Noise == -1 {
 			continue
 		}
 
-		item.Noise = noise
-		item.Pattern = pattern
-
-		if len(items) < context.MaxSearchedItems {
-			items = append(items, item)
+		if len(results) < context.MaxSearchedItems {
+			results = append(results, item)
 		} else {
-			maxIndex, maxNoise := maxNoise()
+			maxIndex, maxNoise := -1, -1
 
-			if maxNoise > noise {
-				items[maxIndex] = item
+			for i, r := range results {
+				if r.Noise >= maxNoise {
+					maxNoise = r.Noise
+					maxIndex = i
+				}
+			}
+
+			if maxNoise > item.Noise {
+				results[maxIndex] = item
 			}
 		}
 	}
+
+	items = results
 }
 
 type SortItems struct {
@@ -283,7 +274,7 @@ func (s *SortByText) Less(i, j int) bool {
 
 func PrepareContent() ([]string, []string, string, []string) {
 	if context.SearchText != "" {
-		computeLowestNoises()
+		trimItemsByNoise()
 		sort.Sort(&SortByNoiseAndText{SortItems{items}})
 	} else {
 		if len(items) > context.MaxDisplayedItems {
@@ -298,8 +289,6 @@ func PrepareContent() ([]string, []string, string, []string) {
 			items = items[len(items)-context.MaxHeight : len(items)]
 		}
 	}
-
-	itemSpace := 5
 
 	content := make([]string, 0, len(items))
 	indices := make([]string, 0, len(items))
