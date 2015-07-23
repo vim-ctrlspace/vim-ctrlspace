@@ -188,11 +188,11 @@ function! ctrlspace#keys#buffer#CopyBufferToTab(k)
 
     if a:k ==# "<"
         if curTab > 1
-            call ctrlspace#buffer#CopyBufferToTab(curTab - 1)
+            call ctrlspace#buffers#CopyBufferToTab(curTab - 1)
         endif
     elseif a:k ==# ">"
         if curTab < tabpagenr("$")
-            call ctrlspace#buffer#CopyBufferToTab(curTab + 1)
+            call ctrlspace#buffers#CopyBufferToTab(curTab + 1)
         endif
     endif
 endfunction
@@ -206,17 +206,17 @@ function! ctrlspace#keys#buffer#MoveBufferToTab(k)
 
     if a:k ==# "{"
         if curTab > 1
-            call ctrlspace#buffer#MoveBufferToTab(curTab - 1)
+            call ctrlspace#buffers#MoveBufferToTab(curTab - 1)
         endif
     elseif a:k ==# "}"
         if curTab < tabpagenr("$")
-            call ctrlspace#buffer#MoveBufferToTab(curTab + 1)
+            call ctrlspace#buffers#MoveBufferToTab(curTab + 1)
         endif
     endif
 endfunction
 
 function! ctrlspace#keys#buffer#DeleteBuffer(k)
-    call ctrlspace#buffer#DeleteBuffer()
+    call ctrlspace#buffers#DeleteBuffer()
 endfunction
 
 function! ctrlspace#keys#buffer#DeleteHiddenNonameBuffers(k)
@@ -225,12 +225,12 @@ endfunction
 
 function! ctrlspace#keys#buffer#DetachBuffer(k)
     if s:modes.Buffer.Data.SubMode ==# "single"
-        call ctrlspace#buffer#DetachBuffer()
+        call ctrlspace#buffers#DetachBuffer()
     endif
 endfunction
 
 function! ctrlspace#keys#buffer#DeleteForeignBuffers(k)
-    call ctrlspace#buffer#DeleteForeignBuffers(0)
+    call ctrlspace#buffers#DeleteForeignBuffers(0)
 endfunction
 
 function! ctrlspace#keys#buffer#CloseBuffer(k)
