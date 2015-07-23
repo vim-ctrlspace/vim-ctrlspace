@@ -124,7 +124,7 @@ function! ctrlspace#buffers#CopyBufferToTab(tab)
     return s:copyOrMoveSelectedBufferIntoTab(tab, 0)
 endfunction
 
-function! ctrlspace#buffers#MoveBufferToTabl(tab)
+function! ctrlspace#buffers#MoveBufferToTab(tab)
     return s:copyOrMoveSelectedBufferIntoTab(tab, 1)
 endfunction
 
