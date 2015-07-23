@@ -179,7 +179,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     endfor
 
     call s:puts("")
-    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0 (c) 2013-2015 Szymon Wrozynski and Contributors")
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0.beta2 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
     setlocal modifiable
 
