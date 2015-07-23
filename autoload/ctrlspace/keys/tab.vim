@@ -121,9 +121,9 @@ function! ctrlspace#keys#tab#MoveTab(k)
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
 
-    if (a:key ==# "+") || (a:key ==# "}")
+    if (a:k ==# "+") || (a:k ==# "}")
         silent! exe "tabm" . tabpagenr()
-    elseif (a:key ==# "-") || (a:key ==# "{")
+    elseif (a:k ==# "-") || (a:k ==# "{")
         silent! exe "tabm" . (tabpagenr() - 2)
     endif
 
