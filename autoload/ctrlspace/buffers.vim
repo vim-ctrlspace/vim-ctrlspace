@@ -121,11 +121,11 @@ function! ctrlspace#buffers#ZoomBuffer(nr, ...)
 endfunction
 
 function! ctrlspace#buffers#CopyBufferToTab(tab)
-    return s:copyOrMoveSelectedBufferIntoTab(tab, 0)
+    return s:copyOrMoveSelectedBufferIntoTab(a:tab, 0)
 endfunction
 
 function! ctrlspace#buffers#MoveBufferToTab(tab)
-    return s:copyOrMoveSelectedBufferIntoTab(tab, 1)
+    return s:copyOrMoveSelectedBufferIntoTab(a:tab, 1)
 endfunction
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
