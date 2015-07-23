@@ -61,7 +61,7 @@ endfunction
 
 function! ctrlspace#keys#file#LoadManyFilesT(k)
     if s:modes.NextTab.Enabled
-        call ctrlspace#files#LoadManyFiles("tabnew", "tabprevious")
+        call ctrlspace#files#LoadManyFiles("tabnext", "tabprevious")
     else
         call s:modes.NextTab.Enable()
         call ctrlspace#files#LoadManyFiles("tabnew", "tabprevious")

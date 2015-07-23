@@ -137,7 +137,7 @@ endfunction
 
 function! ctrlspace#keys#buffer#LoadManyBuffersT(k)
     if s:modes.NextTab.Enabled
-        call ctrlspace#buffers#LoadManyBuffers("tabnew", "tabprevious")
+        call ctrlspace#buffers#LoadManyBuffers("tabnext", "tabprevious")
     else
         call s:modes.NextTab.Enable()
         call ctrlspace#buffers#LoadManyBuffers("tabnew", "tabprevious")
