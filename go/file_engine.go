@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+var (
+	context Context
+	items   ItemCollection
+)
+
+const itemSpace int = 5
+
 type Context struct {
 	SearchModeEnabled int
 	SearchText        string
@@ -35,64 +42,7 @@ type FileItem struct {
 	LowerRunes []rune
 }
 
-var (
-	context Context
-	items   []*FileItem
-)
-
-const itemSpace int = 5
-
-func Init(input *os.File) error {
-	r := bufio.NewReader(input)
-	line, _, err := r.ReadLine()
-
-	if err != nil {
-		return err
-	}
-
-	if err = initContext(line); err != nil {
-		return err
-	}
-
-	return initFileItems()
-}
-
-func initContext(line []byte) (err error) {
-	if err = json.Unmarshal(line, &context); err == nil {
-		context.SearchLowerRunes = []rune(strings.ToLower(context.SearchText))
-		context.ResonatorRunes = []rune(context.SearchResonators)
-	}
-
-	return
-}
-
-func initFileItems() error {
-	file, err := os.Open(string(context.Path))
-
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	idx := 0
-
-	for scanner.Scan() {
-		text := scanner.Text()
-		items = append(items, &FileItem{
-			Index:      idx,
-			Name:       text,
-			Runes:      []rune(text),
-			LowerRunes: []rune(strings.ToLower(text)),
-		})
-		idx++
-	}
-
-	return scanner.Err()
-}
-
-func findSubsequence(item *FileItem, offset int) (int, []int) {
+func (item *FileItem) findSubsequence(offset int) (int, []int) {
 	positions := make([]int, 0, len(item.LowerRunes))
 	noise := 0
 
@@ -108,26 +58,26 @@ func findSubsequence(item *FileItem, offset int) (int, []int) {
 
 		if pos == -1 {
 			return -1, nil
-		} else {
-			if len(positions) > 0 {
-				n := pos - positions[len(positions)-1]
+		}
 
-				if n < 0 {
-					n = -n
-				}
+		if len(positions) > 0 {
+			n := pos - positions[len(positions)-1]
 
-				noise += n - 1
+			if n < 0 {
+				n = -n
 			}
 
-			positions = append(positions, pos)
-			offset = pos + 1
+			noise += n - 1
 		}
+
+		positions = append(positions, pos)
+		offset = pos + 1
 	}
 
 	return noise, positions
 }
 
-func computeItemNoise(item *FileItem) {
+func (item *FileItem) ComputeItemNoise() {
 	noise := -1
 	matched := ""
 
@@ -146,7 +96,7 @@ func computeItemNoise(item *FileItem) {
 		offset := 0
 
 		for offset < len(item.Runes) {
-			n, p := findSubsequence(item, offset)
+			n, p := item.findSubsequence(offset)
 
 			if n == -1 {
 				break
@@ -201,11 +151,39 @@ func computeItemNoise(item *FileItem) {
 	item.Noise = noise
 }
 
-func trimItemsByNoise() {
+type ItemCollection []*FileItem
+
+func (items *ItemCollection) Init() error {
+	file, err := os.Open(string(context.Path))
+
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	idx := 0
+
+	for scanner.Scan() {
+		text := scanner.Text()
+		*items = append([]*FileItem(*items), &FileItem{
+			Index:      idx,
+			Name:       text,
+			Runes:      []rune(text),
+			LowerRunes: []rune(strings.ToLower(text)),
+		})
+		idx++
+	}
+
+	return scanner.Err()
+}
+
+func (items *ItemCollection) TrimByNoise() {
 	results := make([]*FileItem, 0, context.MaxSearchedItems)
 
-	for _, item := range items {
-		computeItemNoise(item)
+	for _, item := range *items {
+		item.ComputeItemNoise()
 
 		if item.Noise == -1 {
 			continue
@@ -229,11 +207,11 @@ func trimItemsByNoise() {
 		}
 	}
 
-	items = results
+	*items = ItemCollection(results)
 }
 
 type SortItems struct {
-	items []*FileItem
+	items ItemCollection
 }
 
 func (s *SortItems) Len() int {
@@ -244,9 +222,7 @@ func (s *SortItems) Swap(i, j int) {
 	s.items[i], s.items[j] = s.items[j], s.items[i]
 }
 
-type SortByNoiseAndText struct {
-	SortItems
-}
+type SortByNoiseAndText struct{ SortItems }
 
 func (s *SortByNoiseAndText) Less(i, j int) bool {
 	if s.items[i].Noise < s.items[j].Noise {
@@ -263,18 +239,36 @@ func (s *SortByNoiseAndText) Less(i, j int) bool {
 	}
 }
 
-type SortByText struct {
-	SortItems
-}
+type SortByText struct{ SortItems }
 
 func (s *SortByText) Less(i, j int) bool {
 	ss := sort.StringSlice{s.items[i].Name, s.items[j].Name}
 	return ss.Less(0, 1)
 }
 
+func Init(input *os.File) error {
+	var err error
+	var line []byte
+
+	r := bufio.NewReader(input)
+
+	if line, _, err = r.ReadLine(); err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(line, &context); err != nil {
+		return err
+	}
+
+	context.SearchLowerRunes = []rune(strings.ToLower(context.SearchText))
+	context.ResonatorRunes = []rune(context.SearchResonators)
+
+	return items.Init()
+}
+
 func PrepareContent() ([]string, []string, string, []string) {
 	if context.SearchText != "" {
-		trimItemsByNoise()
+		items.TrimByNoise()
 		sort.Sort(&SortByNoiseAndText{SortItems{items}})
 	} else {
 		if len(items) > context.MaxDisplayedItems {
@@ -292,7 +286,7 @@ func PrepareContent() ([]string, []string, string, []string) {
 
 	content := make([]string, 0, len(items))
 	indices := make([]string, 0, len(items))
-	patterns := make(map[string]bool)
+	uniqPatterns := make(map[string]bool)
 
 	for _, item := range items {
 		line := append(make([]rune, 0, context.Columns), ' ', ' ')
@@ -309,21 +303,20 @@ func PrepareContent() ([]string, []string, string, []string) {
 		}
 
 		content = append(content, string(line))
+		indices = append(indices, strconv.Itoa(item.Index))
 
 		if len(item.Pattern) > 0 {
-			patterns[item.Pattern] = true
+			uniqPatterns[item.Pattern] = true
 		}
-
-		indices = append(indices, strconv.Itoa(item.Index))
 	}
 
-	patternKeys := make([]string, 0, len(patterns))
+	patterns := make([]string, 0, len(uniqPatterns))
 
-	for k := range patterns {
-		patternKeys = append(patternKeys, fmt.Sprintf("%q", k))
+	for k := range uniqPatterns {
+		patterns = append(patterns, fmt.Sprintf("%q", k))
 	}
 
-	return patternKeys, indices, strconv.Itoa(len(items)), content
+	return patterns, indices, strconv.Itoa(len(items)), content
 }
 
 func main() {
