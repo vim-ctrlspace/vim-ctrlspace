@@ -435,7 +435,7 @@ function! s:copyOrMoveSelectedBufferIntoTab(tab, move)
 
     for i in range(b:size)
         if bufname(b:indices[i]) ==# bname
-            call ctrlspace#windowMoveSelectionBar(i + 1)
+            call ctrlspace#window#MoveSelectionBar(i + 1)
             call ctrlspace#buffers#LoadManyBuffers()
             break
         endif
