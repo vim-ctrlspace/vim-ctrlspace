@@ -168,6 +168,21 @@ function! ctrlspace#files#CopyFileOrBuffer()
     endif
 
     call ctrlspace#window#Toggle(1)
+
+    if !s:modes.File.Enabled
+        if !bufOnly
+            let newFile = fnamemodify(newFile, ":.")
+        endif
+
+        let names = ctrlspace#api#Buffers(tabpagenr())
+
+        for i in range(b:size)
+            if names[b:indices[i]] ==# newFile
+                call ctrlspace#window#MoveSelectionBar(i + 1)
+                break
+            endif
+        endfor
+    endif
 endfunction
 
 function! ctrlspace#files#RenameFileOrBuffer()
