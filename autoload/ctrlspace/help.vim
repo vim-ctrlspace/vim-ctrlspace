@@ -79,6 +79,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#buffer#CloseManyWindows":             "Leave the window containing selected buffer - close all others",
       \ "ctrlspace#keys#buffer#LoadBufferT":                  "Open selected buffer in a new tab",
       \ "ctrlspace#keys#buffer#LoadManyBuffersT":             "Open selected buffer in a new (or next) tab but stay in the plugin window",
+      \ "ctrlspace#keys#buffer#LoadManyBuffersCT":            "Open selected buffer always in a new tab but stay in the plugin window",
       \ "ctrlspace#keys#buffer#NewTabLabel":                  "Change the tab name",
       \ "ctrlspace#keys#buffer#RemoveTabLabel":               "Remove a custom tab name",
       \ "ctrlspace#keys#buffer#MoveTab":                      "Move the current tab",
@@ -110,6 +111,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#file#LoadManyFilesSP":                "Open selected file in a new horizontal split but stay in the plugin window",
       \ "ctrlspace#keys#file#LoadFileT":                      "Open selected file in a new tab",
       \ "ctrlspace#keys#file#LoadManyFilesT":                 "Open selected file in a new (or next) tab but stay in the plugin window",
+      \ "ctrlspace#keys#file#LoadManyFilesCT":                "Open selected file always in a new tab but stay in the plugin window",
       \ "ctrlspace#keys#file#Refresh":                        "Refresh the file list (force reloading)",
       \ "ctrlspace#keys#bookmark#GoToBookmark":               "Jump to selected bookmark (Tab - close, Space - stay)",
       \ "ctrlspace#keys#bookmark#Rename":                     "Change selected bookmark name",
@@ -179,7 +181,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     endfor
 
     call s:puts("")
-    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0.beta2 (c) 2013-2015 Szymon Wrozynski and Contributors")
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0.beta3 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
     setlocal modifiable
 

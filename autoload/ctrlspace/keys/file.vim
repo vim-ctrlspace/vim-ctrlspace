@@ -11,6 +11,7 @@ function! ctrlspace#keys#file#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadManyFilesSP", "File", ["S"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadFileT", "File", ["t"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadManyFilesT", "File", ["T"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadManyFilesCT", "File", ["C-t"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#NewTabLabel", "File", ["="])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#RemoveTabLabel", "File", ["_"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveTab", "File", ["+", "-"])
@@ -66,6 +67,11 @@ function! ctrlspace#keys#file#LoadManyFilesT(k)
         call s:modes.NextTab.Enable()
         call ctrlspace#files#LoadManyFiles("tabnew", "tabprevious")
     endif
+endfunction
+
+function! ctrlspace#keys#file#LoadManyFilesCT(k)
+    call s:modes.NextTab.Enable()
+    call ctrlspace#files#LoadManyFiles("tabnew", "tabprevious")
 endfunction
 
 function! ctrlspace#keys#file#Refresh(k)

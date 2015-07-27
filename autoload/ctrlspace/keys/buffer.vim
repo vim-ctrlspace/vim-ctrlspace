@@ -18,6 +18,7 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseManyWindows", "Buffer", ["X"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadBufferT", "Buffer", ["t"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadManyBuffersT", "Buffer", ["T"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadManyBuffersCT", "Buffer", ["C-t"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#NewTabLabel", "Buffer", ["="])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#RemoveTabLabel", "Buffer", ["_"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#MoveTab", "Buffer", ["+", "-"])
@@ -142,6 +143,11 @@ function! ctrlspace#keys#buffer#LoadManyBuffersT(k)
         call s:modes.NextTab.Enable()
         call ctrlspace#buffers#LoadManyBuffers("tabnew", "tabprevious")
     endif
+endfunction
+
+function! ctrlspace#keys#buffer#LoadManyBuffersCT(k)
+    call s:modes.NextTab.Enable()
+    call ctrlspace#buffers#LoadManyBuffers("tabnew", "tabprevious")
 endfunction
 
 function! ctrlspace#keys#buffer#NewTabLabel(k)
