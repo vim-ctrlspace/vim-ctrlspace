@@ -27,7 +27,7 @@ function! ctrlspace#tabs#CloseTab()
     if exists("t:CtrlSpaceAutotab") && (t:CtrlSpaceAutotab != 0)
         " do nothing
     elseif exists("t:CtrlSpaceLabel") && !empty(t:CtrlSpaceLabel)
-        let bufCount = len(ctrlspace#buffers(tabpagenr()))
+        let bufCount = len(ctrlspace#buffers#Buffers(tabpagenr()))
 
         if (bufCount > 1) && !ctrlspace#ui#Confirmed("Close tab named '" . t:CtrlSpaceLabel . "' with " . bufCount . " buffers?")
             return
