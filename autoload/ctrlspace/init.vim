@@ -27,7 +27,7 @@ function! ctrlspace#init#Init()
 
     hi def link CtrlSpaceNormal   PMenu
     hi def link CtrlSpaceSelected PMenuSel
-    hi def link CtrlSpaceSearch   IncSearch
+    hi def link CtrlSpaceSearch   Search
     hi def link CtrlSpaceStatus   StatusLine
 
     if s:config.SetDefaultMapping
