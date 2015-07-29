@@ -172,7 +172,7 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
         set nossl
     endif
 
-    set guicursor-=n:ver100-blinkon0-CtrlSpaceSelected
+    set guicursor-=n:block-blinkon0-CtrlSpaceSelected
 
     if a:pluginBuffer
         silent! exe ':' . a:pluginBuffer . 'bwipeout'
@@ -400,7 +400,8 @@ function! s:setUpBuffer()
     setlocal nolist
     setlocal cc=
     setlocal filetype=ctrlspace
-    set guicursor+=n:ver100-blinkon0-CtrlSpaceSelected
+
+    set guicursor+=n:block-blinkon0-CtrlSpaceSelected
 
     call ctrlspace#context#SetPluginBuffer(bufnr("%"))
 
