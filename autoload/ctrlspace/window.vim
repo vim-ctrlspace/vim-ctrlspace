@@ -172,8 +172,6 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
         set nossl
     endif
 
-    set guicursor-=n:block-CtrlSpaceSelected-blinkon0
-
     if a:pluginBuffer
         silent! exe ':' . a:pluginBuffer . 'bwipeout'
     else
@@ -194,6 +192,8 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
             call s:modes.Zoom.SetData("OriginalBuffer", 0)
             call s:modes.Zoom.Disable()
         endif
+
+        set guicursor-=n:block-CtrlSpaceSelected-blinkon0
     endif
 
     unlet s:killingNow
@@ -381,6 +381,8 @@ function! s:resetWindow()
         call ctrlspace#workspaces#SetWorkspaceNames()
     endif
 
+    set guicursor+=n:block-CtrlSpaceSelected-blinkon0
+
     call ctrlspace#util#HandleVimSettings("start")
 endfunction
 
@@ -400,8 +402,6 @@ function! s:setUpBuffer()
     setlocal nolist
     setlocal cc=
     setlocal filetype=ctrlspace
-
-    set guicursor+=n:block-CtrlSpaceSelected-blinkon0
 
     call ctrlspace#context#SetPluginBuffer(bufnr("%"))
 
