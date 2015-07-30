@@ -227,6 +227,7 @@ function! ctrlspace#buffers#DetachBuffer()
 
     if exists("t:CtrlSpaceList[nr]")
         let selBufWin = bufwinnr(nr)
+        let curln     = line(".")
 
         if selBufWin != -1
             call ctrlspace#window#MoveSelectionBar("down")
@@ -235,6 +236,7 @@ function! ctrlspace#buffers#DetachBuffer()
 
                 if ctrlspace#window#SelectedIndex() == nr
                     if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
+                        let curln = line(".")
                         call ctrlspace#window#Kill(0, 0)
                         silent! exe selBufWin . "wincmd w"
                         enew
@@ -248,10 +250,12 @@ function! ctrlspace#buffers#DetachBuffer()
                 call s:loadBufferIntoWindow(selBufWin)
             endif
         else
+            let curln = line(".")
             call ctrlspace#window#Kill(0, 0)
         endif
         call remove(t:CtrlSpaceList, nr)
         call ctrlspace#window#Toggle(1)
+        call ctrlspace#window#MoveSelectionBar(curln)
     endif
 
     return nr
