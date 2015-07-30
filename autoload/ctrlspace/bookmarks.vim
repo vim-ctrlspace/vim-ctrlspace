@@ -97,7 +97,7 @@ function! ctrlspace#bookmarks#AddFirstBookmark()
         call ctrlspace#window#Kill(0, 1)
         call ctrlspace#window#Toggle(0)
         call ctrlspace#window#Kill(0, 0)
-        call s:modes.Bookmarks.Enable()
+        call s:modes.Bookmark.Enable()
         call ctrlspace#window#Toggle(1)
     endif
 endfunction
