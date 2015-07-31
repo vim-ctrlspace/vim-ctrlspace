@@ -167,7 +167,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     call s:collectKeysInfo(mapName)
 
     let mi     = s:modeInfo()
-    let header = "Context help for " . mi[0] . " list"
+    let header = "Key Reference for " . mi[0] . " list"
 
     if len(mi) > 1
         let header .= " (modes: " . join(mi[1:], ", ") . ")"
