@@ -20,9 +20,13 @@ endfunction
 
 function! ctrlspace#keys#workspace#LoadOrSave(k)
     if s:modes.Workspace.Data.SubMode ==# "load"
-        call ctrlspace#keys#workspace#LoadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
+        if !ctrlspace#keys#workspace#LoadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
+            return
+        endif
     elseif s:modes.Workspace.Data.SubMode ==# "save"
-        call ctrlspace#keys#workspace#SaveWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+        if !ctrlspace#keys#workspace#SaveWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+            return
+        endif
     endif
 
     if a:k ==# "CR"
@@ -109,12 +113,12 @@ function! ctrlspace#keys#workspace#LoadWorkspace(bang, name)
         endif
 
         if !empty(msg) && !ctrlspace#ui#Confirmed(msg)
-            return
+            return 0
         endif
     endif
 
     if !a:bang && !ctrlspace#ui#ProceedIfModified()
-        return
+        return 0
     endif
 
     call ctrlspace#window#Kill(0, 1)
@@ -123,12 +127,14 @@ function! ctrlspace#keys#workspace#LoadWorkspace(bang, name)
         call ctrlspace#workspaces#SaveWorkspace("")
     endif
 
-    call ctrlspace#workspaces#LoadWorkspace(a:bang, a:name)
+    let ok = ctrlspace#workspaces#LoadWorkspace(a:bang, a:name)
 
-    if a:bang
+    if a:bang && ok
         call ctrlspace#window#Toggle(0)
         call s:modes.Workspace.Enable()
         call ctrlspace#window#Kill(0, 0)
         call ctrlspace#window#Toggle(1)
     endif
+
+    return ok
 endfunction

@@ -67,13 +67,13 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
     let newName = ctrlspace#ui#GetInput("Rename workspace '" . a:name . "' to: ", a:name)
 
     if empty(newName)
-        return
+        return 0
     endif
 
     for existingName in s:workspaces
         if newName ==# existingName
             call ctrlspace#ui#Msg("The workspace '" . newName . "' already exists.")
-            return
+            return 0
         endif
     endfor
 
@@ -108,11 +108,13 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
     call ctrlspace#workspaces#SetWorkspaceNames()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
+
+    return 1
 endfunction
 
 function! ctrlspace#workspaces#DeleteWorkspace(name)
     if !ctrlspace#ui#Confirmed("Delete workspace '" . a:name . "'?")
-        return
+        return 0
     endif
 
     let filename    = ctrlspace#util#WorkspaceFile()
@@ -153,6 +155,8 @@ function! ctrlspace#workspaces#DeleteWorkspace(name)
         call ctrlspace#window#Kill(0, 0)
         call ctrlspace#window#Toggle(1)
     endif
+
+    return 1
 endfunction
 
 " bang == 0) load
@@ -230,6 +234,8 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
     silent! exe "cd " . cwdSave
 
     call ctrlspace#util#HandleVimSettings("stop")
+
+    return 1
 endfunction
 
 function! s:execWorkspaceCommands(bang, name, lines)
@@ -400,6 +406,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 
     call ctrlspace#util#HandleVimSettings("stop")
     call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
+
     return 1
 endfunction
 
