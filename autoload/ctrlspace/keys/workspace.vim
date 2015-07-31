@@ -123,18 +123,20 @@ function! ctrlspace#keys#workspace#LoadWorkspace(bang, name)
 
     call ctrlspace#window#Kill(0, 1)
 
-    if saveWorkspaceBefore
-        call ctrlspace#workspaces#SaveWorkspace("")
+    if saveWorkspaceBefore && !ctrlspace#workspaces#SaveWorkspace("")
+        return 0
     endif
 
-    let ok = ctrlspace#workspaces#LoadWorkspace(a:bang, a:name)
+    if !ctrlspace#workspaces#LoadWorkspace(a:bang, a:name)
+        return 0
+    endif
 
-    if a:bang && ok
+    if a:bang
         call ctrlspace#window#Toggle(0)
         call s:modes.Workspace.Enable()
         call ctrlspace#window#Kill(0, 0)
         call ctrlspace#window#Toggle(1)
     endif
 
-    return ok
+    return 1
 endfunction
