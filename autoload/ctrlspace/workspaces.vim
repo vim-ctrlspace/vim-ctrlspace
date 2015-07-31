@@ -249,6 +249,7 @@ function! s:execWorkspaceCommands(bang, name, lines)
         call add(commands, "call ctrlspace#buffers#DeleteForeignBuffers(1)")
         call ctrlspace#workspaces#SetActiveWorkspaceName(a:name)
     else
+        let curTab = tabpagenr()
         call ctrlspace#ui#Msg("Appending workspace '" . a:name . "'...")
         call add(commands, "tabe")
     endif
@@ -257,6 +258,10 @@ function! s:execWorkspaceCommands(bang, name, lines)
 
     call add(commands, "source CS_SESSION")
     call add(commands, "redraw!")
+
+    if a:bang
+        call add(commands, "normal! " . curTab . "gt")
+    endif
 
     for c in commands
         silent exe c
