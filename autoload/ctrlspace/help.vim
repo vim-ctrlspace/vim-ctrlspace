@@ -167,10 +167,10 @@ function! ctrlspace#help#DisplayHelp(fill)
     call s:collectKeysInfo(mapName)
 
     let mi     = s:modeInfo()
-    let header = "Key Reference for " . mi[0] . " list"
+    let header = "Key Reference for " . mi[0] . " LIST"
 
     if len(mi) > 1
-        let header .= " (modes: " . join(mi[1:], ", ") . ")"
+        let header .= " (" . join(mi[1:], ", ") . ")"
     endif
 
     call s:puts(header)
@@ -271,7 +271,7 @@ function! s:modeInfo()
             call add(info, "SAVE")
         endif
     elseif clv.Name ==# "Tab"
-        call add(info, "TAB LIST")
+        call add(info, "TAB")
     elseif clv.Name ==# "Bookmark"
         call add(info, "BOOKMARK")
     else
