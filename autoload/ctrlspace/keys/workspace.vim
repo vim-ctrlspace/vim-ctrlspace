@@ -20,11 +20,11 @@ endfunction
 
 function! ctrlspace#keys#workspace#LoadOrSave(k)
     if s:modes.Workspace.Data.SubMode ==# "load"
-        if !ctrlspace#keys#workspace#LoadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
+        if !s:loadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
             return
         endif
     elseif s:modes.Workspace.Data.SubMode ==# "save"
-        if !ctrlspace#keys#workspace#SaveWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+        if !s:saveWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
             return
         endif
     endif
@@ -37,7 +37,7 @@ function! ctrlspace#keys#workspace#LoadOrSave(k)
 endfunction
 
 function! ctrlspace#keys#workspace#Append(k)
-    call ctrlspace#keys#workspace#LoadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
+    call s:loadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
 endfunction
 
 function! ctrlspace#keys#workspace#NewWorkspace(k)
@@ -82,7 +82,7 @@ function! ctrlspace#keys#workspace#ToggleSubmode(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#workspace#SaveWorkspace(name)
+function! s:saveWorkspace(name)
     let name = ctrlspace#ui#GetInput("Save current workspace as: ", a:name)
 
     if empty(name)
@@ -93,7 +93,7 @@ function! ctrlspace#keys#workspace#SaveWorkspace(name)
     return ctrlspace#workspaces#SaveWorkspace(name)
 endfunction
 
-function! ctrlspace#keys#workspace#LoadWorkspace(bang, name)
+function! s:loadWorkspace(bang, name)
     let saveWorkspaceBefore = 0
     let active = s:modes.Workspace.Data.Active
 

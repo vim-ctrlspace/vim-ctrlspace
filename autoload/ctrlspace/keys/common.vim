@@ -310,5 +310,12 @@ function! s:saveFirstWorkspace()
         endif
     endfor
 
-    return ctrlspace#keys#workspace#SaveWorkspace(join(labels, " "))
+    let name = ctrlspace#ui#GetInput("Save first workspace as: ", join(labels, " "))
+
+    if empty(name)
+        return 0
+    endif
+
+    call ctrlspace#window#Kill(0, 1)
+    return ctrlspace#workspaces#SaveWorkspace(name)
 endfunction
