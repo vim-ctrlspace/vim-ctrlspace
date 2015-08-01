@@ -7,15 +7,17 @@ function! ctrlspace#keys#workspace#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace", "Workspace", ["n", "N"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#ToggleSubmode", "Workspace", ["s"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete", "Workspace", ["d"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename", "Workspace", ["="])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename", "Workspace", ["=", "m"])
 endfunction
 
 function! ctrlspace#keys#workspace#Delete(k)
     call ctrlspace#workspaces#DeleteWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#workspace#Rename(k)
     call ctrlspace#workspaces#RenameWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#workspace#LoadOrSave(k)
@@ -31,13 +33,19 @@ function! ctrlspace#keys#workspace#LoadOrSave(k)
 
     if a:k ==# "CR"
         call ctrlspace#window#Toggle(0)
+        call ctrlspace#ui#DelayedMsg()
     elseif a:k ==# "Space"
-        call ctrlspace#window#StartAndFeedkeys("w")
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.Workspace.Enable()
+        call ctrlspace#window#Toggle(1)
+        call ctrlspace#ui#DelayedMsg()
     endif
 endfunction
 
 function! ctrlspace#keys#workspace#Append(k)
     call s:loadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#workspace#NewWorkspace(k)
@@ -65,7 +73,10 @@ function! ctrlspace#keys#workspace#NewWorkspace(k)
     call ctrlspace#workspaces#NewWorkspace()
 
     if a:k ==# "N"
-        call ctrlspace#window#StartAndFeedkeys("w")
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.Workspace.Enable()
+        call ctrlspace#window#Toggle(1)
     endif
 endfunction
 

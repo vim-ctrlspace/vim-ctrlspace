@@ -333,6 +333,7 @@ function! s:saveFirstWorkspace()
     call ctrlspace#window#Kill(0, 0)
     call lv.Enable()
     call ctrlspace#window#Toggle(1)
+    call ctrlspace#ui#DelayedMsg()
 
     return ok
 endfunction

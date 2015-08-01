@@ -72,7 +72,7 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
 
     for existingName in s:workspaces
         if newName ==# existingName
-            call ctrlspace#ui#Msg("The workspace '" . newName . "' already exists.")
+            call ctrlspace#ui#Msg("Workspace '" . newName . "' already exists.")
             return 0
         endif
     endfor
@@ -104,11 +104,11 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
         call ctrlspace#workspaces#SetActiveWorkspaceName(newName)
     endif
 
-    call ctrlspace#ui#Msg("The workspace '" . a:name . "' has been renamed to '" . newName . "'.")
     call ctrlspace#workspaces#SetWorkspaceNames()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
 
+    call ctrlspace#ui#DelayedMsg("Workspace '" . a:name . "' has been renamed to '" . newName . "'.")
     return 1
 endfunction
 
@@ -146,7 +146,6 @@ function! ctrlspace#workspaces#DeleteWorkspace(name)
         call ctrlspace#workspaces#SetActiveWorkspaceName(a:name, "")
     endif
 
-    call ctrlspace#ui#Msg("The workspace '" . a:name . "' has been deleted.")
     call ctrlspace#workspaces#SetWorkspaceNames()
 
     if empty(s:workspaces)
@@ -155,6 +154,8 @@ function! ctrlspace#workspaces#DeleteWorkspace(name)
         call ctrlspace#window#Kill(0, 0)
         call ctrlspace#window#Toggle(1)
     endif
+
+    call ctrlspace#ui#DelayedMsg("Workspace '" . a:name . "' has been deleted.")
 
     return 1
 endfunction
@@ -224,12 +225,15 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
     call s:execWorkspaceCommands(a:bang, name, lines)
 
     if !a:bang
-        call ctrlspace#ui#Msg("The workspace '" . name . "' has been loaded.")
         let s:modes.Workspace.Data.Active.Digest = ctrlspace#workspaces#CreateDigest()
+        let msg = "Workspace '" . name . "' has been loaded."
     else
         let s:modes.Workspace.Data.Active.Digest = ""
-        call ctrlspace#ui#Msg("The workspace '" . name . "' has been appended.")
+        let msg = "Workspace '" . name . "' has been appended."
     endif
+
+    call ctrlspace#ui#Msg(msg)
+    call ctrlspace#ui#DelayedMsg(msg)
 
     silent! exe "cd " . fnameescape(cwdSave)
 
@@ -356,7 +360,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
         silent! exe "set ssop=" . ssopSave
 
         call ctrlspace#util#HandleVimSettings("stop")
-        call ctrlspace#ui#Msg("The workspace '" . name . "' cannot be saved at this moment.")
+        call ctrlspace#ui#Msg("Workspace '" . name . "' cannot be saved at this moment.")
         return 0
     endif
 
@@ -410,7 +414,10 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     silent! exe "set ssop=" . ssopSave
 
     call ctrlspace#util#HandleVimSettings("stop")
-    call ctrlspace#ui#Msg("The workspace '" . name . "' has been saved.")
+
+    let msg = "Workspace '" . name . "' has been saved."
+    call ctrlspace#ui#Msg(msg)
+    call ctrlspace#ui#DelayedMsg(msg)
 
     return 1
 endfunction
