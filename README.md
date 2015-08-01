@@ -100,6 +100,14 @@ This feature led people to collect groups of split windows with concrete
 buffers in viewports. In that way each viewport - tabpage - is in fact a set
 of buffers related to some concrete topic.
 
+To sum up:
+
+* open files are kept in buffers
+* treat list of files (buffers) as tabs in other IDEs, e.g. RubyMine
+* tab(s) in Vim is what other apps call workspace(s)
+* tab (workspace) can be arranged by splitting window vertically / horizontally
+* one file can be displayed in different windows (as buffer resides in the memory only once)
+
 
 ### Vim-CtrlSpace Concept
 
