@@ -829,13 +829,13 @@ function <SID>save_workspace_externally(name)
   call <SID>handle_vim_settings("start")
 
   let cwd_save = fnamemodify(".", ":p:h")
-  silent! exe "cd " . s:project_root
+  silent! exe "cd " . fnameescape(s:project_root)
 
   if empty(a:name)
     if !empty(s:active_workspace_name)
       let name = s:active_workspace_name
     else
-      silent! exe "cd " . cwd_save
+      silent! exe "cd " . fnameescape(cwd_save)
       call <SID>handle_vim_settings("stop")
       return
     endif
@@ -902,7 +902,7 @@ function <SID>save_workspace_externally(name)
   silent! exe "mksession! CS_SESSION"
 
   if !filereadable("CS_SESSION")
-    silent! exe "cd " . cwd_save
+    silent! exe "cd " . fnameescape(cwd_save)
     silent! exe "set ssop=" . ssop_save
 
     call <SID>handle_vim_settings("stop")
@@ -959,7 +959,7 @@ function <SID>save_workspace_externally(name)
 
   call <SID>set_workspace_names()
 
-  silent! exe "cd " . cwd_save
+  silent! exe "cd " . fnameescape(cwd_save)
   silent! exe "set ssop=" . ssop_save
 
   call <SID>handle_vim_settings("stop")
@@ -1350,12 +1350,12 @@ function! <SID>load_workspace_externally(bang, name)
   call <SID>handle_vim_settings("start")
 
   let cwd_save = fnamemodify(".", ":p:h")
-  silent! exe "cd " . s:project_root
+  silent! exe "cd " . fnameescape(s:project_root)
 
   let filename = <SID>workspace_file()
 
   if !filereadable(filename)
-    silent! exe "cd " . cwd_save
+    silent! exe "cd " . fnameescape(cwd_save)
     return
   endif
 
@@ -1372,7 +1372,7 @@ function! <SID>load_workspace_externally(bang, name)
     endfor
 
     if empty(name)
-      silent! exe "cd " . cwd_save
+      silent! exe "cd " . fnameescape(cwd_save)
       return
     endif
   else
@@ -1398,7 +1398,7 @@ function! <SID>load_workspace_externally(bang, name)
   if empty(lines)
     call <SID>msg("Workspace '" . name . "' not found in file '" . filename . "'.")
     call <SID>set_workspace_names()
-    silent! exe "cd " . cwd_save
+    silent! exe "cd " . fnameescape(cwd_save)
     return
   endif
 
@@ -1416,7 +1416,7 @@ function! <SID>load_workspace_externally(bang, name)
     call <SID>msg("The workspace '" . name . "' has been appended.")
   endif
 
-  silent! exe "cd " . cwd_save
+  silent! exe "cd " . fnameescape(cwd_save)
 
   call <SID>handle_vim_settings("stop")
 endfunction
@@ -1781,7 +1781,7 @@ function! <SID>goto_bookmark(bm_nr)
     return
   endif
 
-  silent! exe "cd " . new_bookmark.directory
+  silent! exe "cd " . fnameescape(new_bookmark.directory)
   call <SID>delayed_msg("CWD is now: " . new_bookmark.directory)
 endfunction
 
@@ -2541,6 +2541,7 @@ function! <SID>ctrlspace_toggle(internal)
 
   let noises   = []
   let patterns = []
+
 
   if s:file_mode
     if empty(s:files)
@@ -4540,7 +4541,7 @@ function! <SID>set_up_buffer()
   let s:plugin_buffer = bufnr("%")
 
   if !empty(s:project_root)
-    silent! exe "lcd " . s:project_root
+    silent! exe "lcd " . fnameescape(s:project_root)
   endif
 
   let b:search_patterns = {}
