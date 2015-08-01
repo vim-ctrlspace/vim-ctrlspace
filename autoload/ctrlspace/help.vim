@@ -113,6 +113,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#file#LoadManyFilesT":                 "Open selected file in a new (or next) tab but stay in the plugin window",
       \ "ctrlspace#keys#file#LoadManyFilesCT":                "Open selected file always in a new tab but stay in the plugin window",
       \ "ctrlspace#keys#file#Refresh":                        "Refresh the file list (force reloading)",
+      \ "ctrlspace#keys#file#ZoomMode":                       "Toggle Zoom Mode",
       \ "ctrlspace#keys#bookmark#GoToBookmark":               "Jump to selected bookmark (Tab - close, Space - stay)",
       \ "ctrlspace#keys#bookmark#Rename":                     "Change selected bookmark name",
       \ "ctrlspace#keys#bookmark#Edit":                       "Edit selected bookmark directory",

@@ -3,6 +3,7 @@ let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#keys#file#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#SearchParentDirectory", "File", ["BSlash", "Bar"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#file#ZoomMode", "File", ["z"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadFile", "File", ["CR"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadManyFiles", "File", ["Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadFileVS", "File", ["v"])
@@ -30,6 +31,18 @@ endfunction
 
 function! ctrlspace#keys#file#SearchParentDirectory(k)
     call ctrlspace#search#SearchParentDirectoryCycle()
+endfunction
+
+function! ctrlspace#keys#file#ZoomMode(k)
+    if !s:modes.Zoom.Enabled
+        call ctrlspace#files#ZoomFile()
+    else
+        call ctrlspace#window#Kill(0, 1)
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.File.Enable()
+        call ctrlspace#window#Toggle(1)
+    endif
 endfunction
 
 function! ctrlspace#keys#file#LoadFile(k)

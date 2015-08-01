@@ -136,6 +136,10 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         endif
 
         call add(statuslineElements, symbol)
+
+        if s:modes.Zoom.Enabled
+            call add(statuslineElements, s:config.Symbols.Zoom)
+        endif
     endif
 
     if !empty(s:modes.Search.Data.Letters) || s:modes.Search.Enabled
@@ -148,10 +152,6 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         let searchElement .= s:config.Symbols.SRight
 
         call add(statuslineElements, searchElement)
-    endif
-
-    if s:modes.Zoom.Enabled
-        call add(statuslineElements, s:config.Symbols.Zoom)
     endif
 
     if s:modes.Help.Enabled

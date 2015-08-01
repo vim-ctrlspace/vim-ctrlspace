@@ -131,6 +131,25 @@ function! ctrlspace#files#RemoveFile()
     call ctrlspace#window#Toggle(1)
 endfunction
 
+function! ctrlspace#files#ZoomFile()
+    if !s:modes.Zoom.Enabled
+        call s:modes.Zoom.Enable()
+        call s:modes.Zoom.SetData("OriginalBuffer", winbufnr(t:CtrlSpaceStartWindow))
+    endif
+
+    let nr = ctrlspace#window#SelectedIndex()
+    let curln = line(".")
+
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#GoToStartWindow()
+    call s:loadFileOrBuffer(fnamemodify(s:files[nr], ":p"))
+
+    silent! exe "normal! zb"
+
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#MoveSelectionBar(curln)
+endfunction
+
 function! ctrlspace#files#CopyFileOrBuffer()
     let nr   = ctrlspace#window#SelectedIndex()
     let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
