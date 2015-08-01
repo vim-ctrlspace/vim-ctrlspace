@@ -26,7 +26,7 @@ let s:configuration = {
                     \ },
                 \ "ascii": {
                     \ "CS":     "#",
-                    \ "Sin":    "BUF",
+                    \ "Sin":    "SIN",
                     \ "All":    "ALL",
                     \ "Vis":    "VIS",
                     \ "File":   "FILE",
