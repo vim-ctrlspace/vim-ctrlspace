@@ -64,7 +64,7 @@ function! ctrlspace#roots#RemoveProjectRoot(directory)
     endif
 
     call s:removeProjectRoot(directory)
-    call ctrlspace#ui#Msg("The project root '" . directory . "' has been removed.")
+    call ctrlspace#ui#Msg("Project root '" . directory . "' has been removed.")
 endfunction
 
 function! s:removeProjectRoot(directory)
