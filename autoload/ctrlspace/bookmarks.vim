@@ -18,7 +18,7 @@ function! ctrlspace#bookmarks#GoToBookmark(nr)
         return
     endif
 
-    silent! exe "cd " . newBookmark.Directory
+    silent! exe "cd " . fnameescape(newBookmark.Directory)
     call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
 endfunction
 

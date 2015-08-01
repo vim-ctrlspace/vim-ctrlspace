@@ -408,7 +408,7 @@ function! s:setUpBuffer()
     let root = ctrlspace#roots#CurrentProjectRoot()
 
     if !empty(root)
-        silent! exe "lcd " . root
+        silent! exe "lcd " . fnameescape(root)
     endif
 
     if &timeout

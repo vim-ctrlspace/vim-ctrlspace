@@ -169,12 +169,12 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
     call ctrlspace#util#HandleVimSettings("start")
 
     let cwdSave = fnamemodify(".", ":p:h")
-    silent! exe "cd " . ctrlspace#roots#CurrentProjectRoot()
+    silent! exe "cd " . fnameescape(ctrlspace#roots#CurrentProjectRoot())
 
     let filename = ctrlspace#util#WorkspaceFile()
 
     if !filereadable(filename)
-        silent! exe "cd " . cwdSave
+        silent! exe "cd " . fnameescape(cwdSave)
         return 0
     endif
 
@@ -191,7 +191,7 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
         endfor
 
         if empty(name)
-            silent! exe "cd " . cwdSave
+            silent! exe "cd " . fnameescape(cwdSave)
             return 0
         endif
     else
@@ -217,7 +217,7 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
     if empty(lines)
         call ctrlspace#ui#Msg("Workspace '" . name . "' not found in file '" . filename . "'.")
         call ctrlspace#workspaces#SetWorkspaceNames()
-        silent! exe "cd " . cwdSave
+        silent! exe "cd " . fnameescape(cwdSave)
         return 0
     endif
 
@@ -231,7 +231,7 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
         call ctrlspace#ui#Msg("The workspace '" . name . "' has been appended.")
     endif
 
-    silent! exe "cd " . cwdSave
+    silent! exe "cd " . fnameescape(cwdSave)
 
     call ctrlspace#util#HandleVimSettings("stop")
 
@@ -279,13 +279,13 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 
     let cwdSave = fnamemodify(".", ":p:h")
 
-    silent! exe "cd " . ctrlspace#roots#CurrentProjectRoot()
+    silent! exe "cd " . fnameescape(ctrlspace#roots#CurrentProjectRoot())
 
     if empty(a:name)
         if !empty(s:modes.Workspace.Data.Active.Name)
             let name = s:modes.Workspace.Data.Active.Name
         else
-            silent! exe "cd " . cwdSave
+            silent! exe "cd " . fnameescape(cwdSave)
             call ctrlspace#util#HandleVimSettings("stop")
             return 0
         endif
@@ -352,7 +352,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     silent! exe "mksession! CS_SESSION"
 
     if !filereadable("CS_SESSION")
-        silent! exe "cd " . cwdSave
+        silent! exe "cd " . fnameescape(cwdSave)
         silent! exe "set ssop=" . ssopSave
 
         call ctrlspace#util#HandleVimSettings("stop")
@@ -406,7 +406,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     call ctrlspace#workspaces#SetActiveWorkspaceName(name, ctrlspace#workspaces#CreateDigest())
     call ctrlspace#workspaces#SetWorkspaceNames()
 
-    silent! exe "cd " . cwdSave
+    silent! exe "cd " . fnameescape(cwdSave)
     silent! exe "set ssop=" . ssopSave
 
     call ctrlspace#util#HandleVimSettings("stop")
