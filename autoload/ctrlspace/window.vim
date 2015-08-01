@@ -99,7 +99,7 @@ function! ctrlspace#window#GoToBufferListPosition(direction)
     let bufferListLen = len(bufferList)
 
     for index in range(bufferListLen)
-        if bufferList[index]["number"] == currentBuffer
+        if bufferList[index]["index"] == currentBuffer
             let currentIndex = index
             break
         endif
@@ -123,7 +123,7 @@ function! ctrlspace#window#GoToBufferListPosition(direction)
         endif
     endif
 
-    silent! exe ":b " . bufferList[targetIndex]["number"]
+    silent! exe ":b " . bufferList[targetIndex]["index"]
 endfunction
 
 function! ctrlspace#window#GoToStartWindow()
