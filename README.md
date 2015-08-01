@@ -54,7 +54,7 @@ The most exciting **Vim-CtrlSpace 5** features are:
 ##### Upgrading from Version 4
 
 Version 5 is not backward compatible. But main issues are
-related to restoring your workspaces and there is a simple workaround.
+related to restoring your workspaces and there is a simple workaround for it.
 
 After upgrading please open `cs_workspaces` file for given project (it's
 usually stored at e.g. `.git/cs_workspaces`) and rename proper variable
