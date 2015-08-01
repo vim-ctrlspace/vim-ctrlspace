@@ -2960,6 +2960,10 @@ function! <SID>kill(plugin_buffer, final)
   if exists("b:nossl_save") && b:nossl_save
     set nossl
   endif
+  " cmdline support for win32
+  if exists("b:savedShell")
+    let [&shell, &shellcmdflag, &shellxquote, &shellxescape, &shellquote, &shellpipe, &shellredir]=b:savedShell
+  endif
 
   if a:plugin_buffer
     silent! exe ':' . a:plugin_buffer . 'bwipeout'
@@ -4557,6 +4561,11 @@ function! <SID>set_up_buffer()
   if has("win32") && !&ssl
     let b:nossl_save = 1
     set ssl
+  endif
+
+  if has("win32")
+    let b:savedShell=[&shell, &shellcmdflag, &shellxquote, &shellxescape, &shellquote, &shellpipe, &shellredir]
+    set shell=cmd shellcmdflag=/c shellxquote=\" shellquote= shellpipe=> shellredir=>%s\ 2>&1
   endif
 
   augroup CtrlSpaceUpdateSearch
