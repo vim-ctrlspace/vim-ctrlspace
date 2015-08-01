@@ -1,11 +1,11 @@
-" Vim-CtrlSpace - Vim Workspace Controller
+" Vim-CtrlSpace - Vim Space Controller
 " Maintainer: Szymon Wrozynski
-" Version:    5.0.0.beta2
+" Version:    5.0.0
 "
 " The MIT License (MIT)
 
 " Copyright (c) 2013-2015 Szymon Wrozynski <szymon@wrozynski.com> and Contributors
-" Original BufferList plugin code - copyright (c) 2005 Robert Lillack <rob@lillack.de>
+" BufferList plugin code parts - copyright (c) 2005 Robert Lillack <rob@lillack.de>
 
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,25 @@
 
 scriptencoding utf-8
 
-if exists('g:CtrlSpaceLoaded')
+if exists("g:CtrlSpaceLoaded")
     finish
 endif
 
 let g:CtrlSpaceLoaded = 1
+
+if &cp
+    echoe "CtrlSpace requires 'nocompatible' option enabled!"
+    finish
+endif
+
+if !&hid
+    echoe "CtrlSpace requires 'hidden' option enabled!"
+    finish
+endif
+
+if v:version < 703
+    echoe "CtrlSpace requires Vim 7.3 or higher!"
+    finish
+endif
 
 call ctrlspace#init#Init()
