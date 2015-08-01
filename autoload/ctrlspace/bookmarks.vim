@@ -28,6 +28,7 @@ function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
 
     if !empty(newName)
         call ctrlspace#bookmarks#AddToBookmarks(bookmark.Directory, newName)
+        call ctrlspace#ui#DelayedMsg("Bookmark '" . bookmark.Name . "' has been renamed to '" . newName . "'.")
     endif
 endfunction
 

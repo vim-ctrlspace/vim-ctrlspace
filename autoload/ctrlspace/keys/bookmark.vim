@@ -3,7 +3,7 @@ let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#keys#bookmark#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark", "Bookmark", ["Tab", "CR", "Space"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Rename", "Bookmark", ["="])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Rename", "Bookmark", ["=", "m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Edit", "Bookmark", ["e"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Add", "Bookmark", ["a", "A"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete", "Bookmark", ["d"])
@@ -34,6 +34,7 @@ function! ctrlspace#keys#bookmark#Rename(k)
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
     call ctrlspace#window#MoveSelectionBar(curline)
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#bookmark#Edit(k)
