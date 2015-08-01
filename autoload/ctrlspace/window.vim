@@ -92,14 +92,6 @@ function! ctrlspace#window#Toggle(internal)
     normal! zb
 endfunction
 
-function! ctrlspace#window#StartAndFeedkeys(keys)
-    call ctrlspace#window#Toggle(0)
-
-    if !empty(a:keys)
-        call feedkeys(a:keys)
-    endif
-endfunction
-
 function! ctrlspace#window#GoToBufferListPosition(direction)
     let bufferList    = ctrlspace#api#BufferList(tabpagenr())
     let currentBuffer = bufnr("%")

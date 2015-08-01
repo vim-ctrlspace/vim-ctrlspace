@@ -14,7 +14,7 @@ function! ctrlspace#init#Init()
         endif
     endif
 
-    command! -nargs=* -range CtrlSpace :call ctrlspace#window#StartAndFeedkeys(<q-args>)
+    command! -nargs=* -range CtrlSpace :call ctrlspace#window#Toggle(0) | :call feedkeys(<q-args>)
     command! -nargs=0 -range CtrlSpaceGoUp :call ctrlspace#window#GoToBufferListPosition("up")
     command! -nargs=0 -range CtrlSpaceGoDown :call ctrlspace#window#GoToBufferListPosition("down")
     command! -nargs=0 -range CtrlSpaceTabLabel :call ctrlspace#tabs#NewTabLabel(0)
