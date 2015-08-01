@@ -35,19 +35,27 @@ if exists("g:CtrlSpaceLoaded")
 endif
 
 let g:CtrlSpaceLoaded = 1
+let s:errors = []
 
 if &cp
-    echoe "CtrlSpace requires 'nocompatible' option enabled!"
-    finish
+    call add(s:errors, "CtrlSpace requires 'nocompatible' option enabled!")
 endif
 
 if !&hid
-    echoe "CtrlSpace requires 'hidden' option enabled!"
-    finish
+    call add(s:errors, "CtrlSpace requires 'hidden' option enabled!")
 endif
 
 if v:version < 703
-    echoe "CtrlSpace requires Vim 7.3 or higher!"
+    call add(s:errors, "CtrlSpace requires Vim 7.3 or higher!")
+endif
+
+if !empty(s:errors)
+    echohl ErrorMsg
+    for msg in s:errors
+        echom msg
+    endfor
+    echohl None
+
     finish
 endif
 
