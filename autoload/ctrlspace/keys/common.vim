@@ -316,6 +316,23 @@ function! s:saveFirstWorkspace()
         return 0
     endif
 
+    let lv = ctrlspace#modes#CurrentListView()
+
     call ctrlspace#window#Kill(0, 1)
-    return ctrlspace#workspaces#SaveWorkspace(name)
+
+    let ok = ctrlspace#workspaces#SaveWorkspace(name)
+
+    call ctrlspace#window#Toggle(0)
+
+    if ok
+        let lv = s:modes.Workspace
+    elseif lv.Name ==# "Buffer"
+        return 0
+    endif
+
+    call ctrlspace#window#Kill(0, 0)
+    call lv.Enable()
+    call ctrlspace#window#Toggle(1)
+
+    return ok
 endfunction

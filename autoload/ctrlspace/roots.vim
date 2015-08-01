@@ -168,6 +168,7 @@ function! ctrlspace#roots#ProjectRootFound()
             if !empty(projectRoot) && isdirectory(projectRoot)
                 call ctrlspace#files#ClearAll() " clear current files - force reload
                 call s:addProjectRoot(projectRoot)
+                let s:currentProjectRoot = projectRoot
             else
                 call ctrlspace#ui#Msg("Cannot continue with the project root not set.")
                 return 0
