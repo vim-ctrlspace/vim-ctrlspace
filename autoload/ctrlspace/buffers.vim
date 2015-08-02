@@ -362,8 +362,8 @@ function! ctrlspace#buffers#DeleteHiddenNonameBuffers(internal)
     endif
 endfunction
 
-" deletes all foreign buffers
-function! ctrlspace#buffers#DeleteForeignBuffers(internal)
+" deletes all forgotten buffers
+function! ctrlspace#buffers#DeleteForgottenBuffers(internal)
     let buffers = {}
 
     for t in range(1, tabpagenr("$"))
