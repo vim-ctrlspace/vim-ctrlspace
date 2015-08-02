@@ -93,7 +93,7 @@ function! s:initKeyNames()
 endfunction
 
 function! ctrlspace#keys#Undefined(k)
-    call ctrlspace#ui#Msg("Undefined key '" . a:k . "' for current view.")
+    call ctrlspace#ui#Msg("Key '" . a:k . "' doesn't work in this view.")
 endfunction
 
 function! s:initKeyMap()
