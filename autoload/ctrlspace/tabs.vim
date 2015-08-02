@@ -39,7 +39,7 @@ function! ctrlspace#tabs#CloseTab()
     tabclose
 
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
-    call ctrlspace#buffers#DeleteForgottenBuffers(1)
+    call ctrlspace#buffers#DeleteForeignBuffers(1)
 
     call ctrlspace#window#Toggle(0)
 endfunction
@@ -75,23 +75,23 @@ function! ctrlspace#tabs#CollectUnsavedBuffers()
     return 1
 endfunction
 
-function! ctrlspace#tabs#CollectForgottenBuffers()
+function! ctrlspace#tabs#CollectForeignBuffers()
     let buffers = {}
 
     for t in range(1, tabpagenr("$"))
         silent! call extend(buffers, gettabvar(t, "CtrlSpaceList"))
     endfor
 
-    let forgottenBuffers = []
+    let foreignBuffers = []
 
     for b in keys(ctrlspace#buffers#Buffers(0))
         if !has_key(buffers, b)
-            call add(forgottenBuffers, b)
+            call add(foreignBuffers, b)
         endif
     endfor
 
-    if empty(forgottenBuffers)
-        call ctrlspace#ui#Msg("There are no forgotten buffers.")
+    if empty(foreignBuffers)
+        call ctrlspace#ui#Msg("There are no foreign buffers.")
         return 0
     endif
 
@@ -99,9 +99,9 @@ function! ctrlspace#tabs#CollectForgottenBuffers()
 
     tabnew
 
-    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Forgotten buffers", 1)
+    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Foreign buffers", 1)
 
-    for fb in forgottenBuffers
+    for fb in foreignBuffers
         silent! exe ":b " . fb
     endfor
 

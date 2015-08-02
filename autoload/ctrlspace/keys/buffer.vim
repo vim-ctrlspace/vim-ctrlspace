@@ -30,7 +30,7 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#ToggleAllMode", "Buffer", ["a"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#ToggleAllModeAndSearch", "Buffer", ["A"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DetachBuffer", "Buffer", ["f"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DeleteForgottenBuffers", "Buffer", ["F"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#DeleteForeignBuffers", "Buffer", ["F"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseBuffer", "Buffer", ["c"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CloseTab", "Buffer", ["C"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#EditFile", "Buffer", ["e"])
@@ -235,8 +235,8 @@ function! ctrlspace#keys#buffer#DetachBuffer(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#DeleteForgottenBuffers(k)
-    call ctrlspace#buffers#DeleteForgottenBuffers(0)
+function! ctrlspace#keys#buffer#DeleteForeignBuffers(k)
+    call ctrlspace#buffers#DeleteForeignBuffers(0)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 

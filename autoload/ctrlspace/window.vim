@@ -183,7 +183,7 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
             exec ":b " . s:modes.Zoom.Data.OriginalBuffer
             call s:modes.Zoom.SetData("OriginalBuffer", 0)
             call s:modes.Zoom.Disable()
-            call ctrlspace#buffers#DeleteForgottenBuffers(1)
+            call ctrlspace#buffers#DeleteForeignBuffers(1)
             call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
         endif
 

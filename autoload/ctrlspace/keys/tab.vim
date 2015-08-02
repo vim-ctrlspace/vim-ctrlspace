@@ -11,7 +11,7 @@ function! ctrlspace#keys#tab#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#NewTabLabel", "Tab", ["="])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#RemoveTabLabel", "Tab", ["_"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CollectUnsavedBuffers", "Tab", ["u"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CollectForgottenBuffers", "Tab", ["f"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CollectForeignBuffers", "Tab", ["f"])
 endfunction
 
 function! ctrlspace#keys#tab#GoToTab(k)
@@ -138,6 +138,6 @@ function! ctrlspace#keys#tab#CollectUnsavedBuffers(k)
     call ctrlspace#tabs#CollectUnsavedBuffers()
 endfunction
 
-function! ctrlspace#keys#tab#CollectForgottenBuffers(k)
-    call ctrlspace#tabs#CollectForgottenBuffers()
+function! ctrlspace#keys#tab#CollectForeignBuffers(k)
+    call ctrlspace#tabs#CollectForeignBuffers()
 endfunction

@@ -55,7 +55,7 @@ function! ctrlspace#workspaces#NewWorkspace()
     tabe
     tabo!
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
-    call ctrlspace#buffers#DeleteForgottenBuffers(1)
+    call ctrlspace#buffers#DeleteForeignBuffers(1)
     call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "" })
 endfunction
 
@@ -250,7 +250,7 @@ function! s:execWorkspaceCommands(bang, name, lines)
         call add(commands, "tabe")
         call add(commands, "tabo!")
         call add(commands, "call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)")
-        call add(commands, "call ctrlspace#buffers#DeleteForgottenBuffers(1)")
+        call add(commands, "call ctrlspace#buffers#DeleteForeignBuffers(1)")
         call ctrlspace#workspaces#SetActiveWorkspaceName(a:name)
     else
         let curTab = tabpagenr()
