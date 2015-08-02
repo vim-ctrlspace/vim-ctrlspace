@@ -226,6 +226,7 @@ endfunction
 
 function! ctrlspace#keys#buffer#DeleteHiddenNonameBuffers(k)
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(0)
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#buffer#DetachBuffer(k)
@@ -236,6 +237,7 @@ endfunction
 
 function! ctrlspace#keys#buffer#DeleteForgottenBuffers(k)
     call ctrlspace#buffers#DeleteForgottenBuffers(0)
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#keys#buffer#CloseBuffer(k)
@@ -244,6 +246,7 @@ endfunction
 
 function! ctrlspace#keys#buffer#CloseTab(k)
     call ctrlspace#tabs#CloseTab()
+    call ctrlspace#ui#Msg("Current tab closed.")
 endfunction
 
 function! ctrlspace#keys#buffer#ToggleAllMode(k)

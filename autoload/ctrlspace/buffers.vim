@@ -359,6 +359,7 @@ function! ctrlspace#buffers#DeleteHiddenNonameBuffers(internal)
 
     if !a:internal
         call ctrlspace#window#Toggle(1)
+        call ctrlspace#ui#DelayedMsg("Hidden unnamed buffers removed.")
     endif
 endfunction
 
@@ -378,6 +379,7 @@ function! ctrlspace#buffers#DeleteForgottenBuffers(internal)
 
     if !a:internal
         call ctrlspace#window#Toggle(1)
+        call ctrlspace#ui#DelayedMsg("Forgotten buffers removed.")
     endif
 endfunction
 
