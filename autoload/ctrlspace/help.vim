@@ -101,7 +101,6 @@ let s:descriptions = {
       \ "ctrlspace#keys#file#RenameFileOrBuffer":             "Move or rename the selected buffer (together with its file)",
       \ "ctrlspace#keys#file#CopyFileOrBuffer":               "Copy selected file",
       \ "ctrlspace#keys#buffer#GoToBufferOrFile":             "Jump to a previous/next (G/g) tab containing the selected buffer",
-      \ "ctrlspace#keys#buffer#CollectUnsavedBuffers":        "Create a new tab with all unsaved buffers",
       \ "ctrlspace#keys#file#SearchParentDirectory":          "Cyclic search through parent directories",
       \ "ctrlspace#keys#file#LoadFile":                       "Open selected file",
       \ "ctrlspace#keys#file#LoadManyFiles":                  "Open selected file but stays in the plugin window",

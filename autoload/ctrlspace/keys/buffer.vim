@@ -40,7 +40,6 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RenameFileOrBuffer", "Buffer", ["m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#CopyFileOrBuffer", "Buffer", ["y"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFile", "Buffer", ["g", "G"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CollectUnsavedBuffers", "Buffer", ["U"])
 endfunction
 
 function! ctrlspace#keys#buffer#SearchParentDirectory(k)
@@ -260,10 +259,6 @@ endfunction
 
 function! ctrlspace#keys#buffer#GoToBufferOrFile(k)
     call ctrlspace#buffers#GoToBufferOrFile(a:k ==# "g" ? "next" : "previous")
-endfunction
-
-function! ctrlspace#keys#buffer#CollectUnsavedBuffers(k)
-    call ctrlspace#buffers#CollectUnsavedBuffers()
 endfunction
 
 function! s:toggleAllMode()
