@@ -39,9 +39,6 @@ function! ctrlspace#keys#file#ZoomMode(k)
     else
         call ctrlspace#window#Kill(0, 1)
         call ctrlspace#window#Toggle(0)
-        call ctrlspace#window#Kill(0, 0)
-        call s:modes.File.Enable()
-        call ctrlspace#window#Toggle(1)
     endif
 endfunction
 
