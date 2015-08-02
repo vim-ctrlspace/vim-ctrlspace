@@ -1,0 +1,86 @@
+3. Lists                                                       *ctrlspace-lists*
+
+CtrlSpace has 5 lists:
+
+- Buffer List (<h> for Home)
+- File List (<o> for Open)
+- Tab List (<l> for Lists)
+- Workspace List (<w>)
+- Bookmark List (<b>)
+
+To open CtrlSpace window press <C-Space>. By default Buffer List will open.
+Keys <h>, <o>, <l>, <w>, <b> when pressed again toggle between current and previous
+list. Similarly <backspace> works the same way.
+
+3.1 Buffer List                                          *ctrlspace-buffer-list*
+
+Displays buffers from:
+
+- the current tab (Single Mode)
+- visible buffers (Visible Mode <*>)
+- all available buffers (All Mode <a>)
+
+3.1.1 Single Mode                                        *ctrlspace-single-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `•`       | `SIN`   |
+
+Displays only buffers related to the current tab.
+
+3.1.2 Visible Mode                                      *ctrlspace-visible-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `★`       | `VIS`   |
+
+Narrows down Single Mode to only visible buffers. For example if you have
+3 files in the tab and window is vertically split (displaying two files) only
+those 2 files will be displayed in the list.
+
+3.1.3 All Mode                                              *ctrlspace-all-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `፨`       | `ALL`   |
+
+Displays buffers from all tabs.
+
+3.1.4 Zoom Mode                                            *ctrlspace-zoom-mode*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `⌕`       | `*`     |
+
+To toggle Zoom mode on press <z>. Then press <Space> to maximize buffer that is
+highlighted in the list. Pressing <Space> doesn't add buffer to the current
+tab – if you want to add it press <CR>. To exit Zoom mode press <z> again.
+
+
+3.2 File List                                              *ctrlspace-file-list*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `⊚`      | `FILE`  |
+
+
+Displays all files in the project you bookmarked. To find and open a file,
+press </> to toggle fuzzy-search mode.
+
+To have the most recent list of files press <r> (refresh). If you switch
+git branches don't forget to refresh the list.
+
+Troubleshooting
+
+If you happen to see lots of files from the outside your current project, for
+example all your files from home directory, probably you set by an accident
+a root mark in your home directory. To fix that, open `~/.cs_cache` and remove
+bookmark entries that were added by mistake.
+
+
+3.3 Tab List                                                *ctrlspace-tab-list*
+
+| Unicode | ASCII |
+| ------- | ----- |
+| `○●○`     | `-+-`   |
+
