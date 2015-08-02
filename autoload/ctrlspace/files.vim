@@ -134,7 +134,10 @@ endfunction
 function! ctrlspace#files#ZoomFile()
     if !s:modes.Zoom.Enabled
         call s:modes.Zoom.Enable()
-        call s:modes.Zoom.SetData("OriginalBuffer", winbufnr(t:CtrlSpaceStartWindow))
+        call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
+        call s:modes.Zoom.SetData("Mode", "File")
+        call s:modes.Zoom.SetData("Line", line("."))
+        call s:modes.Zoom.SetData("Letters", copy(s:modes.Search.Data.Letters))
     endif
 
     let nr = ctrlspace#window#SelectedIndex()

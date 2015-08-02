@@ -61,7 +61,7 @@ function! s:mode.Disable() dict
 endfunction
 
 function! s:init()
-    call s:mode.new("Zoom", 0, { "OriginalBuffer": 0 })
+    call s:mode.new("Zoom", 0, { "Buffer": 0, "Mode": "", "SubMode": "", "Line": "", "Letters": [] })
     call s:mode.new("NextTab", 0, {})
     call s:mode.new("Search", 0, { "Letters": [], "NewSearchPerformed": 0, "Restored": 0, "HistoryIndex": -1 })
     call s:mode.new("Help", 0, {})

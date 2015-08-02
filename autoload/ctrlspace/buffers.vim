@@ -101,7 +101,11 @@ endfunction
 function! ctrlspace#buffers#ZoomBuffer(nr, ...)
     if !s:modes.Zoom.Enabled
         call s:modes.Zoom.Enable()
-        call s:modes.Zoom.SetData("OriginalBuffer", winbufnr(t:CtrlSpaceStartWindow))
+        call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
+        call s:modes.Zoom.SetData("Mode", "Buffer")
+        call s:modes.Zoom.SetData("SubMode", s:modes.Buffer.Data.SubMode)
+        call s:modes.Zoom.SetData("Line", line("."))
+        call s:modes.Zoom.SetData("Letters", copy(s:modes.Search.Data.Letters))
     endif
 
     let nr = a:nr ? a:nr : ctrlspace#window#SelectedIndex()

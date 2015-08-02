@@ -191,8 +191,8 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
     if empty(title)
         if getbufvar(bufnr, "&ft") == "ctrlspace"
             if s:modes.Zoom.Enabled
-                if s:modes.Zoom.Data.OriginalBuffer
-                    let bufnr = s:modes.Zoom.Data.OriginalBuffer
+                if s:modes.Zoom.Data.Buffer
+                    let bufnr = s:modes.Zoom.Data.Buffer
                 endif
             else
                 let bufnr = winbufnr(t:CtrlSpaceStartWindow)

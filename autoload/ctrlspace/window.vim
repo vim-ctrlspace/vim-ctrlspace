@@ -180,8 +180,8 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
         call ctrlspace#window#GoToStartWindow()
 
         if s:modes.Zoom.Enabled
-            exec ":b " . s:modes.Zoom.Data.OriginalBuffer
-            call s:modes.Zoom.SetData("OriginalBuffer", 0)
+            exec ":b " . s:modes.Zoom.Data.Buffer
+            call s:modes.Zoom.SetData("Buffer", 0)
             call s:modes.Zoom.Disable()
             call ctrlspace#buffers#DeleteForeignBuffers(1)
             call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
