@@ -39,7 +39,75 @@ function! ctrlspace#tabs#CloseTab()
     tabclose
 
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
-    call ctrlspace#buffers#DeleteForeignBuffers(1)
+    call ctrlspace#buffers#DeleteForgottenBuffers(1)
 
     call ctrlspace#window#Toggle(0)
+endfunction
+
+function! ctrlspace#tabs#CollectUnsavedBuffers()
+    let buffers = []
+
+    for i in range(1, bufnr("$"))
+        if getbufvar(i, "&modified") && getbufvar(i, "&modifiable") && getbufvar(i, "&buflisted")
+            call add(buffers, i)
+        endif
+    endfor
+
+    if empty(buffers)
+        call ctrlspace#ui#Msg("There are no unsaved buffers.")
+        return 0
+    endif
+
+    call ctrlspace#window#Kill(0, 1)
+
+    tabnew
+
+    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Unsaved buffers", 1)
+
+    for b in buffers
+        silent! exe ":b " . b
+    endfor
+
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Tab.Enable()
+    call ctrlspace#window#Toggle(1)
+    return 1
+endfunction
+
+function! ctrlspace#tabs#CollectForgottenBuffers()
+    let buffers = {}
+
+    for t in range(1, tabpagenr("$"))
+        silent! call extend(buffers, gettabvar(t, "CtrlSpaceList"))
+    endfor
+
+    let forgottenBuffers = []
+
+    for b in keys(ctrlspace#buffers#Buffers(0))
+        if !has_key(buffers, b)
+            call add(forgottenBuffers, b)
+        endif
+    endfor
+
+    if empty(forgottenBuffers)
+        call ctrlspace#ui#Msg("There are no forgotten buffers.")
+        return 0
+    endif
+
+    call ctrlspace#window#Kill(0, 1)
+
+    tabnew
+
+    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Forgotten buffers", 1)
+
+    for fb in forgottenBuffers
+        silent! exe ":b " . fb
+    endfor
+
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Tab.Enable()
+    call ctrlspace#window#Toggle(1)
+    return 1
 endfunction
