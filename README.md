@@ -183,14 +183,21 @@ to `.vimrc`.
 
 #### Symbols
 
-You can improve your UTF8 characters if necessary. Some graphic
-glyphs might not fit well to one another. If you feel plugin symbols look
-awful, don't hesitate to adjust symbols or their spacing. For example,
-I use MacVim and Inconsolata font, therefore I use the following adjustment:
+You can improve your UTF8 characters if necessary. Some graphic glyphs
+might not fit well to one another. If you feel plugin symbols look awful,
+don't hesitate to adjust symbols or their spacing. For example, I use
+MacVim with Inconsolata font, therefore I use the following adjustment:
 
-    let g:CtrlSpaceSymbols = { "NTM": " ⁺" }
+    if has("gui_running")
+        let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
+    endif
 
-You can find more about this option in the plugin help: 
+It might look weird in your setup, but with default font renderer in
+MacVim and Incosolata font at my favorite size it actually looks quite
+well. It's impossible to provide universal settings that would look good
+at any machine, therefore the fine tuning is left up to you.
+
+You can find more about this tuning option in the plugin help:
 
     :help g:CtrlSpaceSymbols
 
@@ -202,7 +209,9 @@ collect all files in your project directory. Specifically, I recommend
 that you install and use `ag`, as it respects `.gitignore` rules and is
 really fast. Once it's installed you can add this line to your `.vimrc`:
 
-    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+    if executable("ag")
+        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+    endif
 
 
 #### Colors
