@@ -503,7 +503,7 @@ explicitly. After your acceptance that root folder will be stored
 pemanently in the `.cs_cache` file as serve as a known root later.
 
 This `.cs_cache` file is created inside a folder specified by
-|g:CtrlSpaceCacheDir|.  By default it's set to your home directory
+|g:CtrlSpaceCacheDir|. By default it's set to your home directory
 
 If you add a directory to bookmarks, it will be considered as a project
 root automatically. Interestingly bookmarks are stored in the same cache
@@ -522,7 +522,7 @@ CtrlSpace has 5 lists:
  * Bookmark List (<b>)
 
 To open CtrlSpace window press <C-Space>. By default Buffer List will
-open.  Keys <h>, <o>, <l>, <w>, <b> when pressed again toggle between
+open. Keys <h>, <o>, <l>, <w>, <b> when pressed again toggle between
 current and previous list. Similarly <BS> works the same way.
 
 --------------------------------------------------------------------------
@@ -552,7 +552,7 @@ technical buffers of other plugins - not intended to be shown.
 Displays only buffers related to the current tab. By related I mean
 precisely "seen by (or shown in) this tab at least once". Such related
 buffers are listed in a buffer list hold by this tab (and available in the
-Single Mode).  The name Single refers to the fact we are browsing for
+Single Mode). The name Single refers to the fact we are browsing for
 single tab only.
 
 You can also "forget" a buffer by pressing <f>. Forgetting means
@@ -816,8 +816,8 @@ information about the current plugin version.
 Vim-CtrlSpace has many configuration options. To alter any of them, define
 it as global variables in your `.vimrc` file in the similar form: >
 
-  let g:CtrlSpaceFooBar = 123
-
+    let g:CtrlSpaceFooBar = 123
+<
 --------------------------------------------------------------------------
 
 7.1 *g:CtrlSpaceHeight*
