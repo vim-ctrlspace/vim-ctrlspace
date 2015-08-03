@@ -103,18 +103,25 @@ function! ctrlspace#keys#tab#SwitchTab(k)
 endfunction
 
 function! ctrlspace#keys#tab#NewTabLabel(k)
-    let nr = ctrlspace#window#SelectedIndex()
-    call ctrlspace#tabs#NewTabLabel(nr)
-    call ctrlspace#window#Kill(0, 0)
-    call ctrlspace#window#Toggle(1)
+    let l = line(".")
+
+    if ctrlspace#tabs#NewTabLabel(ctrlspace#window#SelectedIndex())
+        call ctrlspace#window#Kill(0, 0)
+        call ctrlspace#window#Toggle(1)
+        call ctrlspace#window#MoveSelectionBar(l)
+    endif
 endfunction
 
 function! ctrlspace#keys#tab#RemoveTabLabel(k)
-    let nr = ctrlspace#window#SelectedIndex()
-    call ctrlspace#tabs#RemoveTabLabel(nr)
-    call ctrlspace#window#Kill(0, 0)
-    call ctrlspace#window#Toggle(1)
-    redraw!
+    let l = line(".")
+
+    if ctrlspace#tabs#RemoveTabLabel(ctrlspace#window#SelectedIndex())
+        call ctrlspace#window#Kill(0, 0)
+        call ctrlspace#window#Toggle(1)
+        redraw!
+
+        call ctrlspace#window#MoveSelectionBar(l)
+    endif
 endfunction
 
 function! ctrlspace#keys#tab#MoveTab(k)

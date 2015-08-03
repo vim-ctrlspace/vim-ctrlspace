@@ -9,14 +9,24 @@ endfunction
 function! ctrlspace#tabs#NewTabLabel(tabnr)
     let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
     let label = ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", gettabvar(tabnr, "CtrlSpaceLabel"))
-    if !empty(label)
-        call ctrlspace#tabs#SetTabLabel(tabnr, label, 0)
+
+    if empty(label)
+        return 0
     endif
+
+    call ctrlspace#tabs#SetTabLabel(tabnr, label, 0)
+    return 1
 endfunction
 
 function! ctrlspace#tabs#RemoveTabLabel(tabnr)
     let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
+
+    if empty(gettabvar(tabnr, "CtrlSpaceLabel"))
+        return 0
+    endif
+
     call ctrlspace#tabs#SetTabLabel(tabnr, "", 0)
+    return 1
 endfunction
 
 function! ctrlspace#tabs#CloseTab()
