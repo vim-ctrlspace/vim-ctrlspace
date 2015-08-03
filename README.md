@@ -185,13 +185,14 @@ to `.vimrc`.
 
 You can improve your UTF8 characters if necessary. Some graphic
 glyphs might not fit well to one another. If you feel plugin symbols look
-crappy, don't hesitate to adjust symbols or their spacing. For example,
-I use MacVim and Inconsolata font, therefore I use the following adjustments:
+awful, don't hesitate to adjust symbols or their spacing. For example,
+I use MacVim and Inconsolata font, therefore I use the following adjustment:
 
-    let g:CtrlSpaceSymbols = { "CTab": "∗", "NTM": " ⁺" }
+    let g:CtrlSpaceSymbols = { "NTM": " ⁺" }
 
-You can find more about this option in [Configuration](#todo-link)
-section on project wiki (or type `:help g:CtrlSpaceSymbols`)
+You can find more about this option in the plugin help: 
+
+    :help g:CtrlSpaceSymbols
 
 
 #### Glob Command
@@ -216,7 +217,7 @@ the following setup:
 
 It provides overall good results. However some color schemes show search
 results with the same colors as PMenu groups. If that's your case try to
-link CtrlSpaceSearch highlight group to IncSearch instead.
+link CtrlSpaceSearch highlight group to IncSearch instead:
 
     hi link CtrlSpaceSearch IncSearch
 
