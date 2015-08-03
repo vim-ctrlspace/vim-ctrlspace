@@ -8,7 +8,7 @@ let s:configuration = {
                     \ "Sin":    "•",
                     \ "All":    "፨",
                     \ "Vis":    "★",
-                    \ "File":   "◉",
+                    \ "File":   "○",
                     \ "Tabs":   "▫",
                     \ "CTab":   "▪",
                     \ "NTM":    "⁺",
