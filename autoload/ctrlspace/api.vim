@@ -77,7 +77,7 @@ function! ctrlspace#api#StatuslineTabSegment()
     let bufsNumber = ctrlspace#api#TabBuffersNumber(currentTab)
     let title      = ctrlspace#api#TabTitle(currentTab, bufnr, bufname)
 
-    if !s:config.UnicodeFont && !empty(bufsNumber)
+    if !s:config.UseUnicode && !empty(bufsNumber)
         let bufsNumber = ":" . bufsNumber
     end
 
@@ -168,7 +168,7 @@ function! ctrlspace#api#TabBuffersNumber(tabnr)
     let numberToShow  = ""
 
     if buffersNumber > 1
-        if s:config.UnicodeFont
+        if s:config.UseUnicode
             let smallNumbers = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
             let numberStr    = string(buffersNumber)
 
@@ -219,7 +219,7 @@ function! ctrlspace#api#Guitablabel()
     let title      = ctrlspace#api#TabTitle(v:lnum, bufnr, bufname)
     let bufsNumber = ctrlspace#api#TabBuffersNumber(v:lnum)
 
-    if !s:config.UnicodeFont && !empty(bufsNumber)
+    if !s:config.UseUnicode && !empty(bufsNumber)
         let bufsNumber = ":" . bufsNumber
     end
 
@@ -247,7 +247,7 @@ function! ctrlspace#api#Tabline()
         let bufsNumber = ctrlspace#api#TabBuffersNumber(t)
         let title      = ctrlspace#api#TabTitle(t, bufnr, bufname)
 
-        if !s:config.UnicodeFont && !empty(bufsNumber)
+        if !s:config.UseUnicode && !empty(bufsNumber)
             let bufsNumber = ":" . bufsNumber
         end
 

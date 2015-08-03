@@ -61,7 +61,7 @@ let s:configuration = {
                 \ "LoadLastWorkspaceOnStart": 0,
                 \ "CacheDir":                 expand($HOME),
                 \ "ProjectRootMarkers":       [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"],
-                \ "UnicodeFont":              1,
+                \ "UseUnicode":               1,
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
                 \ "SearchTiming":             500,
                 \ "SearchResonators":         ['.', '/', '\', '_', '-'],
@@ -77,7 +77,7 @@ function! s:init()
         endif
     endfor
 
-    let s:conf.Symbols = copy(s:conf.UnicodeFont ? s:conf.defaultSymbols.unicode : s:conf.defaultSymbols.ascii)
+    let s:conf.Symbols = copy(s:conf.UseUnicode ? s:conf.defaultSymbols.unicode : s:conf.defaultSymbols.ascii)
 
     if exists("g:CtrlSpaceSymbols")
         call extend(s:conf.Symbols, g:CtrlSpaceSymbols)

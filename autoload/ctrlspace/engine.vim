@@ -49,7 +49,6 @@ function! s:contentFromFileEngine()
                 \ s:maxDisplayedItems . ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
-
     let results  = split(system(s:config.FileEngine, [context]), "\n")
     let patterns = eval(results[0])
     let indices  = eval(results[1])
@@ -201,7 +200,7 @@ function! s:tabContent(clv)
         let tabBufsNumber = ctrlspace#api#TabBuffersNumber(i)
         let title         = ctrlspace#api#TabTitle(i, bufnr, bufname)
 
-        if !s:config.UnicodeFont && !empty(tabBufsNumber)
+        if !s:config.UseUnicode && !empty(tabBufsNumber)
             let tabBufsNumber = ":" . tabBufsNumber
         endif
 
