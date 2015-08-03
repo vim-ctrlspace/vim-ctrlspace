@@ -275,12 +275,3 @@ endfunction
 function! ctrlspace#api#BufNr()
     return bufexists(ctrlspace#context#PluginBuffer()) ? ctrlspace#context#PluginBuffer() : -1
 endfunction
-
-function! ctrlspace#api#TabModified(tabnr)
-    for b in map(keys(ctrlspace#api#Buffers(a:tabnr)), "str2nr(v:val)")
-        if getbufvar(b, '&modified')
-            return 1
-        endif
-    endfor
-    return 0
-endfunction
