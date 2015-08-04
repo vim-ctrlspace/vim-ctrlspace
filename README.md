@@ -67,13 +67,13 @@ names:
 
 ## Idea by Analogy
 
-<p align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/version_5/gfx/cs5_window.png" />
-</p>
-
 Vim-CtrlSpace interface is a window you can invoke by pressing
 `<C-Space>`. The window displays a list of items. You can select those
 items with `<h>`, `<j>`, and `<CR>` keys.
+
+<p align="center">
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/version_5/gfx/cs5_window.png" />
+</p>
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists: 
 
@@ -253,16 +253,19 @@ I advise you to add a project to the Bookmark List by opening the plugin
 window (`<C-Space>`) and pressing `<b>`. The plugin will ask for a project
 directory.
 
-Make sure that the path **is not home directory**. Otherwise the plugin
-will start indexing all your files which will be pointless and resource
-exhaustive. Be concrete and provide a real path to a project. Once your
-bookmark is created, you can go there with `<CR>`.
+Make sure that the path **is not your home directory**. Otherwise the
+plugin will start indexing all your files which will be pointless and
+resource exhaustive. Be concrete and provide a real path to a project.
+Once your bookmark is created, you can go there with `<CR>`.
 
 Now open some files with `<o>`. Finally save a workspace with `<w>` by
 providing your first workspace name.
 
-More guides you can find in the [project wiki](#todo-link). For key
-reference press `<?>` inside the plugin window.
+For more information please check out Vim-CtrlSpace help directly in Vim:
+
+    :help ctrlspace
+
+For key reference press `<?>` inside the plugin window.
 
 
 ## Authors and License
