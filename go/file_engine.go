@@ -1,5 +1,7 @@
 package main
 
+// compile with: gox --output="../bin/file_engine_{{.OS}}_{{.Arch}}"
+
 import (
 	"bufio"
 	"encoding/json"
@@ -16,7 +18,11 @@ var (
 	items   ItemCollection
 )
 
-const itemSpace int = 5
+const (
+	itemSpace         = 5
+	maxSearchedItems  = 200
+	maxDisplayedItems = 500
+)
 
 type Context struct {
 	SearchModeEnabled int
@@ -24,8 +30,6 @@ type Context struct {
 	SearchResonators  string
 	Columns           int
 	MaxHeight         int
-	MaxSearchedItems  int
-	MaxDisplayedItems int
 	Path              string
 	Dots              string
 	DotsSize          int
@@ -180,7 +184,7 @@ func (items *ItemCollection) Init() error {
 }
 
 func (items *ItemCollection) TrimByNoise() {
-	results := make([]*FileItem, 0, context.MaxSearchedItems)
+	results := make([]*FileItem, 0, maxSearchedItems)
 
 	for _, item := range *items {
 		item.ComputeItemNoise()
@@ -189,7 +193,7 @@ func (items *ItemCollection) TrimByNoise() {
 			continue
 		}
 
-		if len(results) < context.MaxSearchedItems {
+		if len(results) < maxSearchedItems {
 			results = append(results, item)
 		} else {
 			maxIndex, maxNoise := -1, -1
@@ -271,8 +275,8 @@ func PrepareContent() ([]string, []string, string, []string) {
 		items.TrimByNoise()
 		sort.Sort(&SortByNoiseAndText{SortItems{items}})
 	} else {
-		if len(items) > context.MaxDisplayedItems {
-			items = items[0:context.MaxDisplayedItems]
+		if len(items) > maxDisplayedItems {
+			items = items[0:maxDisplayedItems]
 		}
 
 		sort.Sort(&SortByText{SortItems{items}})

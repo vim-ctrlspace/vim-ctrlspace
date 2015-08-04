@@ -1,7 +1,5 @@
-let s:config            = ctrlspace#context#Configuration()
-let s:modes             = ctrlspace#modes#Modes()
-let s:maxSearchedItems  = 200
-let s:maxDisplayedItems = 500
+let s:config = ctrlspace#context#Configuration()
+let s:modes  = ctrlspace#modes#Modes()
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
@@ -12,11 +10,11 @@ function! ctrlspace#engine#Content()
     let items = s:contentSource()
 
     if !empty(s:modes.Search.Data.Letters)
-        let items = s:computeLowestNoises(items, s:maxSearchedItems)
+        let items = s:computeLowestNoises(items)
         call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
     else
-        if len(items) > s:maxDisplayedItems
-            let items = items[0 : s:maxDisplayedItems - 1]
+        if len(items) > 500
+            let items = items[0:499]
         endif
 
         if s:modes.Tab.Enabled
@@ -45,8 +43,7 @@ function! s:contentFromFileEngine()
                 \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
                 \ '","SearchResonators":"' . escape(join(s:config.SearchResonators, ""), '\"') .
                 \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight() .
-                \ ',"MaxSearchedItems":' . s:maxSearchedItems . ',"MaxDisplayedItems":' .
-                \ s:maxDisplayedItems . ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
+                \ ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
     let results  = split(system(s:config.FileEngine, [context]), "\n")
@@ -96,7 +93,7 @@ function! ctrlspace#engine#CompareByNoiseAndText(a, b)
     endif
 endfunction
 
-function! s:computeLowestNoises(source, maxItems)
+function! s:computeLowestNoises(source)
     let results       = []
     let noises        = []
     let resultsCount  = 0
@@ -111,7 +108,7 @@ function! s:computeLowestNoises(source, maxItems)
             let item.noise   = noise
             let item.pattern = pattern
 
-            if resultsCount < a:maxItems
+            if resultsCount < 200
                 let resultsCount += 1
                 call add(results, item)
                 call add(noises, noise)
