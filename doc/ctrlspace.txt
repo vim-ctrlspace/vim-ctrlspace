@@ -163,10 +163,10 @@ The most exciting features of Vim-CtrlSpace 5 are:
 
 1.2 Upgrading from Version 4                           *ctrlspace-version-4*
 
-Version 5 is not backward compatible. But main issues are related to
-restoring your workspaces and there is a simple workaround for it.
+Version 5 is not backward compatible. Most issues are related to restoring
+your workspaces and there is a simple workaround for it.
 
-After upgrading please open `cs_workspaces` file for given project (it's
+After upgrading please open `cs_workspaces` file for a given project (it's
 usually stored at e.g. `.git/cs_workspaces`) and rename proper variable
 names: >
 
@@ -305,22 +305,24 @@ to `.vimrc`.
 
 3.2.2 Symbols                                            *ctrlspace-symbols*
 
-You can improve your UTF8 characters if necessary. Some graphic glyphs
-might not fit well to one another. If you feel plugin symbols look awful,
-don't hesitate to adjust symbols or their spacing. For example, I use
-MacVim with Inconsolata font, therefore I use the following adjustment: >
+Vim-Ctrlspace displays icons in the UI if your font supports UTF8, or
+ASCII characters as a fallback. Some symbols (glyphs) might not look well
+with the font you are using, so feel free to change and adjust them.
+
+This is the config I use for Inconsolata font in MacVim: >
 
     if has("gui_running")
         let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
     endif
 <
-It might look weird in your setup, but with default font renderer in
-MacVim and Incosolata font at my favorite size it actually looks quite
-well. It's impossible to provide universal settings that would look good
-at any machine, therefore the fine tuning is left up to you.
+Since it's impossible to provide universal character set that would look
+well on any machine, therefore the fine tuning is left up to you.
 
 You can find more about this tuning option in the plugin help:
 |g:CtrlSpaceSymbols|.
+
+If you feel that you have found a better symbol for a given view, you are
+more than welcome to open a pull request.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -342,7 +344,7 @@ this line to your `.vimrc`: >
 
 3.2.4 Colors                                              *ctrlspace-colors*
 
-Finally, you can tweak up some plugin colors. By default plugin uses
+Finally, you can adjust some plugin colors. By default plugin uses
 the following setup: >
 
     hi link CtrlSpaceNormal   PMenu
@@ -350,9 +352,9 @@ the following setup: >
     hi link CtrlSpaceSearch   Search
     hi link CtrlSpaceStatus   StatusLine
 <
-It provides overall good results. However some color schemes show search
-results with the same colors as PMenu groups. If that's your case try to
-link CtrlSpaceSearch highlight group to IncSearch instead: >
+However some color schemes show search results with the same colors as
+PMenu groups. If that's your case try to link CtrlSpaceSearch highlight
+group to IncSearch instead: >
 
     hi link CtrlSpaceSearch IncSearch
 <
@@ -401,22 +403,22 @@ modes. However, in a modal editor like Vim this should not fear you ;).
 
 You can jump between lists easily by pressing one of the following keys:
 
-| Key | Action                                              |
-| --- | --------------------------------------------------- |
-| `h`   | Toggle Buffer List (aka `H`ome List)                  |
-| `H`   | Jump to Buffer List (aka `H`ome List) in Search Mode  |
-| `o`   | Toggle File List (aka `O`pen List)                    |
-| `O`   | Jump to File List (aka `O`pen List) in Search Mode    |
-| `l`   | Toggle Tab List (aka `L`ists List)                    |
-| `L`   | Jump to Tab List (aka `L`ists List) in Search Mode    |
-| `w`   | Toggle `W`orkspace List                               |
-| `W`   | Jump to `W`orkspace List in Search Mode               |
-| `b`   | Toggle `B`ookmark List                                |
-| `B`   | Jump to `B`ookmark List in Search Mode                |
+| Key | Action                                                |
+| --- | ----------------------------------------------------- |
+| `h`   | Toggle Buffer List (aka `H`ome List)                    |
+| `H`   | Jump to Buffer List (aka `H`ome List) with Search Mode  |
+| `o`   | Toggle File List (aka `O`pen List)                      |
+| `O`   | Jump to File List (aka `O`pen List) with Search Mode    |
+| `l`   | Toggle Tab List (aka `L`ists List)                      |
+| `L`   | Jump to Tab List (aka `L`ists List) with Search Mode    |
+| `w`   | Toggle `W`orkspace List                                 |
+| `W`   | Jump to `W`orkspace List with Search Mode               |
+| `b`   | Toggle `B`ookmark List                                  |
+| `B`   | Jump to `B`ookmark List with Search Mode                |
 
-Anytime you can go back also by pressing <BS>.
+Anytime you can return by pressing <BS>.
 
-User interface of the plugin is a window with a list named a list view.
+User interface of the plugin is a window with a list view.
 Its status line contains important symbolic information:
 
 | UTF8 | ASCII | List        | Description               |
@@ -453,12 +455,11 @@ Those indicators can be configured via |g:CtrlSpaceSymbols| variable.
 
 Vim-CtrlSpace requires a status bar. If you are using a plugin customizing
 the status bar this might be a bit tricky. For example `vim-airline`
-(https://github.com/bling/vim-airline) plugin might require you to set: >
+(https://github.com/bling/vim-airline) plugin might require you to set
+option: >
 
     let g:airline_exclude_preview = 1
 <
-option.
-
 `LightLine` (https://github.com/itchyny/lightline.vim) will require to use
 custom status line segments, provided by Vim-CtrlSpace API.
 
@@ -467,57 +468,54 @@ custom status line segments, provided by Vim-CtrlSpace API.
 
 4.2 Tabline                                              *ctrlspace-tabline*
 
-Vim-CtrlSpace can set a custom tabline. If |g:CtrlSpaceUseTabline| is
-enabled the plugin will set a custom tabline for you. The tabs in that
-tabline are displayed in the following way (similar format is used also in
-the Tab List):
+Vim-CtrlSpace can set a custom tabline for you, if |g:CtrlSpaceUseTabline|
+is enabled. Tabs in the tabline are displayed in the following way
+(similar format is used also in the Tab List):
 
 | Format | Tab number | Buffers | Modified | Buffer or tab name |
 | ------ | ---------- | ------- | -------- | ------------------ |
 | UTF8   | `1`          | `²`       | `+`        | `[README.md]`        |
 | ASCII  | `1`          | `:2`      | `+`        | `[README.md]`        |
 
-
 If GUI tabs are detected, this option will also set the proper function to
 |guitablabel|.
 
-Notice, that intensive tabs usage makes the Vim tabline feature less
-usable, because of increasing tab number, especially with long names. And
-that's when you can find the Tab List can really work for you. You can even
-turn off the tabline completely: >
+Intensive tabs usage makes the tabline feature less usable, because window
+can only display limited amount of tabs especially with long names.
+
+Tab List is a solution to that problem so you can even turn off the
+tabline completely: >
 
     set showtabline=0
 <
-and rely on the Tab List solely. To see Tab List press <l> in the plugin
-window.
+To see Tab List press <l> in the plugin window.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 4.3 Project Root                                    *ctrlspace-project-root*
 
-Some plugin features require a project to work properly. If you open the
-File List for the first time in given Vim's working directory (CWD) it
-will try to find out the possible project root directory.
+Some plugin features require a project directory to work properly. If you
+open the File List for the first time in a given Vim working directory
+(CWD) it will try to figure out the possible project root directory.
 
-First, it starts in the Vim's current working directory and check if there
-are so called "root markers". The root markers are characteristic
-directories that are available in an exemplary project root directory
-(like `.git` or `.hg`...). You can define them yourself in the
+First, it starts in the Vim current working directory and checks for so
+called "root markers". The root markers are characteristic directories
+that are available in an exemplary project root directory (like `.git` or
+`.hg`...). You can define them yourself in the
 |g:CtrlSpaceProjectRootMarkers| variable.
 
-If no markers were found the plugin will check if perhaps this directory
-is a known root. The known roots are those directories you provided
-(accepted) yourself.
+If no markers were found the plugin will check if CWD is a known root. The
+known roots are those directories you provided (accepted) yourself.
 
-If the current directory cannot be proven as a project root, the algorithm
-will repeat the whole procedure in the parent one.
+If the current directory is not a project root the algorithm will repeat
+the whole procedure in the parent directory.
 
-After checking all predecessors it will ask you to provide the root folder
-explicitly. After your acceptance that root folder will be stored
-pemanently in the `.cs_cache` file as serve as a known root later.
+After checking all parent directories plugin will ask you to provide the
+root folder explicitly. After your acceptance your choice will be stored
+permanently in the `.cs_cache` file.
 
-This `.cs_cache` file is created inside a folder specified by
+The `.cs_cache` file is created inside a folder specified by
 |g:CtrlSpaceCacheDir|. By default it's set to your home directory
 
 If you add a directory to bookmarks, it will be considered as a project
@@ -553,7 +551,7 @@ Displays buffers from:
  * all available buffers (All Mode <a>)
 
 Buffers in Vim can have various "properties". The plugin displays only
-certain buffers: "listed" (|buflisted|) and named. Unnamed buffers are
+certain buffers: "listed" (|buflisted|) and named ones. Unnamed buffers are
 diplayed only when visible in the current tab or contain unsaved changes
 (|modified|). This restriction prevents from accidentally diplaying
 technical buffers of other plugins - not intended to be shown.
@@ -569,17 +567,17 @@ technical buffers of other plugins - not intended to be shown.
 
 Displays only buffers related to the current tab. By related I mean
 precisely "seen by (or shown in) this tab at least once". Such related
-buffers are listed in a buffer list hold by this tab (and available in the
-Single Mode). The name Single refers to the fact we are browsing for
-single tab only.
+buffers are present in a buffer list kept by this tab (and available in
+the Single Mode). The Single name refers to the fact we are browsing only
+a list of this tab.
 
 You can also "forget" a buffer by pressing <f>. Forgetting means
 detaching, making unrelated, or just making foreign to the given tab. Such
 buffer might be related to other tabs instead or might be unrelated to any
-tab. Then it would be available only through the "All Mode" (press <a>).
+tab. Then it would only be available through the "All Mode" (press <a>).
 
 Forgotten buffers unrelated to any tab are called "foreign buffers". They
-can be automatically deleted (closed) by pressing <F>. You can also on the
+can be automatically deleted (closed) by pressing <F>. You can also
 collect them in an automatic tab by pressing <f> in the Tab List.
 
                                                              |ctrlspace-toc|
@@ -597,7 +595,7 @@ only those 2 files will be displayed in the list.
 
 You can easily move between visible windows with <Tab>. By <S-Tab> you can
 move to window and go back to the plugin. This action results in changing
-the active window on which plugin would operate.
+the active window on which plugin will operate.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -609,7 +607,7 @@ the active window on which plugin would operate.
 | `፨`    | `ALL`   |
 
 Displays buffers from all tabs together with foreign buffers. Practically
-it displays all possible buffers similarly to `:ls` command.
+it displays all possible buffers similarly to |:ls| command.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -646,12 +644,11 @@ added by mistake.
 | ---- | ----- |
 | `▫▪▫`  | `-+-`   |
 
-Tabs in Vim-CtrlSpace are considered as lists of related buffers. But of
-course, they remain regular Vim tab pages. So they can display the buffers
-they carry in split windows, they can be moved, copied, deleted, named,
-extracted, switched, etc.
+Tabs in Vim-CtrlSpace are considered as lists of related buffers still
+remaining regular Vim tab pages. They can display buffers in split
+windows, be moved, copied, deleted, named, extracted, switched, and so on.
 
-The plugin lets you to perform many classic tab actions easily in the Tab
+The plugin lets you perform many classic tab actions easily in the Tab
 List by pressing letter <l> (for `L`ists - since tab pages are simply
 seperate buffer lists).
 
@@ -659,20 +656,19 @@ Tabs, due to this plugin nature, are used more extensively than in a
 typical Vim usage. Vim author, Bram Moolenaar in his great talk "7 Habits
 of Effective Text Editing" (http://www.youtube.com/watch?v=p6K4iIMlouI)
 stated that if you needed more than 10 tabs then probably you were doing
-something wrong. This in not the case in Vim-CtrlSpace. Here tab pages are
-great, labelled containers for buffers, and therefore they are heavily
-used.
+something wrong. This in not the case in Vim-CtrlSpace where tab pages are
+labelled containers for buffers.
 
-This also implies that the default tabline used in Vim to organize tab
-pages is not sufficient. For example, you might have more tabs with wide
-labels which don't fit the tabline width, causing rendering problems.
+Therefore the default tabline used in Vim for organizing tab pages is not
+sufficient. For example, you might have more tabs with long labels which
+don't fit the tabline width, causing rendering problems.
 
-It's recommended to turn off the tabline entirely (via Vim's |showtabline|
-option) and stick to the Tab List only.
+It's recommended to turn off the tabline entirely (via Vim |showtabline|
+option) and stick only to the Tab List.
 
 Tabs can be (re)named (<=> or <m>, and <_>). Labelled tabs containing more
 than one buffer can be closed (<c>) after a confirmation (except automatic
-ones). Automatic tabs are labelled tabs created automatically by the
+tabs). Automatic tabs are labelled tabs created automatically by the
 plugin as a result of copying (<y>), collecting unsaved buffers (<u>), or
 collecting foreign buffers (<f>).
 
@@ -688,12 +684,12 @@ collecting foreign buffers (<f>).
 
 The plugin allows you to save and load workspaces. A workspace is a set of
 opened windows, tabs, and buffers. The Workspace List shows you available
-workspaces for given project. By default this list is displayed in the
+workspaces for a given project. By default this list is displayed in the
 Load Mode. To open Workspace List press <w>. Then press <s> to select the
-mode (toggles between Save and Load ones), <m> or <=> to rename, finally
-<d> to delete.
+mode (toggles between Save and Load modes), <m>, <=> to rename, and <d> to
+delete.
 
-The word "workspace" can be considered as a synonym of a "session". The
+The word "workspace" can be considered a synonym of a "session". The
 ability of having so many sessions available at hand creates a lot of
 interesting use cases! For example, you can have a workspace for each task
 or feature you are working on. It's very easy to switch from one workspace
@@ -701,11 +697,11 @@ to another.
 
 You can easily append any workspace to your current one (press <a>).
 Moreover, you can have special workspaces prepared to be appended to
-others. In that way you are able reuse common and repetative sets of tabs
-and files in many contexts.
+others. In that way you are able to reuse common and repetative sets of
+tabs and files in many contexts.
 
 Workspaces are saved in a file (`.cs_workspaces`) inside the project
-directory. Its extact name and path is determined by configuration.
+directory. Its exact name and path is determined by configuration.
 
 It's also possible to automatically load the last active workspace on Vim
 startup and save active workspace on Vim exit. See
@@ -721,21 +717,20 @@ for more details.
 | ---- | ----- |
 | `♥`    | `BM`    |
 
-Bookmark List can be treated as a Project list populated with your
-favorite projects. With bookmarks you can easily jump between different
-directory locations (changes Vim's CWD).
+Bookmark List can be treated as a favorite project list. With bookmarks
+you can easily jump between different directory locations (changes Vim
+CWD).
 
-In that way inside different projects you will have different file lists,
-different workspace lists, etc. Nothing prevents you to mix buffers
-between various projects - you can for example, jump to previous project,
-open a configuration file, and return to your current stuff with that file
-open.
+Each project directory contains naturally a different file list, different
+workspace list, etc. Nothing prevents you to mix buffers between various
+projects - you can, for example jump to previous project, open a
+configuration file, and return to your current stuff with that file open.
 
 To see the Bookmark List press <b>. To add a bookmark - press <a>, to edit
 the target directory - <e>. You can also rename it with <m> and <=>.
 
 It's worth to mention, that you can still navigate to different places
-manually, with the |:cd| command. The plugin will behave in the same way.
+manually, with the |:cd| command. The plugin will behave the same way.
 In fact, jumping with Bookmark List is just like a shortcut for the |:cd|
 command.
 
@@ -767,8 +762,8 @@ Zoom Mode works for Buffer and File Lists. To toggle Zoom Mode on press
 list. Pressing <Space> doesn't add buffer to the current tab – if you want
 to add it press <CR>. To exit Zoom Mode press <z> again.
 
-When entering Zoom Mode your current position and list is stored. Later
-it's restored eventually upon exiting.
+When entering Zoom Mode your current position and list is remembered and
+reverted on exiting.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -779,18 +774,18 @@ it's restored eventually upon exiting.
 | ---- | ----- |
 | `⁺²`   | `+2`    |
 
-Similarly like the Zoom Mode, this one also occurs in File and Buffer
+Similarly like the Zoom Mode, Next Tab Mode works in File and Buffer
 Lists. It can be turned on with the uppercase <T> letter (or <C-t>). If
-the mode is active, <T> creates the new tab only once (that would be
-a next tab to the current one) and add all files/buffers to that tab. This
-is opposite to <t> which opens things in a new tab all the time. If you
+the mode is active, <T> creates the new tab only once (that would be a
+next tab to the current one) and add all files / buffers to that tab. This
+is opposite to <t> which opens things in a new tab every time. If you
 want to create a new tab but stay in the Next Tab Mode press <C-t>.
 
 The mode indicator shows you the number of buffers opened in the next tab.
 You can jump to that tab anytime with <]> key.
 
-This mode is allow you to bulk opening files or buffers in subsequent
-tabs. That way you can easily extract given items to separate tabs.
+This mode allows for bulk opening files or buffers in subsequent tabs.
+That way you can easily extract given items to separate tabs.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -801,29 +796,27 @@ tabs. That way you can easily extract given items to separate tabs.
 | ---- | ----- |
 | `›_‹`  | `[_]`   |
 
-This mode can be triggered by </> or by upperscase letter of given list
+This mode can be triggered by </> or by a capital letter of given list
 (<H>, <O>, <L>, <W>, <B>). In that mode you can enter a search text. This
 will narrow the list content and sort items by relevance (the highest
-score - the lowest position). To end entering press <CR>. If you press
-<Tab> instead your text will be accepted and followed immediately (just
-like pressing <CR> twice). To see full key reference during query entering
-press <?>.
+score - the lowest position). To finish entering press <CR> or </>. If you
+press <Tab> instead, your text will be accepted and followed immediately
+(just like pressing <CR> twice). To see full key reference during query
+entering press <?>.
 
-To wipe out the search query press <BS>. To restore previous queries from
-history go with <C-p> (previous) and <C-n> (next).
+To clear the search query press <BS>. To use previous queries from history
+press <C-p> (previous) or <C-n> (next).
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.4 Nop Mode                                            *ctrlspace-nop-mode*
 
-Nop (Non-Operational) Mode happens when i.e. there are no items to show
-(empty list), or you are trying to type a Search query, and there are no
-results for that query at all. That means the Nop can happen during the
-"entering phase" of the Search Mode or in some other cases, e.g. changed
-list narrowed by some search query to the one with no results.
+Nop (Non-Operational) Mode happens when for example there are no items to
+show (empty list), or you are trying to type a search query, and there are
+no results at all.
 
-As always to see what are the rescue options from a Nop Mode check <?>.
+To see what are the rescue options from a Nop Mode check <?>.
 Sometimes it would be <BS> removing search query, sometimes switching to
 different list (<h>, <o>, <l>, <w>, or <b>).
 
@@ -834,10 +827,7 @@ different list (<h>, <o>, <l>, <w>, or <b>).
 
 Help Mode is a view showing available keys together with their
 descriptions, depending on your current list and modes. You can toggle
-Help Mode anywhere by pressing <?>.
-
-The first line informs about the list and modes. The last line contains
-information about the current plugin version.
+Help Mode in any view by pressing <?>.
 
                                                              |ctrlspace-toc|
 ==========================================================================
@@ -863,7 +853,7 @@ Sets the minimal height of the plugin window. Default value: >
 
 7.2 *g:CtrlSpaceMaxHeight*
 
-Sets the maximum height of the plugin window. If `0` provided it uses 1/3
+Sets the maximum height of the plugin window. If `0` is provided it uses 1/3
 of the screen height. Default value: >
 
     let g:CtrlSpaceMaxHeight = 0
@@ -895,7 +885,7 @@ notation. Default value: >
 7.5 *g:CtrlSpaceKeys*
 
 You can provide your own functions and override default key bindings in
-that way. The g:CtrlSpaceKeys can store a dictionary, where keys could be
+that way. The |g:CtrlSpaceKeys| can store a dictionary, where keys could be
 lists or modes, accordingly:
 
  * `"Search"`
@@ -935,8 +925,8 @@ Default value: >
 7.6 *g:CtrlSpaceHelp*
 
 Allows you to provide a help description for your custom functions.
-Constains a dictionary with keys holding function names and values
-containing their descriptions. This will be displayed in the at the Help
+Contains a dictionary with keys holding function names and values
+containing their descriptions. They will be displayed in the Help
 Mode. Example: >
 
     let g:CtrlSpaceHelp = { "PrintFooBar": "Print foo bar!" }
@@ -951,7 +941,7 @@ Default value: >
 7.7 *g:CtrlSpaceGlobCommand*
 
 If not empty, the provided command will be used to list all files instead
-of Vim |globpath()| function. For example, if you have Ag installed that
+of Vim |globpath()| function. For example, if you have `Ag` installed that
 could be: >
 
     if executable("ag")
@@ -991,8 +981,8 @@ Default value: >
 7.10 *g:CtrlSpaceSaveWorkspaceOnExit*
 
 Saves the active workspace (if present) on Vim quit. If this option is
-set, the Vim quit (<Q>) action from the plugin modes does not check for
-workspace changes.
+set, the Vim quit (<Q>) action in the plugin does not check for workspace
+changes.
 
 Default value: >
 
@@ -1003,9 +993,9 @@ Default value: >
 
 7.11 *g:CtrlSpaceSaveWorkspaceOnSwitch*
 
-Saves the active workspace (if present) upon switching to another
-workspace or clearing (closing) the current one. If this option is set,
-the plugin won't warn you about an unsaved workspace.
+Saves the active workspace (if present) on switching to another workspace
+or clearing (closing) the current one. If this option is set, the plugin
+won't warn you about an unsaved workspace.
 
 Default value: >
 
@@ -1040,13 +1030,12 @@ Default value: >
 7.14 *g:CtrlSpaceProjectRootMarkers*
 
 An array of directory names which presence indicates the project root. If
-no marker is found, you will be asked to confirm the project root basing
-on the current working directory. Make this array empty to disable this
-functionality.
+no marker is found, you will be asked to confirm the project root
+depending on the current working directory. Use empty array to disable
+this functionality.
 
-These markes will be also used as a storage for `cs_workspaces`
-(workspaces of the current project) and `cs_files` (cached files of the
-current project).
+Markers will be also used as a storage for `cs_workspaces` (workspaces of
+the current project) and `cs_files` (cached files of the current project).
 
 Default value: >
 
@@ -1075,7 +1064,7 @@ Default value: >
 
 7.16 *g:CtrlSpaceSymbols*
 
-Enables you to provide your own symbols. It's useful if for example your
+Enables you to provide your own symbols. It's useful if, for example, your
 font doesn't contain enough symbols or the glyphs are poorly rendered.
 
 Vim-CtrlSpace uses the following defaults:
@@ -1102,7 +1091,7 @@ Vim-CtrlSpace uses the following defaults:
 | `IM`     | `+`    | `+`     |
 | `Dots`   | `…`    | `...`   |
 
-You can redefine your own like in this example: >
+You can define your own symbols like in this example: >
 
     let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
 <
@@ -1117,8 +1106,8 @@ Default value: >
 
 The expression used to ignore some files during file collecting. It is
 used in addition to the `wildignore` option in Vim (see |wildignore|).
-Notice, the `wildignore` option won't work with a custom glob command
-(|g:CtrlSpaceGlobCommand|). And the glob command may ignore some files
+The `wildignore` option won't work with a custom glob command
+(|g:CtrlSpaceGlobCommand|). The glob command may ignore some files
 itself (for example: `Ag` command obeys `.gitignore` file).
 
 Default value: >
@@ -1201,7 +1190,7 @@ several architectures:
 
 The engine protocol is relatively simple and it's possible to implement an
 engine in any technology. The engine must be provided as an executable
-file to the `bin` directory in the plugin folder. Then to enable it
+file in the `bin` directory in the plugin folder. Then to enable it
 provide the executable name as a string to |g:CtrlSpaceFileEngine| variable.
 For example, a Go version for Mac OS X: >
 
@@ -1277,26 +1266,26 @@ Removes a custom tab label.
 
 8.1.6 *:CtrlSpaceSaveWorkspace* [my workspace]
 
-Saves the workspace with the given name. If no name is given then it saves
-the active workspace (if present).
+Saves the workspace with a given name. If no name is provided then it
+saves the active workspace (if present).
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.7 *:CtrlSpaceNewWorkspace*
 
-Closes all opened buffers and eventually opened workspace and leaves only
-one tab and one buffer, as in a fresh Vim instance. This is useful if you
-want to start creating a workspace from the very beginning.
+Closes all opened buffers and the active workspace (if any) and leaves
+only one tab and one buffer, as in a fresh Vim instance. This is useful if
+you want to create an empty workspace.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.8 *:CtrlSpaceLoadWorkspace* [!] [my workspace]
 
-Loads the workspace with the given name. It has also a banged version
+Loads the workspace with a given name. It has also a banged version
 ( *:CtrlSpaceLoadWorkspace!* ) which performs appending instead of
-loading. If no name is give then it loads (or appends) the active
+loading. If no name is given then it loads (or appends) the active
 workspace (if present).
 
                                                              |ctrlspace-toc|
@@ -1304,18 +1293,18 @@ workspace (if present).
 
 8.1.9 *:CtrlSpaceAddProjectRoot* [directory]
 
-Add a passed directory as a permanent project root. It's useful when e.g.
-project root markers are missing or available on a too higher level of
-a hierarchy. If no directory has been passed the current working one is
-taken instead.
+Add a given directory as a permanent project root. It's useful when, for
+example project root markers are missing or available on a too higher
+level of a hierarchy. If no directory is given the current working
+directory is used instead.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.10 *:CtrlSpaceRemoveProjectRoot* [directory]
 
-Removes a passed directory from permanent project root collection. If no
-directory has been passed the current working one is taken instead.
+Removes a given directory from permanent project root collection. If no
+directory is given the current working directory is used instead.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1326,16 +1315,15 @@ Almost all Vim-CtrlSpace function are public and accessible from any
 place. However some of them in the `ctrlspace#api` namespace are designed
 for external integration with the plugin internals.
 
-You can use those API functions for seamless status line integration,
-tabline integration, or just for more advanced interactions with other
-plugins.
+You can use those API functions for seamless status line or tabline
+integration, or just for more advanced interactions with other plugins.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.1 ctrlspace#api#BufferList(tabnr)           *ctrlspace#api#BufferList()*
 
-Returns a list of buffers available in the given tab. The list is sorted
+Returns a list of buffers available in a given tab. The list is sorted
 in the same order like in the CtrlSpace Buffer List window.
 
                                                              |ctrlspace-toc|
@@ -1343,7 +1331,7 @@ in the same order like in the CtrlSpace Buffer List window.
 
 8.2.2 ctrlspace#api#Buffers(tabnr)                 *ctrlspace#api#Buffers()*
 
-Returns a dictionary of buffer number and name pairs for given tab. This
+Returns a dictionary of buffer number and name pairs for a given tab. This
 is the content of the internal buffer list belonging to the specified tab.
 
                                                              |ctrlspace-toc|
@@ -1358,7 +1346,7 @@ Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
 8.2.4 ctrlspace#api#Statusline()                *ctrlspace#api#Statusline()*
 
-Provides the custom statusline string used by plugin window.
+Provides a custom statusline string used by plugin window.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1374,9 +1362,9 @@ useful if you don't use the custom tabline string (or perhaps you have set
                                      *ctrlspace#api#StatuslineModeSegment()*
 8.2.6 ctrlspace#api#StatuslineModeSegment(...)
 
-Returns the info about the mode of the plugin. It can take an optional
-separator. It can be useful for a custom status line integration (e.g. in
-plugins like LightLine (https://github.com/itchyny/lightline.vim))
+Returns the info about the plugin mode. It can take an optional separator.
+It can be useful for a custom status line integration (e.g. in plugins
+like LightLine (https://github.com/itchyny/lightline.vim))
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1394,7 +1382,7 @@ implementation.
                                                   *ctrlspace#api#TabTitle()*
 8.2.8 ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 
-A helper function returning a consistent title for given tab. If the tab
+A helper function returning a consistent title for a given tab. If the tab
 does not have a custom title, then the title based on passed buffer number
 and buffer name is returned instead.
 
@@ -1403,14 +1391,14 @@ and buffer name is returned instead.
 
 8.2.9 ctrlspace#api#Guitablabel()              *ctrlspace#api#Guitablabel()*
 
-Provides the custom label for GVim's tabs.
+Provides a custom label for GVim tabs.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.10 ctrlspace#api#Tabline()                     *ctrlspace#api#Tabline()*
 
-Provides the custom tabline string.
+Provides a custom tabline string.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1420,6 +1408,7 @@ Provides the custom tabline string.
 Returns the current plugin buffer number if the plugin is visible or `-1`
 otherwise.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 9. Authors and License                       *ctrlspace-authors-and-license*
@@ -1438,5 +1427,8 @@ Vim-Tabber by Jim Steward and Tabline by Matthew Kitt.
 
 Special thanks to Wojtek Ryrych (https://github.com/ryrych) for help and
 patience ;) and all Contributors.
+
+                                                             |ctrlspace-toc|
+==========================================================================
 
 vim:tw=74:ts=4:ft=help:norl:

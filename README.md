@@ -52,10 +52,10 @@ The most exciting **Vim-CtrlSpace 5** features are:
 
 ##### Upgrading from Version 4
 
-Version 5 is not backward compatible. But main issues are
-related to restoring your workspaces and there is a simple workaround for it.
+Version 5 is not backward compatible. But most issues are related to
+restoring your workspaces and there is a simple workaround for it.
 
-After upgrading please open `cs_workspaces` file for given project (it's
+After upgrading please open `cs_workspaces` file for a given project (it's
 usually stored at e.g. `.git/cs_workspaces`) and rename proper variable
 names:
 
@@ -186,23 +186,25 @@ to `.vimrc`.
 
 #### Symbols
 
-You can improve your UTF8 characters if necessary. Some graphic glyphs
-might not fit well to one another. If you feel plugin symbols look awful,
-don't hesitate to adjust symbols or their spacing. For example, I use
-MacVim with Inconsolata font, therefore I use the following adjustment:
+Vim-Ctrlspace displays icons in the UI if your font supports UTF8, or
+ASCII characters as a fallback. Some symbols (glyphs) might not look well
+with the font you are using, so feel free to change and adjust them.
+
+This is the config I use for Inconsolata font in MacVim:
 
     if has("gui_running")
         let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
     endif
 
-It might look weird in your setup, but with default font renderer in
-MacVim and Incosolata font at my favorite size it actually looks quite
-well. It's impossible to provide universal settings that would look good
-at any machine, therefore the fine tuning is left up to you.
+Since it's impossible to provide universal character set that would look well
+on any machine, therefore the fine tuning is left up to you.
 
 You can find more about this tuning option in the plugin help:
 
     :help g:CtrlSpaceSymbols
+
+If you feel that you have found a better symbol for a given view, you are
+more than welcome to open a pull request.
 
 
 #### Glob Command
@@ -219,7 +221,7 @@ really fast. Once it's installed you can add this line to your `.vimrc`:
 
 #### Colors
 
-Finally, you can tweak up some plugin colors. By default plugin uses
+Finally, you can adjust some plugin colors. By default plugin uses
 the following setup:
 
     hi link CtrlSpaceNormal   PMenu
@@ -227,9 +229,9 @@ the following setup:
     hi link CtrlSpaceSearch   Search
     hi link CtrlSpaceStatus   StatusLine
 
-It provides overall good results. However some color schemes show search
-results with the same colors as PMenu groups. If that's your case try to
-link CtrlSpaceSearch highlight group to IncSearch instead:
+However some color schemes show search results with the same colors as
+PMenu groups. If that's your case try to link CtrlSpaceSearch highlight
+group to IncSearch instead:
 
     hi link CtrlSpaceSearch IncSearch
 
