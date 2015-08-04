@@ -24,7 +24,6 @@ Table of Contents                                            *ctrlspace-toc*
 
 1. Overview                                             |ctrlspace-overview|
   1.1 Version 5                                        |ctrlspace-version-5|
-  1.2 Upgrading from Version 4                         |ctrlspace-version-4|
 2. Idea by Analogy                                          |ctrlspace-idea|
 3. Getting Started                               |ctrlspace-getting-started|
   3.1 Installation                                  |ctrlspace-installation|
@@ -158,23 +157,10 @@ The most exciting features of Vim-CtrlSpace 5 are:
  * more effective and responsive behavior
  * fine-grained configuration
 
-                                                             |ctrlspace-toc|
---------------------------------------------------------------------------
+Version 5 is not backward compatible. All configuration variables and API
+functions have been renamed. Please check |ctrlspace-configuration| for
+more info.
 
-1.2 Upgrading from Version 4                           *ctrlspace-version-4*
-
-Version 5 is not backward compatible. Most issues are related to restoring
-your workspaces and there is a simple workaround for it.
-
-After upgrading please open `cs_workspaces` file for a given project (it's
-usually stored at e.g. `.git/cs_workspaces`) and rename proper variable
-names: >
-
-    :e .git/cs_workspaces
-    :%s/t:ctrlspace_label/t:CtrlSpaceLabel/g
-    :%s/t:ctrlspace_autotab/t:CtrlSpaceAutotab/g
-    :wq
-<
                                                              |ctrlspace-toc|
 ==========================================================================
 

@@ -25,7 +25,7 @@ idea, don't hesitate to post new issues or pull requests. Collaboration is
 the most awesome thing in the open source community!
 
 
-#### Version 5
+### Version 5
 
 Vim-CtrlSpace started over 2 years ago as a fork of [another
 plugin](https://github.com/roblillack/vim-bufferlist) and the Version
@@ -49,20 +49,10 @@ The most exciting **Vim-CtrlSpace 5** features are:
 * more effective and responsive behavior
 * fine-grained configuration
 
+Version 5 is not backward compatible. All configuration variables and API
+functions have been renamed. Please check Vim help for more info:
 
-##### Upgrading from Version 4
-
-Version 5 is not backward compatible. But most issues are related to
-restoring your workspaces and there is a simple workaround for it.
-
-After upgrading please open `cs_workspaces` file for a given project (it's
-usually stored at e.g. `.git/cs_workspaces`) and rename proper variable
-names:
-
-    :e .git/cs_workspaces
-    :%s/t:ctrlspace_label/t:CtrlSpaceLabel/g
-    :%s/t:ctrlspace_autotab/t:CtrlSpaceAutotab/g
-    :wq
+    :help ctrlspace-configuration
 
 
 ## Idea by Analogy

@@ -211,6 +211,8 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
         elseif ol ==# endMarker
             let inWorkspace = 0
         elseif inWorkspace
+            let ol = substitute(ol, "let t:ctrlspace_label", "let t:CtrlSpaceLabel", "")
+            let ol = substitute(ol, "let t:ctrlspace_autotab", "let t:CtrlSpaceAutotab", "")
             call add(lines, ol)
         endif
     endfor
