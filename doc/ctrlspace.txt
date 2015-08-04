@@ -20,7 +20,7 @@ Copyright (c) 2013-2015 Szymon Wrozynski and Contributors
 
 ==========================================================================
 
-Table of Contents                                            |ctrlspace-toc|
+Table of Contents                                            *ctrlspace-toc*
 
 1. Overview                                             |ctrlspace-overview|
   1.1 Version 5                                        |ctrlspace-version-5|
@@ -132,6 +132,7 @@ pet project now :). If you have a question, a feature request, or a new
 idea, don't hesitate to post new issues or pull requests. Collaboration
 is the most awesome thing in the open source community!
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 1.1 Version 5                                          *ctrlspace-version-5*
@@ -157,6 +158,7 @@ The most exciting features of Vim-CtrlSpace 5 are:
  * more effective and responsive behavior
  * fine-grained configuration
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 1.2 Upgrading from Version 4                           *ctrlspace-version-4*
@@ -173,6 +175,7 @@ names: >
     :%s/t:ctrlspace_autotab/t:CtrlSpaceAutotab/g
     :wq
 <
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 2. Idea by Analogy                                          *ctrlspace-idea*
@@ -226,10 +229,12 @@ All your buffers, tabs, and tab layouts can be persisted as a workspace.
 It's like taking a picture of your desk with an instant camera. You can
 save multiple workspaces per project with Workspace List.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 3. Getting Started                               *ctrlspace-getting-started*
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.1 Installation                                    *ctrlspace-installation*
@@ -245,6 +250,7 @@ You can also clone the repository to your `.vim` directory: >
     cd ~/.vim
     git clone https://github.com/szw/vim-ctrlspace.git .
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.2 Basic Settings                                *ctrlspace-basic-settings*
@@ -263,6 +269,7 @@ Tabline in Vim has very limited capabilities and as Vim-CtrlSpace makes
 use of tabs intensively, tabline would just get in your way. Tab List
 (<l>) makes tabline obsolete ;).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.2.1 Go Engine                                        *ctrlspace-go-engine*
@@ -293,6 +300,7 @@ it (this is an example for Mac OS X): >
 <
 to `.vimrc`.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.2.2 Symbols                                            *ctrlspace-symbols*
@@ -314,6 +322,7 @@ at any machine, therefore the fine tuning is left up to you.
 You can find more about this tuning option in the plugin help:
 |g:CtrlSpaceSymbols|.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.2.3 Glob Command                                  *ctrlspace-glob-command*
@@ -328,6 +337,7 @@ this line to your `.vimrc`: >
         let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
     endif
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.2.4 Colors                                              *ctrlspace-colors*
@@ -352,6 +362,7 @@ example: >
     hi CtrlSpaceSearch guifg=#cb4b16 guibg=NONE gui=bold
                      \ ctermfg=9 ctermbg=NONE term=bold cterm=bold
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 3.3 First Steps                                      *ctrlspace-first-steps*
@@ -379,6 +390,7 @@ providing your first workspace name.
 
 For key reference press <?> inside the plugin window.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 4. User Interface                                             *ctrlspace-ui*
@@ -434,6 +446,7 @@ Items listed in the plugin window can have additional indicators
 
 Those indicators can be configured via |g:CtrlSpaceSymbols| variable.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 4.1 Status Line                                      *ctrlspace-status-line*
@@ -449,6 +462,7 @@ option.
 `LightLine` (https://github.com/itchyny/lightline.vim) will require to use
 custom status line segments, provided by Vim-CtrlSpace API.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 4.2 Tabline                                              *ctrlspace-tabline*
@@ -477,6 +491,7 @@ turn off the tabline completely: >
 and rely on the Tab List solely. To see Tab List press <l> in the plugin
 window.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 4.3 Project Root                                    *ctrlspace-project-root*
@@ -509,6 +524,7 @@ If you add a directory to bookmarks, it will be considered as a project
 root automatically. Interestingly bookmarks are stored in the same cache
 file.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 5. Lists                                                   *ctrlspace-lists*
@@ -525,6 +541,7 @@ To open CtrlSpace window press <C-Space>. By default Buffer List will
 open. Keys <h>, <o>, <l>, <w>, <b> when pressed again toggle between
 current and previous list. Similarly <BS> works the same way.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.1 Buffer List                                      *ctrlspace-buffer-list*
@@ -541,6 +558,7 @@ diplayed only when visible in the current tab or contain unsaved changes
 (|modified|). This restriction prevents from accidentally diplaying
 technical buffers of other plugins - not intended to be shown.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.1.1 Single Mode                                    *ctrlspace-single-mode*
@@ -564,6 +582,7 @@ Forgotten buffers unrelated to any tab are called "foreign buffers". They
 can be automatically deleted (closed) by pressing <F>. You can also on the
 collect them in an automatic tab by pressing <f> in the Tab List.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.1.2 Visible Mode                                  *ctrlspace-visible-mode*
@@ -580,6 +599,7 @@ You can easily move between visible windows with <Tab>. By <S-Tab> you can
 move to window and go back to the plugin. This action results in changing
 the active window on which plugin would operate.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.1.3 All Mode                                          *ctrlspace-all-mode*
@@ -591,6 +611,7 @@ the active window on which plugin would operate.
 Displays buffers from all tabs together with foreign buffers. Practically
 it displays all possible buffers similarly to `:ls` command.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.2 File List                                          *ctrlspace-file-list*
@@ -616,6 +637,7 @@ accident a root mark in your home directory. To fix that, open
 `~/.cs_cache` and remove bookmark and project root entries that were
 added by mistake.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.3 Tab List                                            *ctrlspace-tab-list*
@@ -654,6 +676,7 @@ ones). Automatic tabs are labelled tabs created automatically by the
 plugin as a result of copying (<y>), collecting unsaved buffers (<u>), or
 collecting foreign buffers (<f>).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.4 Workspace List                                *ctrlspace-workspace-list*
@@ -689,6 +712,7 @@ startup and save active workspace on Vim exit. See
 |g:CtrlSpaceLoadLastWorkspaceOnStart| and |g:CtrlSpaceSaveWorkspaceOnExit|
 for more details.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 5.5 Bookmark List                                  *ctrlspace-bookmark-list*
@@ -722,12 +746,14 @@ Another smart way of changing directory is jumping to a directory of given
 buffer (file) by pressing <i> in the Buffer List. It's useful if you have
 files from two or more different projects. To go (jump) back press <I>.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 6. Common Modes                                     *ctrlspace-common-modes*
 
 Common modes are available in more than one list.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.1 Zoom Mode                                          *ctrlspace-zoom-mode*
@@ -744,6 +770,7 @@ to add it press <CR>. To exit Zoom Mode press <z> again.
 When entering Zoom Mode your current position and list is stored. Later
 it's restored eventually upon exiting.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.2 Next Tab Mode                                  *ctrlspace-next-tab-mode*
@@ -765,6 +792,7 @@ You can jump to that tab anytime with <]> key.
 This mode is allow you to bulk opening files or buffers in subsequent
 tabs. That way you can easily extract given items to separate tabs.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.3 Search Mode                                      *ctrlspace-search-mode*
@@ -784,6 +812,7 @@ press <?>.
 To wipe out the search query press <BS>. To restore previous queries from
 history go with <C-p> (previous) and <C-n> (next).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.4 Nop Mode                                            *ctrlspace-nop-mode*
@@ -798,6 +827,7 @@ As always to see what are the rescue options from a Nop Mode check <?>.
 Sometimes it would be <BS> removing search query, sometimes switching to
 different list (<h>, <o>, <l>, <w>, or <b>).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 6.5 Help Mode                                          *ctrlspace-help-mode*
@@ -809,6 +839,7 @@ Help Mode anywhere by pressing <?>.
 The first line informs about the list and modes. The last line contains
 information about the current plugin version.
 
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 7. Configuration                                   *ctrlspace-configuration*
@@ -818,6 +849,7 @@ it as global variables in your `.vimrc` file in the similar form: >
 
     let g:CtrlSpaceFooBar = 123
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.1 *g:CtrlSpaceHeight*
@@ -826,6 +858,7 @@ Sets the minimal height of the plugin window. Default value: >
 
     let g:CtrlSpaceHeight = 1
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.2 *g:CtrlSpaceMaxHeight*
@@ -835,6 +868,7 @@ of the screen height. Default value: >
 
     let g:CtrlSpaceMaxHeight = 0
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.3 *g:CtrlSpaceSetDefaultMapping*
@@ -844,6 +878,7 @@ have to provide your own mapping to trigger the plugin. Default value: >
 
     let g:CtrlSpaceSetDefaultMapping = 1
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.4 *g:CtrlSpaceDefaultMappingKey*
@@ -854,6 +889,7 @@ notation. Default value: >
 
     let g:CtrlSpaceDefaultMappingKey = "<C-Space>"
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.5 *g:CtrlSpaceKeys*
@@ -893,6 +929,7 @@ Default value: >
 
     let g:CtrlSpaceKeys = {}
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.6 *g:CtrlSpaceHelp*
@@ -908,6 +945,7 @@ Default value: >
 
     let g:CtrlSpaceHelp = {}
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.7 *g:CtrlSpaceGlobCommand*
@@ -924,6 +962,7 @@ Default value: >
 
     let g:CtrlSpaceGlobCommand = ""
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.8 *g:CtrlSpaceUseTabline*
@@ -934,6 +973,7 @@ Default value: >
 
     let g:CtrlSpaceUseTabline = 1
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.9 *g:CtrlSpaceUseMouseAndArrowsInTerm*
@@ -945,6 +985,7 @@ Default value: >
 
     let g:CtrlSpaceUseMouseAndArrowsInTerm = 0
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.10 *g:CtrlSpaceSaveWorkspaceOnExit*
@@ -957,6 +998,7 @@ Default value: >
 
     let g:CtrlSpaceSaveWorkspaceOnExit = 0
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.11 *g:CtrlSpaceSaveWorkspaceOnSwitch*
@@ -969,6 +1011,7 @@ Default value: >
 
     let g:CtrlSpaceSaveWorkspaceOnSwitch = 0
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.12 *g:CtrlSpaceLoadLastWorkspaceOnStart*
@@ -979,6 +1022,7 @@ Default value: >
 
     let g:CtrlSpaceLoadLastWorkspaceOnStart = 0
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.13 *g:CtrlSpaceCacheDir*
@@ -990,6 +1034,7 @@ Default value: >
 
     let g:CtrlSpaceCacheDir = expand($HOME)
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.14 *g:CtrlSpaceProjectRootMarkers*
@@ -1014,6 +1059,7 @@ Default value: >
          \ "CVS"
          \ ]
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.15 *g:CtrlSpaceUseUnicode*
@@ -1024,6 +1070,7 @@ Default value: >
 
     let g:CtrlSpaceUseUnicode = 1
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.16 *g:CtrlSpaceSymbols*
@@ -1063,6 +1110,7 @@ Default value: >
 
     let g:CtrlSpaceSymbols = {}
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.17 *g:CtrlSpaceIgnoredFiles*
@@ -1077,6 +1125,7 @@ Default value: >
 
     let g:CtrlSpaceIgnoredFiles = '\v(tmp|temp)[\/]'
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.18 *g:CtrlSpaceStatuslineFunction*
@@ -1087,6 +1136,7 @@ Default value: >
 
     let g:CtrlSpaceStatuslineFunction = "ctrlspace#api#Statusline()"
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.19 *g:CtrlSpaceSearchTiming*
@@ -1099,6 +1149,7 @@ Default value: >
 
     let g:CtrlSpaceSearchTiming = 500
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.20 *g:CtrlSpaceSearchResonators*
@@ -1123,6 +1174,7 @@ Default value: >
 
     let g:CtrlSpaceSearchResonators = ['.', '/', '\', '_', '-']
 <
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 7.21 *g:CtrlSpaceFileEngine*
@@ -1163,6 +1215,7 @@ Default value: >
 
 8. API                                                       *ctrlspace-api*
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1 Commands                                            *ctrlspace-commands*
@@ -1180,6 +1233,7 @@ At the moment Vim-CtrlSpace provides you 10 commands:
  * |:CtrlSpaceAddProjectRoot|
  * |:CtrlSpaceRemoveProjectRoot|
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.1 *:CtrlSpace* [keys]
@@ -1188,6 +1242,7 @@ Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration. You can pass keys that will be "pressed"
 in the plugin window.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.2 *:CtrlSpaceGoUp*
@@ -1195,6 +1250,7 @@ in the plugin window.
 Opens the previous buffer from the current Buffer List in Single Mode
 (without opening the plugin window).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.3 *:CtrlSpaceGoDown*
@@ -1202,18 +1258,21 @@ Opens the previous buffer from the current Buffer List in Single Mode
 Opens the next buffer from the current Buffer List in Single Mode (without
 opening the plugin window).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.4 *:CtrlSpaceTabLabel*
 
 Allows you to change (or add/remove) a custom tab name.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.5 *:CtrlSpaceClearTabLabel*
 
 Removes a custom tab label.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.6 *:CtrlSpaceSaveWorkspace* [my workspace]
@@ -1221,6 +1280,7 @@ Removes a custom tab label.
 Saves the workspace with the given name. If no name is given then it saves
 the active workspace (if present).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.7 *:CtrlSpaceNewWorkspace*
@@ -1229,6 +1289,7 @@ Closes all opened buffers and eventually opened workspace and leaves only
 one tab and one buffer, as in a fresh Vim instance. This is useful if you
 want to start creating a workspace from the very beginning.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.8 *:CtrlSpaceLoadWorkspace* [!] [my workspace]
@@ -1238,6 +1299,7 @@ Loads the workspace with the given name. It has also a banged version
 loading. If no name is give then it loads (or appends) the active
 workspace (if present).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.9 *:CtrlSpaceAddProjectRoot* [directory]
@@ -1247,6 +1309,7 @@ project root markers are missing or available on a too higher level of
 a hierarchy. If no directory has been passed the current working one is
 taken instead.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.1.10 *:CtrlSpaceRemoveProjectRoot* [directory]
@@ -1254,6 +1317,7 @@ taken instead.
 Removes a passed directory from permanent project root collection. If no
 directory has been passed the current working one is taken instead.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2 Functions                                          *ctrlspace-functions*
@@ -1266,6 +1330,7 @@ You can use those API functions for seamless status line integration,
 tabline integration, or just for more advanced interactions with other
 plugins.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.1 ctrlspace#api#BufferList(tabnr)           *ctrlspace#api#BufferList()*
@@ -1273,6 +1338,7 @@ plugins.
 Returns a list of buffers available in the given tab. The list is sorted
 in the same order like in the CtrlSpace Buffer List window.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.2 ctrlspace#api#Buffers(tabnr)                 *ctrlspace#api#Buffers()*
@@ -1280,18 +1346,21 @@ in the same order like in the CtrlSpace Buffer List window.
 Returns a dictionary of buffer number and name pairs for given tab. This
 is the content of the internal buffer list belonging to the specified tab.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.3 ctrlspace#api#TabModified(tabnr)         *ctrlspace#api#TabModified()*
 
 Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.4 ctrlspace#api#Statusline()                *ctrlspace#api#Statusline()*
 
 Provides the custom statusline string used by plugin window.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
                                       *ctrlspace#api#StatuslineTabSegment()*
 8.2.5 ctrlspace#api#StatuslineTabSegment()
@@ -1300,6 +1369,7 @@ Returns the info about the current tab (tab number, label, etc.). It is
 useful if you don't use the custom tabline string (or perhaps you have set
 |showtabline| to `0` (see |showtabline| for more info)).
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
                                      *ctrlspace#api#StatuslineModeSegment()*
 8.2.6 ctrlspace#api#StatuslineModeSegment(...)
@@ -1308,6 +1378,7 @@ Returns the info about the mode of the plugin. It can take an optional
 separator. It can be useful for a custom status line integration (e.g. in
 plugins like LightLine (https://github.com/itchyny/lightline.vim))
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
                                           *ctrlspace#api#TabBuffersNumber()*
 8.2.7 ctrlspace#api#TabBuffersNumber(tabnr)
@@ -1318,6 +1389,7 @@ characters (depending on |g:CtrlSpaceUseUnicode| setting). It is a helper
 function useful if you want to provide your own tabline function
 implementation.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
                                                   *ctrlspace#api#TabTitle()*
 8.2.8 ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
@@ -1326,18 +1398,21 @@ A helper function returning a consistent title for given tab. If the tab
 does not have a custom title, then the title based on passed buffer number
 and buffer name is returned instead.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.9 ctrlspace#api#Guitablabel()              *ctrlspace#api#Guitablabel()*
 
 Provides the custom label for GVim's tabs.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.10 ctrlspace#api#Tabline()                     *ctrlspace#api#Tabline()*
 
 Provides the custom tabline string.
 
+                                                             |ctrlspace-toc|
 --------------------------------------------------------------------------
 
 8.2.11 ctrlspace#api#BufNr()                         *ctrlspace#api#BufNr()*
