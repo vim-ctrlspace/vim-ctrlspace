@@ -67,13 +67,13 @@ names:
 
 ## Idea by Analogy
 
-Vim-CtrlSpace interface is a window you can invoke by pressing
-`<C-Space>`. The window displays a list of items. You can select those
-items with `<h>`, `<j>`, and `<CR>` keys.
-
 <p align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/version_5/gfx/cs5_window.png" />
 </p>
+
+Vim-CtrlSpace interface is a window you can invoke by pressing
+`<C-Space>`. The window displays a list of items. You can select those
+items with `<h>`, `<j>`, and `<CR>` keys.
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists: 
 
