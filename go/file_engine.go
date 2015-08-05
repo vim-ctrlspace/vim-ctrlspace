@@ -26,13 +26,13 @@ const (
 )
 
 type Context struct {
-	SearchText       string
-	Columns          int
-	RowsLimit        int
-	Path             string
-	Dots             string
-	DotsSize         int
-	SearchLowerRunes []rune
+	Query      string
+	Columns    int
+	RowsLimit  int
+	FilesCache string
+	Dots       string
+	DotsSize   int
+	LowerRunes []rune
 }
 
 type FileItem struct {
@@ -48,7 +48,7 @@ func (item *FileItem) findSubsequence(offset int) (int, []int) {
 	positions := make([]int, 0, len(item.LowerRunes))
 	noise := 0
 
-	for _, sl := range context.SearchLowerRunes {
+	for _, sl := range context.LowerRunes {
 		pos := -1
 
 		for i, l := range item.LowerRunes[offset:] {
@@ -83,16 +83,16 @@ func (item *FileItem) ComputeItemNoise() {
 	noise := -1
 	matched := ""
 
-	if len(context.SearchLowerRunes) == 1 {
+	if len(context.LowerRunes) == 1 {
 		for i, l := range item.LowerRunes {
-			if l == context.SearchLowerRunes[0] {
+			if l == context.LowerRunes[0] {
 				noise = i
 				break
 			}
 		}
 
 		if noise > -1 {
-			matched = context.SearchText
+			matched = context.Query
 		}
 	} else {
 		offset := 0
@@ -154,7 +154,7 @@ func (item *FileItem) ComputeItemNoise() {
 type ItemCollection []*FileItem
 
 func (items *ItemCollection) Init() error {
-	file, err := os.Open(string(context.Path))
+	file, err := os.Open(context.FilesCache)
 
 	if err != nil {
 		return err
@@ -260,13 +260,13 @@ func Init(input *os.File) error {
 		return err
 	}
 
-	context.SearchLowerRunes = []rune(strings.ToLower(context.SearchText))
+	context.LowerRunes = []rune(strings.ToLower(context.Query))
 
 	return items.Init()
 }
 
 func PrepareContent() ([]string, []string, string, []string) {
-	if context.SearchText != "" {
+	if context.Query != "" {
 		items.TrimByNoise()
 		sort.Sort(&SortByNoiseAndText{SortItems{items}})
 	} else {

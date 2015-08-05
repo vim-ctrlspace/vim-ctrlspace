@@ -40,9 +40,9 @@ endfunction
 function! s:contentFromFileEngine()
     call ctrlspace#files#CollectFiles()
 
-    let context = '{"SearchText":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
+    let context = '{"Query":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
                 \ ',"RowsLimit":' . (s:modes.Search.Enabled ? ctrlspace#window#MaxHeight() : 0) .
-                \ ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
+                \ ',"FilesCache":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
     let results  = split(system(s:config.FileEngine, [context]), "\n")
