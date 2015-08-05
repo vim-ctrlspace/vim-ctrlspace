@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/version_5/gfx/logo5.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo5.png" />
 <br><br>
 </div>
 
@@ -62,7 +62,7 @@ Vim-CtrlSpace interface is a window you can invoke by pressing
 items with `<h>`, `<j>`, and `<CR>` keys.
 
 <p align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/version_5/gfx/cs5_window.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists: 
