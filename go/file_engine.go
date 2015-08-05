@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	context Context
-	items   ItemCollection
+	context    Context
+	items      ItemCollection
+	resonators = [...]rune{'.', '/', '\\', '_', '-', ' '}
 )
 
 const (
@@ -25,16 +26,13 @@ const (
 )
 
 type Context struct {
-	SearchModeEnabled int
-	SearchText        string
-	SearchResonators  string
-	Columns           int
-	MaxHeight         int
-	Path              string
-	Dots              string
-	DotsSize          int
-	SearchLowerRunes  []rune
-	ResonatorRunes    []rune
+	SearchText       string
+	Columns          int
+	RowsLimit        int
+	Path             string
+	Dots             string
+	DotsSize         int
+	SearchLowerRunes []rune
 }
 
 type FileItem struct {
@@ -109,37 +107,35 @@ func (item *FileItem) ComputeItemNoise() {
 				offset = p[0] + 1
 				matched = string(item.Runes[p[0] : p[len(p)-1]+1])
 
-				if len(context.ResonatorRunes) > 0 {
-					if p[0] != 0 {
-						noise++
-						moreNoise := true
+				if p[0] != 0 {
+					noise++
+					moreNoise := true
 
-						for _, r := range context.ResonatorRunes {
-							if r == item.Runes[p[0]-1] {
-								moreNoise = false
-								break
-							}
-						}
-
-						if moreNoise {
-							noise++
+					for _, r := range resonators {
+						if r == item.Runes[p[0]-1] {
+							moreNoise = false
+							break
 						}
 					}
 
-					if p[len(p)-1] != len(item.Runes)-1 {
+					if moreNoise {
 						noise++
-						moreNoise := true
+					}
+				}
 
-						for _, r := range context.ResonatorRunes {
-							if r == item.Runes[p[len(p)-1]+1] {
-								moreNoise = false
-								break
-							}
-						}
+				if p[len(p)-1] != len(item.Runes)-1 {
+					noise++
+					moreNoise := true
 
-						if moreNoise {
-							noise++
+					for _, r := range resonators {
+						if r == item.Runes[p[len(p)-1]+1] {
+							moreNoise = false
+							break
 						}
+					}
+
+					if moreNoise {
+						noise++
 					}
 				}
 			} else {
@@ -265,7 +261,6 @@ func Init(input *os.File) error {
 	}
 
 	context.SearchLowerRunes = []rune(strings.ToLower(context.SearchText))
-	context.ResonatorRunes = []rune(context.SearchResonators)
 
 	return items.Init()
 }
@@ -282,10 +277,8 @@ func PrepareContent() ([]string, []string, string, []string) {
 		sort.Sort(&SortByText{SortItems{items}})
 	}
 
-	if context.SearchModeEnabled == 1 {
-		if len(items) > context.MaxHeight {
-			items = items[len(items)-context.MaxHeight : len(items)]
-		}
+	if context.RowsLimit > 0 && context.RowsLimit < len(items) {
+		items = items[len(items)-context.RowsLimit : len(items)]
 	}
 
 	content := make([]string, 0, len(items))

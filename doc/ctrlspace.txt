@@ -74,8 +74,7 @@ Table of Contents                                            *ctrlspace-toc*
   7.17 g:CtrlSpaceIgnoredFiles                     |g:CtrlSpaceIgnoredFiles|
   7.18 g:CtrlSpaceStatuslineFunction         |g:CtrlSpaceStatuslineFunction|
   7.19 g:CtrlSpaceSearchTiming                     |g:CtrlSpaceSearchTiming|
-  7.20 g:CtrlSpaceSearchResonators             |g:CtrlSpaceSearchResonators|
-  7.21 g:CtrlSpaceFileEngine                         |g:CtrlSpaceFileEngine|
+  7.20 g:CtrlSpaceFileEngine                         |g:CtrlSpaceFileEngine|
 8. API                                                       |ctrlspace-api|
   8.1 Commands                                          |ctrlspace-commands|
     8.1.1 :CtrlSpace [keys]                                     |:CtrlSpace|
@@ -1127,32 +1126,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.20 *g:CtrlSpaceSearchResonators*
-
-Allows you to set characters which will be used to increase search
-accurancy. If such "resonator" is found next to the searched sequence, it
-increases the search score.
-
-For example, consider following files:
-
- * `zzzabczzz.txt`
- * `zzzzzzabc.txt`
- * `zzzzz.abc.txt`
-
-If you search for `abc` with default resonators, you will get the last
-file as the top relevant item, because there are two resonators (`.` dots)
-next to the searched sequence. Next you would get the middle one (one dot
-around `abc`), and then the first one (no resonators at all). You can
-disable this behavior completely by providing an empty array.
-
-Default value: >
-
-    let g:CtrlSpaceSearchResonators = ['.', '/', '\', '_', '-']
-<
-                                                             |ctrlspace-toc|
---------------------------------------------------------------------------
-
-7.21 *g:CtrlSpaceFileEngine*
+7.20 *g:CtrlSpaceFileEngine*
 
 The plugin provides fuzzy search engine written in Go and compiled for
 several architectures:

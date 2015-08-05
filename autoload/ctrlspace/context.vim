@@ -64,7 +64,6 @@ let s:configuration = {
                 \ "UseUnicode":               1,
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
                 \ "SearchTiming":             500,
-                \ "SearchResonators":         ['.', '/', '\', '_', '-'],
                 \ "FileEngine":               "",
             \ }
 

@@ -1,5 +1,6 @@
-let s:config = ctrlspace#context#Configuration()
-let s:modes  = ctrlspace#modes#Modes()
+let s:config     = ctrlspace#context#Configuration()
+let s:modes      = ctrlspace#modes#Modes()
+let s:resonators = ['.', '/', '\', '_', '-', ' ']
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
@@ -39,10 +40,8 @@ endfunction
 function! s:contentFromFileEngine()
     call ctrlspace#files#CollectFiles()
 
-    let context = '{"SearchModeEnabled":' . s:modes.Search.Enabled .
-                \ ',"SearchText":"' . join(s:modes.Search.Data.Letters, "") .
-                \ '","SearchResonators":"' . escape(join(s:config.SearchResonators, ""), '\"') .
-                \ '","Columns":' . &columns . ',"MaxHeight":' . ctrlspace#window#MaxHeight() .
+    let context = '{"SearchText":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
+                \ ',"RowsLimit":' . (s:modes.Search.Enabled ? ctrlspace#window#MaxHeight() : 0) .
                 \ ',"Path":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
@@ -318,21 +317,19 @@ function! s:findLowestSearchNoise(text)
                 let offset        = subseq[1][0] + 1
                 let matchedString = a:text[subseq[1][0]:subseq[1][-1]]
 
-                if !empty(s:config.SearchResonators)
-                    if subseq[1][0] != 0
-                        let noise += 1
+                if subseq[1][0] != 0
+                    let noise += 1
 
-                        if index(s:config.SearchResonators, a:text[subseq[1][0] - 1]) == -1
-                            let noise += 1
-                        endif
+                    if index(s:resonators, a:text[subseq[1][0] - 1]) == -1
+                        let noise += 1
                     endif
+                endif
 
-                    if subseq[1][-1] != textLen - 1
+                if subseq[1][-1] != textLen - 1
+                    let noise += 1
+
+                    if index(s:resonators, a:text[subseq[1][-1] + 1]) == -1
                         let noise += 1
-
-                        if index(s:config.SearchResonators, a:text[subseq[1][-1] + 1]) == -1
-                            let noise += 1
-                        endif
                     endif
                 endif
             else
