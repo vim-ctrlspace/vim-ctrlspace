@@ -270,12 +270,12 @@ function! s:bufferEntry(bufnr)
     endif
 endfunction
 
-function! s:findSubsequence(letters, text, offset)
+function! s:findSubsequence(text, offset)
     let positions     = []
     let noise         = 0
     let currentOffset = a:offset
 
-    for letter in a:letters
+    for letter in s:modes.Search.Data.Letters
         let matchedPosition = match(a:text, "\\m\\c" . letter, currentOffset)
 
         if matchedPosition == -1
@@ -293,49 +293,53 @@ function! s:findSubsequence(letters, text, offset)
 endfunction
 
 function! s:findLowestSearchNoise(text)
-    let letters       = s:modes.Search.Data.Letters
     let noise         = -1
     let matchedString = ""
+    let ltrLen        = len(s:modes.Search.Data.Letters)
+    let textLen       = strlen(a:text)
 
-    if len(letters) == 1
-        let noise = match(a:text, "\\m\\c" . letters[0])
+    if ltrLen == 1
+        let noise = match(a:text, "\\m\\c" . s:modes.Search.Data.Letters[0])
 
         if noise > -1
-            let matchedString = letters[0]
+            let matchedString = s:modes.Search.Data.Letters[0]
         endif
     else
-        let offset   = 0
-        let textLen = strlen(a:text)
+        let offset    = 0
+        let positions = []
 
-        while offset < textLen
-            let subseq = s:findSubsequence(letters, a:text, offset)
+        while ltrLen <= textLen - offset
+            let subseq = s:findSubsequence(a:text, offset)
 
             if subseq[0] == -1
                 break
             elseif (noise == -1) || (subseq[0] < noise)
-                let noise         = subseq[0]
-                let offset        = subseq[1][0] + 1
-                let matchedString = a:text[subseq[1][0]:subseq[1][-1]]
-
-                if subseq[1][0] != 0
-                    let noise += 1
-
-                    if index(s:resonators, a:text[subseq[1][0] - 1]) == -1
-                        let noise += 1
-                    endif
-                endif
-
-                if subseq[1][-1] != textLen - 1
-                    let noise += 1
-
-                    if index(s:resonators, a:text[subseq[1][-1] + 1]) == -1
-                        let noise += 1
-                    endif
-                endif
+                let [noise, positions] = subseq
+                let offset = positions[0] + 1
             else
                 let offset += 1
             endif
         endwhile
+
+        if noise > -1
+            let matchedString = a:text[positions[0]:positions[-1]]
+
+            if positions[0] != 0
+                let noise += 1
+
+                if index(s:resonators, a:text[positions[0] - 1]) == -1
+                    let noise += 1
+                endif
+            endif
+
+            if positions[-1] != textLen - 1
+                let noise += 1
+
+                if index(s:resonators, a:text[positions[-1] + 1]) == -1
+                    let noise += 1
+                endif
+            endif
+        endif
     endif
 
     let pattern = ""

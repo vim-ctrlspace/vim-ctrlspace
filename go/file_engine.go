@@ -79,7 +79,7 @@ func (item *FileItem) findSubsequence(offset int) (int, []int) {
 	return noise, positions
 }
 
-func (item *FileItem) ComputeItemNoise() {
+func (item *FileItem) ComputeNoise() {
 	noise := -1
 	matched := ""
 
@@ -95,51 +95,55 @@ func (item *FileItem) ComputeItemNoise() {
 			matched = context.Query
 		}
 	} else {
+		var positions []int
 		offset := 0
 
-		for offset < len(item.Runes) {
+		for len(context.LowerRunes) <= len(item.Runes)-offset {
 			n, p := item.findSubsequence(offset)
 
 			if n == -1 {
 				break
 			} else if noise == -1 || n < noise {
-				noise = n
-				offset = p[0] + 1
-				matched = string(item.Runes[p[0] : p[len(p)-1]+1])
-
-				if p[0] != 0 {
-					noise++
-					moreNoise := true
-
-					for _, r := range resonators {
-						if r == item.Runes[p[0]-1] {
-							moreNoise = false
-							break
-						}
-					}
-
-					if moreNoise {
-						noise++
-					}
-				}
-
-				if p[len(p)-1] != len(item.Runes)-1 {
-					noise++
-					moreNoise := true
-
-					for _, r := range resonators {
-						if r == item.Runes[p[len(p)-1]+1] {
-							moreNoise = false
-							break
-						}
-					}
-
-					if moreNoise {
-						noise++
-					}
-				}
+				noise, positions = n, p
+				offset = positions[0] + 1
 			} else {
 				offset++
+			}
+		}
+
+		if noise > -1 {
+			matched = string(item.Runes[positions[0] : positions[len(positions)-1]+1])
+
+			if positions[0] != 0 {
+				noise++
+				more := true
+
+				for _, r := range resonators {
+					if r == item.Runes[positions[0]-1] {
+						more = false
+						break
+					}
+				}
+
+				if more {
+					noise++
+				}
+			}
+
+			if positions[len(positions)-1] != len(item.Runes)-1 {
+				noise++
+				more := true
+
+				for _, r := range resonators {
+					if r == item.Runes[positions[len(positions)-1]+1] {
+						more = false
+						break
+					}
+				}
+
+				if more {
+					noise++
+				}
 			}
 		}
 	}
@@ -183,7 +187,7 @@ func (items *ItemCollection) TrimByNoise() {
 	results := make([]*FileItem, 0, maxSearchedItems)
 
 	for _, item := range *items {
-		item.ComputeItemNoise()
+		item.ComputeNoise()
 
 		if item.Noise == -1 {
 			continue
