@@ -393,6 +393,7 @@ function! s:setUpBuffer()
     endif
     setlocal nocursorcolumn
     setlocal nocursorline
+    setlocal nospell
     setlocal nolist
     setlocal cc=
     setlocal filetype=ctrlspace
