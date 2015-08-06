@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.02
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.06
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -77,28 +77,28 @@ Table of Contents                                            *ctrlspace-toc*
   7.20 g:CtrlSpaceFileEngine                         |g:CtrlSpaceFileEngine|
 8. API                                                       |ctrlspace-api|
   8.1 Commands                                          |ctrlspace-commands|
-    8.1.1 :CtrlSpace [keys]                                     |:CtrlSpace|
+    8.1.1 :CtrlSpace {keys}                                     |:CtrlSpace|
     8.1.2 :CtrlSpaceGoUp                                    |:CtrlSpaceGoUp|
     8.1.3 :CtrlSpaceGoDown                                |:CtrlSpaceGoDown|
     8.1.4 :CtrlSpaceTabLabel                            |:CtrlSpaceTabLabel|
     8.1.5 :CtrlSpaceClearTabLabel                  |:CtrlSpaceClearTabLabel|
-    8.1.6 :CtrlSpaceSaveWorkspace [workspace]      |:CtrlSpaceSaveWorkspace|
+    8.1.6 :CtrlSpaceSaveWorkspace {workspace}      |:CtrlSpaceSaveWorkspace|
     8.1.7 :CtrlSpaceNewWorkspace                    |:CtrlSpaceNewWorkspace|
-    8.1.8 :CtrlSpaceLoadWorkspace [!] [workspace]  |:CtrlSpaceLoadWorkspace|
-    8.1.9 :CtrlSpaceAddProjectRoot [dir]          |:CtrlSpaceAddProjectRoot|
-    8.1.10 :CtrlSpaceRemoveProjectRoot [dir]   |:CtrlSpaceRemoveProjectRoot|
+    8.1.8 :CtrlSpaceLoadWorkspace {!} {workspace}  |:CtrlSpaceLoadWorkspace|
+    8.1.9 :CtrlSpaceAddProjectRoot {dir}          |:CtrlSpaceAddProjectRoot|
+    8.1.10 :CtrlSpaceRemoveProjectRoot {dir}   |:CtrlSpaceRemoveProjectRoot|
   8.2 Functions                                        |ctrlspace-functions|
-    8.2.1 ctrlspace#api#BufferList(tabnr)       |ctrlspace#api#BufferList()|
-    8.2.2 ctrlspace#api#Buffers(tabnr)             |ctrlspace#api#Buffers()|
-    8.2.3 ctrlspace#api#TabModified(tabnr)     |ctrlspace#api#TabModified()|
+    8.2.1 ctrlspace#api#BufferList({tabnr})     |ctrlspace#api#BufferList()|
+    8.2.2 ctrlspace#api#Buffers({tabnr})           |ctrlspace#api#Buffers()|
+    8.2.3 ctrlspace#api#TabModified({tabnr})   |ctrlspace#api#TabModified()|
     8.2.4 ctrlspace#api#Statusline()            |ctrlspace#api#Statusline()|
     8.2.5 ctrlspace#api#StatuslineTabSegment()
                                       |ctrlspace#api#StatuslineTabSegment()|
-    8.2.6 ctrlspace#api#StatuslineModeSegment(...)
+    8.2.6 ctrlspace#api#StatuslineModeSegment({...})
                                      |ctrlspace#api#StatuslineModeSegment()|
-    8.2.7 ctrlspace#api#TabBuffersNumber(tabnr)
+    8.2.7 ctrlspace#api#TabBuffersNumber({tabnr})
                                           |ctrlspace#api#TabBuffersNumber()|
-    8.2.8 ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
+    8.2.8 ctrlspace#api#TabTitle({tabnr}, {bufnr}, {bufname})
                                                   |ctrlspace#api#TabTitle()|
     8.2.9 ctrlspace#api#Guitablabel()          |ctrlspace#api#Guitablabel()|
     8.2.10 ctrlspace#api#Tabline()                 |ctrlspace#api#Tabline()|
@@ -1185,7 +1185,7 @@ At the moment Vim-CtrlSpace provides you 10 commands:
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.1 *:CtrlSpace* [keys]
+8.1.1 *:CtrlSpace* {keys}
 
 Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration. You can pass keys that will be "pressed"
@@ -1224,7 +1224,7 @@ Removes a custom tab label.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.6 *:CtrlSpaceSaveWorkspace* [my workspace]
+8.1.6 *:CtrlSpaceSaveWorkspace* {workspace}
 
 Saves the workspace with a given name. If no name is provided then it
 saves the active workspace (if present).
@@ -1241,7 +1241,7 @@ you want to create an empty workspace.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.8 *:CtrlSpaceLoadWorkspace* [!] [my workspace]
+8.1.8 *:CtrlSpaceLoadWorkspace* {!} {workspace}
 
 Loads the workspace with a given name. It has also a banged version
 ( *:CtrlSpaceLoadWorkspace!* ) which performs appending instead of
@@ -1251,7 +1251,7 @@ workspace (if present).
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.9 *:CtrlSpaceAddProjectRoot* [directory]
+8.1.9 *:CtrlSpaceAddProjectRoot* {directory}
 
 Add a given directory as a permanent project root. It's useful when, for
 example project root markers are missing or available on a too higher
@@ -1261,7 +1261,7 @@ directory is used instead.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.10 *:CtrlSpaceRemoveProjectRoot* [directory]
+8.1.10 *:CtrlSpaceRemoveProjectRoot* {directory}
 
 Removes a given directory from permanent project root collection. If no
 directory is given the current working directory is used instead.
@@ -1281,7 +1281,7 @@ integration, or just for more advanced interactions with other plugins.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.2.1 ctrlspace#api#BufferList(tabnr)           *ctrlspace#api#BufferList()*
+8.2.1 ctrlspace#api#BufferList({tabnr})         *ctrlspace#api#BufferList()*
 
 Returns a list of buffers available in a given tab. The list is sorted
 in the same order like in the CtrlSpace Buffer List window.
@@ -1289,7 +1289,7 @@ in the same order like in the CtrlSpace Buffer List window.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.2.2 ctrlspace#api#Buffers(tabnr)                 *ctrlspace#api#Buffers()*
+8.2.2 ctrlspace#api#Buffers({tabnr})               *ctrlspace#api#Buffers()*
 
 Returns a dictionary of buffer number and name pairs for a given tab. This
 is the content of the internal buffer list belonging to the specified tab.
@@ -1297,7 +1297,7 @@ is the content of the internal buffer list belonging to the specified tab.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.2.3 ctrlspace#api#TabModified(tabnr)         *ctrlspace#api#TabModified()*
+8.2.3 ctrlspace#api#TabModified({tabnr})       *ctrlspace#api#TabModified()*
 
 Returns `1` if given tab contains a modified buffer, `0` otherwise.
 
@@ -1320,7 +1320,7 @@ useful if you don't use the custom tabline string (or perhaps you have set
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
                                      *ctrlspace#api#StatuslineModeSegment()*
-8.2.6 ctrlspace#api#StatuslineModeSegment(...)
+8.2.6 ctrlspace#api#StatuslineModeSegment({...})
 
 Returns the info about the plugin mode. It can take an optional separator.
 It can be useful for a custom status line integration (e.g. in plugins
@@ -1329,7 +1329,7 @@ like LightLine (https://github.com/itchyny/lightline.vim))
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
                                           *ctrlspace#api#TabBuffersNumber()*
-8.2.7 ctrlspace#api#TabBuffersNumber(tabnr)
+8.2.7 ctrlspace#api#TabBuffersNumber({tabnr})
 
 Returns formatted number of buffers belonging to given tab. Formats the
 output as small Unicode characters (upper indexes) or regular ASCII number
@@ -1340,7 +1340,7 @@ implementation.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
                                                   *ctrlspace#api#TabTitle()*
-8.2.8 ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
+8.2.8 ctrlspace#api#TabTitle({tabnr}, {bufnr}, {bufname})
 
 A helper function returning a consistent title for a given tab. If the tab
 does not have a custom title, then the title based on passed buffer number
