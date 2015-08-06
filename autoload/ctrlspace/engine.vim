@@ -1,6 +1,10 @@
 let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
-let s:resonators = ['.', '/', '\', '_', '-', ' ']
+let s:resonators = ['.', '/', '_', '-', ' ']
+
+if has("win32")
+    call add(s:resonators, '\')
+endif
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
