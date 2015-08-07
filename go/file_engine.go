@@ -270,36 +270,54 @@ func PrepareContent() ([]string, []string, string, []string) {
 		items = items[len(items)-context.Limit : len(items)]
 	}
 
-	content := make([]string, 0, len(items))
-	indices := make([]string, 0, len(items))
+	content := make([]string, len(items))
+	indices := make([]string, len(items))
+
 	uniqPatterns := make(map[string]bool)
 
-	for _, item := range items {
-		line := append(make([]rune, 0, context.Columns), ' ', ' ')
+	for i, item := range items {
+		line := make([]rune, context.Columns)
+
+		line[0] = ' '
+		line[1] = ' '
+
+		pos := 2
 
 		if len(item.Runes)+itemSpace > context.Columns {
-			line = append(line, []rune(context.Dots)...)
-			line = append(line, item.Runes[len(item.Runes)-context.Columns+itemSpace+context.DotsSize:]...)
+			for _, r := range []rune(context.Dots) {
+				line[pos] = r
+				pos++
+			}
+
+			for _, r := range item.Runes[len(item.Runes)-context.Columns+itemSpace+context.DotsSize:] {
+				line[pos] = r
+				pos++
+			}
 		} else {
-			line = append(line, item.Runes...)
+			for _, r := range item.Runes {
+				line[pos] = r
+				pos++
+			}
 		}
 
-		for len(line) < context.Columns {
-			line = append(line, ' ')
+		for pos < context.Columns {
+			line[pos] = ' '
+			pos++
 		}
 
-		content = append(content, string(line))
-		indices = append(indices, strconv.Itoa(item.Index))
+		content[i] = string(line)
+		indices[i] = strconv.Itoa(item.Index)
 
 		if len(item.Pattern) > 0 {
 			uniqPatterns[item.Pattern] = true
 		}
 	}
 
-	patterns := make([]string, 0, len(uniqPatterns))
+	patterns, i := make([]string, len(uniqPatterns)), 0
 
-	for k := range uniqPatterns {
-		patterns = append(patterns, fmt.Sprintf("%q", k))
+	for p := range uniqPatterns {
+		patterns[i] = fmt.Sprintf("%q", p)
+		i++
 	}
 
 	return patterns, indices, strconv.Itoa(len(items)), content
