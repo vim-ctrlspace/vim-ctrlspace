@@ -45,8 +45,8 @@ function! s:contentFromFileEngine()
     call ctrlspace#files#CollectFiles()
 
     let context = '{"Query":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
-                \ ',"RowsLimit":' . (s:modes.Search.Enabled ? ctrlspace#window#MaxHeight() : 0) .
-                \ ',"FilesCache":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
+                \ ',"Limit":' . (s:modes.Search.Enabled ? ctrlspace#window#MaxHeight() : 0) .
+                \ ',"Source":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
                 \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
     let results  = split(system(s:config.FileEngine, [context]), "\n")

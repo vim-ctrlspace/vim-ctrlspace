@@ -27,8 +27,8 @@ const (
 type Context struct {
 	Query      string
 	Columns    int
-	RowsLimit  int
-	FilesCache string
+	Limit      int
+	Source     string
 	Dots       string
 	DotsSize   int
 	LowerRunes []rune
@@ -143,7 +143,7 @@ func (item *FileItem) ComputeNoise() {
 type ItemCollection []*FileItem
 
 func (items *ItemCollection) Init() error {
-	file, err := os.Open(context.FilesCache)
+	file, err := os.Open(context.Source)
 
 	if err != nil {
 		return err
@@ -266,8 +266,8 @@ func PrepareContent() ([]string, []string, string, []string) {
 		sort.Sort(&SortByText{SortItems{items}})
 	}
 
-	if context.RowsLimit > 0 && context.RowsLimit < len(items) {
-		items = items[len(items)-context.RowsLimit : len(items)]
+	if context.Limit > 0 && context.Limit < len(items) {
+		items = items[len(items)-context.Limit : len(items)]
 	}
 
 	content := make([]string, 0, len(items))
