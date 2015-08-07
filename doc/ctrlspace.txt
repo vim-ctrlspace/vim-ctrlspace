@@ -77,16 +77,16 @@ Table of Contents                                            *ctrlspace-toc*
   7.20 g:CtrlSpaceFileEngine                         |g:CtrlSpaceFileEngine|
 8. API                                                       |ctrlspace-api|
   8.1 Commands                                          |ctrlspace-commands|
-    8.1.1 :CtrlSpace {keys}                                     |:CtrlSpace|
+    8.1.1 :CtrlSpace [keys]                                     |:CtrlSpace|
     8.1.2 :CtrlSpaceGoUp                                    |:CtrlSpaceGoUp|
     8.1.3 :CtrlSpaceGoDown                                |:CtrlSpaceGoDown|
     8.1.4 :CtrlSpaceTabLabel                            |:CtrlSpaceTabLabel|
     8.1.5 :CtrlSpaceClearTabLabel                  |:CtrlSpaceClearTabLabel|
-    8.1.6 :CtrlSpaceSaveWorkspace {workspace}      |:CtrlSpaceSaveWorkspace|
+    8.1.6 :CtrlSpaceSaveWorkspace [workspace]      |:CtrlSpaceSaveWorkspace|
     8.1.7 :CtrlSpaceNewWorkspace                    |:CtrlSpaceNewWorkspace|
-    8.1.8 :CtrlSpaceLoadWorkspace {!} {workspace}  |:CtrlSpaceLoadWorkspace|
-    8.1.9 :CtrlSpaceAddProjectRoot {dir}          |:CtrlSpaceAddProjectRoot|
-    8.1.10 :CtrlSpaceRemoveProjectRoot {dir}   |:CtrlSpaceRemoveProjectRoot|
+    8.1.8 :CtrlSpaceLoadWorkspace [!] [workspace]  |:CtrlSpaceLoadWorkspace|
+    8.1.9 :CtrlSpaceAddProjectRoot [dir]          |:CtrlSpaceAddProjectRoot|
+    8.1.10 :CtrlSpaceRemoveProjectRoot [dir]   |:CtrlSpaceRemoveProjectRoot|
   8.2 Functions                                        |ctrlspace-functions|
     8.2.1 ctrlspace#api#BufferList({tabnr})     |ctrlspace#api#BufferList()|
     8.2.2 ctrlspace#api#Buffers({tabnr})           |ctrlspace#api#Buffers()|
@@ -1185,7 +1185,7 @@ At the moment Vim-CtrlSpace provides you 10 commands:
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.1 *:CtrlSpace* {keys}
+8.1.1 *:CtrlSpace* [keys]
 
 Shows the plugin window. It is meant to be used in custom mappings or more
 sophisticated plugin integration. You can pass keys that will be "pressed"
@@ -1224,7 +1224,7 @@ Removes a custom tab label.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.6 *:CtrlSpaceSaveWorkspace* {workspace}
+8.1.6 *:CtrlSpaceSaveWorkspace* [workspace]
 
 Saves the workspace with a given name. If no name is provided then it
 saves the active workspace (if present).
@@ -1241,7 +1241,7 @@ you want to create an empty workspace.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.8 *:CtrlSpaceLoadWorkspace* {!} {workspace}
+8.1.8 *:CtrlSpaceLoadWorkspace* [!] [workspace]
 
 Loads the workspace with a given name. It has also a banged version
 ( *:CtrlSpaceLoadWorkspace!* ) which performs appending instead of
@@ -1251,7 +1251,7 @@ workspace (if present).
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.9 *:CtrlSpaceAddProjectRoot* {directory}
+8.1.9 *:CtrlSpaceAddProjectRoot* [directory]
 
 Add a given directory as a permanent project root. It's useful when, for
 example project root markers are missing or available on a too higher
@@ -1261,7 +1261,7 @@ directory is used instead.
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.1.10 *:CtrlSpaceRemoveProjectRoot* {directory}
+8.1.10 *:CtrlSpaceRemoveProjectRoot* [directory]
 
 Removes a given directory from permanent project root collection. If no
 directory is given the current working directory is used instead.

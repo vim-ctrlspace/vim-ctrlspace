@@ -43,11 +43,11 @@ function! ctrlspace#roots#AddProjectRoot(directory)
     let roots = copy(s:projectRoots)
 
     for bm in ctrlspace#bookmarks#Bookmarks()
-        let roots[bm.directory] = 1
+        let roots[bm.Directory] = 1
     endfor
 
     if exists("roots[directory]")
-        call ctrlspace#ui#Msg("Directory is already a permanent project root!")
+        call ctrlspace#ui#Msg("Directory '" . directory . "' is already a permanent project root!")
         return
     endif
 
