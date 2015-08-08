@@ -94,6 +94,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#buffer#DeleteForeignBuffers":         "Delete (close) all foreign buffers (detached from tabs)",
       \ "ctrlspace#keys#buffer#CloseBuffer":                  "Try to close selected buffer (delete if possible, forget otherwise)",
       \ "ctrlspace#keys#buffer#CloseTab":                     "Close the current tab, then perform F, and then D",
+      \ "ctrlspace#keys#buffer#NewWorkspace":                 "Close all buffers - make a new workspace",
       \ "ctrlspace#keys#file#EditFile":                       "Edit a new file or a sibling of selected buffer",
       \ "ctrlspace#keys#file#ExploreDirectory":               "Explore a directory of selected buffer",
       \ "ctrlspace#keys#file#GoToDirectory":                  "Change CWD to a directory having the selected buffer (i) or go back (I)",
@@ -130,7 +131,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#tab#CollectForeignBuffers":           "Create a new tab with foreign buffers",
       \ "ctrlspace#keys#workspace#LoadOrSave":                "Load (or save) selected workspace (Tab - close, Space - stay)",
       \ "ctrlspace#keys#workspace#Append":                    "Append a selected workspace to the current one",
-      \ "ctrlspace#keys#workspace#NewWorkspace":              "Make a new workspace - close all buffers (N - stay)",
+      \ "ctrlspace#keys#workspace#NewWorkspace":              "Make a new workspace - close all buffers",
       \ "ctrlspace#keys#workspace#ToggleSubmode":             "Toggle the mode from Load to Save or vice-versa",
       \ "ctrlspace#keys#workspace#Delete":                    "Delete selected workspace",
       \ "ctrlspace#keys#workspace#Rename":                    "Rename selected workspace",
@@ -182,7 +183,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     endfor
 
     call s:puts("")
-    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.0 (c) 2013-2015 Szymon Wrozynski and Contributors")
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.1 (c) 2013-2015 Szymon Wrozynski and Contributors")
 
     setlocal modifiable
 
