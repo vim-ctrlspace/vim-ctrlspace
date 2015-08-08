@@ -282,12 +282,12 @@ function! ctrlspace#keys#buffer#NewWorkspace(k)
         if s:config.SaveWorkspaceOnSwitch
             let saveWorkspaceBefore = 1
         elseif !ctrlspace#ui#Confirmed("Current workspace ('" . active.Name . "') not saved. Proceed anyway?")
-            return
+            return 0
         endif
     endif
 
     if !ctrlspace#ui#ProceedIfModified()
-        return
+        return 0
     endif
 
     call ctrlspace#window#Kill(0, 1)
@@ -298,6 +298,7 @@ function! ctrlspace#keys#buffer#NewWorkspace(k)
 
     call ctrlspace#workspaces#NewWorkspace()
     call ctrlspace#window#Toggle(0)
+    return 1
 endfunction
 
 function! s:toggleAllMode()

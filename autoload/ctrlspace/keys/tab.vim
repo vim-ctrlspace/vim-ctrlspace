@@ -12,6 +12,7 @@ function! ctrlspace#keys#tab#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#RemoveTabLabel", "Tab", ["_"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CollectUnsavedBuffers", "Tab", ["u"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CollectForeignBuffers", "Tab", ["f"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#NewWorkspace", "Tab", ["N"])
 endfunction
 
 function! ctrlspace#keys#tab#GoToTab(k)
@@ -147,4 +148,14 @@ endfunction
 
 function! ctrlspace#keys#tab#CollectForeignBuffers(k)
     call ctrlspace#tabs#CollectForeignBuffers()
+endfunction
+
+function! ctrlspace#keys#tab#NewWorkspace(k)
+    if !ctrlspace#keys#buffer#NewWorkspace(a:k)
+        return
+    endif
+
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Tab.Enable()
+    call ctrlspace#window#Toggle(1)
 endfunction

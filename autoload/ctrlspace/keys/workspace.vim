@@ -49,30 +49,10 @@ function! ctrlspace#keys#workspace#Append(k)
 endfunction
 
 function! ctrlspace#keys#workspace#NewWorkspace(k)
-    let saveWorkspaceBefore = 0
-    let active = s:modes.Workspace.Data.Active
-
-    if !empty(active.Name) && (active.Digest !=# ctrlspace#workspaces#CreateDigest())
-        if s:config.SaveWorkspaceOnSwitch
-            let saveWorkspaceBefore = 1
-        elseif !ctrlspace#ui#Confirmed("Current workspace ('" . active.Name . "') not saved. Proceed anyway?")
-            return
-        endif
-    endif
-
-    if !ctrlspace#ui#ProceedIfModified()
+    if !ctrlspace#keys#buffer#NewWorkspace(a:k)
         return
     endif
 
-    call ctrlspace#window#Kill(0, 1)
-
-    if saveWorkspaceBefore
-        call ctrlspace#workspaces#SaveWorkspace("")
-    endif
-
-    call ctrlspace#workspaces#NewWorkspace()
-
-    call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 0)
     call s:modes.Workspace.Enable()
     call ctrlspace#window#Toggle(1)
