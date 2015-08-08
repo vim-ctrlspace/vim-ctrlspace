@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.06
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.08
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -7,7 +7,7 @@
 
 
 
-                           Vim-CtrlSpace 5.0.0~
+                           Vim-CtrlSpace 5.0.1~
 
                            Vim Space Controller
 
