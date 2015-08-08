@@ -263,7 +263,7 @@ For key reference press `<?>` inside the plugin window.
 ## Authors and License
 
 Copyright &copy; 2013-2015 [Szymon Wrozynski and
-Contributors](https://github.com/szw/vim-ctrlspace/commits/master).
+Contributors](https://github.com/szw/vim-ctrlspace/graphs/contributors).
 Licensed under [MIT
 License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
 conditions. 
@@ -276,4 +276,4 @@ Robert Lillack. Moreover some concepts and inspiration has been taken from
 
 Special thanks to [Wojtek Ryrych](https://github.com/ryrych) for help and
 patience ;) and all
-[Contributors](https://github.com/szw/vim-ctrlspace/commits/master).
+[Contributors](https://github.com/szw/vim-ctrlspace/graphs/contributors).
