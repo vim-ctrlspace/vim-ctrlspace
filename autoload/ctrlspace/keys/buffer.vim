@@ -40,6 +40,7 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#RenameFileOrBuffer", "Buffer", ["m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#CopyFileOrBuffer", "Buffer", ["y"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#GoToBufferOrFile", "Buffer", ["g", "G"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#NewWorkspace", "Buffer", ["N"])
 endfunction
 
 function! ctrlspace#keys#buffer#SearchParentDirectory(k)
@@ -271,6 +272,32 @@ endfunction
 
 function! ctrlspace#keys#buffer#GoToBufferOrFile(k)
     call ctrlspace#buffers#GoToBufferOrFile(a:k ==# "g" ? "next" : "previous")
+endfunction
+
+function! ctrlspace#keys#buffer#NewWorkspace(k)
+    let saveWorkspaceBefore = 0
+    let active = s:modes.Workspace.Data.Active
+
+    if !empty(active.Name) && (active.Digest !=# ctrlspace#workspaces#CreateDigest())
+        if s:config.SaveWorkspaceOnSwitch
+            let saveWorkspaceBefore = 1
+        elseif !ctrlspace#ui#Confirmed("Current workspace ('" . active.Name . "') not saved. Proceed anyway?")
+            return
+        endif
+    endif
+
+    if !ctrlspace#ui#ProceedIfModified()
+        return
+    endif
+
+    call ctrlspace#window#Kill(0, 1)
+
+    if saveWorkspaceBefore
+        call ctrlspace#workspaces#SaveWorkspace("")
+    endif
+
+    call ctrlspace#workspaces#NewWorkspace()
+    call ctrlspace#window#Toggle(0)
 endfunction
 
 function! s:toggleAllMode()
