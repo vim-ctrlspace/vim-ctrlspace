@@ -4,7 +4,7 @@ let s:modes  = ctrlspace#modes#Modes()
 function! ctrlspace#keys#workspace#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#LoadOrSave", "Workspace", ["Tab", "CR", "Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append", "Workspace", ["a"])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace", "Workspace", ["n", "N"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace", "Workspace", ["N"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#ToggleSubmode", "Workspace", ["s"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete", "Workspace", ["d"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename", "Workspace", ["=", "m"])
@@ -72,12 +72,10 @@ function! ctrlspace#keys#workspace#NewWorkspace(k)
 
     call ctrlspace#workspaces#NewWorkspace()
 
-    if a:k ==# "N"
-        call ctrlspace#window#Toggle(0)
-        call ctrlspace#window#Kill(0, 0)
-        call s:modes.Workspace.Enable()
-        call ctrlspace#window#Toggle(1)
-    endif
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Workspace.Enable()
+    call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#keys#workspace#ToggleSubmode(k)
