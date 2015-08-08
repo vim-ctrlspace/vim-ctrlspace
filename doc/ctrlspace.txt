@@ -937,6 +937,13 @@ Default value: >
 
     let g:CtrlSpaceGlobCommand = ""
 <
+
+Cool Tip~
+
+You can even make `Ag` to show hidden files by providing `--hidden` option: >
+
+    let g:CtrlSpaceGlobCommand = 'ag -l --hidden --nocolor -g ""'
+<
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
