@@ -195,11 +195,11 @@ endfunction
 
 function! ctrlspace#window#QuitVim()
     if !s:config.SaveWorkspaceOnExit
-        let aw = s:modes.Workspace.Data.Active
+        let aw = ctrlspace#workspaces#ActiveWorkspace()
 
-        if !empty(aw.Name) && aw.Digest !=# ctrlspace#workspaces#CreateDigest() &&
-                \ !ctrlspace#ui#Confirmed("Current workspace ('" . aw.Name . "') not saved. Proceed anyway?")
-        return
+        if aw.Status == 2 && !ctrlspace#ui#Confirmed("Current workspace ('" . aw.Name . "') not saved. Proceed anyway?")
+            return
+        endif
     endif
 
     if !ctrlspace#ui#ProceedIfModified()
@@ -471,9 +471,10 @@ function! s:setActiveLine()
                 let activeLine = clv.Data.LastBrowsed
             else
                 let activeLine = 1
+                let aw         = ctrlspace#workspaces#ActiveWorkspace()
 
-                if !empty(clv.Data.Active.Name)
-                    let currWsp = clv.Data.Active.Name
+                if aw.Status
+                    let currWsp = aw.Name
                 elseif !empty(clv.Data.LastActive)
                     let currWsp = clv.Data.LastActive
                 else

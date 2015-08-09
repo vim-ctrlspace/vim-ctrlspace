@@ -167,13 +167,14 @@ endfunction
 function! s:workspaceListContent(clv)
     let content    = []
     let workspaces = ctrlspace#workspaces#Workspaces()
+    let active     = ctrlspace#workspaces#ActiveWorkspace()
 
     for i in range(len(workspaces))
         let name = workspaces[i]
         let indicators = ""
 
-        if name ==# a:clv.Data.Active.Name
-            if a:clv.Data.Active.Digest !=# ctrlspace#workspaces#CreateDigest()
+        if name ==# active.Name && active.Status
+            if active.Status == 2
                 let indicators .= s:config.Symbols.IM
             endif
 

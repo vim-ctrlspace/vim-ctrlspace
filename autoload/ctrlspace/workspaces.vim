@@ -30,7 +30,7 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
         let digest = s:modes.Workspace.Data.Active.Digest
     end
 
-    call s:modes.Workspace.SetData("Active", { "Name": a:name, "Digest": digest })
+    call s:modes.Workspace.SetData("Active", { "Name": a:name, "Digest": digest, "Root": ctrlspace#roots#CurrentProjectRoot() })
     call s:modes.Workspace.SetData("LastActive", a:name)
 
     let filename = ctrlspace#util#WorkspaceFile()
@@ -51,12 +51,27 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
     call writefile(lines, filename)
 endfunction
 
+function! ctrlspace#workspaces#ActiveWorkspace()
+    let aw = s:modes.Workspace.Data.Active
+    let aw.Status = 0
+
+    if !empty(aw.Name) && aw.Root ==# ctrlspace#roots#CurrentProjectRoot()
+        let aw.Status = 1
+
+        if aw.Digest !=# ctrlspace#workspaces#CreateDigest()
+            let aw.Status = 2
+        endif
+    endif
+
+    return aw
+endfunction
+
 function! ctrlspace#workspaces#NewWorkspace()
     tabe
     tabo!
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
     call ctrlspace#buffers#DeleteForeignBuffers(1)
-    call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "" })
+    call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "", "Root": "" })
 endfunction
 
 function! ctrlspace#workspaces#SelectedWorkspaceName()
@@ -100,7 +115,7 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
 
     call writefile(lines, filename)
 
-    if s:modes.Workspace.Data.Active.Name ==# a:name
+    if s:modes.Workspace.Data.Active.Name ==# a:name && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
         call ctrlspace#workspaces#SetActiveWorkspaceName(newName)
     endif
 
@@ -142,7 +157,7 @@ function! ctrlspace#workspaces#DeleteWorkspace(name)
 
     call writefile(lines, filename)
 
-    if s:modes.Workspace.Data.Active.Name ==# a:name
+    if s:modes.Workspace.Data.Active.Name ==# a:name && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
         call ctrlspace#workspaces#SetActiveWorkspaceName(a:name, "")
     endif
 
@@ -284,15 +299,17 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     call ctrlspace#util#HandleVimSettings("start")
 
     let cwdSave = fnamemodify(".", ":p:h")
+    let root    = ctrlspace#roots#CurrentProjectRoot()
 
-    silent! exe "cd " . fnameescape(ctrlspace#roots#CurrentProjectRoot())
+    silent! exe "cd " . fnameescape(root)
 
     if empty(a:name)
-        if !empty(s:modes.Workspace.Data.Active.Name)
+        if !empty(s:modes.Workspace.Data.Active.Name) && s:modes.Workspace.Data.Active.Root ==# root
             let name = s:modes.Workspace.Data.Active.Name
         else
             silent! exe "cd " . fnameescape(cwdSave)
             call ctrlspace#util#HandleVimSettings("stop")
+            call ctrlspace#ui#Msg("Nothing to save.")
             return 0
         endif
     else

@@ -69,7 +69,7 @@ function! s:init()
     call s:mode.new("Buffer", 1, { "SubMode": "single" })
     call s:mode.new("File", 1, {})
     call s:mode.new("Tab", 1, {})
-    call s:mode.new("Workspace", 1, { "SubMode": "load", "Active": { "Name": "", "Digest": "" }, "LastActive": "", "LastBrowsed": 0 })
+    call s:mode.new("Workspace", 1, { "SubMode": "load", "Active": { "Name": "", "Digest": "", "Root": "" }, "LastActive": "", "LastBrowsed": 0 })
     call s:mode.new("Bookmark", 1, { "Active": {} })
 endfunction
 

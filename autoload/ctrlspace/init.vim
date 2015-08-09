@@ -42,7 +42,7 @@ function! ctrlspace#init#Init()
     au TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
     if s:config.SaveWorkspaceOnExit
-        au VimLeavePre * if !empty(s:modes.Workspace.Data.Active.Name) | call ctrlspace#workspaces#SaveWorkspace("") | endif
+        au VimLeavePre * if ctrlspace#workspaces#ActiveWorkspace().Status | call ctrlspace#workspaces#SaveWorkspace("") | endif
     endif
 
     if s:config.LoadLastWorkspaceOnStart

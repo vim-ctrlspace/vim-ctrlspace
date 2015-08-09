@@ -276,9 +276,9 @@ endfunction
 
 function! ctrlspace#keys#buffer#NewWorkspace(k)
     let saveWorkspaceBefore = 0
-    let active = s:modes.Workspace.Data.Active
+    let active = ctrlspace#workspaces#ActiveWorkspace()
 
-    if !empty(active.Name) && (active.Digest !=# ctrlspace#workspaces#CreateDigest())
+    if active.Status == 2
         if s:config.SaveWorkspaceOnSwitch
             let saveWorkspaceBefore = 1
         elseif !ctrlspace#ui#Confirmed("Current workspace ('" . active.Name . "') not saved. Proceed anyway?")

@@ -84,20 +84,18 @@ endfunction
 
 function! s:loadWorkspace(bang, name)
     let saveWorkspaceBefore = 0
-    let active = s:modes.Workspace.Data.Active
+    let active = ctrlspace#workspaces#ActiveWorkspace()
 
-    if !empty(active.Name) && !a:bang
+    if active.Status && !a:bang
         let msg = ""
 
         if a:name ==# active.Name
             let msg = "Reload current workspace: '" . a:name . "'?"
-        elseif !empty(active.Name)
-            if active.Digest !=# ctrlspace#workspaces#CreateDigest()
-                if s:config.SaveWorkspaceOnSwitch
-                    let saveWorkspaceBefore = 1
-                else
-                    let msg = "Current workspace ('" . active.Name . "') not saved. Proceed anyway?"
-                endif
+        elseif active.Status == 2
+            if s:config.SaveWorkspaceOnSwitch
+                let saveWorkspaceBefore = 1
+            else
+                let msg = "Current workspace ('" . active.Name . "') not saved. Proceed anyway?"
             endif
         endif
 
