@@ -33,7 +33,7 @@ function! ctrlspace#roots#SetLastProjectRoot(value)
 endfunction
 
 function! ctrlspace#roots#AddProjectRoot(directory)
-    let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
+    let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
 
     if !isdirectory(directory)
         call ctrlspace#ui#Msg("Invalid directory: '" . directory . "'")
@@ -56,7 +56,7 @@ function! ctrlspace#roots#AddProjectRoot(directory)
 endfunction
 
 function! ctrlspace#roots#RemoveProjectRoot(directory)
-    let directory = ctrlspace#util#NormalizeDirectory(empty(a:directory) ? getcwd() : a:directory)
+    let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
 
     if !exists("s:projectRoots[directory]")
         call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
