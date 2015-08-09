@@ -58,6 +58,7 @@ let s:descriptions = {
       \ "ctrlspace#keys#nop#Quit":                            "Quit Vim with a prompt if unsaved changes found",
       \ "ctrlspace#keys#nop#RestorePreviousSearch":           "Bring back the previous searched text",
       \ "ctrlspace#keys#nop#RestoreNextSearch":               "Bring the next searched text",
+      \ "ctrlspace#keys#nop#NewWorkspace":                    "Close everything - make a new workspace",
       \ "ctrlspace#keys#search#ClearOrRemoveLetter":          "Remove a previously entered character",
       \ "ctrlspace#keys#search#AddLetter":                    "Add a character to search",
       \ "ctrlspace#keys#search#SwitchOff":                    "Exit Search Mode",

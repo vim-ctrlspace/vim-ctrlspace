@@ -19,6 +19,7 @@ function! ctrlspace#keys#nop#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#Quit",                         "Nop", ["Q"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#RestorePreviousSearch",        "Nop", ['C-p'])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#RestoreNextSearch",            "Nop", ['C-n'])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#NewWorkspace",                 "Nop", ["N"])
 endfunction
 
 function! ctrlspace#keys#nop#ClearLetters(k)
@@ -122,5 +123,11 @@ endfunction
 function! ctrlspace#keys#nop#RestoreNextSearch(k)
     if !s:modes.Search.Enabled
         call ctrlspace#search#RestoreSearchLetters("next")
+    endif
+endfunction
+
+function! ctrlspace#keys#nop#NewWorkspace(k)
+    if !s:modes.Search.Enabled
+        call ctrlspace#keys#buffer#NewWorkspace(a:k)
     endif
 endfunction
