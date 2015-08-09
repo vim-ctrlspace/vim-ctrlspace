@@ -58,7 +58,7 @@ function! ctrlspace#tabs#CollectUnsavedBuffers()
     let buffers = []
 
     for i in range(1, bufnr("$"))
-        if getbufvar(i, "&modified") && getbufvar(i, "&modifiable") && getbufvar(i, "&buflisted")
+        if getbufvar(i, "&modified") && getbufvar(i, "&buflisted")
             call add(buffers, i)
         endif
     endfor

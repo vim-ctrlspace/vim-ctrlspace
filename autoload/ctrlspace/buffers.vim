@@ -8,7 +8,7 @@ endfunction
 
 function! ctrlspace#buffers#Init()
     for current in range(1, bufnr("$"))
-        if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
+        if !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
             break
         endif
 
@@ -21,7 +21,7 @@ endfunction
 function! ctrlspace#buffers#AddBuffer()
     let current = bufnr('%')
 
-    if !getbufvar(current, "&modifiable") || !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
+    if !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
         return
     endif
 
@@ -390,7 +390,7 @@ endfunction
 function! s:copyOrMoveSelectedBufferIntoTab(tab, move)
     let nr = ctrlspace#window#SelectedIndex()
 
-    if !getbufvar(str2nr(nr), "&modifiable") || !getbufvar(str2nr(nr), "&buflisted") || empty(bufname(str2nr(nr)))
+    if !getbufvar(str2nr(nr), "&buflisted") || empty(bufname(str2nr(nr)))
         return
     endif
 

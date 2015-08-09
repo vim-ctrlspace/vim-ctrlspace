@@ -15,7 +15,7 @@ function! ctrlspace#api#BufferList(tabnr)
             let bufname = '[' . i . '*No Name]'
         endif
 
-        if strlen(bufname) && getbufvar(i, '&modifiable')
+        if strlen(bufname)
             call add(bufferList, { "index": i, "text": bufname })
         endif
     endfor
@@ -39,7 +39,7 @@ function! ctrlspace#api#Buffers(tabnr)
             let bufname = '[' . i . '*No Name]'
         endif
 
-        if strlen(bufname) && getbufvar(i, '&modifiable')
+        if strlen(bufname)
             let bufferList[i] = bufname
         endif
     endfor

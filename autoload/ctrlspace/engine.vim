@@ -255,7 +255,7 @@ function! s:bufferEntry(bufnr)
         let bufname = "[" . a:bufnr . "*No Name]"
     endif
 
-    if strlen(bufname) && getbufvar(a:bufnr, "&modifiable")
+    if strlen(bufname)
         let indicators = ""
 
         if modified
