@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.11
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.12
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -22,88 +22,89 @@ Copyright (c) 2013-2015 Szymon Wrozynski and Contributors
 
 Table of Contents                                            *ctrlspace-toc*
 
-1. Overview                                             |ctrlspace-overview|
-  1.1 Version 5                                        |ctrlspace-version-5|
-2. Idea by Analogy                                          |ctrlspace-idea|
-3. Getting Started                               |ctrlspace-getting-started|
-  3.1 Installation                                  |ctrlspace-installation|
-  3.2 Basic Settings                              |ctrlspace-basic-settings|
-    3.2.1 Go Engine                                    |ctrlspace-go-engine|
-    3.2.2 Symbols                                        |ctrlspace-symbols|
-    3.2.3 Glob Command                              |ctrlspace-glob-command|
-    3.2.4 Colors                                          |ctrlspace-colors|
-  3.3 First Steps                                    |ctrlspace-first-steps|
-4. User Interface                                             |ctrlspace-ui|
-  4.1 Status Line                                    |ctrlspace-status-line|
-  4.2 Tabline                                            |ctrlspace-tabline|
-  4.3 Project Root                                  |ctrlspace-project-root|
-5. Lists                                                   |ctrlspace-lists|
-  5.1 Buffer List                                    |ctrlspace-buffer-list|
-    5.1.1 Single Mode                                |ctrlspace-single-mode|
-    5.1.2 Visible Mode                              |ctrlspace-visible-mode|
-    5.1.3 All Mode                                      |ctrlspace-all-mode|
-  5.2 File List                                        |ctrlspace-file-list|
-  5.3 Tab List                                          |ctrlspace-tab-list|
-  5.4 Workspace List                              |ctrlspace-workspace-list|
-  5.5 Bookmark List                                |ctrlspace-bookmark-list|
-6. Common Modes                                     |ctrlspace-common-modes|
-  6.1 Zoom Mode                                        |ctrlspace-zoom-mode|
-  6.2 Next Tab Mode                                |ctrlspace-next-tab-mode|
-  6.3 Search Mode                                    |ctrlspace-search-mode|
-  6.4 Nop Mode                                          |ctrlspace-nop-mode|
-  6.5 Help Mode                                        |ctrlspace-help-mode|
-7. Configuration                                   |ctrlspace-configuration|
-  7.1 g:CtrlSpaceHeight                                  |g:CtrlSpaceHeight|
-  7.2 g:CtrlSpaceMaxHeight                            |g:CtrlSpaceMaxHeight|
-  7.3 g:CtrlSpaceSetDefaultMapping            |g:CtrlSpaceSetDefaultMapping|
-  7.4 g:CtrlSpaceDefaultMappingKey            |g:CtrlSpaceDefaultMappingKey|
-  7.5 g:CtrlSpaceKeys                                      |g:CtrlSpaceKeys|
-  7.6 g:CtrlSpaceHelp                                      |g:CtrlSpaceHelp|
-  7.7 g:CtrlSpaceGlobCommand                        |g:CtrlSpaceGlobCommand|
-  7.8 g:CtrlSpaceUseTabline                          |g:CtrlSpaceUseTabline|
-  7.9 g:CtrlSpaceUseMouseAndArrowsInTerm
+ 1. Overview                                            |ctrlspace-overview|
+   1.1 Version 5                                       |ctrlspace-version-5|
+ 2. Idea by Analogy                                         |ctrlspace-idea|
+ 3. Getting Started                              |ctrlspace-getting-started|
+   3.1 Installation                                 |ctrlspace-installation|
+   3.2 Basic Settings                             |ctrlspace-basic-settings|
+     3.2.1 Go Engine                                   |ctrlspace-go-engine|
+     3.2.2 Symbols                                       |ctrlspace-symbols|
+     3.2.3 Glob Command                             |ctrlspace-glob-command|
+     3.2.4 Colors                                         |ctrlspace-colors|
+   3.3 First Steps                                   |ctrlspace-first-steps|
+ 4. User Interface                                            |ctrlspace-ui|
+   4.1 Status Line                                   |ctrlspace-status-line|
+   4.2 Tabline                                           |ctrlspace-tabline|
+   4.3 Project Root                                 |ctrlspace-project-root|
+ 5. Lists                                                  |ctrlspace-lists|
+   5.1 Buffer List                                   |ctrlspace-buffer-list|
+     5.1.1 Single Mode                               |ctrlspace-single-mode|
+     5.1.2 Visible Mode                             |ctrlspace-visible-mode|
+     5.1.3 All Mode                                     |ctrlspace-all-mode|
+   5.2 File List                                       |ctrlspace-file-list|
+   5.3 Tab List                                         |ctrlspace-tab-list|
+   5.4 Workspace List                             |ctrlspace-workspace-list|
+   5.5 Bookmark List                               |ctrlspace-bookmark-list|
+ 6. Common Modes                                    |ctrlspace-common-modes|
+   6.1 Zoom Mode                                       |ctrlspace-zoom-mode|
+   6.2 Next Tab Mode                               |ctrlspace-next-tab-mode|
+   6.3 Search Mode                                   |ctrlspace-search-mode|
+   6.4 Nop Mode                                         |ctrlspace-nop-mode|
+   6.5 Help Mode                                       |ctrlspace-help-mode|
+ 7. Configuration                                  |ctrlspace-configuration|
+   7.1 g:CtrlSpaceHeight                                 |g:CtrlSpaceHeight|
+   7.2 g:CtrlSpaceMaxHeight                           |g:CtrlSpaceMaxHeight|
+   7.3 g:CtrlSpaceSetDefaultMapping           |g:CtrlSpaceSetDefaultMapping|
+   7.4 g:CtrlSpaceDefaultMappingKey           |g:CtrlSpaceDefaultMappingKey|
+   7.5 g:CtrlSpaceKeys                                     |g:CtrlSpaceKeys|
+   7.6 g:CtrlSpaceHelp                                     |g:CtrlSpaceHelp|
+   7.7 g:CtrlSpaceGlobCommand                       |g:CtrlSpaceGlobCommand|
+   7.8 g:CtrlSpaceUseTabline                         |g:CtrlSpaceUseTabline|
+   7.9 g:CtrlSpaceUseMouseAndArrowsInTerm
                                         |g:CtrlSpaceUseMouseAndArrowsInTerm|
-  7.10 g:CtrlSpaceSaveWorkspaceOnExit       |g:CtrlSpaceSaveWorkspaceOnExit|
-  7.11 g:CtrlSpaceSaveWorkspaceOnSwitch   |g:CtrlSpaceSaveWorkspaceOnSwitch|
-  7.12 g:CtrlSpaceLoadLastWorkspaceOnStart
+   7.10 g:CtrlSpaceSaveWorkspaceOnExit      |g:CtrlSpaceSaveWorkspaceOnExit|
+   7.11 g:CtrlSpaceSaveWorkspaceOnSwitch  |g:CtrlSpaceSaveWorkspaceOnSwitch|
+   7.12 g:CtrlSpaceLoadLastWorkspaceOnStart
                                        |g:CtrlSpaceLoadLastWorkspaceOnStart|
-  7.13 g:CtrlSpaceCacheDir                             |g:CtrlSpaceCacheDir|
-  7.14 g:CtrlSpaceProjectRootMarkers         |g:CtrlSpaceProjectRootMarkers|
-  7.15 g:CtrlSpaceUseUnicode                         |g:CtrlSpaceUseUnicode|
-  7.16 g:CtrlSpaceSymbols                               |g:CtrlSpaceSymbols|
-  7.17 g:CtrlSpaceIgnoredFiles                     |g:CtrlSpaceIgnoredFiles|
-  7.18 g:CtrlSpaceStatuslineFunction         |g:CtrlSpaceStatuslineFunction|
-  7.19 g:CtrlSpaceSearchTiming                     |g:CtrlSpaceSearchTiming|
-  7.20 g:CtrlSpaceFileEngine                         |g:CtrlSpaceFileEngine|
-8. API                                                       |ctrlspace-api|
-  8.1 Commands                                          |ctrlspace-commands|
-    8.1.1 :CtrlSpace [keys]                                     |:CtrlSpace|
-    8.1.2 :CtrlSpaceGoUp                                    |:CtrlSpaceGoUp|
-    8.1.3 :CtrlSpaceGoDown                                |:CtrlSpaceGoDown|
-    8.1.4 :CtrlSpaceTabLabel                            |:CtrlSpaceTabLabel|
-    8.1.5 :CtrlSpaceClearTabLabel                  |:CtrlSpaceClearTabLabel|
-    8.1.6 :CtrlSpaceSaveWorkspace [workspace]      |:CtrlSpaceSaveWorkspace|
-    8.1.7 :CtrlSpaceNewWorkspace                    |:CtrlSpaceNewWorkspace|
-    8.1.8 :CtrlSpaceLoadWorkspace [!] [workspace]  |:CtrlSpaceLoadWorkspace|
-    8.1.9 :CtrlSpaceAddProjectRoot [dir]          |:CtrlSpaceAddProjectRoot|
-    8.1.10 :CtrlSpaceRemoveProjectRoot [dir]   |:CtrlSpaceRemoveProjectRoot|
-  8.2 Functions                                        |ctrlspace-functions|
-    8.2.1 ctrlspace#api#BufferList({tabnr})     |ctrlspace#api#BufferList()|
-    8.2.2 ctrlspace#api#Buffers({tabnr})           |ctrlspace#api#Buffers()|
-    8.2.3 ctrlspace#api#TabModified({tabnr})   |ctrlspace#api#TabModified()|
-    8.2.4 ctrlspace#api#Statusline()            |ctrlspace#api#Statusline()|
-    8.2.5 ctrlspace#api#StatuslineTabSegment()
+   7.13 g:CtrlSpaceCacheDir                            |g:CtrlSpaceCacheDir|
+   7.14 g:CtrlSpaceProjectRootMarkers        |g:CtrlSpaceProjectRootMarkers|
+   7.15 g:CtrlSpaceUseUnicode                        |g:CtrlSpaceUseUnicode|
+   7.16 g:CtrlSpaceSymbols                              |g:CtrlSpaceSymbols|
+   7.17 g:CtrlSpaceIgnoredFiles                    |g:CtrlSpaceIgnoredFiles|
+   7.18 g:CtrlSpaceStatuslineFunction        |g:CtrlSpaceStatuslineFunction|
+   7.19 g:CtrlSpaceSearchTiming                    |g:CtrlSpaceSearchTiming|
+   7.20 g:CtrlSpaceFileEngine                        |g:CtrlSpaceFileEngine|
+ 8. API                                                      |ctrlspace-api|
+   8.1 Commands                                         |ctrlspace-commands|
+     8.1.1 :CtrlSpace [keys]                                    |:CtrlSpace|
+     8.1.2 :CtrlSpaceGoUp                                   |:CtrlSpaceGoUp|
+     8.1.3 :CtrlSpaceGoDown                               |:CtrlSpaceGoDown|
+     8.1.4 :CtrlSpaceTabLabel                           |:CtrlSpaceTabLabel|
+     8.1.5 :CtrlSpaceClearTabLabel                 |:CtrlSpaceClearTabLabel|
+     8.1.6 :CtrlSpaceSaveWorkspace [workspace]     |:CtrlSpaceSaveWorkspace|
+     8.1.7 :CtrlSpaceNewWorkspace                   |:CtrlSpaceNewWorkspace|
+     8.1.8 :CtrlSpaceLoadWorkspace [!] [workspace] |:CtrlSpaceLoadWorkspace|
+     8.1.9 :CtrlSpaceAddProjectRoot [dir]         |:CtrlSpaceAddProjectRoot|
+     8.1.10 :CtrlSpaceRemoveProjectRoot [dir]  |:CtrlSpaceRemoveProjectRoot|
+   8.2 Functions                                       |ctrlspace-functions|
+     8.2.1 ctrlspace#api#BufferList({tabnr})    |ctrlspace#api#BufferList()|
+     8.2.2 ctrlspace#api#Buffers({tabnr})          |ctrlspace#api#Buffers()|
+     8.2.3 ctrlspace#api#TabModified({tabnr})  |ctrlspace#api#TabModified()|
+     8.2.4 ctrlspace#api#Statusline()           |ctrlspace#api#Statusline()|
+     8.2.5 ctrlspace#api#StatuslineTabSegment()
                                       |ctrlspace#api#StatuslineTabSegment()|
-    8.2.6 ctrlspace#api#StatuslineModeSegment({...})
+     8.2.6 ctrlspace#api#StatuslineModeSegment({...})
                                      |ctrlspace#api#StatuslineModeSegment()|
-    8.2.7 ctrlspace#api#TabBuffersNumber({tabnr})
+     8.2.7 ctrlspace#api#TabBuffersNumber({tabnr})
                                           |ctrlspace#api#TabBuffersNumber()|
-    8.2.8 ctrlspace#api#TabTitle({tabnr}, {bufnr}, {bufname})
+     8.2.8 ctrlspace#api#TabTitle({tabnr}, {bufnr}, {bufname})
                                                   |ctrlspace#api#TabTitle()|
-    8.2.9 ctrlspace#api#Guitablabel()          |ctrlspace#api#Guitablabel()|
-    8.2.10 ctrlspace#api#Tabline()                 |ctrlspace#api#Tabline()|
-    8.2.11 ctrlspace#api#BufNr()                     |ctrlspace#api#BufNr()|
-9. Authors and License                       |ctrlspace-authors-and-license|
+     8.2.9 ctrlspace#api#Guitablabel()         |ctrlspace#api#Guitablabel()|
+     8.2.10 ctrlspace#api#Tabline()                |ctrlspace#api#Tabline()|
+     8.2.11 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
+ 9. File Engine Protocol                             |ctrlspace-file-engine|
+10. Authors and License                      |ctrlspace-authors-and-license|
 
 ==========================================================================
 
@@ -1375,7 +1376,142 @@ otherwise.
                                                              |ctrlspace-toc|
 ==========================================================================
 
-9. Authors and License                       *ctrlspace-authors-and-license*
+9. File Engine Protocol                              *ctrlspace-file-engine*
+
+It's fairly easy to provide your own implementation of a fuzzy searcher
+for files. The main reason for enabling such external searcher is the
+limited speed of Vim Script processing.
+
+Moreover the amount of data returned by the search algorithm is
+significantly greater than in other popular fuzzy searchers implemented in
+Vim Script (like `CtrlP`) and that impacts on performance as well.
+
+
+General Assumptions~
+
+By default the plugin shows at most 500 items per list and 200 when fuzzy
+searched. That rule is enforced by internal fuzzy searcher implementation
+and by the external engine written in Go.
+
+More items make the plugin window sluggish and inconvenient to browse. If
+something you are looking for is not immediately available within those
+limits then most likely you should refine your search criteria.
+
+Of course your are not forced to follow those limitations. Feel free to
+change the limits in your own implementation if you think it would work
+better for you.
+
+The external engine is designed specifically for searching and displaying
+files. All other search in the plugin is performed by an internal engine.
+The communication with external processes involves some latency as Vim
+must execute an external command in the system shell.
+
+However, such latency is acceptable for files, where we might have a great
+volume to search and show. It is much less likely that you hit thousands
+of buffers, tabs, workspaces, or bookmarks. But for files that is a common
+scenario on everyday basis.
+
+Therefore the responsibility of an external engine is also to render the
+exact response - text that would be displayed in the plugin window
+together with all metadata that allow plugin proceed it further. This is
+because of the massive scale of processing needed in case of files.
+
+My former experiences showed that even string concatenating at that scale
+can take a serious time in Vim Script.
+
+
+The Request~
+
+The plugin attempts to request data by executing the engine program and
+passing just one single line of text ended with `"\n"` line terminator to
+the program Standard Input (`STDIN`). That line is a JSON object
+describing the current context of Vim necessary for rendering a response.
+
+The context JSON has the following structure (with sample data): >
+
+    {
+        "Query":    "gfx",
+        "Columns":  170,
+        "Limit":    0,
+        "Source":   "/Users/szw/Projects/vim-ctrlspace/.git/cs_files",
+        "Dots":     "…",
+        "DotsSize": 1
+    }
+<
+The fields have following meanings:
+
+ * `Query`    - Characters placed in the plugin search input
+              (`[A-Za-z0-9]`). The query might be empty - then the engine
+              should just display items.
+
+ * `Columns`  - The width of the plugin window. The content lines in the
+              response should have extact width provided by this value.
+
+ * `Limit`    - If greater than 0 then results should be trimmed to that
+              value - otherwise they should follow 500 / 200 rule.
+              The limit is used while Search Mode is enabled. In that
+              mode you cannot move the bar and browse List View.
+              Since you are just supposed to type search characters
+              there is no point to render more items than would be visible
+              at that moment.
+
+ * `Source`   - The path to file containing list to files to be searched.
+              The source is a text file containg file paths. Each line
+              is a separate file path. The line number minus 1 is
+              considered as a correspondent index value.
+
+ * `Dots`     - The character(s) used to trim the item text that exceeds
+              plugin window width. See also |g:CtrlSpaceSymbols|.
+
+ * `DotsSize` - The visual size of the `Dots` symbol.
+
+
+The Response~
+
+The engine should generate output to its Standard Output (`STDOUT`). The
+expected response should be composed of a few lines. Each line provides
+different type of data and metadata. A sample response might look like
+this one: >
+
+    ["gfx"]
+    [31,44]
+    2
+      gfx/cs5_window.png
+      gfx/logo5.png
+<
+The first line should contain unique search patterns that will be used to
+highlight search results with `CtrlSpaceSearch` group. Those patterns
+should be expressed as a |list| definition in Vim Script, for example: >
+
+    ["gfx"]
+<
+The second line must be a list of indices (line numbers of the source file
+minus 1) sorted accordingly to search algorithm relevance. This order
+should also match to the order of text lines explained below. The
+list should be formatted as a Vim Script |list|: >
+
+    [31,44]
+<
+Third line is the results size: >
+
+    2
+<
+The next lines are just content lines. They must be of size given by
+context `Columns` field. That means all remaining characters should be
+filled with spaces (`'` `'`). Also first 2 and last 3 characters of each
+line should be always blank spaces. In that way you will provide a
+response matching well the current plugin design: >
+
+      gfx/cs5_window.png
+      gfx/logo5.png
+<
+The order reflects the reversed results relevance. The most relevant items
+should be placed at the bottom (as last ones).
+
+                                                             |ctrlspace-toc|
+==========================================================================
+
+10. Authors and License                      *ctrlspace-authors-and-license*
 
 Copyright (c) 2013-2015 Szymon Wrozynski and Contributors.
 
