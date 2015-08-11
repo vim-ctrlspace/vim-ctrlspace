@@ -177,6 +177,7 @@ function! ctrlspace#help#DisplayHelp(fill)
         let header .= " (" . join(mi[1:], ", ") . ")"
     endif
 
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.2 (engine: " . s:config.FileEngineName . ")")
     call s:puts(header)
     call s:puts("")
 
@@ -185,7 +186,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     endfor
 
     call s:puts("")
-    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.1 (c) 2013-2015 Szymon Wrozynski and Contributors")
+    call s:puts("Copyright (c) 2013-2015 Szymon Wrozynski and Contributors")
 
     setlocal modifiable
 

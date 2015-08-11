@@ -64,7 +64,7 @@ let s:configuration = {
                 \ "UseUnicode":               1,
                 \ "IgnoredFiles":             '\v(tmp|temp)[\/]',
                 \ "SearchTiming":             500,
-                \ "FileEngine":               "",
+                \ "FileEngine":               "auto",
             \ }
 
 function! s:init()
@@ -88,8 +88,55 @@ function! s:init()
           \ "Dots": strwidth(s:conf.Symbols.Dots)
           \ }
 
-    let engine = s:pluginFolder . "/bin/" . s:conf.FileEngine
-    let s:conf.FileEngine = executable(engine) ? engine : ""
+    if s:conf.FileEngine ==# "auto"
+        let s:conf.FileEngine = s:detectEngine()
+    endif
+
+    if !empty(s:conf.FileEngine)
+        let s:conf.FileEngineName = s:conf.FileEngine
+        let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
+        let s:conf.FileEngine = executable(ebin) ? ebin : ""
+    endif
+
+    if empty(s:conf.FileEngine)
+        let s:conf.FileEngineName = "VIM"
+    endif
+endfunction
+
+function! s:detectEngine()
+    let [os, arch] = ["", ""]
+
+    if has("win32")
+        let os   = "windows"
+        let arch = empty(system('set | find "ProgramFiles(x86)"')) ? "386" : "amd64"
+    else
+        let uname = system("uname -a")
+
+        for sys in ["darwin", "linux", "freebsd", "netbsd", "openbsd", "plan9"]
+            if uname =~? sys
+                let os = sys
+                break
+            endif
+        endfor
+
+        if os ==? "plan9"
+            let arch = "386"
+        elseif !empty(os)
+            if uname =~? "64"
+                let arch = "amd64"
+            elseif uname =~? "arm"
+                let arch = "arm"
+            else
+                let arch = "386"
+            endif
+        endif
+    endif
+
+    if empty(os) || empty(arch)
+        return ""
+    endif
+
+    return join(["file_engine", os, arch], "_")
 endfunction
 
 call s:init()

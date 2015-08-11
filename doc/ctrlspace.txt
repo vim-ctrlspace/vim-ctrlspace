@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.08
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.11
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -7,7 +7,7 @@
 
 
 
-                           Vim-CtrlSpace 5.0.1~
+                           Vim-CtrlSpace 5.0.2~
 
                            Vim Space Controller
 
@@ -259,31 +259,11 @@ use of tabs intensively, tabline would just get in your way. Tab List
 
 3.2.1 Go Engine                                        *ctrlspace-go-engine*
 
-The plugin provides engine compiled for several architectures:
+The plugin provides engine compiled for popular operating systems and
+architectures. By default it will attempt to detect your os and
+architecture. To see if auto detection was successful press <?>.
 
- * `file_engine_darwin_386`
- * `file_engine_darwin_amd64`
- * `file_engine_freebsd_386`
- * `file_engine_freebsd_amd64`
- * `file_engine_freebsd_arm`
- * `file_engine_linux_386`
- * `file_engine_linux_amd64`
- * `file_engine_linux_arm`
- * `file_engine_netbsd_386`
- * `file_engine_netbsd_amd64`
- * `file_engine_netbsd_arm`
- * `file_engine_openbsd_386`
- * `file_engine_openbsd_amd64`
- * `file_engine_plan9_386`
- * `file_engine_windows_386.exe`
- * `file_engine_windows_amd64.exe`
-
-To enable Go file engine please pick the one matching your machine and add
-it (this is an example for Mac OS X): >
-
-    let g:CtrlSpaceFileEngine = "file_engine_darwin_amd64"
-<
-to `.vimrc`.
+To find more about file engines check |g:CtrlSpaceFileEngine|.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1157,16 +1137,33 @@ several architectures:
 
 The engine protocol is relatively simple and it's possible to implement an
 engine in any technology. The engine must be provided as an executable
-file in the `bin` directory in the plugin folder. Then to enable it
-provide the executable name as a string to |g:CtrlSpaceFileEngine| variable.
-For example, a Go version for Mac OS X: >
+file in the `bin` directory in the plugin folder.
+
+To enable your custom engine provide the executable name as a string to
+|g:CtrlSpaceFileEngine| variable. You can also force plugin to use
+a certain implementation of your choice. For example, a Go version
+for Mac OS X could look like: >
 
     let g:CtrlSpaceFileEngine = "file_engine_darwin_amd64"
 <
-Default value: >
+Another way of enabling a Go implementation is file engine auto detection.
+Plugin can try to infer matching os and architecture and use proper Go
+binary. To enable it provide a string `"auto"` (or leave default value): >
+
+    let g:CtrlSpaceFileEngine = "auto"
+<
+To make sure a correct file engine is in use check the Help View (<?>).
+
+To disable external file engines and stick to pure Vim implementation,
+just provide an empty string: >
 
     let g:CtrlSpaceFileEngine = ""
 <
+Default value: >
+
+    let g:CtrlSpaceFileEngine = "auto"
+<
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 8. API                                                       *ctrlspace-api*

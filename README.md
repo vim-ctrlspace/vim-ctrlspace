@@ -147,31 +147,13 @@ use of tabs intensively, tabline would just get in your way. **Tab List**
 
 #### Go Engine
 
-The plugin provides engine compiled for several architectures:
+The plugin provides engine compiled for popular operating systems and
+architectures. By default it will attempt to detect your os and
+architecture. To see if auto detection was successful press `<?>`.
 
-* `file_engine_darwin_386`
-* `file_engine_darwin_amd64`
-* `file_engine_freebsd_386`
-* `file_engine_freebsd_amd64`
-* `file_engine_freebsd_arm`
-* `file_engine_linux_386`
-* `file_engine_linux_amd64` 
-* `file_engine_linux_arm`
-* `file_engine_netbsd_386`
-* `file_engine_netbsd_amd64`
-* `file_engine_netbsd_arm`
-* `file_engine_openbsd_386`
-* `file_engine_openbsd_amd64`
-* `file_engine_plan9_386`
-* `file_engine_windows_386.exe`
-* `file_engine_windows_amd64.exe`
+To find more about file engines check:
 
-To enable **Go file engine** please pick the one matching your machine and add
-it (this is an example for Mac OS X):
-
-    let g:CtrlSpaceFileEngine = "file_engine_darwin_amd64"
-
-to `.vimrc`.
+    :help g:CtrlSpaceFileEngine
 
 
 #### Symbols

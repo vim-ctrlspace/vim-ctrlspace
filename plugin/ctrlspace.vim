@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Space Controller
 " Maintainer: Szymon Wrozynski
-" Version:    5.0.1
+" Version:    5.0.2
 "
 " The MIT License (MIT)
 
@@ -50,7 +50,7 @@ if v:version < 703
 endif
 
 if !empty(s:errors)
-    echohl ErrorMsg
+    echohl WarningMsg
     for msg in s:errors
         echom msg
     endfor
