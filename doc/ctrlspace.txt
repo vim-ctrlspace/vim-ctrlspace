@@ -1137,8 +1137,8 @@ several architectures:
  * `file_engine_windows_amd64.exe`
 
 The engine protocol is relatively simple and it's possible to implement an
-engine in any technology. The engine must be provided as an executable
-file in the `bin` directory in the plugin folder.
+engine in any technology (see |ctrlspace-file-engine|). The engine must be
+provided as an executable file in the `bin` directory in the plugin folder.
 
 To enable your custom engine provide the executable name as a string to
 |g:CtrlSpaceFileEngine| variable. You can also force plugin to use
