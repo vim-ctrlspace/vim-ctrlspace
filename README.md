@@ -143,7 +143,9 @@ set hidden
 
 If you feel brave enough **turn off** tabline:
 
-    set showtabline=0
+```VimL
+set showtabline=0
+```
 
 Tabline in Vim has very limited capabilities and as Vim-CtrlSpace makes
 use of tabs intensively, tabline would just get in your way. **Tab List**
