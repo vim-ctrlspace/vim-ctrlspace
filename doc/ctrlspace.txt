@@ -225,12 +225,10 @@ save multiple workspaces per project with Workspace List.
 
 3.1 Installation                                    *ctrlspace-installation*
 
-If you use Vundle add: >
+If you use Vundle add to your `.vimrc`: >
 
     Plugin 'szw/vim-ctrlspace'
 <
-to your `.vimrc`.
-
 You can also clone the repository to your `.vim` directory: >
 
     cd ~/.vim
@@ -278,7 +276,12 @@ with the font you are using, so feel free to change and adjust them.
 This is the config I use for Inconsolata font in MacVim: >
 
     if has("gui_running")
-        let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
+        let g:CtrlSpaceSymbols = {
+           \ "File": "◯",
+           \ "CTab": "▣",
+           \ "Tabs": "▢",
+           \ "NTM":  " ⁺"
+         \ }
     endif
 <
 Since it's impossible to provide universal character set that would look
