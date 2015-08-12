@@ -103,7 +103,7 @@ Table of Contents                                            *ctrlspace-toc*
      8.2.9 ctrlspace#api#Guitablabel()         |ctrlspace#api#Guitablabel()|
      8.2.10 ctrlspace#api#Tabline()                |ctrlspace#api#Tabline()|
      8.2.11 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
- 9. File Engine Protocol                             |ctrlspace-file-engine|
+ 9. File Engine Protocol                         |ctrlspace-engine-protocol|
 10. Authors and License                      |ctrlspace-authors-and-license|
 
 ==========================================================================
@@ -1137,8 +1137,9 @@ several architectures:
  * `file_engine_windows_amd64.exe`
 
 The engine protocol is relatively simple and it's possible to implement an
-engine in any technology (see |ctrlspace-file-engine|). The engine must be
-provided as an executable file in the `bin` directory in the plugin folder.
+engine in any technology (see |ctrlspace-engine-protocol|). The engine
+must be provided as an executable file in the `bin` directory in the plugin
+folder.
 
 To enable your custom engine provide the executable name as a string to
 |g:CtrlSpaceFileEngine| variable. You can also force plugin to use
@@ -1376,7 +1377,7 @@ otherwise.
                                                              |ctrlspace-toc|
 ==========================================================================
 
-9. File Engine Protocol                              *ctrlspace-file-engine*
+9. File Engine Protocol                          *ctrlspace-engine-protocol*
 
 It's fairly easy to provide your own implementation of a fuzzy searcher
 for files. The main reason for enabling such external searcher is the
@@ -1384,7 +1385,7 @@ limited speed of Vim Script processing.
 
 Moreover the amount of data returned by the search algorithm is
 significantly greater than in other popular fuzzy searchers implemented in
-Vim Script (like `CtrlP`) and that impacts on performance as well.
+Vim Script (like `CtrlP`) and that affects the performance as well.
 
 
 General Assumptions~

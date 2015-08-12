@@ -52,7 +52,9 @@ The most exciting **Vim-CtrlSpace 5** features are:
 Version 5 is not backward compatible. All configuration variables and API
 functions have been renamed. Please check Vim help for more info:
 
-    :help ctrlspace-configuration
+```VimL
+:help ctrlspace-configuration
+```
 
 
 ## Idea by Analogy
@@ -116,25 +118,28 @@ save multiple workspaces per project with **Workspace List**.
 
 ### Installation
 
-If you use Vundle add:
+If you use Vundle add to your `.vimrc`:
 
-    Plugin 'szw/vim-ctrlspace' 
-
-to your `.vimrc`.
+```VimL
+Plugin 'szw/vim-ctrlspace' 
+```
 
 You can also clone the repository to your `.vim` directory:
 
-    cd ~/.vim
-    git clone https://github.com/szw/vim-ctrlspace.git .
-
+```Shell
+cd ~/.vim
+git clone https://github.com/szw/vim-ctrlspace.git .
+```
 
 ### Basic Settings
 
 First please make sure that you set `nocompatible` and `hidden` options
 (required by the plugin) in your `.vimrc`:
 
-    set nocompatible
-    set hidden
+```VimL
+set nocompatible
+set hidden
+```
 
 If you feel brave enough **turn off** tabline:
 
@@ -153,7 +158,9 @@ architecture. To see if auto detection was successful press `<?>`.
 
 To find more about file engines check:
 
-    :help g:CtrlSpaceFileEngine
+```VimL
+:help g:CtrlSpaceFileEngine
+```
 
 
 #### Symbols
@@ -164,16 +171,20 @@ with the font you are using, so feel free to change and adjust them.
 
 This is the config I use for Inconsolata font in MacVim:
 
-    if has("gui_running")
-        let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
-    endif
+```VimL
+if has("gui_running")
+    let g:CtrlSpaceSymbols = { "File": "◯", "CTab": "▣", "Tabs": "▢", "NTM": " ⁺" }
+endif
+```
 
 Since it's impossible to provide universal character set that would look well
 on any machine, therefore the fine tuning is left up to you.
 
 You can find more about this tuning option in the plugin help:
 
-    :help g:CtrlSpaceSymbols
+```VimL
+:help g:CtrlSpaceSymbols
+```
 
 If you feel that you have found a better symbol for a given view, you are
 more than welcome to open a pull request.
@@ -186,9 +197,11 @@ collect all files in your project directory. Specifically, I recommend
 that you install and use `ag`, as it respects `.gitignore` rules and is
 really fast. Once it's installed you can add this line to your `.vimrc`:
 
-    if executable("ag")
-        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
-    endif
+```VimL
+if executable("ag")
+    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+endif
+```
 
 
 #### Colors
@@ -196,20 +209,26 @@ really fast. Once it's installed you can add this line to your `.vimrc`:
 Finally, you can adjust some plugin colors. By default plugin uses
 the following setup:
 
-    hi link CtrlSpaceNormal   PMenu
-    hi link CtrlSpaceSelected PMenuSel
-    hi link CtrlSpaceSearch   Search
-    hi link CtrlSpaceStatus   StatusLine
+```VimL
+hi link CtrlSpaceNormal   PMenu
+hi link CtrlSpaceSelected PMenuSel
+hi link CtrlSpaceSearch   Search
+hi link CtrlSpaceStatus   StatusLine
+```
 
 However some color schemes show search results with the same colors as
 PMenu groups. If that's your case try to link CtrlSpaceSearch highlight
 group to IncSearch instead:
 
-    hi link CtrlSpaceSearch IncSearch
+```VimL
+hi link CtrlSpaceSearch IncSearch
+```
 
 Of course nothing prevents you from providing your own highlighting, for example:
 
-    hi CtrlSpaceSearch guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
+```VimL
+hi CtrlSpaceSearch guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
+```
 
 
 ### First Steps
@@ -237,7 +256,9 @@ providing your first workspace name.
 
 For more information please check out Vim-CtrlSpace help directly in Vim:
 
-    :help ctrlspace
+```VimL
+:help ctrlspace
+```
 
 For key reference press `<?>` inside the plugin window.
 
