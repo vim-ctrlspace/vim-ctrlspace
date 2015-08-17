@@ -53,9 +53,13 @@ function! ctrlspace#keys#bookmark#Edit(k)
 endfunction
 
 function! ctrlspace#keys#bookmark#Add(k)
-    let nr = (a:k ==# "a") ? ctrlspace#window#SelectedIndex() : 0
+    if a:k ==# "a"
+        let result = ctrlspace#bookmarks#AddNewBookmark(ctrlspace#window#SelectedIndex())
+    else
+        let result = ctrlspace#bookmarks#AddNewBookmark()
+    endif
 
-    if ctrlspace#bookmarks#AddNewBookmark(nr)
+    if result
         call ctrlspace#window#Kill(0, 1)
         call ctrlspace#window#Toggle(0)
         call ctrlspace#window#Kill(0, 0)
