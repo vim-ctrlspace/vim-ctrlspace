@@ -56,6 +56,9 @@ function! s:initKeyNames()
         call add(controlList, "C-" . l)
     endfor
 
+    call add(controlList, "C-^")
+    call add(controlList, "C-]")
+
     let controls = join(controlList, " ")
 
     let numbers  = "1 2 3 4 5 6 7 8 9 0"
