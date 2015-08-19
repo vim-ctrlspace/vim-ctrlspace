@@ -72,7 +72,7 @@ function! ctrlspace#tabs#CollectUnsavedBuffers()
 
     tabnew
 
-    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Unsaved buffers", 1)
+    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Unsaved Buffers", 1)
 
     for b in buffers
         silent! exe ":b " . b
@@ -109,7 +109,7 @@ function! ctrlspace#tabs#CollectForeignBuffers()
 
     tabnew
 
-    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Foreign buffers", 1)
+    call ctrlspace#tabs#SetTabLabel(tabpagenr(), "Foreign Buffers", 1)
 
     for fb in foreignBuffers
         silent! exe ":b " . fb

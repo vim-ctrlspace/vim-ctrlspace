@@ -1,7 +1,8 @@
-let s:config     = ctrlspace#context#Configuration()
-let s:modes      = ctrlspace#modes#Modes()
-let s:sizes      = ctrlspace#context#SymbolSizes()
-let s:textBuffer = []
+let s:config        = ctrlspace#context#Configuration()
+let s:modes         = ctrlspace#modes#Modes()
+let s:sizes         = ctrlspace#context#SymbolSizes()
+let s:textBuffer    = []
+let s:externalBufnr = -1
 
 let s:helpMap = {
       \ "Search":    {},
@@ -159,6 +160,77 @@ endfunction
 
 call s:init()
 
+function! ctrlspace#help#CloseExternalWindow()
+    if bufexists(s:externalBufnr)
+        let curtab = tabpagenr()
+
+        for t in range(1, tabpagenr("$"))
+           let bufs = map(keys(ctrlspace#buffers#Buffers(t)), "str2nr(v:val)")
+
+           if index(bufs, s:externalBufnr) != -1 && len(bufs) > 1
+               silent! exe "normal! " . t . "gt"
+
+               if bufwinnr(s:externalBufnr) == 1 && winnr("$") == 1
+                    silent! exe ":CtrlSpaceGoDown"
+               endif
+
+               silent! exe "normal! " . curtab . "gt"
+           endif
+        endfor
+
+        silent! exe "bw " . s:externalBufnr
+    endif
+endfunction
+
+function! ctrlspace#help#OpenInNewWindow()
+    let mi     = s:modeInfo()
+    let header = "Key Reference for " . mi[0] . " LIST"
+    let fname  = fnameescape(mi[0] . " LIST KEY REFERENCE")
+
+    if len(mi) > 1
+        let header .= " (" . join(mi[1:], ", ") . ")"
+    endif
+
+    call add(s:textBuffer, header . " - press <q> to close")
+    call add(s:textBuffer, "")
+
+    for info in b:helpKeyDescriptions
+        call add(s:textBuffer, info.key . " | " . info.description)
+    endfor
+
+    call ctrlspace#window#Kill(0, 1)
+    call ctrlspace#help#CloseExternalWindow()
+
+    if winnr("$") > 1
+        new
+        wincmd K
+        wincmd _
+    else
+        enew
+    endif
+
+    let s:externalBufnr = bufnr("%")
+
+    silent! exe "file " . fname
+
+    setlocal noswapfile
+    setlocal buftype=nofile
+    setlocal bufhidden=hide
+    setlocal buflisted
+    setlocal filetype=ctrlspace_help
+
+    setlocal modifiable
+
+    silent! put! =s:flushTextBuffer()
+    normal! GkJ
+    normal! 0
+    normal! gg
+
+    noremap <silent><buffer> q :call ctrlspace#help#CloseExternalWindow()<CR>
+
+    setlocal nomodifiable
+endfunction
+
 function! ctrlspace#help#DisplayHelp(fill)
     if s:modes.Nop.Enabled
         let mapName = "Nop"
@@ -177,8 +249,8 @@ function! ctrlspace#help#DisplayHelp(fill)
         let header .= " (" . join(mi[1:], ", ") . ")"
     endif
 
-    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.2 (engine: " . s:config.FileEngineName . ")")
-    call s:puts(header)
+    call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.3 (engine: " . s:config.FileEngineName . ")")
+    call s:puts(header . " - press <CR> to expand")
     call s:puts("")
 
     for info in b:helpKeyDescriptions
