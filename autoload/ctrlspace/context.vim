@@ -112,23 +112,19 @@ function! s:detectEngine()
     else
         let uname = system("uname -a")
 
-        for sys in ["darwin", "linux", "freebsd", "netbsd", "openbsd", "plan9"]
+        for sys in ["darwin", "linux", "freebsd", "netbsd", "openbsd"]
             if uname =~? sys
                 let os = sys
                 break
             endif
         endfor
 
-        if os ==? "plan9"
+        if uname =~? "64"
+            let arch = "amd64"
+        elseif uname =~? "arm"
+            let arch = "arm"
+        else
             let arch = "386"
-        elseif !empty(os)
-            if uname =~? "64"
-                let arch = "amd64"
-            elseif uname =~? "arm"
-                let arch = "arm"
-            else
-                let arch = "386"
-            endif
         endif
     endif
 
