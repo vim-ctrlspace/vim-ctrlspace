@@ -1135,7 +1135,6 @@ several architectures:
  * `file_engine_netbsd_arm`
  * `file_engine_openbsd_386`
  * `file_engine_openbsd_amd64`
- * `file_engine_plan9_386`
  * `file_engine_windows_386.exe`
  * `file_engine_windows_amd64.exe`
 
