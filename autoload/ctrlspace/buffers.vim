@@ -47,7 +47,14 @@ endfunction
 function! ctrlspace#buffers#Buffers(tabnr)
     if a:tabnr
         let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
-        if type(buffers) != type({})
+
+        " Fix strange Vim bug after :only and e.g. help window:
+        " for the first time after :only gettabvar cannot properly ready any tab variable
+        if type(buffers) == 1
+            let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
+        endif
+
+        if type(buffers) != 4
             return {}
         endif
     else

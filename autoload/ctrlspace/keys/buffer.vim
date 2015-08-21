@@ -137,13 +137,6 @@ function! ctrlspace#keys#buffer#CloseManyWindows(k)
     if (winnr("$") > 2) && ctrlspace#window#GoToWindow()
         only
         call ctrlspace#window#Toggle(0)
-
-        " Fix unpredictable Console Vim behavior
-        if s:modes.Nop.Enabled
-            call ctrlspace#window#Kill(0, 1)
-            call ctrlspace#window#Toggle(0)
-        endif
-
         call ctrlspace#window#MoveSelectionBar(curln)
     endif
 endfunction
