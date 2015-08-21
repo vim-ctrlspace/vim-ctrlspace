@@ -51,6 +51,7 @@ function! ctrlspace#buffers#Buffers(tabnr)
         " Fix strange Vim bug after :only and e.g. help window:
         " for the first time after :only gettabvar cannot properly ready any tab variable
         if type(buffers) == 1
+            unlet buffers
             let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
         endif
 
