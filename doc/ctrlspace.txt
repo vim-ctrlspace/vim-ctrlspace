@@ -276,12 +276,8 @@ with the font you are using, so feel free to change and adjust them.
 This is the config I use for Inconsolata font in MacVim: >
 
     if has("gui_running")
-        let g:CtrlSpaceSymbols = {
-           \ "File": "◯",
-           \ "CTab": "▣",
-           \ "Tabs": "▢",
-           \ "NTM":  " ⁺"
-         \ }
+        " Settings for MacVim and Inconsolata font
+        let g:CtrlSpaceSymbols = { "File": "◯", "CTab": "▣", "Tabs": "▢" }
     endif
 <
 Since it's impossible to provide universal character set that would look
@@ -1069,7 +1065,7 @@ Vim-CtrlSpace uses the following defaults:
 
 You can define your own symbols like in this example: >
 
-    let g:CtrlSpaceSymbols = { "File": "◯", "NTM": " ⁺" }
+    let g:CtrlSpaceSymbols = { "File": "◯" }
 <
 Default value: >
 

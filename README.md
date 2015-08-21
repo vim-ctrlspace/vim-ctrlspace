@@ -175,7 +175,8 @@ This is the config I use for Inconsolata font in MacVim:
 
 ```VimL
 if has("gui_running")
-    let g:CtrlSpaceSymbols = { "File": "◯", "CTab": "▣", "Tabs": "▢", "NTM": " ⁺" }
+    " Settings for MacVim and Inconsolata font
+    let g:CtrlSpaceSymbols = { "File": "◯", "CTab": "▣", "Tabs": "▢" }
 endif
 ```
 

@@ -132,7 +132,7 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         endif
 
         if s:modes.NextTab.Enabled
-            let symbol .= s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
+            let symbol .= " " . s:config.Symbols.NTM . ctrlspace#api#TabBuffersNumber(tabpagenr() + 1)
         endif
 
         call add(statuslineElements, symbol)
