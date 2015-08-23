@@ -13,12 +13,7 @@ endfunction
 
 function! ctrlspace#bookmarks#GoToBookmark(nr)
     let newBookmark = s:bookmarks[a:nr]
-
-    if !empty(s:modes.Bookmark.Data.Active) && s:modes.Bookmark.Data.Active.Directory ==# newBookmark.Directory
-        return
-    endif
-
-    silent! exe "cd " . fnameescape(newBookmark.Directory)
+    call ctrlspace#util#ChDir(newBookmark.Directory)
     call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
 endfunction
 

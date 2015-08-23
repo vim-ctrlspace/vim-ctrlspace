@@ -44,6 +44,29 @@ function! ctrlspace#util#FilesCache()
     return s:internalFilePath("cs_files")
 endfunction
 
+function! ctrlspace#util#ChDir(dir)
+    let dir    = fnameescape(a:dir)
+    let curtab = tabpagenr()
+    let curwin = winnr()
+
+    silent! exe "cd " . dir
+
+    for t in range(1, tabpagenr("$"))
+        silent! exe "tabnext " . t
+
+        for w in range(1, winnr("$"))
+            silent! exe w . "wincmd w"
+
+            if haslocaldir()
+                silent! exe "lcd " . dir
+            endif
+        endfor
+    endfor
+
+    silent! exe "tabnext " . curtab
+    silent! exe curwin . "wincmd w"
+endfunction
+
 function! s:internalFilePath(name)
     let root = ctrlspace#roots#CurrentProjectRoot()
     let fullPart = empty(root) ? "" : (root . "/")

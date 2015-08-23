@@ -344,7 +344,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     call add(lines, startMarker)
 
     let ssopSave = &ssop
-    set ssop=winsize,tabpages,buffers,sesdir
+    set ssop=winsize,tabpages,buffers,curdir
 
     let tabData = []
 

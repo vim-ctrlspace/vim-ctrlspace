@@ -297,9 +297,9 @@ function! ctrlspace#files#GoToDirectory(back)
         else
             call add(s:goToDirectorySave, cwd)
         endif
-
-        silent! exe "cd " . fnameescape(directory)
     endif
+
+    call ctrlspace#util#ChDir(directory)
 
     call ctrlspace#ui#DelayedMsg("CWD is now: " . directory)
 
