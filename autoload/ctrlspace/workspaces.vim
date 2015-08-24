@@ -394,7 +394,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
             endif
 
             for b in data.bufs
-                call add(lines, "edit " . b)
+                call add(lines, "edit " . fnameescape(b))
             endfor
 
             if !empty(data.label)
