@@ -166,10 +166,14 @@ function! ctrlspace#keys#buffer#NewTabLabel(k)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveTab(k)
-    if a:k ==# "+"
-        silent! exe "tabm" . tabpagenr()
-    elseif a:k ==# "-"
-        silent! exe "tabm" . (tabpagenr() - 2)
+    if v:version < 704
+        if a:k ==# "+"
+            silent! exe "tabm" . tabpagenr()
+        elseif a:k ==# "-"
+            silent! exe "tabm" . (tabpagenr() - 2)
+        endif
+    else
+        silent! exe "tabm" . a:k
     endif
 
     call ctrlspace#util#SetStatusline()
