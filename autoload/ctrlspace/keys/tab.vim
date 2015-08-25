@@ -130,11 +130,23 @@ function! ctrlspace#keys#tab#MoveTab(k)
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
 
-    if (a:k ==# "+") || (a:k ==# "}")
-        silent! exe "tabm" . tabpagenr()
-    elseif (a:k ==# "-") || (a:k ==# "{")
-        silent! exe "tabm" . (tabpagenr() - 2)
+    let cmd = "tabm"
+
+    if v:version < 704
+        if (a:k ==# "+") || (a:k ==# "}")
+            let cmd .= tabpagenr()
+        elseif (a:k ==# "-") || (a:k ==# "{")
+            let cmd .= (tabpagenr() - 2)
+        endif
+    else
+        if (a:k ==# "+") || (a:k ==# "}")
+            let cmd .= "+"
+        elseif (a:k ==# "-") || (a:k ==# "{")
+            let cmd .= "-"
+        endif
     endif
+
+    silent! exe cmd
 
     call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 0)
