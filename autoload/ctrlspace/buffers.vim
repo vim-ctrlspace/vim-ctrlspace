@@ -48,8 +48,10 @@ function! ctrlspace#buffers#Buffers(tabnr)
     if a:tabnr
         let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
 
-        " Fix strange Vim bug after :only and e.g. help window:
+        " Workaround for a Vim bug after :only and e.g. help window:
         " for the first time after :only gettabvar cannot properly ready any tab variable
+        " More info: https://github.com/vim/vim/issues/394
+        " TODO Remove when decided to drop support for Vim 7.3
         if type(buffers) == 1
             unlet buffers
             let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
