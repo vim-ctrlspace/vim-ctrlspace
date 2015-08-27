@@ -60,28 +60,12 @@ function! ctrlspace#keys#tab#CopyTab(k)
     let sourceLabel = exists("t:CtrlSpaceLabel") ? t:CtrlSpaceLabel : ""
     let sourceList = copy(t:CtrlSpaceList)
 
-    if exists("t:CtrlSpaceSearchHistory")
-        let sourceSearchHistory = copy(t:CtrlSpaceSearchHistory)
-    endif
-
-    if exists("t:CtrlSpaceSearchHistoryIndex")
-        let sourceSearchHistoryIndex = copy(t:CtrlSpaceSearchHistoryIndex)
-    endif
-
     silent! exe "tabnew"
 
     let label = empty(sourceLabel) ? ("Copy of tab " . nr) : (sourceLabel . " (copy)")
     call ctrlspace#tabs#SetTabLabel(tabpagenr(), label, 1)
 
     let t:CtrlSpaceList = sourceList
-
-    if exists("sourceSearchHistory")
-        let t:CtrlSpaceSearchHistory = sourceSearchHistory
-    endif
-
-    if exists("sourceSearchHistoryIndex")
-        let t:CtrlSpaceSearchHistoryIndex = sourceSearchHistoryIndex
-    endif
 
     call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 1)
