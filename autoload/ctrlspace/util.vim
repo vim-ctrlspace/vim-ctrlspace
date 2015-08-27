@@ -2,100 +2,100 @@ let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#util#NormalizeDirectory(directory)
-    let directory = resolve(expand(a:directory))
+	let directory = resolve(expand(a:directory))
 
-    while directory[strlen(directory) - 1] == "/" || directory[strlen(directory) - 1] == "\\"
-        let directory = directory[0:-2]
-    endwhile
+	while directory[strlen(directory) - 1] == "/" || directory[strlen(directory) - 1] == "\\"
+		let directory = directory[0:-2]
+	endwhile
 
-    return directory
+	return directory
 endfunction
 
 function! ctrlspace#util#HandleVimSettings(switch)
-    call s:handleSwitchbuf(a:switch)
-    call s:handleAutochdir(a:switch)
+	call s:handleSwitchbuf(a:switch)
+	call s:handleAutochdir(a:switch)
 endfunction
 
 function! s:handleSwitchbuf(switch)
-    if (a:switch == "start") && !empty(&swb)
-        let s:swbSave = &swb
-        set swb=
-    elseif (a:switch == "stop") && exists("s:swbSave")
-        let &swb = s:swbSave
-        unlet s:swbSave
-    endif
+	if (a:switch == "start") && !empty(&swb)
+		let s:swbSave = &swb
+		set swb=
+	elseif (a:switch == "stop") && exists("s:swbSave")
+		let &swb = s:swbSave
+		unlet s:swbSave
+	endif
 endfunction
 
 function! s:handleAutochdir(switch)
-    if (a:switch == "start") && &acd
-        let s:acdWasOn = 1
-        set noacd
-    elseif (a:switch == "stop") && exists("s:acdWasOn")
-        set acd
-        unlet s:acdWasOn
-    endif
+	if (a:switch == "start") && &acd
+		let s:acdWasOn = 1
+		set noacd
+	elseif (a:switch == "stop") && exists("s:acdWasOn")
+		set acd
+		unlet s:acdWasOn
+	endif
 endfunction
 
 function! ctrlspace#util#WorkspaceFile()
-    return s:internalFilePath("cs_workspaces")
+	return s:internalFilePath("cs_workspaces")
 endfunction
 
 function! ctrlspace#util#FilesCache()
-    return s:internalFilePath("cs_files")
+	return s:internalFilePath("cs_files")
 endfunction
 
 function! ctrlspace#util#ChDir(dir)
-    let dir    = fnameescape(a:dir)
-    let curtab = tabpagenr()
-    let curwin = winnr()
+	let dir    = fnameescape(a:dir)
+	let curtab = tabpagenr()
+	let curwin = winnr()
 
-    silent! exe "cd " . dir
+	silent! exe "cd " . dir
 
-    for t in range(1, tabpagenr("$"))
-        silent! exe "tabnext " . t
+	for t in range(1, tabpagenr("$"))
+		silent! exe "tabnext " . t
 
-        for w in range(1, winnr("$"))
-            silent! exe w . "wincmd w"
+		for w in range(1, winnr("$"))
+			silent! exe w . "wincmd w"
 
-            if haslocaldir()
-                silent! exe "lcd " . dir
-            endif
-        endfor
-    endfor
+			if haslocaldir()
+				silent! exe "lcd " . dir
+			endif
+		endfor
+	endfor
 
-    silent! exe "tabnext " . curtab
-    silent! exe curwin . "wincmd w"
+	silent! exe "tabnext " . curtab
+	silent! exe curwin . "wincmd w"
 endfunction
 
 function! s:internalFilePath(name)
-    let root = ctrlspace#roots#CurrentProjectRoot()
-    let fullPart = empty(root) ? "" : (root . "/")
+	let root = ctrlspace#roots#CurrentProjectRoot()
+	let fullPart = empty(root) ? "" : (root . "/")
 
-    if !empty(s:config.ProjectRootMarkers)
-        for candidate in s:config.ProjectRootMarkers
-            let candidatePath = fullPart . candidate
+	if !empty(s:config.ProjectRootMarkers)
+		for candidate in s:config.ProjectRootMarkers
+			let candidatePath = fullPart . candidate
 
-            if isdirectory(candidatePath)
-                return candidatePath . "/" . a:name
-            endif
-        endfor
-    endif
+			if isdirectory(candidatePath)
+				return candidatePath . "/" . a:name
+			endif
+		endfor
+	endif
 
-    return fullPart . "." . a:name
+	return fullPart . "." . a:name
 endfunction
 
 function! ctrlspace#util#GetbufvarWithDefault(nr, name, default)
-    let value = getbufvar(a:nr, a:name)
-    return type(value) == type("") && empty(value) ? a:default : value
+	let value = getbufvar(a:nr, a:name)
+	return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
 function! ctrlspace#util#GettabvarWithDefault(nr, name, default)
-    let value = gettabvar(a:nr, a:name)
-    return type(value) == type("") && empty(value) ? a:default : value
+	let value = gettabvar(a:nr, a:name)
+	return type(value) == type("") && empty(value) ? a:default : value
 endfunction
 
 function! ctrlspace#util#SetStatusline()
-    if has("statusline")
-        silent! exe "let &l:statusline = " . s:config.StatuslineFunction
-    endif
+	if has("statusline")
+		silent! exe "let &l:statusline = " . s:config.StatuslineFunction
+	endif
 endfunction
