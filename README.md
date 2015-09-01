@@ -67,7 +67,7 @@ items with `<h>`, `<j>`, and `<CR>` keys.
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
-Generally speaking Vim-CtrlSpace can display 5 types of lists: 
+Generally speaking Vim-CtrlSpace can display 5 types of lists:
 
 * Buffer List
 * File List
@@ -97,7 +97,7 @@ holds a **separate** list of buffers. And this is something very different
 when compared to plain Vim. Tabs powered by the plugin can be seen as
 piles of documents on the desk.
 
-With tabs you can, for example: 
+With tabs you can, for example:
 
 * group related buffers
 * extract to other tabs
@@ -121,7 +121,7 @@ save multiple workspaces per project with **Workspace List**.
 If you use Vundle add to your `.vimrc`:
 
 ```VimL
-Plugin 'szw/vim-ctrlspace' 
+Plugin 'szw/vim-ctrlspace'
 ```
 
 You can also clone the repository to your `.vim` directory:
@@ -265,6 +265,26 @@ For more information please check out Vim-CtrlSpace help directly in Vim:
 
 For key reference press `<?>` inside the plugin window.
 
+### Fuzzy Search Hints
+
+If you are used to hitting the `<ctrl-P>` key combination for fuzzy search, add
+this to your .vimrc file:
+
+```VimL
+nnoremap <silent><C-p> :CtrlSpace O<CR>
+```
+
+Be sure to remember to refresh your search file list using `<r>` command.
+
+### Automatically Saving Workspace
+
+Ctrl-Space can automatically save your workspace status based on configurations below:
+
+```VimL
+let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
+let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
+let g:CtrlSpaceSaveWorkspaceOnExit = 1
+```
 
 ## Authors and License
 
@@ -272,7 +292,7 @@ Copyright &copy; 2013-2015 [Szymon Wrozynski and
 Contributors](https://github.com/szw/vim-ctrlspace/graphs/contributors).
 Licensed under [MIT
 License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
-conditions. 
+conditions.
 
 **Vim-CtrlSpace** is inspired by Robert Lillack plugin [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005
