@@ -267,7 +267,7 @@ For key reference press `<?>` inside the plugin window.
 
 ### Fuzzy Search Hints
 
-If you are used to hitting the <ctrl-P> key combination for fuzzy search, add
+If you are used to hitting the `<ctrl-P>` key combination for fuzzy search, add
 this to your .vimrc file:
 
 ```VimL
