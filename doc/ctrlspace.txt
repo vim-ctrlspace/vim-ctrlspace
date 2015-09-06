@@ -31,7 +31,8 @@ Table of Contents                                            *ctrlspace-toc*
      3.2.1 Go Engine                                   |ctrlspace-go-engine|
      3.2.2 Symbols                                       |ctrlspace-symbols|
      3.2.3 Glob Command                             |ctrlspace-glob-command|
-     3.2.4 Colors                                         |ctrlspace-colors|
+     3.2.4 Search Timing                           |ctrlspace-search-timing|
+     3.2.5 Colors                                         |ctrlspace-colors|
    3.3 First Steps                                   |ctrlspace-first-steps|
  4. User Interface                                            |ctrlspace-ui|
    4.1 Status Line                                   |ctrlspace-status-line|
@@ -307,7 +308,18 @@ this line to your `.vimrc`: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-3.2.4 Colors                                              *ctrlspace-colors*
+3.2.4 Search Timing                                *ctrlspace-search-timing*
+
+If you usually don't have to deal with huge projects having 100 000 files
+you can make plugin fuzzy search even snappier by providing a lower
+|g:CtrlSpaceSearchTiming| value: >
+
+    let g:CtrlSpaceSearchTiming = 200
+<
+                                                             |ctrlspace-toc|
+--------------------------------------------------------------------------
+
+3.2.5 Colors                                              *ctrlspace-colors*
 
 Finally, you can adjust some plugin colors. By default plugin uses
 the following setup: >

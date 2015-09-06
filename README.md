@@ -206,6 +206,15 @@ if executable("ag")
 endif
 ```
 
+#### Search Timing
+
+If you usually don't have to deal with huge projects having 100 000 files
+you can make plugin fuzzy search even snappier by providing a lower
+`g:CtrlSpaceSearchTiming` value:
+
+```VimL
+let g:CtrlSpaceSearchTiming = 200
+```
 
 #### Colors
 
