@@ -210,10 +210,11 @@ endif
 
 If you usually don't have to deal with huge projects having 100 000 files
 you can make plugin fuzzy search even snappier by providing a lower
-`g:CtrlSpaceSearchTiming` value:
+`g:CtrlSpaceSearchTiming` value (like `100` or `200` depending on your
+machine):
 
 ```VimL
-let g:CtrlSpaceSearchTiming = 200
+let g:CtrlSpaceSearchTiming = 100
 ```
 
 #### Colors
