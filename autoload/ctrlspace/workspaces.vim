@@ -386,7 +386,9 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	let tabIndex = 0
 
 	for cmd in readfile("CS_SESSION")
-		if ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+		if cmd =~# "^lcd"
+			continue
+		elseif ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
 			let data = tabData[tabIndex]
 
 			if tabIndex > 0
