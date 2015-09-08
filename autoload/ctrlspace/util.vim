@@ -52,10 +52,10 @@ function! ctrlspace#util#ChDir(dir)
 	silent! exe "cd " . dir
 
 	for t in range(1, tabpagenr("$"))
-		silent! exe "tabnext " . t
+		silent! exe "noautocmd tabnext " . t
 
 		for w in range(1, winnr("$"))
-			silent! exe w . "wincmd w"
+			silent! exe "noautocmd " . w . "wincmd w"
 
 			if haslocaldir()
 				silent! exe "lcd " . dir
@@ -63,8 +63,8 @@ function! ctrlspace#util#ChDir(dir)
 		endfor
 	endfor
 
-	silent! exe "tabnext " . curtab
-	silent! exe curwin . "wincmd w"
+	silent! exe "noautocmd tabnext " . curtab
+	silent! exe "noautocmd " . curwin . "wincmd w"
 endfunction
 
 function! s:internalFilePath(name)
