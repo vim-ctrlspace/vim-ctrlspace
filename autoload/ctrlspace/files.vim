@@ -154,6 +154,12 @@ function! ctrlspace#files#ZoomFile()
 endfunction
 
 function! ctrlspace#files#CopyFileOrBuffer()
+	let root = ctrlspace#roots#CurrentProjectRoot()
+
+	if !empty(root)
+		call ctrlspace#util#ChDir(root)
+	endif
+
 	let nr   = ctrlspace#window#SelectedIndex()
 	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
@@ -208,6 +214,12 @@ function! ctrlspace#files#CopyFileOrBuffer()
 endfunction
 
 function! ctrlspace#files#RenameFileOrBuffer()
+	let root = ctrlspace#roots#CurrentProjectRoot()
+
+	if !empty(root)
+		call ctrlspace#util#ChDir(root)
+	endif
+
 	let nr   = ctrlspace#window#SelectedIndex()
 	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
