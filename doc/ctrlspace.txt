@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.08.12
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.09.16
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -7,7 +7,7 @@
 
 
 
-                           Vim-CtrlSpace 5.0.3~
+                           Vim-CtrlSpace 5.0.4~
 
                            Vim Space Controller
 
@@ -310,11 +310,11 @@ this line to your `.vimrc`: >
 
 3.2.4 Search Timing                                *ctrlspace-search-timing*
 
-If you usually don't have to deal with huge projects having 100 000 files
-you can make plugin fuzzy search even snappier by providing a lower
-|g:CtrlSpaceSearchTiming| value (like `100` or `200` depending on your machine): >
+If you usually have to deal with huge projects having 100 000 files you
+can increase plugin fuzzy search delay to make it even more responsible by
+providing a higher |g:CtrlSpaceSearchTiming| value: >
 
-    let g:CtrlSpaceSearchTiming = 100
+    let g:CtrlSpaceSearchTiming = 500
 <
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1115,12 +1115,12 @@ Default value: >
 7.19 *g:CtrlSpaceSearchTiming*
 
 Allows you to adjust search smoothness by providing a delay on search
-input. By default the delay is set to 500 ms. That way the plugin ensures
+input. By default the delay is set to 100 ms. That way the plugin ensures
 smooth search input behavior.
 
 Default value: >
 
-    let g:CtrlSpaceSearchTiming = 500
+    let g:CtrlSpaceSearchTiming = 100
 <
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
