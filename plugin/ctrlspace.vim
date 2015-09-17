@@ -1,6 +1,6 @@
 " Vim-CtrlSpace - Vim Space Controller
 " Maintainer: Szymon Wrozynski
-" Version:    5.0.4
+" Version:    5.0.5
 "
 " The MIT License (MIT)
 

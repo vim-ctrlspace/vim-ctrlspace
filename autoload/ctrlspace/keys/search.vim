@@ -7,6 +7,7 @@ function! ctrlspace#keys#search#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#ClearOrRemoveLetter", "Search", ["BS", 'C-h'])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#SwitchOff",           "Search", ["/", "CR"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#SwitchOffCR",         "Search", ["Tab"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#SwitchOffSpace",      "Search", ["Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#ClearLetters",        "Search", ['C-u', 'C-w'])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#search#AddLetter",           "Search", ["lowercase", "uppercase", "numbers"])
 endfunction
@@ -30,6 +31,11 @@ endfunction
 function! ctrlspace#keys#search#SwitchOffCR(k)
 	call ctrlspace#search#SwitchSearchMode(0)
 	call feedkeys("\<CR>")
+endfunction
+
+function! ctrlspace#keys#search#SwitchOffSpace(k)
+	call ctrlspace#search#SwitchSearchMode(0)
+	call feedkeys("\<Space>")
 endfunction
 
 function! ctrlspace#keys#search#ClearLetters(k)
