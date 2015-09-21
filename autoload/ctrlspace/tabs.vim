@@ -8,8 +8,7 @@ endfunction
 
 function! ctrlspace#tabs#NewTabLabel(tabnr)
 	let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
-	let label = ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", gettabvar(tabnr, "CtrlSpaceLabel"))
-
+	let label = ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", ctrlspace#util#Gettabvar(tabnr, "CtrlSpaceLabel"))
 	if empty(label)
 		return 0
 	endif
@@ -21,7 +20,7 @@ endfunction
 function! ctrlspace#tabs#RemoveTabLabel(tabnr)
 	let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
 
-	if empty(gettabvar(tabnr, "CtrlSpaceLabel"))
+	if empty(ctrlspace#util#Gettabvar(tabnr, "CtrlSpaceLabel"))
 		return 0
 	endif
 
@@ -89,7 +88,7 @@ function! ctrlspace#tabs#CollectForeignBuffers()
 	let buffers = {}
 
 	for t in range(1, tabpagenr("$"))
-		silent! call extend(buffers, gettabvar(t, "CtrlSpaceList"))
+		silent! call extend(buffers, ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
 	endfor
 
 	let foreignBuffers = []

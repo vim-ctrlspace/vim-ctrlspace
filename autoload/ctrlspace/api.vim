@@ -186,7 +186,7 @@ endfunction
 function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 	let bufname = a:bufname
 	let bufnr   = a:bufnr
-	let title   = gettabvar(a:tabnr, "CtrlSpaceLabel")
+	let title   = ctrlspace#util#Gettabvar(a:tabnr, "CtrlSpaceLabel")
 
 	if empty(title)
 		if getbufvar(bufnr, "&ft") == "ctrlspace"

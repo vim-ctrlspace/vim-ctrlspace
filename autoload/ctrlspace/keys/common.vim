@@ -304,9 +304,9 @@ function! s:saveFirstWorkspace()
 	let labels = []
 
 	for t in range(1, tabpagenr("$"))
-		let label = gettabvar(t, "CtrlSpaceLabel")
+		let label = ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel")
 		if !empty(label)
-			call add(labels, gettabvar(t, "CtrlSpaceLabel"))
+			call add(labels, label)
 		endif
 	endfor
 

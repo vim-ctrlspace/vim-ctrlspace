@@ -350,7 +350,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 
 	for t in range(1, lastTab)
 		let data = {
-					\ "label": gettabvar(t, "CtrlSpaceLabel"),
+					\ "label": ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel"),
 					\ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
 					\ }
 
@@ -457,7 +457,7 @@ function! ctrlspace#workspaces#CreateDigest()
 	let lines = []
 
 	for t in range(1, tabpagenr("$"))
-		let line     = [t, gettabvar(t, "CtrlSpaceLabel")]
+		let line     = [t, ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel")]
 		let bufs     = []
 		let visibles = []
 

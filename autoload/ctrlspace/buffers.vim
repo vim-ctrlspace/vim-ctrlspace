@@ -149,7 +149,7 @@ function! ctrlspace#buffers#CloseBuffer()
 	let foundTabs = 0
 
 	for t in range(1, tabpagenr('$'))
-		let cslist = gettabvar(t, "CtrlSpaceList")
+		let cslist = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {})
 		if !empty(cslist) && exists("cslist[nr]")
 			let foundTabs += 1
 		endif
@@ -211,7 +211,7 @@ function! ctrlspace#buffers#DeleteBuffer()
 				silent! exe "tabn " . t
 
 				let tabWin = bufwinnr(b)
-				let cslist = copy(gettabvar(t, "CtrlSpaceList"))
+				let cslist = copy(ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
 
 				call remove(cslist, nr)
 
@@ -382,7 +382,7 @@ function! ctrlspace#buffers#DeleteForeignBuffers(internal)
 	let buffers = {}
 
 	for t in range(1, tabpagenr("$"))
-		silent! call extend(buffers, gettabvar(t, "CtrlSpaceList"))
+		silent! call extend(buffers, ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
 	endfor
 
 	if !a:internal
@@ -404,7 +404,7 @@ function! s:copyOrMoveSelectedBufferIntoTab(tab, move)
 		return
 	endif
 
-	let map = gettabvar(a:tab, "CtrlSpaceList")
+	let map = ctrlspace#util#GettabvarWithDefault(a:tab, "CtrlSpaceList", {})
 
 	if a:move
 		call ctrlspace#buffers#DetachBuffer()
@@ -457,7 +457,7 @@ endfunction
 
 function! s:forgetBuffersInAllTabs(numbers)
 	for t in range(1, tabpagenr("$"))
-		let cslist = copy(gettabvar(t, "CtrlSpaceList"))
+		let cslist = copy(ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
 
 		if empty(cslist)
 			continue
