@@ -124,9 +124,9 @@ function! ctrlspace#keys#tab#MoveTab(k)
 		endif
 	else
 		if (a:k ==# "+") || (a:k ==# "}")
-			let cmd .= "+"
+			let cmd .= "+1"
 		elseif (a:k ==# "-") || (a:k ==# "{")
-			let cmd .= "-"
+			let cmd .= "-1"
 		endif
 	endif
 

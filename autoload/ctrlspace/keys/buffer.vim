@@ -173,7 +173,7 @@ function! ctrlspace#keys#buffer#MoveTab(k)
 			silent! exe "tabm" . (tabpagenr() - 2)
 		endif
 	else
-		silent! exe "tabm" . a:k
+		silent! exe "tabm" . a:k . "1"
 	endif
 
 	call ctrlspace#util#SetStatusline()
