@@ -1376,6 +1376,26 @@ Provides a custom label for GVim tabs.
 
 Provides a custom tabline string.
 
+Useful, for example, to show the current work dir in the tabline by adding
+the following scriplet to ~/.vimrc:
+
+function! CWDTabline()
+    let tabline=''
+    let tabline.='%#TabLineFill#'
+    let tabline.='%=|'      "left/right separator
+    let tabline.='%#identifier#'
+    let tabline.='%.30(%{fnamemodify(getcwd(), ":~")}%)'
+    let tabline.='%*'
+
+    return tabline
+endfunction
+
+function! MyTabline()
+  return ctrlspace#api#Tabline().CWDTabline()
+endfunction
+
+set tabline=%!MyTabline()
+set showtabline=2
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
