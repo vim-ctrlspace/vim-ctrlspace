@@ -83,6 +83,10 @@ function! ctrlspace#engine#CompareByNoiseAndText(a, b)
 		return 1
 	elseif a:a.noise > a:b.noise
 		return -1
+	elseif a:a.smallnoise < a:b.smallnoise
+		return 1
+	elseif a:a.smallnoise > a:b.smallnoise
+		return -1
 	elseif strlen(a:a.text) < strlen(a:b.text)
 		return 1
 	elseif strlen(a:a.text) > strlen(a:b.text)
@@ -103,13 +107,14 @@ function! s:computeLowestNoises(source)
 
 	for index in range(len(a:source))
 		let item = a:source[index]
-		let [noise, pattern] = s:findLowestSearchNoise(item.text)
+		let [noise, smallnoise, pattern] = s:findLowestSearchNoise(item.text)
 
 		if noise == -1
 			continue
 		else
-			let item.noise   = noise
-			let item.pattern = pattern
+			let item.noise      = noise
+			let item.smallnoise = smallnoise
+			let item.pattern    = pattern
 
 			if resultsCount < 200
 				let resultsCount += 1
@@ -299,6 +304,7 @@ endfunction
 
 function! s:findLowestSearchNoise(text)
 	let noise         = -1
+	let smallnoise    = 0
 	let matchedString = ""
 	let ltrLen        = len(s:modes.Search.Data.Letters)
 	let textLen       = strlen(a:text)
@@ -328,22 +334,21 @@ function! s:findLowestSearchNoise(text)
 
 		if noise > -1
 			let matchedString = a:text[positions[0]:positions[-1]]
+			let smallnoise = 0
 
-			if noise > 0
-				if positions[0] != 0
-					let noise += 1
+			if positions[0] != 0
+				let smallnoise += 1
 
-					if index(s:resonators, a:text[positions[0] - 1]) == -1
-						let noise += 1
-					endif
+				if index(s:resonators, a:text[positions[0] - 1]) == -1
+					let smallnoise += 1
 				endif
+			endif
 
-				if positions[-1] != textLen - 1
-					let noise += 1
+			if positions[-1] != textLen - 1
+				let smallnoise += 1
 
-					if index(s:resonators, a:text[positions[-1] + 1]) == -1
-						let noise += 1
-					endif
+				if index(s:resonators, a:text[positions[-1] + 1]) == -1
+					let smallnoise += 1
 				endif
 			endif
 		endif
@@ -355,7 +360,7 @@ function! s:findLowestSearchNoise(text)
 		let pattern = matchedString
 	endif
 
-	return [noise, pattern]
+	return [noise, smallnoise, pattern]
 endfunction
 
 function! s:prepareContent(items)

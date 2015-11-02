@@ -38,6 +38,7 @@ type FileItem struct {
 	Index      int
 	Name       string
 	Noise      int
+	SmallNoise int
 	Pattern    string
 	Runes      []rune
 	LowerRunes []rune
@@ -112,24 +113,23 @@ func (item *FileItem) ComputeNoise() {
 
 		if noise > -1 {
 			matched = string(item.Runes[positions[0] : positions[len(positions)-1]+1])
+			item.SmallNoise = 0
 
-			if noise > 0 {
-				if positions[0] != 0 {
-					noise++
-					r := item.Runes[positions[0]-1]
+			if positions[0] != 0 {
+				item.SmallNoise++
+				r := item.Runes[positions[0]-1]
 
-					if (r >= 48 && r <= 90) || r >= 97 {
-						noise++
-					}
+				if (r >= 48 && r <= 90) || r >= 97 {
+					item.SmallNoise++
 				}
+			}
 
-				if positions[len(positions)-1] != len(item.Runes)-1 {
-					noise++
-					r := item.Runes[positions[len(positions)-1]+1]
+			if positions[len(positions)-1] != len(item.Runes)-1 {
+				item.SmallNoise++
+				r := item.Runes[positions[len(positions)-1]+1]
 
-					if (r >= 48 && r <= 90) || r >= 97 {
-						noise++
-					}
+				if (r >= 48 && r <= 90) || r >= 97 {
+					item.SmallNoise++
 				}
 			}
 		}
@@ -219,6 +219,10 @@ func (s *SortByNoiseAndText) Less(i, j int) bool {
 	if s.items[i].Noise < s.items[j].Noise {
 		return false
 	} else if s.items[i].Noise > s.items[j].Noise {
+		return true
+	} else if s.items[i].SmallNoise < s.items[j].SmallNoise {
+		return false
+	} else if s.items[i].SmallNoise > s.items[j].SmallNoise {
 		return true
 	} else if len(s.items[i].Runes) < len(s.items[j].Runes) {
 		return false
