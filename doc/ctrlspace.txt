@@ -7,7 +7,7 @@
 
 
 
-                           Vim-CtrlSpace 5.0.5~
+                           Vim-CtrlSpace 5.0.6~
 
                            Vim Space Controller
 

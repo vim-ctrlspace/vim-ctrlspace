@@ -113,21 +113,23 @@ func (item *FileItem) ComputeNoise() {
 		if noise > -1 {
 			matched = string(item.Runes[positions[0] : positions[len(positions)-1]+1])
 
-			if positions[0] != 0 {
-				noise++
-				r := item.Runes[positions[0]-1]
-
-				if (r >= 48 && r <= 90) || r >= 97 {
+			if noise > 0 {
+				if positions[0] != 0 {
 					noise++
+					r := item.Runes[positions[0]-1]
+
+					if (r >= 48 && r <= 90) || r >= 97 {
+						noise++
+					}
 				}
-			}
 
-			if positions[len(positions)-1] != len(item.Runes)-1 {
-				noise++
-				r := item.Runes[positions[len(positions)-1]+1]
-
-				if (r >= 48 && r <= 90) || r >= 97 {
+				if positions[len(positions)-1] != len(item.Runes)-1 {
 					noise++
+					r := item.Runes[positions[len(positions)-1]+1]
+
+					if (r >= 48 && r <= 90) || r >= 97 {
+						noise++
+					}
 				}
 			}
 		}

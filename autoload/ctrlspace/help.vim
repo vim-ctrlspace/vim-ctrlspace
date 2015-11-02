@@ -250,7 +250,7 @@ function! ctrlspace#help#DisplayHelp(fill)
 		let header .= " (" . join(mi[1:], ", ") . ")"
 	endif
 
-	call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.5 (engine: " . s:config.FileEngineName . ")")
+	call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.6 (engine: " . s:config.FileEngineName . ")")
 	call s:puts(header . " - press <CR> to expand")
 	call s:puts("")
 

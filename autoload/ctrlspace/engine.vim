@@ -329,19 +329,21 @@ function! s:findLowestSearchNoise(text)
 		if noise > -1
 			let matchedString = a:text[positions[0]:positions[-1]]
 
-			if positions[0] != 0
-				let noise += 1
-
-				if index(s:resonators, a:text[positions[0] - 1]) == -1
+			if noise > 0
+				if positions[0] != 0
 					let noise += 1
+
+					if index(s:resonators, a:text[positions[0] - 1]) == -1
+						let noise += 1
+					endif
 				endif
-			endif
 
-			if positions[-1] != textLen - 1
-				let noise += 1
-
-				if index(s:resonators, a:text[positions[-1] + 1]) == -1
+				if positions[-1] != textLen - 1
 					let noise += 1
+
+					if index(s:resonators, a:text[positions[-1] + 1]) == -1
+						let noise += 1
+					endif
 				endif
 			endif
 		endif
