@@ -1115,12 +1115,12 @@ Default value: >
 7.19 *g:CtrlSpaceSearchTiming*
 
 Allows you to adjust search smoothness by providing a delay on search
-input. By default the delay is set to 100 ms. That way the plugin ensures
+input. By default the delay is set to 200 ms. That way the plugin ensures
 smooth search input behavior.
 
 Default value: >
 
-    let g:CtrlSpaceSearchTiming = 100
+    let g:CtrlSpaceSearchTiming = 200
 <
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
