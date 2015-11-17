@@ -30,12 +30,16 @@ endfunction
 
 function! ctrlspace#keys#search#SwitchOffCR(k)
 	call ctrlspace#search#SwitchSearchMode(0)
-	call feedkeys("\<CR>")
+	if !s:modes.Nop.Enabled
+		call feedkeys("\<CR>")
+	endif
 endfunction
 
 function! ctrlspace#keys#search#SwitchOffSpace(k)
 	call ctrlspace#search#SwitchSearchMode(0)
-	call feedkeys("\<Space>")
+	if !s:modes.Nop.Enabled
+		call feedkeys("\<Space>")
+	endif
 endfunction
 
 function! ctrlspace#keys#search#ClearLetters(k)
