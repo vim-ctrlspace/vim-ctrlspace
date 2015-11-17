@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.09.16
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.11.17
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -7,7 +7,7 @@
 
 
 
-                           Vim-CtrlSpace 5.0.6~
+                           Vim-CtrlSpace 5.0.7~
 
                            Vim Space Controller
 
@@ -790,12 +790,11 @@ press <C-p> (previous) or <C-n> (next).
 6.4 Nop Mode                                            *ctrlspace-nop-mode*
 
 Nop (Non-Operational) Mode happens when for example there are no items to
-show (empty list), or you are trying to type a search query, and there are
-no results at all.
+show (empty list). This might also happen while typing a search query and
+there are no results at all.
 
-To see what are the rescue options from a Nop Mode check <?>.
-Sometimes it would be <BS> removing search query, sometimes switching to
-different list (<h>, <o>, <l>, <w>, or <b>).
+In Nop Mode the keys are limited just to a subset of common keys. To see
+what keys are available check <?>.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------

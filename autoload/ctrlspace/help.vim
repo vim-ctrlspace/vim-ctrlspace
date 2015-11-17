@@ -43,23 +43,6 @@ let s:descriptions = {
 			\ "ctrlspace#keys#common#ToggleTabModeAndSearch":       "Enter the Tab List (Tab [L]ist) in Search Mode",
 			\ "ctrlspace#keys#common#ToggleBookmarkMode":           "Toggle Bookmark List view",
 			\ "ctrlspace#keys#common#ToggleBookmarkModeAndSearch":  "Enter the Bookmark List in Search Mode",
-			\ "ctrlspace#keys#nop#ClearLetters":                    "Clear search phrase",
-			\ "ctrlspace#keys#nop#BackOrClearSearch":               "Go back or remove search phrase",
-			\ "ctrlspace#keys#nop#ToggleFileMode":                  "Toggle File List ([O]pen List) view",
-			\ "ctrlspace#keys#nop#ToggleFileModeAndSearch":         "Enter the File List ([O]pen List) in Search Mode",
-			\ "ctrlspace#keys#nop#ToggleBufferMode":                "Toggle Buffer List view ([H]ome List)",
-			\ "ctrlspace#keys#nop#ToggleBufferModeAndSearch":       "Enter the Buffer List ([H]ome List) in Search Mode",
-			\ "ctrlspace#keys#nop#ToggleWorkspaceMode":             "Toggle Workspace List view",
-			\ "ctrlspace#keys#nop#ToggleWorkspaceModeAndSearch":    "Enter the Workspace List in Search Mode",
-			\ "ctrlspace#keys#nop#ToggleTabMode":                   "Toggle Tab List view (Tab [L]ist)",
-			\ "ctrlspace#keys#nop#ToggleTabModeAndSearch":          "Enter the Tab List (Tab [L]ist) in Search Mode",
-			\ "ctrlspace#keys#nop#ToggleBookmarkMode":              "Toggle Bookmark List view",
-			\ "ctrlspace#keys#nop#ToggleBookmarkModeAndSearch":     "Enter the Bookmark List in Search Mode",
-			\ "ctrlspace#keys#nop#Close":                           "Close the list",
-			\ "ctrlspace#keys#nop#Quit":                            "Quit Vim with a prompt if unsaved changes found",
-			\ "ctrlspace#keys#nop#RestorePreviousSearch":           "Bring back the previous searched text",
-			\ "ctrlspace#keys#nop#RestoreNextSearch":               "Bring the next searched text",
-			\ "ctrlspace#keys#nop#NewWorkspace":                    "Close everything - make a new workspace",
 			\ "ctrlspace#keys#search#ClearOrRemoveLetter":          "Remove a previously entered character",
 			\ "ctrlspace#keys#search#AddLetter":                    "Add a character to search",
 			\ "ctrlspace#keys#search#SwitchOff":                    "Exit Search Mode",
@@ -250,7 +233,7 @@ function! ctrlspace#help#DisplayHelp(fill)
 		let header .= " (" . join(mi[1:], ", ") . ")"
 	endif
 
-	call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.6 (engine: " . s:config.FileEngineName . ")")
+	call s:puts(s:config.Symbols.CS . " CtrlSpace 5.0.7 (engine: " . s:config.FileEngineName . ")")
 	call s:puts(header . " - press <CR> to expand")
 	call s:puts("")
 

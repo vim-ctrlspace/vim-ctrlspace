@@ -138,10 +138,10 @@ function! ctrlspace#keys#Keypressed(key)
 
 	if s:modes.Help.Enabled
 		let mapName = "Help"
-	elseif s:modes.Nop.Enabled
-		let mapName = "Nop"
 	elseif s:modes.Search.Enabled
 		let mapName = "Search"
+	elseif s:modes.Nop.Enabled
+		let mapName = "Nop"
 	else
 		let mapName = ctrlspace#modes#CurrentListView().Name
 	endif
