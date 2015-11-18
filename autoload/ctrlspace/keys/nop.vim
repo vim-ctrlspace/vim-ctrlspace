@@ -20,4 +20,18 @@ function! ctrlspace#keys#nop#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#common#RestorePreviousSearch",        "Nop", ['C-p'])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#common#RestoreNextSearch",            "Nop", ['C-n'])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#NewWorkspace",                 "Nop", ["N"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#ToggleAllMode",                   "Nop", ["a"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#nop#ToggleAllModeAndSearch",          "Nop", ["A"])
+endfunction
+
+function! ctrlspace#keys#nop#ToggleAllMode(k)
+	if s:modes.Buffer.Enabled
+		call ctrlspace#keys#buffer#ToggleAllMode(a:k)
+	endif
+endfunction
+
+function! ctrlspace#keys#nop#ToggleAllModeAndSearch(k)
+	if s:modes.Buffer.Enabled
+		call ctrlspace#keys#buffer#ToggleAllModeAndSearch(a:k)
+	endif
 endfunction

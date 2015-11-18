@@ -122,6 +122,8 @@ let s:descriptions = {
 			\ "ctrlspace#keys#workspace#ToggleSubmode":             "Toggle the mode from Load to Save or vice-versa",
 			\ "ctrlspace#keys#workspace#Delete":                    "Delete selected workspace",
 			\ "ctrlspace#keys#workspace#Rename":                    "Rename selected workspace",
+                        \ "ctrlspace#keys#nop#ToggleAllMode":                   "Enter the All Mode if in Buffer Mode already",
+                        \ "ctrlspace#keys#nop#ToggleAllModeAndSearch":          "Enter the Search Mode combined with the All mode if in Buffer Mode already",
 			\ }
 
 function! ctrlspace#help#AddMapping(funcName, mapName, entry)
