@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/logo5.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/logo5.png" />
 <br><br>
 </div>
 
@@ -64,7 +64,7 @@ Vim-CtrlSpace interface is a window you can invoke by pressing
 items with `<h>`, `<j>`, and `<CR>` keys.
 
 <p align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/cs5_window.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists:
@@ -121,14 +121,14 @@ save multiple workspaces per project with **Workspace List**.
 If you use Vundle add to your `.vimrc`:
 
 ```VimL
-Plugin 'szw/vim-ctrlspace'
+Plugin 'vim-ctrlspace/vim-ctrlspace'
 ```
 
 You can also clone the repository to your `.vim` directory:
 
 ```Shell
 cd ~/.vim
-git clone https://github.com/szw/vim-ctrlspace.git .
+git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 ```
 
 ### Basic Settings
@@ -298,9 +298,9 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 ## Authors and License
 
 Copyright &copy; 2013-2015 [Szymon Wrozynski and
-Contributors](https://github.com/szw/vim-ctrlspace/graphs/contributors).
+Contributors](https://github.com/vim-ctrlspace/vim-ctrlspace/graphs/contributors).
 Licensed under [MIT
-License](https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
+License](https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
 conditions.
 
 **Vim-CtrlSpace** is inspired by Robert Lillack plugin [VIM
@@ -311,4 +311,4 @@ Robert Lillack. Moreover some concepts and inspiration has been taken from
 
 Special thanks to [Wojtek Ryrych](https://github.com/ryrych) for help and
 patience ;) and all
-[Contributors](https://github.com/szw/vim-ctrlspace/graphs/contributors).
+[Contributors](https://github.com/vim-ctrlspace/vim-ctrlspace/graphs/contributors).

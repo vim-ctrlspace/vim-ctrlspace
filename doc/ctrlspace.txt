@@ -228,12 +228,12 @@ save multiple workspaces per project with Workspace List.
 
 If you use Vundle add to your `.vimrc`: >
 
-    Plugin 'szw/vim-ctrlspace'
+    Plugin 'vim-ctrlspace/vim-ctrlspace'
 <
 You can also clone the repository to your `.vim` directory: >
 
     cd ~/.vim
-    git clone https://github.com/szw/vim-ctrlspace.git .
+    git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 <
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -1544,11 +1544,11 @@ should be placed at the bottom (as last ones).
 
 Copyright (c) 2013-2015 Szymon Wrozynski and Contributors.
 
- * https://github.com/szw/vim-ctrlspace/commits/master
+ * https://github.com/vim-ctrlspace/vim-ctrlspace/commits/master
 
 Licensed under MIT License conditions.
 
- * https://github.com/szw/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26
+ * https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26
 
 Vim-CtrlSpace is inspired by Robert Lillack plugin VIM bufferlist (c) 2005
 Robert Lillack. Moreover some concepts and inspiration has been taken from

@@ -26,7 +26,7 @@
 " THE SOFTWARE.
 "
 " Usage:
-" https://github.com/szw/vim-ctrlspace/blob/master/README.md
+" https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/README.md
 
 scriptencoding utf-8
 
