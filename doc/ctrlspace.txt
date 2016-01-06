@@ -103,7 +103,8 @@ Table of Contents                                            *ctrlspace-toc*
                                                   |ctrlspace#api#TabTitle()|
      8.2.9 ctrlspace#api#Guitablabel()         |ctrlspace#api#Guitablabel()|
      8.2.10 ctrlspace#api#Tabline()                |ctrlspace#api#Tabline()|
-     8.2.11 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
+     8.2.11 ctrlspace#api#TabList()                |ctrlspace#api#TabList()|
+     8.2.12 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
  9. File Engine Specifications                      |ctrlspace-engine-specs|
 10. Authors and License                      |ctrlspace-authors-and-license|
 
@@ -1400,7 +1401,15 @@ set showtabline=2
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-8.2.11 ctrlspace#api#BufNr()                         *ctrlspace#api#BufNr()*
+8.2.11 ctrlspace#api#TabList()                     *ctrlspace#api#TabList()*
+
+Returns a list of tabs. The list contains a dictionary for each tab with
+the keys 'index', 'name', 'visible' and 'modified'.
+
+                                                             |ctrlspace-toc|
+--------------------------------------------------------------------------
+
+8.2.12 ctrlspace#api#BufNr()                         *ctrlspace#api#BufNr()*
 
 Returns the current plugin buffer number if the plugin is visible or `-1`
 otherwise.

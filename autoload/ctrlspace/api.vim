@@ -236,6 +236,26 @@ function! ctrlspace#api#Guitablabel()
 	return label
 endfunction
 
+function! ctrlspace#api#TabList()
+	let tabList     = []
+	let lastTab    = tabpagenr("$")
+	let currentTab = tabpagenr()
+
+	for t in range(1, lastTab)
+		let winnr       = tabpagewinnr(t)
+		let buflist     = tabpagebuflist(t)
+		let bufnr       = buflist[winnr - 1]
+		let bufname     = bufname(bufnr)
+		let tabTitle    = ctrlspace#api#TabTitle(t, bufnr, bufname)
+		let tabModified = ctrlspace#api#TabModified(t)
+                let tabCurrent  = t == currentTab
+
+		call add(tabList, { "index": t, "title": tabTitle, "current": tabCurrent, "modified": tabModified })
+        endfor
+
+        return tabList
+endfunction
+
 function! ctrlspace#api#Tabline()
 	let lastTab    = tabpagenr("$")
 	let currentTab = tabpagenr()
