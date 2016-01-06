@@ -10,13 +10,15 @@ function! ctrlspace#api#BufferList(tabnr)
 		let i = str2nr(i)
 
 		let bufname = bufname(i)
+		let bufVisible = index(visibleBuffers, i) != -1
+		let bufModified = (getbufvar(i, '&modified'))
 
-		if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visibleBuffers, i) != -1))
+		if !strlen(bufname) && (bufModified || bufVisible)
 			let bufname = '[' . i . '*No Name]'
 		endif
 
 		if strlen(bufname)
-			call add(bufferList, { "index": i, "text": bufname })
+			call add(bufferList, { "index": i, "text": bufname, "visible": bufVisible, "modified": bufModified })
 		endif
 	endfor
 

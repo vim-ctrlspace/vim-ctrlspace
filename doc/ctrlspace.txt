@@ -1299,7 +1299,9 @@ integration, or just for more advanced interactions with other plugins.
 8.2.1 ctrlspace#api#BufferList({tabnr})         *ctrlspace#api#BufferList()*
 
 Returns a list of buffers available in a given tab. The list is sorted
-in the same order like in the CtrlSpace Buffer List window.
+in the same order like in the CtrlSpace Buffer List window. The list
+contains a dictionary for each tab with the keys 'index', 'name', 'visible'
+and 'modified'.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
