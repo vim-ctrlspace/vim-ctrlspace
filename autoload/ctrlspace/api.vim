@@ -10,13 +10,15 @@ function! ctrlspace#api#BufferList(tabnr)
 		let i = str2nr(i)
 
 		let bufname = bufname(i)
+		let bufVisible = index(visibleBuffers, i) != -1
+		let bufModified = (getbufvar(i, '&modified'))
 
-		if !strlen(bufname) && (getbufvar(i, '&modified') || (index(visibleBuffers, i) != -1))
+		if !strlen(bufname) && (bufModified || bufVisible)
 			let bufname = '[' . i . '*No Name]'
 		endif
 
 		if strlen(bufname)
-			call add(bufferList, { "index": i, "text": bufname })
+			call add(bufferList, { "index": i, "text": bufname, "visible": bufVisible, "modified": bufModified })
 		endif
 	endfor
 
@@ -232,6 +234,26 @@ function! ctrlspace#api#Guitablabel()
 	let label .= title . ' '
 
 	return label
+endfunction
+
+function! ctrlspace#api#TabList()
+	let tabList     = []
+	let lastTab    = tabpagenr("$")
+	let currentTab = tabpagenr()
+
+	for t in range(1, lastTab)
+		let winnr       = tabpagewinnr(t)
+		let buflist     = tabpagebuflist(t)
+		let bufnr       = buflist[winnr - 1]
+		let bufname     = bufname(bufnr)
+		let tabTitle    = ctrlspace#api#TabTitle(t, bufnr, bufname)
+		let tabModified = ctrlspace#api#TabModified(t)
+                let tabCurrent  = t == currentTab
+
+		call add(tabList, { "index": t, "title": tabTitle, "current": tabCurrent, "modified": tabModified })
+        endfor
+
+        return tabList
 endfunction
 
 function! ctrlspace#api#Tabline()
