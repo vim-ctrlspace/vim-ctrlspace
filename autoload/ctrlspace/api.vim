@@ -248,7 +248,7 @@ function! ctrlspace#api#TabList()
 		let bufname     = bufname(bufnr)
 		let tabTitle    = ctrlspace#api#TabTitle(t, bufnr, bufname)
 		let tabModified = ctrlspace#api#TabModified(t)
-                let tabCurrent  = t == currentTab
+		let tabCurrent  = t == currentTab
 
 		call add(tabList, { "index": t, "title": tabTitle, "current": tabCurrent, "modified": tabModified })
         endfor
