@@ -99,12 +99,8 @@ function! ctrlspace#bookmarks#AddFirstBookmark()
 endfunction
 
 function! ctrlspace#bookmarks#AddNewBookmark(...)
-	if a:0
-		let current = s:bookmarks[a:1].Directory
-	else
-		let root    = ctrlspace#roots#CurrentProjectRoot()
-		let current = empty(root) ? fnamemodify(".", ":p:h") : root
-	endif
+  let root    = ctrlspace#roots#CurrentProjectRoot()
+  let current = empty(root) ? fnamemodify(".", ":p:h") : root
 
 	let directory = ctrlspace#ui#GetInput("Add directory to bookmarks: ", current, "dir")
 
