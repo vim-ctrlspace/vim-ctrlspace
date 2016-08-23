@@ -134,19 +134,19 @@ function! ctrlspace#keys#common#LeftMouse2(k)
 endfunction
 
 function! ctrlspace#keys#common#DownArrow(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar("down")
 	endif
 endfunction
 
 function! ctrlspace#keys#common#UpArrow(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar("up")
 	endif
 endfunction
 
 function! ctrlspace#keys#common#Home(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar(1)
 	endif
 endfunction
@@ -156,7 +156,7 @@ function! ctrlspace#keys#common#Top(k)
 endfunction
 
 function! ctrlspace#keys#common#End(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar(line("$"))
 	endif
 endfunction
@@ -166,7 +166,7 @@ function! ctrlspace#keys#common#Bottom(k)
 endfunction
 
 function! ctrlspace#keys#common#PageDown(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar("pgdown")
 	endif
 endfunction
@@ -176,7 +176,7 @@ function! ctrlspace#keys#common#ScrollDown(k)
 endfunction
 
 function! ctrlspace#keys#common#PageUp(k)
-	if s:config.UseMouseAndArrowsInTerm || has("gui_running")
+	if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
 		call ctrlspace#window#MoveSelectionBar("pgup")
 	endif
 endfunction

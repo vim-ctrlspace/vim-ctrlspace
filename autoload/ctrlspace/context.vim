@@ -54,6 +54,7 @@ let s:configuration = {
 			\ "Help":                     {},
 			\ "GlobCommand":              "",
 			\ "UseTabline":               1,
+			\ "UseArrowsInTerm":          0,
 			\ "UseMouseAndArrowsInTerm":  0,
 			\ "StatuslineFunction":       "ctrlspace#api#Statusline()",
 			\ "SaveWorkspaceOnExit":      0,
