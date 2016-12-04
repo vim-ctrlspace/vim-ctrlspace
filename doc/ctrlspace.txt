@@ -303,7 +303,7 @@ Specifically, I recommend that you install and use `ag`, as it respects
 this line to your `.vimrc`: >
 
     if executable("ag")
-        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+        let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g **/**
     endif
 <
                                                              |ctrlspace-toc|
