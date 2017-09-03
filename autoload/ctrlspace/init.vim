@@ -60,8 +60,8 @@ endfunction
 function! s:initProjectRootsAndBookmarks()
     let cacheFile    = s:config.CacheDir . "/.cs_cache"
     let projectRoots = {}
-    let bookmarks    = []
-    let worksapces   = []
+    let cache_bookmarks    = []
+    let cache_workspaces   = []
 
     " Parse .cs_data
     if filereadable(cacheFile)
@@ -81,26 +81,28 @@ function! s:initProjectRootsAndBookmarks()
                                 \ "Directory"   : parts[0],
                                 \ "JumpCounter" : 0
                                 \ }
+                    call add(cache_bookmarks, bookmark)
+                    let projectRoots[bookmark.Directory] = 1
                 endif
-                call add(bookmarks, bookmark)
-                let projectRoots[bookmark.Directory] = 1
             endif
 
             " Find all workspace items.
             if line =~# "CS_WORKSPACE: "
                 let parts = split(line[14:], ctrlspace#context#Separator())
-                " only directory of workspace is required.
-                let workspace = {
-                            \ "Name": ((len(parts) > 1) ? parts[1] : parts[0]),
-                            \ "Directory" : parts[0],
-                            \ }
-                call add(worksapces, workspace)
-                let projectRoots[workspace.Directory] = 1
+                " Workspace name and directory of workspace are both required.
+                if len(parts) > 1
+                    let workspace = {
+                                \ "Name"      : parts[1],
+                                \ "Directory" : parts[0],
+                                \ }
+                    call add(cache_workspaces, workspace)
+                    let projectRoots[workspace.Directory] = 1
+                endif
             endif
         endfor
     endif
 
     call ctrlspace#roots#SetProjectRoots(projectRoots)
-    call ctrlspace#bookmarks#SetBookmarks(bookmarks)
+    call ctrlspace#bookmarks#SetBookmarks(cache_bookmarks)
 endfunction
 " }}}
