@@ -152,10 +152,19 @@ function! s:contentSource()
 	endif
 endfunction
 
+" FUNCTION: s:bookmarkListContent(clv) {{{
 function! s:bookmarkListContent(clv)
 	let content   = []
 	let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
+    " Get max name text width
+    let l:max_name_wid = 0
+    for item in bookmarks
+        let l:wid = strwidth(item["Name"])
+        let l:max_name_wid = (l:wid > l:max_name_wid) ? l:wid : l:max_name_wid
+    endfor
+
+    " Get content
 	for i in range(len(bookmarks))
 		let indicators = ""
 
@@ -163,11 +172,19 @@ function! s:bookmarkListContent(clv)
 			let indicators .= s:config.Symbols.IA
 		endif
 
-		call add(content, { "index": i, "text": bookmarks[i].Name, "indicators": indicators })
+        " Tabular linetext of bookmark-content
+        let l:linetext = bookmarks[i].Name
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  =>  "
+        let l:linetext .= bookmarks[i].Directory
+
+		call add(content, { "index": i, 
+                          \ "text": l:linetext,  
+                          \ "indicators": indicators })
 	endfor
 
 	return content
 endfunction
+" }}}
 
 function! s:workspaceListContent(clv)
 	let content    = []

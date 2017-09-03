@@ -218,6 +218,7 @@ function! s:toggleListView(k, mode)
 		call s:modes.Workspace.SetData("LastBrowsed", line("."))
 	endif
 
+    " For toggle back
 	if s:modes[a:mode].Enabled
 		if s:lastListView ==# a:mode
 			return 0

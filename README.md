@@ -1,5 +1,5 @@
 <div align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/logo5.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/logo5.png" />
 <br><br>
 </div>
 
@@ -10,6 +10,13 @@ providing:
 * fast fuzzy searching **powered by Go**
 * workspaces (sessions)
 * bookmarks for your favorite projects
+
+
+> This is a fork of [vim-ctrlspace](https://github.com/vim-ctrlspace/vim-ctrlspace).
+> The main changes are listed following:
+> * Change bookmark list as files bookmark. (20170903)
+
+---
 
 The plugin name follows the convention of naming fuzzy search plugins
 after their default mappings (like _Command-T_ or _CtrlP_), hence the
@@ -64,7 +71,7 @@ Vim-CtrlSpace interface is a window you can invoke by pressing
 items with `<h>`, `<j>`, and `<CR>` keys.
 
 <p align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists:

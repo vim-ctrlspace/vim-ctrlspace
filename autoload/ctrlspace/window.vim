@@ -1,5 +1,14 @@
+
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
+
+let s:cs_start_file = ""
+
+" FUNCTION: ctrlspace#windown#GetStartFile() {{{
+function! ctrlspace#window#GetStartFile()
+    return s:cs_start_file
+endfunction
+" }}}
 
 function! ctrlspace#window#MaxHeight()
 	let maxFromConfig = s:config.MaxHeight
@@ -11,9 +20,13 @@ function! ctrlspace#window#MaxHeight()
 	endif
 endfunction
 
+" FUNCTION: ctrlspace#window#Toggle(internal) {{{
+" @param intenal : if it's internal toggle(e.g. from buffet to bookmark)
 function! ctrlspace#window#Toggle(internal)
 	if !a:internal
 		call s:resetWindow()
+        " Get the full file name and path when open ctrlspace
+        let s:cs_start_file = expand("%:p")
 	endif
 
 	" if we get called and the list is open --> close it
@@ -91,6 +104,7 @@ function! ctrlspace#window#Toggle(internal)
 
 	normal! zb
 endfunction
+" }}}
 
 function! ctrlspace#window#GoToBufferListPosition(direction)
 	let bufferList    = ctrlspace#api#BufferList(tabpagenr())

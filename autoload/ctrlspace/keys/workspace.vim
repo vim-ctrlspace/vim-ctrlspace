@@ -2,12 +2,12 @@ let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#keys#workspace#Init()
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#LoadOrSave", "Workspace", ["Tab", "CR", "Space"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append", "Workspace", ["a"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace", "Workspace", ["N"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#ToggleSubmode", "Workspace", ["s"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete", "Workspace", ["d"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename", "Workspace", ["=", "m"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#LoadOrSave"    , "Workspace" , ["Tab" , "CR"  , "Space"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["a"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace"  , "Workspace" , ["N"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#ToggleSubmode" , "Workspace" , ["s"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["="   , "m"])
 endfunction
 
 function! ctrlspace#keys#workspace#Delete(k)

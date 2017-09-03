@@ -46,6 +46,7 @@ function! s:initCustomMappings()
 	endfor
 endfunction
 
+" Init all keys to s:keyNames list
 function! s:initKeyNames()
 	let lowercase = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
 	let uppercase = toupper(lowercase)
@@ -99,6 +100,7 @@ function! ctrlspace#keys#Undefined(k)
 	call ctrlspace#ui#Msg("Key '" . a:k . "' doesn't work in this view.")
 endfunction
 
+" Init mapping function to s:keyMap for each ctrpspace mode
 function! s:initKeyMap()
 	let Undefined = function("ctrlspace#keys#Undefined")
 	let blankMap    = {}

@@ -1,3 +1,4 @@
+
 let s:config    = ctrlspace#context#Configuration()
 let s:modes     = ctrlspace#modes#Modes()
 let s:bookmarks = []
@@ -11,53 +12,16 @@ function! ctrlspace#bookmarks#SetBookmarks(value)
 	return s:bookmarks
 endfunction
 
+" FUNCTION: ctrlspace#bookmarks#GoToBookmark(nr) {{{
 function! ctrlspace#bookmarks#GoToBookmark(nr)
 	let newBookmark = s:bookmarks[a:nr]
 	call ctrlspace#util#ChDir(newBookmark.Directory)
+
+    " Edit bookmarked file and change CWD to bookmakred directory
+    execute "edit " . newBookmark.Directory. "/" . newBookmark.Name
 	call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
 endfunction
-
-function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
-	let bookmark = s:bookmarks[a:nr]
-	let newName = ctrlspace#ui#GetInput("New bookmark name: ", bookmark.Name)
-
-	if !empty(newName)
-		call ctrlspace#bookmarks#AddToBookmarks(bookmark.Directory, newName)
-		call ctrlspace#ui#DelayedMsg("Bookmark '" . bookmark.Name . "' has been renamed to '" . newName . "'.")
-	endif
-endfunction
-
-function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr)
-	let bookmark  = s:bookmarks[a:nr]
-	let current   = bookmark.Directory
-	let name      = bookmark.Name
-	let directory = ctrlspace#ui#GetInput("Edit directory for bookmark '" . name . "': ", current, "dir")
-
-	if empty(directory)
-		return 0
-	endif
-
-	let directory = ctrlspace#util#NormalizeDirectory(directory)
-
-	if !isdirectory(directory)
-		call ctrlspace#ui#Msg("Directory incorrect.")
-		return 0
-	endif
-
-	for bookmark in s:bookmarks
-		if bookmark.Directory ==# directory
-			call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . name . "'.")
-			return 0
-		endif
-	endfor
-
-	call remove(s:bookmarks, a:nr)
-
-	call ctrlspace#bookmarks#AddToBookmarks(directory, name)
-	call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
-
-	return 1
-endfunction
+" }}}
 
 function! ctrlspace#bookmarks#RemoveBookmark(nr)
 	let name = s:bookmarks[a:nr].Name
@@ -98,44 +62,31 @@ function! ctrlspace#bookmarks#AddFirstBookmark()
 	endif
 endfunction
 
-function! ctrlspace#bookmarks#AddNewBookmark(...)
-	if a:0
-		let current = s:bookmarks[a:1].Directory
-	else
-		let root    = ctrlspace#roots#CurrentProjectRoot()
-		let current = empty(root) ? fnamemodify(".", ":p:h") : root
-	endif
+" FUNCTION: ctrlspace#bookmarks#AddNewBookmark() {{{
+function! ctrlspace#bookmarks#AddNewBookmark()
+    " Get current filename and directory.
+    let l:start_file = ctrlspace#util#NormalizeDirectory(ctrlspace#window#GetStartFile())
+    let l:filename = fnamemodify(l:start_file, ":p:t")
+    let l:directory = fnamemodify(l:start_file, ":p:h")
 
-	let directory = ctrlspace#ui#GetInput("Add directory to bookmarks: ", current, "dir")
-
-	if empty(directory)
-		return 0
-	endif
-
-	let directory = ctrlspace#util#NormalizeDirectory(directory)
-
-	if !isdirectory(directory)
-		call ctrlspace#ui#Msg("Directory incorrect.")
-		return 0
-	endif
-
+    " Detect whether existing
 	for bm in s:bookmarks
-		if bm.Directory == directory
-			call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . bm.Name . "'.")
+		if bm.Directory == l:directory && bm.Name == l:filename
+			call ctrlspace#ui#Msg("'" . l:filename . "' bookmark has been already existed")
 			return 0
 		endif
 	endfor
 
-	let name = ctrlspace#ui#GetInput("New bookmark name: ", fnamemodify(directory, ":t"))
+    if !ctrlspace#ui#Confirmed("Add to bookmarks: " . l:start_file . " ?")
+        return 0
+    endif
 
-	if empty(name)
-		return 0
-	endif
+	call ctrlspace#bookmarks#AddToBookmarks(l:directory, l:filename)
+    call ctrlspace#ui#DelayedMsg("'" . l:filename . "' was bookmarked")
 
-	call ctrlspace#bookmarks#AddToBookmarks(directory, name)
-	call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
-	return 1
+    return 1
 endfunction
+" }}}
 
 function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
 	let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
