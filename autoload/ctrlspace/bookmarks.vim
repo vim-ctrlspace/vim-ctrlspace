@@ -100,13 +100,12 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
     call add(s:bookmarks, bookmark)
 
     let lines     = []
-    let bmRoots   = {}
     let cacheFile = s:config.CacheDir . "/.cs_cache"
 
     if filereadable(cacheFile)
         for oldLine in readfile(cacheFile)
-            " cache non-bookmark and non-project lines
-            if (oldLine !~# "CS_BOOKMARK: ") && (oldLine !~# "CS_PROJECT_ROOT: ")
+            " cache non-bookmark lines
+            if (oldLine !~# "CS_BOOKMARK: ")
                 call add(lines, oldLine)
             endif
         endfor
@@ -114,17 +113,9 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
 
     for bm in s:bookmarks
         call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
-        let bmRoots[bm.Directory] = 1
-    endfor
-
-    for root in keys(ctrlspace#roots#ProjectRoots())
-        if !has_key(bmRoots, root)
-            call add(lines, "CS_PROJECT_ROOT: " . root)
-        endif
     endfor
 
     call writefile(lines, cacheFile)
-    call extend(ctrlspace#roots#ProjectRoots(), { bookmark.Directory: 1 })
 
     return bookmark
 endfunction

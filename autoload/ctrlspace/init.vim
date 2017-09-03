@@ -82,7 +82,6 @@ function! s:initProjectRootsAndBookmarks()
                                 \ "JumpCounter" : 0
                                 \ }
                     call add(cache_bookmarks, bookmark)
-                    let projectRoots[bookmark.Directory] = 1
                 endif
             endif
 
@@ -104,5 +103,6 @@ function! s:initProjectRootsAndBookmarks()
 
     call ctrlspace#roots#SetProjectRoots(projectRoots)
     call ctrlspace#bookmarks#SetBookmarks(cache_bookmarks)
+    "call ctrlspace#workspaces#SetCacheWorkspaces(cache_workspaces)
 endfunction
 " }}}
