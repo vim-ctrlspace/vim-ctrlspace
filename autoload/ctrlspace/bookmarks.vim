@@ -84,7 +84,7 @@ function! ctrlspace#bookmarks#AddNewBookmark()
     endif
 
     call ctrlspace#bookmarks#AddToBookmarks(l:directory, l:filename)
-    call ctrlspace#ui#DelayedMsg("'" . l:filename . "' was bookmarked")
+    call ctrlspace#ui#DelayedMsg("'" . l:filename . "' was bookmarked successful")
 
     return 1
 endfunction
