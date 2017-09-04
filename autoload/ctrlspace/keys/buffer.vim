@@ -297,7 +297,7 @@ function! ctrlspace#keys#buffer#NewWorkspace(k)
 	call ctrlspace#window#Kill(0, 1)
 
 	if saveWorkspaceBefore
-		call ctrlspace#workspaces#SaveWorkspace("")
+		call ctrlspace#workspaces#SaveWorkspaceFile("")
 	endif
 
 	call ctrlspace#workspaces#NewWorkspace()

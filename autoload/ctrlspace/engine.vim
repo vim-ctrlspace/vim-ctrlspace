@@ -186,30 +186,46 @@ function! s:bookmarkListContent(clv)
 endfunction
 " }}}
 
+" FUNCTION: s:workspaceListContent(clv) {{{
 function! s:workspaceListContent(clv)
-	let content    = []
-	let workspaces = ctrlspace#workspaces#Workspaces()
-	let active     = ctrlspace#workspaces#ActiveWorkspace()
+	let l:content    = []
+    let l:cache_workspaces = ctrlspace#workspaces#CacheWorkspaces()
+	let l:active     = ctrlspace#workspaces#ActiveWorkspace()
 
-	for i in range(len(workspaces))
-		let name = workspaces[i]
-		let indicators = ""
+    " Get max name text width
+    let l:max_name_wid = 0
+    for item in l:cache_workspaces 
+        let l:wid = strwidth(item["Name"])
+        let l:max_name_wid = (l:wid > l:max_name_wid) ? l:wid : l:max_name_wid
+    endfor
 
-		if name ==# active.Name && active.Status
+    " Get content
+    for item in range(len(l:cache_workspaces))
+        let l:name = l:cache_workspaces[item].Name
+        let l:linetext = ""
+        let l:indicators = ""
+
+        " Set inidicators
+		if l:name ==# active.Name && active.Status
 			if active.Status == 2
-				let indicators .= s:config.Symbols.IM
+				let l:indicators .= s:config.Symbols.IM
 			endif
-
-			let indicators .= s:config.Symbols.IA
+			let l:indicators .= s:config.Symbols.IA
 		elseif name ==# a:clv.Data.LastActive
-			let indicators .= s:config.Symbols.IV
+			let l:indicators .= s:config.Symbols.IV
 		endif
 
-		call add(content, { "index": i, "text": name, "indicators": indicators })
-	endfor
+        " Tabular linetext of bookmark-content
+        let l:linetext = l:name
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  <<  "
+        let l:linetext .= l:cache_workspaces[item].Directory
 
-	return content
+		call add(l:content, { "index": item, "text": l:linetext, "indicators": l:indicators })
+    endfor
+
+    return l:content
 endfunction
+" }}}
 
 function! s:tabContent(clv)
 	let content    = []

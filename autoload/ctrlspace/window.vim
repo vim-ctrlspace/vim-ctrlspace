@@ -21,7 +21,7 @@ function! ctrlspace#window#MaxHeight()
 endfunction
 
 " FUNCTION: ctrlspace#window#Toggle(internal) {{{
-" @param intenal : if it's internal toggle(e.g. from buffet to bookmark)
+" @param intenal == 1 : it's internal toggle(e.g. from buffet to bookmark)
 function! ctrlspace#window#Toggle(internal)
 	if !a:internal
 		call s:resetWindow()
@@ -494,7 +494,11 @@ function! s:setActiveLine()
 				endif
 
 				if !empty(currWsp)
-					let workspaces = ctrlspace#workspaces#Workspaces()
+                    let cache_workspaces = ctrlspace#workspaces#CacheWorkspaces()
+					let workspaces = []
+                    for item in cache_workspaces
+                        call add(workspaces, item["Name"])
+                    endfor
 
 					for i in range(b:size)
 						if currWsp ==# workspaces[b:indices[i]]
