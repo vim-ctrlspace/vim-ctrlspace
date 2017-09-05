@@ -16,6 +16,18 @@ providing:
 > The main changes are listed following:
 > * Change bookmark list as files bookmark. (20170903)
 
+<div align="center">
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
+<br><br>
+</div>
+
+> * Change workspace list to show all workspaces of all projects that had been added. (20170905)
+
+<div align="center">
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
+<br><br>
+</div>
+
 ---
 
 The plugin name follows the convention of naming fuzzy search plugins

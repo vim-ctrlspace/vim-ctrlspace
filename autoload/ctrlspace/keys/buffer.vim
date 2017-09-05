@@ -300,7 +300,7 @@ function! ctrlspace#keys#buffer#NewWorkspace(k)
 		call ctrlspace#workspaces#SaveWorkspaceFile("")
 	endif
 
-	call ctrlspace#workspaces#NewWorkspace()
+	call ctrlspace#workspaces#ClearWorkspace()
 	call ctrlspace#window#Toggle(0)
 	return 1
 endfunction

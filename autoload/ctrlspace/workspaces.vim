@@ -77,13 +77,15 @@ function! ctrlspace#workspaces#ActiveWorkspace()
 	return aw
 endfunction
 
-function! ctrlspace#workspaces#NewWorkspace()
+" FUNCTION: ctrlspace#workspaces#ClearWorkspace() {{{
+function! ctrlspace#workspaces#ClearWorkspace()
 	tabe
 	tabo!
 	call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
 	call ctrlspace#buffers#DeleteForeignBuffers(1)
 	call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "", "Root": "" })
 endfunction
+" }}}
 
 " FUNCTION: ctrlspace#workspaces#SelectedWorkspaceName() {{{
 function! ctrlspace#workspaces#SelectedWorkspaceName()
@@ -91,103 +93,6 @@ function! ctrlspace#workspaces#SelectedWorkspaceName()
 	return s:modes.Workspace.Enabled ? s:cache_workspaces[ctrlspace#window#SelectedIndex()]["Name"] : ""
 endfunction
 " }}}
-
-function! ctrlspace#workspaces#RenameWorkspace(name)
-	let newName = ctrlspace#ui#GetInput("Rename workspace '" . a:name . "' to: ", a:name)
-
-	if empty(newName)
-		return 0
-	endif
-
-	for existingName in s:workspaces
-		if newName ==# existingName
-			call ctrlspace#ui#Msg("Workspace '" . newName . "' already exists.")
-			return 0
-		endif
-	endfor
-
-	let filename = ctrlspace#util#WorkspaceFile()
-	let lines    = []
-
-	let workspaceStartMarker = "CS_WORKSPACE_BEGIN: " . a:name
-	let workspaceEndMarker   = "CS_WORKSPACE_END: " . a:name
-	let lastWorkspaceMarker  = "CS_LAST_WORKSPACE: " . a:name
-
-	if filereadable(filename)
-		for line in readfile(filename)
-			if line ==# workspaceStartMarker
-				let line = "CS_WORKSPACE_BEGIN: " . newName
-			elseif line ==# workspaceEndMarker
-				let line = "CS_WORKSPACE_END: " . newName
-			elseif line ==# lastWorkspaceMarker
-				let line = "CS_LAST_WORKSPACE: " . newName
-			endif
-
-			call add(lines, line)
-		endfor
-	endif
-
-	call writefile(lines, filename)
-
-	if s:modes.Workspace.Data.Active.Name ==# a:name && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
-		call ctrlspace#workspaces#SetActiveWorkspaceName(newName)
-	endif
-
-	call ctrlspace#workspaces#SetWorkspaceNames()
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#Toggle(1)
-
-	call ctrlspace#ui#DelayedMsg("Workspace '" . a:name . "' has been renamed to '" . newName . "'.")
-	return 1
-endfunction
-
-function! ctrlspace#workspaces#DeleteWorkspace(name)
-	if !ctrlspace#ui#Confirmed("Delete workspace '" . a:name . "'?")
-		return 0
-	endif
-
-	let filename    = ctrlspace#util#WorkspaceFile()
-	let lines       = []
-	let inWorkspace = 0
-
-	let workspaceStartMarker = "CS_WORKSPACE_BEGIN: " . a:name
-	let workspaceEndMarker   = "CS_WORKSPACE_END: " . a:name
-
-	if filereadable(filename)
-		for oldLine in readfile(filename)
-			if oldLine ==# workspaceStartMarker
-				let inWorkspace = 1
-			endif
-
-			if !inWorkspace
-				call add(lines, oldLine)
-			endif
-
-			if oldLine ==# workspaceEndMarker
-				let inWorkspace = 0
-			endif
-		endfor
-	endif
-
-	call writefile(lines, filename)
-
-	if s:modes.Workspace.Data.Active.Name ==# a:name && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
-		call ctrlspace#workspaces#SetActiveWorkspaceName(a:name, "")
-	endif
-
-	call ctrlspace#workspaces#SetWorkspaceNames()
-
-	if empty(s:workspaces)
-		call ctrlspace#window#Kill(0, 1)
-	else
-		call ctrlspace#window#Kill(0, 0)
-		call ctrlspace#window#Toggle(1)
-	endif
-
-	call ctrlspace#ui#DelayedMsg("Workspace '" . a:name . "' has been deleted.")
-
-	return 1
-endfunction
 
 " bang == 0) load, bang == 1) append
 function! ctrlspace#workspaces#LoadWorkspaceFile(bang, name)
@@ -514,11 +419,25 @@ function! ctrlspace#workspaces#CreateDigest()
 endfunction
 
 " FUNCTION: ctrlspace#workspaces#PreloadWorkspaces() {{{
-" @param nr : selected workspace item
-function! ctrlspace#workspaces#PreloadWorkspaces(nr)
-    let l:cache_ws = s:cache_workspaces[a:nr]
+" @param type: the type of preload
+function! ctrlspace#workspaces#PreloadWorkspaces(type)
+    let l:cache_ws = s:cache_workspaces[ctrlspace#window#SelectedIndex()]
+
+    " Special preload
+    if "Save" == a:type
+        if ctrlspace#roots#CurrentProjectRoot() != l:cache_ws.Directory
+            let l:cur_project = ctrlspace#roots#CurrentProjectRoot()
+            if !empty(l:cur_project)
+                let l:cur_project = "(" . l:cur_project . ")."
+            endif
+            call ctrlspace#ui#Msg("The workspace  you choose is not in Current Project". l:cur_project)
+            return 0
+        endif
+    endif
+
     call ctrlspace#util#ChDir(l:cache_ws.Directory)
     call ctrlspace#roots#SetCurrentProjectRoot(l:cache_ws.Directory)
+    return 1
 endfunction
 " }}}
 
@@ -528,6 +447,8 @@ function! ctrlspace#workspaces#AddNewWorkspace()
 	if !ctrlspace#roots#ProjectRootFound()
 		return 0
 	endif
+    let l:root_directory = ctrlspace#roots#CurrentProjectRoot()
+    let l:name = ""
 
 	let labels = []
 	for t in range(1, tabpagenr("$"))
@@ -542,13 +463,12 @@ function! ctrlspace#workspaces#AddNewWorkspace()
 	endif
 
     " Detect whether workspace is existing
-    " let l:cur_directory = ctrlspace#util#NormalizeDirectory(ctrlspace#roots#CurrentProjectRoot())
-    " for ws in s:cache_workspaces
-    "     if l:cur_directory ==  ws.Directory && l:name == ws.Name
-    "         call ctrlspace#ui#Msg("Workspace '" . l:name . "' has already existed in '" . l:cur_directory. "'")
-    "         return 0
-    "     endif
-    " endfor
+    for wsname in s:workspaces
+        if wsname ==# l:name
+            call ctrlspace#ui#Msg("Workspace '" . l:name . "' has already existed in root directory'" . l:root_directory . "'")
+            return 0
+        endif
+    endfor
 
 	call ctrlspace#window#Kill(0, 1)
 
@@ -557,7 +477,7 @@ function! ctrlspace#workspaces#AddNewWorkspace()
 
     if l:ok
         " add ctrlspace item to cs_cache file with directory been project root
-        call ctrlspace#workspaces#AddToCacheWorkspaces(ctrlspace#roots#CurrentProjectRoot(), l:name)
+        call s:addToCacheWorkspaces(l:root_directory, l:name)
     endif
 
     call ctrlspace#window#Toggle(0)
@@ -576,9 +496,9 @@ function! ctrlspace#workspaces#AddNewWorkspace()
 endfunction
 " }}}
 
-" FUNCTION: ctrlspace#workspaces#AddToCacheWorkspaces(directory, name) {{{
+" FUNCTION: s:addToCacheWorkspaces(directory, name) {{{
 " Directory must be project root
-function! ctrlspace#workspaces#AddToCacheWorkspaces(directory, name)
+function! s:addToCacheWorkspaces(directory, name)
     let l:workspace = { "Name" : a:name, 
                       \ "Directory" : ctrlspace#util#NormalizeDirectory(a:directory)
                       \ }
@@ -608,20 +528,21 @@ function! ctrlspace#workspaces#AddToCacheWorkspaces(directory, name)
 endfunction
 " }}}
 
-
-
-" FUNCTION: ctrlspace#workspaces#RemoveWorkspaces(nr) {{{
-function! ctrlspace#workspaces#RemoveWorkspaces(nr)
+" FUNCTION: ctrlspace#workspaces#DeleteWorkspace(nr) {{{
+function! ctrlspace#workspaces#DeleteWorkspace(nr)
     let l:name = s:cache_workspaces[a:nr].Name
     if !ctrlspace#ui#Confirmed("Delete workspace '" . l:name . "'?")
-        return
+        return 0
     endif
 
+    " Delete workspace from cs_workspace file
+	call s:deleteWorkspaceFile(l:name)
+
+    " Delete workspace from cs_cache file
     call remove(s:cache_workspaces, a:nr)
 
     let lines     = []
     let cacheFile = s:config.CacheDir . "/.cs_cache"
-
     if filereadable(cacheFile)
         for oldLine in readfile(cacheFile)
             " cache non-workspace lines
@@ -630,14 +551,132 @@ function! ctrlspace#workspaces#RemoveWorkspaces(nr)
             endif
         endfor
     endif
-
     for ws in s:cache_workspaces
         call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
     endfor
-
     call writefile(lines, cacheFile)
 
     call ctrlspace#ui#DelayedMsg("Workspace '" . l:name . "' has been deleted.")
+    return 1
+endfunction
+" }}}
+
+" FUNCTION: s:deleteWorkspaceFile(name) {{{
+function! s:deleteWorkspaceFile(name)
+	let filename    = ctrlspace#util#WorkspaceFile()
+	let lines       = []
+	let inWorkspace = 0
+
+	let workspaceStartMarker = "CS_WORKSPACE_BEGIN: " . a:name
+	let workspaceEndMarker   = "CS_WORKSPACE_END: " . a:name
+
+	if filereadable(filename)
+		for oldLine in readfile(filename)
+			if oldLine ==# workspaceStartMarker
+				let inWorkspace = 1
+			endif
+
+			if !inWorkspace
+				call add(lines, oldLine)
+			endif
+
+			if oldLine ==# workspaceEndMarker
+				let inWorkspace = 0
+			endif
+		endfor
+	endif
+
+	call writefile(lines, filename)
+
+	if s:modes.Workspace.Data.Active.Name ==# a:name && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
+		call ctrlspace#workspaces#SetActiveWorkspaceName(a:name, "")
+	endif
+
+	call ctrlspace#workspaces#SetWorkspaceNames()
+endfunction
+" }}}
+
+" FUNCTION" ctrlspace#workspaces#RenameWorkspace(nr) {{{
+function! ctrlspace#workspaces#RenameWorkspace(nr)
+    let l:new_name = ctrlspace#ui#GetInput("Input new workspace name: ")
+
+	if empty(l:new_name)
+		return 0
+	endif
+
+    " Rename workspace in cs_workspace file
+    call ctrlspace#workspaces#SetWorkspaceNames()
+    if !s:renameWorkspaceFile(l:new_name, s:cache_workspaces[a:nr].Name)
+       return 0
+    endif
+
+    " Rename workspace in cs_cache file
+    let s:cache_workspaces[a:nr]["Name"] = l:new_name
+
+    let lines     = []
+    let cacheFile = s:config.CacheDir . "/.cs_cache"
+    if filereadable(cacheFile)
+        for oldLine in readfile(cacheFile)
+            " cache non-workspace lines
+            if oldLine !~# "CS_WORKSPACE: " 
+                call add(lines, oldLine)
+            endif
+        endfor
+    endif
+    for ws in s:cache_workspaces
+        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
+    endfor
+    call writefile(lines, cacheFile)
+
+	call ctrlspace#window#Kill(0, 0)
+	call ctrlspace#window#Toggle(1)
+	call ctrlspace#ui#DelayedMsg("'" . l:new_name . "' has been set.")
+
+    return 1
+endfunction
+" }}}
+
+" FUNCTION: s:renameWorkspaceFile(name) {{{
+function! s:renameWorkspaceFile(name, oldname)
+	let newName = a:name
+
+	for existingName in s:workspaces
+		if newName ==# existingName
+			call ctrlspace#ui#Msg("Workspace '" . newName . "' already exists.")
+			return 0
+		endif
+	endfor
+
+	let filename = ctrlspace#util#WorkspaceFile()
+	let lines    = []
+
+	let workspaceStartMarker = "CS_WORKSPACE_BEGIN: " . a:oldname
+	let workspaceEndMarker   = "CS_WORKSPACE_END: " . a:oldname
+	let lastWorkspaceMarker  = "CS_LAST_WORKSPACE: " . a:oldname
+
+	if filereadable(filename)
+		for line in readfile(filename)
+			if line ==# workspaceStartMarker
+				let line = "CS_WORKSPACE_BEGIN: " . newName
+			elseif line ==# workspaceEndMarker
+				let line = "CS_WORKSPACE_END: " . newName
+			elseif line ==# lastWorkspaceMarker
+				let line = "CS_LAST_WORKSPACE: " . newName
+			endif
+
+			call add(lines, line)
+		endfor
+	endif
+
+	call writefile(lines, filename)
+
+	if s:modes.Workspace.Data.Active.Name ==# a:oldname && s:modes.Workspace.Data.Active.Root ==# ctrlspace#roots#CurrentProjectRoot()
+		call ctrlspace#workspaces#SetActiveWorkspaceName(newName)
+	endif
+
+	call ctrlspace#workspaces#SetWorkspaceNames()
+
+	return 1
 endfunction
 " }}}
 

@@ -2,21 +2,17 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
+" FUNCTION: ctrlspace#keys#workspace#Init() {{{
 function! ctrlspace#keys#workspace#Init()
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#LoadOrSave"    , "Workspace" , ["Tab" , "CR"  , "Space"])
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["a"])
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace"  , "Workspace" , ["N"])
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#ToggleSubmode" , "Workspace" , ["s"])
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
-	"call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["="   , "m"])
-
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Load"          , "Workspace" , ["CR"  , "Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["Tab"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Add"           , "Workspace" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Save"          , "Workspace" , ["s"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["="   , "m"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Clear"         , "Workspace" , ["C"])
 endfunction
+" }}}
 
 " FUNCTION: ctrlspace#keys#workspace#Add(k) {{{
 function! ctrlspace#keys#workspace#Add(k)
@@ -61,13 +57,6 @@ function! s:loadWorkspace(bang, name)
 		return 0
 	endif
 
-	if a:bang
-		call ctrlspace#window#Toggle(0)
-		call s:modes.Workspace.Enable()
-		call ctrlspace#window#Kill(0, 0)
-		call ctrlspace#window#Toggle(1)
-	endif
-
 	return 1
 endfunction
 " }}}
@@ -75,7 +64,9 @@ endfunction
 " FUNCTION: ctrlspace#keys#workspace#Load(k) {{{
 function! ctrlspace#keys#workspace#Load(k)
     " preload workspace form cs_cache file
-    call ctrlspace#workspaces#PreloadWorkspaces(ctrlspace#window#SelectedIndex())
+    if !ctrlspace#workspaces#PreloadWorkspaces("Load")
+        return
+    endif
 
     " load workspace from cs_workspace file
     if !s:loadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
@@ -95,20 +86,46 @@ function! ctrlspace#keys#workspace#Load(k)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#keys#workspace#Append(k) {{{
+function! ctrlspace#keys#workspace#Append(k)
+    " preload workspace form cs_cache file
+    if !ctrlspace#workspaces#PreloadWorkspaces("Append")
+        return
+    endif
+
+    " append workspace from cs_workspace file
+	if !s:loadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
+        return
+    endif
+
+    call ctrlspace#window#Toggle(0)
+    call s:modes.Workspace.Enable()
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
+	call ctrlspace#ui#DelayedMsg()
+endfunction
+" }}}
+
 " FUNCTION: ctrlspace#keys#workspace#Save(k) {{{
 function! ctrlspace#keys#workspace#Save(k)
     " preload workspace form cs_cache file
-    call ctrlspace#workspaces#PreloadWorkspaces(ctrlspace#window#SelectedIndex())
+    if !ctrlspace#workspaces#PreloadWorkspaces("Save")
+        return
+    endif
 
     " Confirme saving
     let l:name = ctrlspace#workspaces#SelectedWorkspaceName()
-    if !ctrlspace#ui#Confirmed("Save workspace '" . l:name . "' ?")
+    if !ctrlspace#ui#Confirmed("Save to workspace '" . l:name . "' ?")
         return
     endif
+
 	call ctrlspace#window#Kill(0, 1)
 
     " save workspace to cs_workspace file
-    if !ctrlspace#workspaces#SaveWorkspaceFile(l:name)
+    if ctrlspace#workspaces#SaveWorkspaceFile(l:name)
+        call ctrlspace#ui#DelayedMsg("Workspace '" . l:name . "' has been saved.")
+    else
+        call ctrlspace#ui#Msg("Failed to save Workspace '" . l:name . "'.")
         return
     endif
 
@@ -116,37 +133,43 @@ function! ctrlspace#keys#workspace#Save(k)
     call ctrlspace#window#Kill(0, 0)
     call s:modes.Workspace.Enable()
     call ctrlspace#window#Toggle(1)
-    call ctrlspace#ui#Msg("Workspace '" . l:name . "' has been saved")
-endfunction
-" }}}
-
-" FUNCTION: ctrlspace#keys#workspace#Append(k) {{{
-function! ctrlspace#keys#workspace#Append(k)
-    " preload workspace form cs_cache file
-    call ctrlspace#workspaces#PreloadWorkspaces(ctrlspace#window#SelectedIndex())
-
-	call s:loadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
-	call ctrlspace#ui#DelayedMsg()
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 " }}}
 
 " FUNCTION: ctrlspace#keys#workspace#Delete(k) {{{
 function! ctrlspace#keys#workspace#Delete(k)
-	call ctrlspace#workspaces#DeleteWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
-	call ctrlspace#ui#DelayedMsg()
+    " preload workspace form cs_cache file
+    if !ctrlspace#workspaces#PreloadWorkspaces("Delete")
+        return
+    endif
+
+    if ctrlspace#workspaces#DeleteWorkspace(ctrlspace#window#SelectedIndex())
+        call ctrlspace#window#Kill(0, 1)
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.Workspace.Enable()
+        call ctrlspace#window#Toggle(1)
+        call ctrlspace#ui#DelayedMsg()
+    endif
 endfunction
 " }}}
 
 " FUNCTION: ctrlspace#keys#workspace#Rename(k) {{{
 function! ctrlspace#keys#workspace#Rename(k)
-	call ctrlspace#workspaces#RenameWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
+    " preload workspace form cs_cache file
+    if !ctrlspace#workspaces#PreloadWorkspaces("Rename")
+        return
+    endif
+
+	call ctrlspace#workspaces#RenameWorkspace(ctrlspace#window#SelectedIndex())
 	call ctrlspace#ui#DelayedMsg()
 endfunction
 " }}}
 
-
-
-function! ctrlspace#keys#workspace#NewWorkspace(k)
+" FUNCTION: ctrlspace#keys#workspace#Clear(k) {{{
+" Clear all buffers and tabs of one workspace
+function! ctrlspace#keys#workspace#Clear(k)
 	if !ctrlspace#keys#buffer#NewWorkspace(a:k)
 		return
 	endif
@@ -155,3 +178,5 @@ function! ctrlspace#keys#workspace#NewWorkspace(k)
 	call s:modes.Workspace.Enable()
 	call ctrlspace#window#Toggle(1)
 endfunction
+" }}}
+
