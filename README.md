@@ -3,25 +3,15 @@
 <br><br>
 </div>
 
-Welcome to **Vim-CtrlSpace**, a comprehensive solution for your Vim editor
-providing:
 
-* tabs / buffers / files management
-* fast fuzzy searching **powered by Go**
-* workspaces (sessions)
-* bookmarks for your favorite projects
-
-
-> This is a fork of [vim-ctrlspace](https://github.com/vim-ctrlspace/vim-ctrlspace).
-> The main changes are listed following:
-> * Change bookmark list as files bookmark. (20170903)
+**This is a fork of [vim-ctrlspace](https://github.com/vim-ctrlspace/vim-ctrlspace). The main changes are listed following:**
+- **Change bookmark list as files bookmark. (20170903)**
 
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
-<br><br>
 </div>
 
-> * Change workspace list to show all workspaces of all projects that had been added. (20170905)
+- **Change workspace list to show all workspaces of all projects that had been added. (20170905)**
 
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
@@ -29,6 +19,14 @@ providing:
 </div>
 
 ---
+
+Welcome to **Vim-CtrlSpace**, a comprehensive solution for your Vim editor
+providing:
+
+* tabs / buffers / files management
+* fast fuzzy searching **powered by Go**
+* workspaces (sessions)
+* bookmarks for your favorite projects
 
 The plugin name follows the convention of naming fuzzy search plugins
 after their default mappings (like _Command-T_ or _CtrlP_), hence the

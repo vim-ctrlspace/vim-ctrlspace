@@ -24,6 +24,8 @@ function! ctrlspace#engine#Content()
 
 		if s:modes.Tab.Enabled
 			call sort(items, function("ctrlspace#engine#CompareByIndex"))
+        elseif s:modes.Bookmark.Enabled || s:modes.Workspace.Enabled
+			call sort(items, function("ctrlspace#engine#CompareByTextTwo"))
 		else
 			call sort(items, function("ctrlspace#engine#CompareByText"))
 		endif
@@ -67,6 +69,24 @@ function! ctrlspace#engine#CompareByText(a, b)
 		return 0
 	endif
 endfunction
+
+" FUNCTION: ctrlspace#engine#CompareByTextTwo(a, b) {{{
+function! ctrlspace#engine#CompareByTextTwo(a, b)
+    if a:a.position < a:b.position
+        return -1
+    elseif a:a.position > a:b.position
+        return 1
+    else
+        if a:a.text < a:b.text
+            return -1
+        elseif a:a.text > a:b.text
+            return 1
+        else
+            return 0
+        endif
+    endif
+endfunction
+" }}}
 
 function! ctrlspace#engine#CompareByIndex(a, b)
 	if a:a.index < a:b.index
@@ -179,6 +199,7 @@ function! s:bookmarkListContent(clv)
 
 		call add(content, { "index": i, 
                           \ "text": l:linetext,  
+                          \ "position" : bookmarks[i].Directory,
                           \ "indicators": indicators })
 	endfor
 
@@ -202,6 +223,7 @@ function! s:workspaceListContent(clv)
     " Get content
     for item in range(len(l:cache_workspaces))
         let l:name = l:cache_workspaces[item].Name
+        let l:directory = l:cache_workspaces[item].Directory
         let l:linetext = ""
         let l:indicators = ""
 
@@ -218,9 +240,12 @@ function! s:workspaceListContent(clv)
         " Tabular linetext of bookmark-content
         let l:linetext = l:name
         let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  <<  "
-        let l:linetext .= l:cache_workspaces[item].Directory
+        let l:linetext .= l:directory
 
-		call add(l:content, { "index": item, "text": l:linetext, "indicators": l:indicators })
+		call add(l:content, { "index": item, 
+                            \ "text": l:linetext, 
+                            \ "position" : l:directory,
+                            \ "indicators": l:indicators })
     endfor
 
     return l:content
