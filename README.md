@@ -11,12 +11,29 @@
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
 </div>
 
+| Key            | Action               |
+| :---:          | :---                 |
+| Tab, CR, Space | Edit bookmarked file |
+| a              | Add bookmark         |
+| d              | Delete bookmark      |
+
 - **Change workspace list to show all workspaces of all projects that had been added. (20170905)**
 
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
-<br><br>
 </div>
+
+| Key       | Action                                  |
+| :---:     | :---                                    |
+| CR, Space | Load workspace                          |
+| Tab       | Append workspace in new tab             |
+| a         | Add new workspace                       |
+| s         | Save workspace                          |
+| d         | Delete workspace                        |
+| m, =      | Rename workspace                        |
+| C         | Clear all buffers and tabs of workspace |
+
+<br><br>
 
 ---
 
