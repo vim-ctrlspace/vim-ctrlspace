@@ -611,7 +611,9 @@ function! s:displayContent()
 
 		normal! 0
 
-		call s:modes.Nop.Enable()
+        if !(s:modes.Bookmark.Enabled || s:modes.Workspace.Enabled)
+            call s:modes.Nop.Enable()
+        endif
 	endif
 
 	setlocal nomodifiable
