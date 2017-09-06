@@ -1,6 +1,20 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
+
+" FUNCTION: ctrlspace#util#IsSameDirectory(dir1, dir2) {{{
+function! ctrlspace#util#IsSameDirectory(dir1, dir2)
+    let l:dir_a = substitute(ctrlspace#util#NormalizeDirectory(a:dir1), "\\", "/", "g")
+    let l:dir_b = substitute(ctrlspace#util#NormalizeDirectory(a:dir2), "\\", "/", "g")
+
+    if has("win32") || has("win64") || has('win32unix')
+        return (l:dir_a ==? l:dir_b)
+    else
+        return (l:dir_a ==# l:dir_b)
+    endif
+endfunction
+" }}}
+
 function! ctrlspace#util#NormalizeDirectory(directory)
 	let directory = resolve(expand(a:directory))
 

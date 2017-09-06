@@ -42,10 +42,6 @@ function! ctrlspace#roots#AddProjectRoot(directory)
 
 	let roots = copy(s:projectRoots)
 
-	for bm in ctrlspace#bookmarks#Bookmarks()
-		let roots[bm.Directory] = 1
-	endfor
-
 	if exists("roots[directory]")
 		call ctrlspace#ui#Msg("Directory '" . directory . "' is already a permanent project root!")
 		return
@@ -98,12 +94,7 @@ function! s:addProjectRoot(directory)
 	let s:projectRoots[directory] = 1
 
 	let lines     = []
-	let bmRoots   = {}
 	let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-	for bm in ctrlspace#bookmarks#Bookmarks()
-		let bmRoots[bm.Directory] = 1
-	endfor
 
 	if filereadable(cacheFile)
 		for oldLine in readfile(cacheFile)
@@ -114,9 +105,7 @@ function! s:addProjectRoot(directory)
 	endif
 
 	for root in keys(s:projectRoots)
-		if !exists("bmRoots[root]")
-			call add(lines, "CS_PROJECT_ROOT: " . root)
-		endif
+        call add(lines, "CS_PROJECT_ROOT: " . root)
 	endfor
 
 	call writefile(lines, cacheFile)
