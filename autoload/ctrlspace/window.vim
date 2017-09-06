@@ -1,5 +1,14 @@
+
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
+
+let s:cs_start_file = ""
+
+" FUNCTION: ctrlspace#windown#GetStartFile() {{{
+function! ctrlspace#window#GetStartFile()
+    return s:cs_start_file
+endfunction
+" }}}
 
 function! ctrlspace#window#MaxHeight()
 	let maxFromConfig = s:config.MaxHeight
@@ -11,9 +20,13 @@ function! ctrlspace#window#MaxHeight()
 	endif
 endfunction
 
+" FUNCTION: ctrlspace#window#Toggle(internal) {{{
+" @param intenal == 1 : it's internal toggle(e.g. from buffet to bookmark)
 function! ctrlspace#window#Toggle(internal)
 	if !a:internal
 		call s:resetWindow()
+        " Get the full file name and path when open ctrlspace
+        let s:cs_start_file = expand("%:p")
 	endif
 
 	" if we get called and the list is open --> close it
@@ -91,6 +104,7 @@ function! ctrlspace#window#Toggle(internal)
 
 	normal! zb
 endfunction
+" }}}
 
 function! ctrlspace#window#GoToBufferListPosition(direction)
 	let bufferList    = ctrlspace#api#BufferList(tabpagenr())
@@ -480,7 +494,11 @@ function! s:setActiveLine()
 				endif
 
 				if !empty(currWsp)
-					let workspaces = ctrlspace#workspaces#Workspaces()
+                    let cache_workspaces = ctrlspace#workspaces#CacheWorkspaces()
+					let workspaces = []
+                    for item in cache_workspaces
+                        call add(workspaces, item["Name"])
+                    endfor
 
 					for i in range(b:size)
 						if currWsp ==# workspaces[b:indices[i]]
@@ -593,7 +611,9 @@ function! s:displayContent()
 
 		normal! 0
 
-		call s:modes.Nop.Enable()
+        if !(s:modes.Bookmark.Enabled || s:modes.Workspace.Enabled)
+            call s:modes.Nop.Enable()
+        endif
 	endif
 
 	setlocal nomodifiable

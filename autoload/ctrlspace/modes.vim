@@ -10,6 +10,7 @@ let s:mode = {
 	\ "ListView": 0
 	\ }
 
+" Add instance of s:mode
 function! s:mode.new(name, listView, data) dict
 	let instance          = copy(self)
 	let instance.Name     = a:name
@@ -60,6 +61,7 @@ function! s:mode.Disable() dict
 	let self.Enabled = 0
 endfunction
 
+" Init tinstance of s:mode
 function! s:init()
 	call s:mode.new("Zoom", 0, { "Buffer": 0, "Mode": "", "SubMode": "", "Line": "", "Letters": [] })
 	call s:mode.new("NextTab", 0, {})
