@@ -4,8 +4,8 @@ let s:modes  = ctrlspace#modes#Modes()
 
 " FUNCTION: ctrlspace#keys#workspace#Init() {{{
 function! ctrlspace#keys#workspace#Init()
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Load"          , "Workspace" , ["CR"  , "Space"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["Tab"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Load"          , "Workspace" , ["CR"  , "Space", "Tab"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append"        , "Workspace" , ["t"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Add"           , "Workspace" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Save"          , "Workspace" , ["s"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
@@ -73,9 +73,11 @@ function! ctrlspace#keys#workspace#Load(k)
         return
     endif
 
-	if a:k ==# "CR"
+	if a:k ==# "Tab"
 		call ctrlspace#window#Toggle(0)
 		call ctrlspace#ui#DelayedMsg()
+    "elseif a:k ==# "CR"
+        " No need to open ctrlspace again when workspace was loaded.
 	elseif a:k ==# "Space"
 		call ctrlspace#window#Toggle(0)
 		call ctrlspace#window#Kill(0, 0)

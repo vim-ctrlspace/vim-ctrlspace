@@ -6,6 +6,7 @@ function! ctrlspace#keys#bookmark#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark" , "Bookmark" , ["Tab" , "CR"  , "Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Add"          , "Bookmark" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete"       , "Bookmark" , ["d"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Append"       , "Bookmark" , ["t"])
 endfunction
 " }}}
 
@@ -16,9 +17,10 @@ function! ctrlspace#keys#bookmark#GoToBookmark(k)
 	call ctrlspace#window#Kill(0, 1)
 	call ctrlspace#bookmarks#GoToBookmark(nr)
 
-	if a:k ==# "CR"
+	if a:k ==# "Tab"
+		call ctrlspace#window#Toggle(0)
+    "elseif a:k ==# "CR"
         " No need to open ctrlspace again when bookmark file was opened
-		"call ctrlspace#window#Toggle(0)
 	elseif a:k ==# "Space"
 		call ctrlspace#window#Toggle(0)
 		call ctrlspace#window#Kill(0, 0)
@@ -26,6 +28,20 @@ function! ctrlspace#keys#bookmark#GoToBookmark(k)
 		call ctrlspace#window#Toggle(1)
 	endif
 
+	call ctrlspace#ui#DelayedMsg()
+endfunction
+" }}}
+
+" FUNCTION: ctrlspace#keys#bookmark#Append(k) {{{
+function! ctrlspace#keys#bookmark#Append(k)
+    let l:bookmark = ctrlspace#bookmarks#Bookmarks()[ctrlspace#window#SelectedIndex()]
+
+	call ctrlspace#window#Kill(0, 1)
+
+    " Edit bookmarked file and change CWD to bookmakred directory
+    execute "tabe " . l:bookmark.Directory. "/" . l:bookmark.Name
+    call ctrlspace#util#ChDir(l:bookmark.Directory)
+    call ctrlspace#ui#DelayedMsg("CWD is now: " . l:bookmark.Directory)
 	call ctrlspace#ui#DelayedMsg()
 endfunction
 " }}}

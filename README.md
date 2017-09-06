@@ -11,11 +11,12 @@
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
 </div>
 
-| Key            | Action               |
-| :---:          | :---                 |
-| Tab, CR, Space | Edit bookmarked file |
-| a              | Add bookmark         |
-| d              | Delete bookmark      |
+| **Key**        | **Action**                                                         |
+| :---:          | :---                                                               |
+| Tab, CR, Space | Edit bookmarked file (Tab - goto buffer, CR - close, Space - stay) |
+| a              | Add bookmark                                                       |
+| d              | Delete bookmark                                                    |
+| t              | Append bookmarked file in new tab                                  |
 
 - **Change workspace list to show all workspaces of all projects that had been added. (20170905)**
 
@@ -23,15 +24,15 @@
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
 </div>
 
-| Key       | Action                                  |
-| :---:     | :---                                    |
-| CR, Space | Load workspace                          |
-| Tab       | Append workspace in new tab             |
-| a         | Add new workspace                       |
-| s         | Save workspace                          |
-| d         | Delete workspace                        |
-| m, =      | Rename workspace                        |
-| C         | Clear all buffers and tabs of workspace |
+| **Key**        | **Action**                                                   |
+| :---:          | :---                                                         |
+| Tab, CR, Space | Load workspace (Tab - goto buffer, CR - close, Space - stay) |
+| t              | Append workspace in new tab                                  |
+| a              | Add new workspace                                            |
+| s              | Save workspace                                               |
+| d              | Delete workspace                                             |
+| m, =           | Rename workspace                                             |
+| C              | Clear all buffers and tabs of workspace                      |
 
 <br><br>
 
