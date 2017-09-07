@@ -17,6 +17,8 @@
 | a              | Add bookmark                                                       |
 | d              | Delete bookmark                                                    |
 | t              | Append bookmarked file in new tab                                  |
+| s              | Append bookmarked file in split window                             |
+| v              | Append bookmarked file in vsplit window                            |
 
 - **Change workspace list to show all workspaces of all projects that had been added. (20170905)**
 

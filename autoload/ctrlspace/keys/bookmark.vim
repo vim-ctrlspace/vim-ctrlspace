@@ -6,7 +6,7 @@ function! ctrlspace#keys#bookmark#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark" , "Bookmark" , ["Tab" , "CR"  , "Space"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Add"          , "Bookmark" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete"       , "Bookmark" , ["d"])
-	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Append"       , "Bookmark" , ["t"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Append"       , "Bookmark" , ["t", "s", "v"])
 endfunction
 " }}}
 
@@ -38,8 +38,16 @@ function! ctrlspace#keys#bookmark#Append(k)
 
 	call ctrlspace#window#Kill(0, 1)
 
-    " Edit bookmarked file and change CWD to bookmakred directory
-    execute "tabe " . l:bookmark.Directory. "/" . l:bookmark.Name
+    " Edit bookmarked file
+    if a:k ==# "t"
+        execute "tabe " . l:bookmark.Directory. "/" . l:bookmark.Name
+    elseif a:k ==# "s"
+        execute "split " . l:bookmark.Directory. "/" . l:bookmark.Name
+    elseif a:k ==# "v"
+        execute "vsplit " . l:bookmark.Directory. "/" . l:bookmark.Name
+    endif
+
+    " change CWD to bookmakred directory
     call ctrlspace#util#ChDir(l:bookmark.Directory)
     call ctrlspace#ui#DelayedMsg("CWD is now: " . l:bookmark.Directory)
 	call ctrlspace#ui#DelayedMsg()

@@ -103,7 +103,7 @@ let s:descriptions = {
             \ "ctrlspace#keys#bookmark#GoToBookmark":               "Jump to selected bookmark (Tab - goto buffer, CR - close, Space - stay)",
             \ "ctrlspace#keys#bookmark#Add":                        "Add a new bookmark",
             \ "ctrlspace#keys#bookmark#Delete":                     "Delete selected bookmark",
-            \ "ctrlspace#keys#bookmark#Append":                     "Append bookmarked file in new tab",
+            \ "ctrlspace#keys#bookmark#Append":                     "Append bookmarked file(t - new tab, s/v - split)",
             \ "ctrlspace#keys#tab#GoToTab":                         "Open a selected tab (Tab - close, Space - stay)",
             \ "ctrlspace#keys#tab#CloseTab":                        "Close the selected tab, then foreign buffers and nonames",
             \ "ctrlspace#keys#tab#AddTab":                          "Create a new tab",
