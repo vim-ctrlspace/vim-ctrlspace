@@ -116,7 +116,7 @@ let s:descriptions = {
             \ "ctrlspace#keys#tab#CollectForeignBuffers":           "Create a new tab with foreign buffers",
             \ "ctrlspace#keys#tab#NewWorkspace":                    "Close all tabs - make a new workspace",
             \ "ctrlspace#keys#workspace#Load":                      "Load selected workspace (Tab - goto buffer, CR - close, Space - stay)",
-            \ "ctrlspace#keys#workspace#Append":                    "Append a selected workspace to the current one",
+            \ "ctrlspace#keys#workspace#Append":                    "Append a selected workspace to new tab",
             \ "ctrlspace#keys#workspace#Add":                       "Add new workspace in current project root",
             \ "ctrlspace#keys#workspace#Clear":                     "Clear workspace - close all buffers and tabs",
             \ "ctrlspace#keys#workspace#Save":                      "Save selected workspace",
@@ -239,6 +239,19 @@ function! ctrlspace#help#DisplayHelp(fill)
     call s:puts(header . " - press <CR> to expand")
     call s:puts("")
 
+    if !empty(b:helpKeyDescriptionsMode)
+        call s:puts("=============== " . mapName . " Keys ===============")
+        for info in b:helpKeyDescriptionsMode
+            call s:puts(info.key . " | " . info.description)
+        endfor
+    endif
+    call s:puts("")
+
+    if mapName ==# "Nop" || mapName ==# "Search"
+        call s:puts("=============== " . mapName . " Keys ===============")
+    else
+        call s:puts("=============== Common Keys ===============")
+    endif
     for info in b:helpKeyDescriptions
         call s:puts(info.key . " | " . info.description)
     endfor
@@ -293,21 +306,31 @@ function! s:flushTextBuffer()
     return text
 endfunction
 
-function! s:keyHelp(key, description)
+function! s:keyHelp(key, description, ismode)
     if !exists("b:helpKeyDescriptions")
         let b:helpKeyDescriptions = []
+        let b:helpKeyDescriptionsMode = []
         let b:helpKeyWidth = 0
     endif
 
-    call add(b:helpKeyDescriptions, { "key": a:key, "description": a:description })
+    if a:ismode
+        call add(b:helpKeyDescriptionsMode, { "key": a:key, "description": a:description })
+    else
+        call add(b:helpKeyDescriptions, { "key": a:key, "description": a:description })
+    endif
 
     if strwidth(a:key) > b:helpKeyWidth
         let b:helpKeyWidth = strwidth(a:key)
     else
         for keyInfo in b:helpKeyDescriptions
-            while strwidth(keyInfo.key) < b:helpKeyWidth
-                let keyInfo.key .= " "
-            endwhile
+            if strwidth(keyInfo.key) < b:helpKeyWidth
+                let keyInfo.key .= repeat(" ", b:helpKeyWidth - strwidth(keyInfo.key))
+            endif
+        endfor
+        for keyInfo in b:helpKeyDescriptionsMode
+            if strwidth(keyInfo.key) < b:helpKeyWidth
+                let keyInfo.key .= repeat(" ", b:helpKeyWidth - strwidth(keyInfo.key))
+            endif
         endfor
     endif
 endfunction
@@ -317,7 +340,15 @@ function! s:collectKeysInfo(mapName)
         let fn = s:helpMap[a:mapName][key]
 
         if has_key(s:descriptions, fn) && !empty(s:descriptions[fn])
-            call s:keyHelp(key, s:descriptions[fn])
+            if (fn =~# "^" . "ctrlspace#keys#buffer" ||
+                \ fn =~# "^" . "ctrlspace#keys#file" ||
+                \ fn =~# "^" . "ctrlspace#keys#bookmark" ||
+                \ fn =~# "^" . "ctrlspace#keys#tab" ||
+                \ fn =~# "^" . "ctrlspace#keys#workspace")
+                call s:keyHelp(key, s:descriptions[fn], 1)
+            else
+                call s:keyHelp(key, s:descriptions[fn], 0)
+            endif
         endif
     endfor
 endfunction
