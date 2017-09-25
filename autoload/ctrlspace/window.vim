@@ -405,6 +405,8 @@ function! s:setUpBuffer()
 	endif
 	setlocal nocursorcolumn
 	setlocal nocursorline
+    setlocal nofoldenable
+    setlocal foldcolumn=1
 	setlocal nospell
 	setlocal nolist
 	setlocal cc=
