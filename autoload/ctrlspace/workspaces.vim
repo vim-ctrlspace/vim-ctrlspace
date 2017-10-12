@@ -76,7 +76,7 @@ function! s:clearWorkspaceRedundance(root)
 
     for item in l:cache_ws
         if -1 != match(s:workspaces, '\C^' . item.Name . '$')
-            " workspace that is in cs_cache file and alse in cs_workspace file
+            " workspace that is in cs_cache file and also in cs_workspace file
             call add(l:cache_new, item)
         endif
     endfor
