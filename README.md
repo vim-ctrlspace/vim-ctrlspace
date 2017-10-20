@@ -5,7 +5,8 @@
 
 
 **This is a fork of [vim-ctrlspace](https://github.com/vim-ctrlspace/vim-ctrlspace). The main changes are listed following:**
-- **Change bookmark list as files bookmark. (20170903)**
+- **(20170903) Change bookmark list as files bookmark list.**
+All your bookmarked files will be listed with filename and filepath. For example, there 3 bookmarked files in the list in the picutre following.
 
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
@@ -20,7 +21,8 @@
 | s              | Append bookmarked file in split window                             |
 | v              | Append bookmarked file in vsplit window                            |
 
-- **Change workspace list to show all workspaces of all projects that had been added. (20170905)**
+- **(20170905) Change workspace list as all workspace list.**
+Now workspace list will show all workspaces of projects with workspace name and projects path. For example, there 2 projects and 4 workspaces in the picture following.
 
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
