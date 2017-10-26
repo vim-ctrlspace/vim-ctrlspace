@@ -168,6 +168,7 @@ function! ctrlspace#help#CloseExternalWindow()
     endif
 endfunction
 
+" FUNCTION: ctrlspace#help#OpenInNewWindow() {{{
 function! ctrlspace#help#OpenInNewWindow()
     let mi     = s:modeInfo()
     let header = "Key Reference for " . mi[0] . " LIST"
@@ -209,14 +210,16 @@ function! ctrlspace#help#OpenInNewWindow()
 
     silent! put! =s:flushTextBuffer()
     normal! GkJ
-    normal! 0
     normal! gg
+    normal! 0
 
     noremap <silent><buffer> q :call ctrlspace#help#CloseExternalWindow()<CR>
 
     setlocal nomodifiable
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#help#DisplayHelp(fill) {{{
 function! ctrlspace#help#DisplayHelp(fill)
     if s:modes.Nop.Enabled
         let mapName = "Nop"
@@ -280,11 +283,12 @@ function! ctrlspace#help#DisplayHelp(fill)
         silent! put =a:fill
     endwhile
 
-    normal! 0
     normal! gg
+    normal! 0
 
     setlocal nomodifiable
 endfunction
+" }}}
 
 function! s:puts(str)
     let str = "  " . a:str
@@ -306,6 +310,7 @@ function! s:flushTextBuffer()
     return text
 endfunction
 
+" FUNCTION: s:keyHelp(key, description, ismode) {{{
 function! s:keyHelp(key, description, ismode)
     if !exists("b:helpKeyDescriptions")
         let b:helpKeyDescriptions = []
@@ -334,7 +339,9 @@ function! s:keyHelp(key, description, ismode)
         endfor
     endif
 endfunction
+" }}}
 
+" FUNCTION: s:collectKeysInfo(mapName) {{{
 function! s:collectKeysInfo(mapName)
     for key in sort(keys(s:helpMap[a:mapName]))
         let fn = s:helpMap[a:mapName][key]
@@ -352,18 +359,15 @@ function! s:collectKeysInfo(mapName)
         endif
     endfor
 endfunction
+" }}}
 
+" FUNCTION: s:modeInfo() {{{
 function! s:modeInfo()
     let info = []
     let clv  = ctrlspace#modes#CurrentListView()
 
     if clv.Name ==# "Workspace"
         call add(info, "WORKSPACE")
-        if clv.Data.SubMode ==# "load"
-            call add(info, "LOAD")
-        elseif clv.Data.SubMode ==# "save"
-            call add(info, "SAVE")
-        endif
     elseif clv.Name ==# "Tab"
         call add(info, "TAB")
     elseif clv.Name ==# "Bookmark"
@@ -401,3 +405,4 @@ function! s:modeInfo()
 
     return info
 endfunction
+" }}}

@@ -111,11 +111,7 @@ function! ctrlspace#api#StatuslineModeSegment(...)
 	let clv = ctrlspace#modes#CurrentListView()
 
 	if clv.Name ==# "Workspace"
-		if clv.Data.SubMode ==# "load"
-			call add(statuslineElements, s:config.Symbols.WLoad)
-		elseif clv.Data.SubMode ==# "save"
-			call add(statuslineElements, s:config.Symbols.WSave)
-		endif
+        call add(statuslineElements, s:config.Symbols.WS)
 	elseif clv.Name ==# "Tab"
 		call add(statuslineElements, s:createStatusTabline())
 	elseif clv.Name ==# "Bookmark"

@@ -194,7 +194,7 @@ function! s:bookmarkListContent(clv)
 
         " Tabular linetext of bookmark-content
         let l:linetext = bookmarks[i].Name
-        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  =>  "
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  →  "
         let l:linetext .= bookmarks[i].Directory
 
 		call add(content, { "index": i, 
@@ -239,7 +239,7 @@ function! s:workspaceListContent(clv)
 
         " Tabular linetext of bookmark-content
         let l:linetext = l:name
-        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  <<  "
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  →  "
         let l:linetext .= l:directory
 
 		call add(l:content, { "index": item, 
