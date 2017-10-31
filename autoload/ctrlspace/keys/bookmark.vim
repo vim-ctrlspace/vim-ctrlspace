@@ -85,10 +85,10 @@ endfunction
 " FUNCTION: ctrlspace#keys#bookmark#Sort(k) {{{
 function! ctrlspace#keys#bookmark#Sort(k)
 	if s:modes.Bookmark.Data.SortMode ==# "path"
-	    let s:modes.Bookmark.Data.SortMode = "name"
+        call s:modes.Bookmark.SetData("SortMode", "name")
         call ctrlspace#ui#DelayedMsg("Bookmark was sorted by name")
     elseif s:modes.Bookmark.Data.SortMode ==# "name"
-	    let s:modes.Bookmark.Data.SortMode = "path"
+        call s:modes.Bookmark.SetData("SortMode", "path")
         call ctrlspace#ui#DelayedMsg("Bookmark was sorted by path")
     endif
 

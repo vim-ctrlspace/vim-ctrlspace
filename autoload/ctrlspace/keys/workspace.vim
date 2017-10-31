@@ -186,10 +186,10 @@ endfunction
 " FUNCTION: ctrlspace#keys#workspace#Sort(k) {{{
 function! ctrlspace#keys#workspace#Sort(k)
 	if s:modes.Workspace.Data.SortMode ==# "path"
-	    let s:modes.Workspace.Data.SortMode = "name"
+        call s:modes.Workspace.SetData("SortMode", "name")
         call ctrlspace#ui#DelayedMsg("Workspace was sorted by name")
     elseif s:modes.Workspace.Data.SortMode ==# "name"
-	    let s:modes.Workspace.Data.SortMode = "path"
+        call s:modes.Workspace.SetData("SortMode", "path")
         call ctrlspace#ui#DelayedMsg("Workspace was sorted by path")
     endif
 
