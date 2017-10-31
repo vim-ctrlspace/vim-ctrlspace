@@ -11,6 +11,7 @@ function! ctrlspace#keys#workspace#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Delete"        , "Workspace" , ["d"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename"        , "Workspace" , ["="   , "m"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Clear"         , "Workspace" , ["C"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Sort"          , "Workspace" , ["g"])
 endfunction
 " }}}
 
@@ -182,3 +183,20 @@ function! ctrlspace#keys#workspace#Clear(k)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#keys#workspace#Sort(k) {{{
+function! ctrlspace#keys#workspace#Sort(k)
+	if s:modes.Workspace.Data.SortMode ==# "path"
+	    let s:modes.Workspace.Data.SortMode = "name"
+        call ctrlspace#ui#DelayedMsg("Workspace was sorted by name")
+    elseif s:modes.Workspace.Data.SortMode ==# "name"
+	    let s:modes.Workspace.Data.SortMode = "path"
+        call ctrlspace#ui#DelayedMsg("Workspace was sorted by path")
+    endif
+
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Workspace.Enable()
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#ui#DelayedMsg()
+endfunction
+" }}}

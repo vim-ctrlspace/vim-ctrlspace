@@ -104,6 +104,7 @@ let s:descriptions = {
             \ "ctrlspace#keys#bookmark#Add":                        "Add a new bookmark",
             \ "ctrlspace#keys#bookmark#Delete":                     "Delete selected bookmark",
             \ "ctrlspace#keys#bookmark#Append":                     "Append bookmarked file(t - new tab, s/v - split)",
+            \ "ctrlspace#keys#bookmark#Sort":                       "Toggle sort mode between path and name",
             \ "ctrlspace#keys#tab#GoToTab":                         "Open a selected tab (Tab - close, Space - stay)",
             \ "ctrlspace#keys#tab#CloseTab":                        "Close the selected tab, then foreign buffers and nonames",
             \ "ctrlspace#keys#tab#AddTab":                          "Create a new tab",
@@ -122,6 +123,7 @@ let s:descriptions = {
             \ "ctrlspace#keys#workspace#Save":                      "Save selected workspace",
             \ "ctrlspace#keys#workspace#Delete":                    "Delete selected workspace",
             \ "ctrlspace#keys#workspace#Rename":                    "Rename selected workspace",
+            \ "ctrlspace#keys#workspace#Sort":                      "Toggle sort mode between path and name",
             \ "ctrlspace#keys#nop#ToggleAllMode":                   "Enter the All Mode if in Buffer Mode already",
             \ "ctrlspace#keys#nop#ToggleAllModeAndSearch":          "Enter the Search Mode combined with the All mode if in Buffer Mode already",
             \ }

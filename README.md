@@ -20,6 +20,7 @@ All your bookmarked files will be listed with filename and filepath. For example
 | t              | Append bookmarked file in new tab                                  |
 | s              | Append bookmarked file in split window                             |
 | v              | Append bookmarked file in vsplit window                            |
+| g              | Toggle sort mode between path and name                             |
 
 - **(20170905) Change workspace list as all workspace list.**
 Now workspace list will show all workspaces of projects with workspace name and projects path. For example, there 2 projects and 4 workspaces in the picture following.
@@ -36,6 +37,7 @@ Now workspace list will show all workspaces of projects with workspace name and 
 | s              | Save workspace                                               |
 | d              | Delete workspace                                             |
 | m, =           | Rename workspace                                             |
+| g              | Toggle sort mode between path and name                       |
 | C              | Clear all buffers and tabs of workspace                      |
 
 <br><br>

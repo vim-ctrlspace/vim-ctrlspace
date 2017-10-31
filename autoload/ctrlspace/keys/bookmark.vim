@@ -7,6 +7,7 @@ function! ctrlspace#keys#bookmark#Init()
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Add"          , "Bookmark" , ["a"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete"       , "Bookmark" , ["d"])
 	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Append"       , "Bookmark" , ["t", "s", "v"])
+	call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Sort"         , "Bookmark" , ["g"])
 endfunction
 " }}}
 
@@ -54,6 +55,7 @@ function! ctrlspace#keys#bookmark#Append(k)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#keys#bookmark#Add(k) {{{
 function! ctrlspace#keys#bookmark#Add(k)
     let result = ctrlspace#bookmarks#AddNewBookmark()
 	if result
@@ -65,7 +67,9 @@ function! ctrlspace#keys#bookmark#Add(k)
 		call ctrlspace#ui#DelayedMsg()
 	endif
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#keys#bookmark#Delete(k) {{{
 function! ctrlspace#keys#bookmark#Delete(k)
 	let nr = ctrlspace#window#SelectedIndex()
 	call ctrlspace#bookmarks#RemoveBookmark(nr)
@@ -76,3 +80,22 @@ function! ctrlspace#keys#bookmark#Delete(k)
 	call ctrlspace#window#Toggle(1)
 	call ctrlspace#ui#DelayedMsg()
 endfunction
+" }}}
+
+" FUNCTION: ctrlspace#keys#bookmark#Sort(k) {{{
+function! ctrlspace#keys#bookmark#Sort(k)
+	if s:modes.Bookmark.Data.SortMode ==# "path"
+	    let s:modes.Bookmark.Data.SortMode = "name"
+        call ctrlspace#ui#DelayedMsg("Bookmark was sorted by name")
+    elseif s:modes.Bookmark.Data.SortMode ==# "name"
+	    let s:modes.Bookmark.Data.SortMode = "path"
+        call ctrlspace#ui#DelayedMsg("Bookmark was sorted by path")
+    endif
+
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+    call s:modes.Bookmark.Enable()
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#ui#DelayedMsg()
+endfunction
+" }}}

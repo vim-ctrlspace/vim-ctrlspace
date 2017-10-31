@@ -6,6 +6,7 @@ if has("win32")
 	call add(s:resonators, '\')
 endif
 
+" FUNCTION: ctrlspace#engine#Content() {{{
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
 	if !empty(s:config.FileEngine) && s:modes.File.Enabled
@@ -24,7 +25,9 @@ function! ctrlspace#engine#Content()
 
 		if s:modes.Tab.Enabled
 			call sort(items, function("ctrlspace#engine#CompareByIndex"))
-        elseif s:modes.Bookmark.Enabled || s:modes.Workspace.Enabled
+        elseif s:modes.Workspace.Enabled && s:modes.Workspace.Data.SortMode ==# "path"
+			call sort(items, function("ctrlspace#engine#CompareByTextTwo"))
+        elseif s:modes.Bookmark.Enabled && s:modes.Bookmark.Data.SortMode ==# "path"
 			call sort(items, function("ctrlspace#engine#CompareByTextTwo"))
 		else
 			call sort(items, function("ctrlspace#engine#CompareByText"))
@@ -42,6 +45,7 @@ function! ctrlspace#engine#Content()
 
 	return s:prepareContent(items)
 endfunction
+" }}}
 
 function! s:contentFromFileEngine()
 	call ctrlspace#files#CollectFiles()
