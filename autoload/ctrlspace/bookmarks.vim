@@ -24,6 +24,7 @@ function! ctrlspace#bookmarks#GoToBookmark(nr)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#bookmarks#RemoveBookmark(nr) {{{
 function! ctrlspace#bookmarks#RemoveBookmark(nr)
     let name = s:bookmarks[a:nr].Name
 
@@ -53,7 +54,9 @@ function! ctrlspace#bookmarks#RemoveBookmark(nr)
 
     call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#bookmarks#AddFirstBookmark() {{{
 function! ctrlspace#bookmarks#AddFirstBookmark()
     if ctrlspace#bookmarks#AddNewBookmark()
         call ctrlspace#window#Kill(0, 1)
@@ -63,6 +66,7 @@ function! ctrlspace#bookmarks#AddFirstBookmark()
         call ctrlspace#window#Toggle(1)
     endif
 endfunction
+" }}}
 
 " FUNCTION: ctrlspace#bookmarks#AddNewBookmark() {{{
 function! ctrlspace#bookmarks#AddNewBookmark()
@@ -73,7 +77,7 @@ function! ctrlspace#bookmarks#AddNewBookmark()
 
     " Detect whether existing
     for bm in s:bookmarks
-        if bm.Directory == l:directory && bm.Name == l:filename
+        if ctrlspace#util#IsSameDirectory(bm.Directory, l:directory) && bm.Name == l:filename
             call ctrlspace#ui#Msg("'" . l:filename . "' bookmark has been already existed")
             return 0
         endif
@@ -95,7 +99,9 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
     let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
     let jumpCounter = 0
 
-    let bookmark = { "Name": a:name, "Directory": directory, "JumpCounter": jumpCounter }
+    let bookmark = { "Name": a:name,
+                   \ "Directory": ctrlspace#util#UseSlashDir(directory),
+                   \ "JumpCounter": jumpCounter }
 
     call add(s:bookmarks, bookmark)
 

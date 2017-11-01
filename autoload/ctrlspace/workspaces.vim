@@ -26,7 +26,9 @@ function! s:clearAllWorkspaceRedundance()
     " clear redundance workspace for each directory
     let l:cache_dir = []
     for item in s:cache_workspaces
-        call add(l:cache_dir, item.Directory)
+        if -1 == match(l:cache_dir, '\C^' . item.Directory . '$')
+            call add(l:cache_dir, item.Directory)
+        endif
     endfor
     for item in l:cache_dir
         call s:clearWorkspaceRedundance(item)
@@ -54,6 +56,7 @@ endfunction
 " }}}
 
 " FUNCTION: s:clearRedundanceWorkspace() {{{
+" @param root: Project root where workspace redundance will be cleared.
 function! s:clearWorkspaceRedundance(root)
     call ctrlspace#util#ChDir(a:root)
     call ctrlspace#roots#SetCurrentProjectRoot(a:root)
@@ -74,6 +77,7 @@ function! s:clearWorkspaceRedundance(root)
         endif
     endfor
 
+    " Clear the redundance of workspaces that is in current project root
     for item in l:cache_ws
         if -1 != match(s:workspaces, '\C^' . item.Name . '$')
             " workspace that is in cs_cache file and also in cs_workspace file
@@ -83,6 +87,7 @@ function! s:clearWorkspaceRedundance(root)
     for name in s:workspaces
         if -1 == match(l:cache_ws_name, '\C^' . name . '$')
             " workspace that is in cs_workspace file but NOT in cs_cache file
+            " will be added to cs_cache file
             call add(l:cache_new, { "Name" : name,
                                   \ "Directory" : l:root_dir})
         endif
@@ -112,6 +117,7 @@ function! ctrlspace#workspaces#SetWorkspaceNames()
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#workspaces#SetActiveWorkspaceName(name, ...) {{{
 function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
 	if a:0 > 0
 		let digest = a:1
@@ -139,7 +145,9 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
 
 	call writefile(lines, filename)
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#workspaces#ActiveWorkspace() {{{
 function! ctrlspace#workspaces#ActiveWorkspace()
 	let aw = s:modes.Workspace.Data.Active
 	let aw.Status = 0
@@ -154,6 +162,7 @@ function! ctrlspace#workspaces#ActiveWorkspace()
 
 	return aw
 endfunction
+" }}}
 
 " FUNCTION: ctrlspace#workspaces#ClearWorkspace() {{{
 function! ctrlspace#workspaces#ClearWorkspace()
@@ -172,6 +181,7 @@ function! ctrlspace#workspaces#SelectedWorkspaceName()
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#workspaces#LoadWorkspaceFile(bang, name) {{{
 " bang == 0) load, bang == 1) append
 function! ctrlspace#workspaces#LoadWorkspaceFile(bang, name)
 	if !ctrlspace#roots#ProjectRootFound()
@@ -254,7 +264,9 @@ function! ctrlspace#workspaces#LoadWorkspaceFile(bang, name)
 
 	return 1
 endfunction
+" }}}
 
+" FUNCTION: s:execWorkspaceFileCommands(bang, name, lines) {{{
 function! s:execWorkspaceFileCommands(bang, name, lines)
 	let commands = []
 
@@ -286,9 +298,10 @@ function! s:execWorkspaceFileCommands(bang, name, lines)
 
 	call delete("CS_SESSION")
 endfunction
+" }}}
 
-" Save the file cs_workspace in project root
 " FUNCTION: ctrlspace#workspaces#SaveWorkspaceFile(name) {{{
+" Save the file cs_workspace in project root
 function! ctrlspace#workspaces#SaveWorkspaceFile(name)
 	if !ctrlspace#roots#ProjectRootFound()
 		return 0
@@ -438,6 +451,7 @@ function! ctrlspace#workspaces#SaveWorkspaceFile(name)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#workspaces#CreateDigest() {{{
 function! ctrlspace#workspaces#CreateDigest()
 	let useNossl = exists("b:nosslSave") && b:nosslSave
 
@@ -495,6 +509,7 @@ function! ctrlspace#workspaces#CreateDigest()
 
 	return digest
 endfunction
+" }}}
 
 " FUNCTION: ctrlspace#workspaces#PreloadWorkspaces() {{{
 " @param type: the type of preload
@@ -575,10 +590,10 @@ endfunction
 " }}}
 
 " FUNCTION: s:addToCacheWorkspaces(directory, name) {{{
-" Directory must be project root
+" @param directory: Must be project root
 function! s:addToCacheWorkspaces(directory, name)
-    let l:workspace = { "Name" : a:name, 
-                      \ "Directory" : a:directory
+    let l:workspace = { "Name" : a:name,
+                      \ "Directory" : ctrlspace#util#UseSlashDir(a:directory)
                       \ }
 
     call add(s:cache_workspaces, l:workspace)
