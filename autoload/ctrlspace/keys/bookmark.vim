@@ -48,9 +48,8 @@ function! ctrlspace#keys#bookmark#Append(k)
         execute "vsplit " . l:bookmark.Directory. "/" . l:bookmark.Name
     endif
 
-    " change CWD to bookmakred directory
-    call ctrlspace#util#ChDir(l:bookmark.Directory)
-    call ctrlspace#ui#DelayedMsg("CWD is now: " . l:bookmark.Directory)
+    " Change CWD to bookmakred directory
+    call ctrlspace#ui#DelayedMsg("Directory: " . l:bookmark.Directory)
 	call ctrlspace#ui#DelayedMsg()
 endfunction
 " }}}

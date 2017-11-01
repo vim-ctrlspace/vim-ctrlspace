@@ -531,7 +531,6 @@ function! ctrlspace#workspaces#PreloadWorkspaces(type)
         endif
     endif
 
-    call ctrlspace#util#ChDir(l:cache_ws.Directory)
     call ctrlspace#roots#SetCurrentProjectRoot(l:cache_ws.Directory)
     return 1
 endfunction

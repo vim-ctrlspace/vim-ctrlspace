@@ -16,11 +16,10 @@ endfunction
 " FUNCTION: ctrlspace#bookmarks#GoToBookmark(nr) {{{
 function! ctrlspace#bookmarks#GoToBookmark(nr)
     let newBookmark = s:bookmarks[a:nr]
-    call ctrlspace#util#ChDir(newBookmark.Directory)
 
-    " Edit bookmarked file and change CWD to bookmakred directory
+    " Edit bookmarked file
     execute "edit " . newBookmark.Directory. "/" . newBookmark.Name
-    call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
+    call ctrlspace#ui#DelayedMsg("Directory: " . newBookmark.Directory)
 endfunction
 " }}}
 
