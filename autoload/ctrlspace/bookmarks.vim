@@ -126,6 +126,7 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
 endfunction
 " }}}
 
+" FUNCTION: ctrlspace#bookmarks#FindActiveBookmark() {{{
 function! ctrlspace#bookmarks#FindActiveBookmark()
     let root = ctrlspace#roots#CurrentProjectRoot()
 
@@ -144,3 +145,4 @@ function! ctrlspace#bookmarks#FindActiveBookmark()
 
     return {}
 endfunction
+" }}}
