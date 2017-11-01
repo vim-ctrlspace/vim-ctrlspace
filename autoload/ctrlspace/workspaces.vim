@@ -31,7 +31,7 @@ function! s:clearAllWorkspaceRedundance()
         endif
     endfor
     for item in l:cache_dir
-        call s:clearWorkspaceRedundance(item)
+        call ctrlspace#workspaces#ClearWorkspaceRedundance(item)
     endfor
 
     " wirte new cache workspace to cs_cache file
@@ -55,11 +55,14 @@ function! s:clearAllWorkspaceRedundance()
 endfunction
 " }}}
 
-" FUNCTION: s:clearRedundanceWorkspace() {{{
+" FUNCTION: ctrlspace#workspaces#ClearWorkspaceRedundance(root) {{{
 " @param root: Project root where workspace redundance will be cleared.
-function! s:clearWorkspaceRedundance(root)
-    call ctrlspace#util#ChDir(a:root)
-    call ctrlspace#roots#SetCurrentProjectRoot(a:root)
+function! ctrlspace#workspaces#ClearWorkspaceRedundance(root)
+    if !empty(a:root)
+        call ctrlspace#roots#SetCurrentProjectRoot(a:root)
+    else
+        call ctrlspace#roots#SetCurrentProjectRoot(expand("%:p:h"))
+    endif
     call ctrlspace#workspaces#SetWorkspaceNames()
 	let l:root_dir = ctrlspace#roots#CurrentProjectRoot()
 
