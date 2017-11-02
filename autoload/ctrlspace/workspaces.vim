@@ -609,24 +609,7 @@ function! s:addToCacheWorkspaces(directory, name)
 
     call add(s:cache_workspaces, l:workspace)
 
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            " cache non-workspace lines
-            if (oldLine !~# "CS_WORKSPACE: ")
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-
-    " add new workspace line
-    for ws in s:cache_workspaces
-        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
-    endfor
-
-    call writefile(lines, cacheFile)
+    call s:writeCacheWorkspaces()
 
     return l:workspace
 endfunction
@@ -645,20 +628,7 @@ function! ctrlspace#workspaces#DeleteWorkspace(nr)
     " Delete workspace from cs_cache file
     call remove(s:cache_workspaces, a:nr)
 
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            " cache non-workspace lines
-            if oldLine !~# "CS_WORKSPACE: " 
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-    for ws in s:cache_workspaces
-        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
-    endfor
-    call writefile(lines, cacheFile)
+    call s:writeCacheWorkspaces()
 
     call ctrlspace#ui#DelayedMsg("Workspace '" . l:name . "' has been deleted.")
     return 1
@@ -717,20 +687,7 @@ function! ctrlspace#workspaces#RenameWorkspace(nr)
     " Rename workspace in cs_cache file
     let s:cache_workspaces[a:nr]["Name"] = l:new_name
 
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            " cache non-workspace lines
-            if oldLine !~# "CS_WORKSPACE: " 
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-    for ws in s:cache_workspaces
-        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
-    endfor
-    call writefile(lines, cacheFile)
+    call s:writeCacheWorkspaces()
 
 	call ctrlspace#window#Kill(0, 0)
 	call ctrlspace#window#Toggle(1)
