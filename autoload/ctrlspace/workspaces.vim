@@ -18,6 +18,26 @@ function! ctrlspace#workspaces#SetCacheWorkspaces(value)
 endfunction
 " }}}
 
+" FUNCTION: s:writeCacheWorkspaces() {{{
+function! s:writeCacheWorkspaces()
+    " Wirte s:cache_workspaces to cs_cache file
+    let lines     = []
+    let cacheFile = s:config.CacheDir . "/.cs_cache"
+    if filereadable(cacheFile)
+        for oldLine in readfile(cacheFile)
+            " Cache non-workspace lines
+            if oldLine !~# "CS_WORKSPACE: " 
+                call add(lines, oldLine)
+            endif
+        endfor
+    endif
+    for ws in s:cache_workspaces
+        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
+    endfor
+    call writefile(lines, cacheFile)
+endfunctio
+" }}}
+
 " FUNCTION: s:clearAllWorkspaceRedundance() {{{
 function! s:clearAllWorkspaceRedundance()
     " save old project root
@@ -31,38 +51,20 @@ function! s:clearAllWorkspaceRedundance()
         endif
     endfor
     for item in l:cache_dir
-        call ctrlspace#workspaces#ClearWorkspaceRedundance(item)
+        call s:clearWorkspaceRedundance(item)
     endfor
 
-    " wirte new cache workspace to cs_cache file
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            " cache non-workspace lines
-            if oldLine !~# "CS_WORKSPACE: " 
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-    for ws in s:cache_workspaces
-        call add(lines, "CS_WORKSPACE: " . ws.Directory . ctrlspace#context#Separator() . ws.Name)
-    endfor
-    call writefile(lines, cacheFile)
+    call s:writeCacheWorkspaces()
 
     " recover project root
     call ctrlspace#roots#SetCurrentProjectRoot(l:root_old)
 endfunction
 " }}}
 
-" FUNCTION: ctrlspace#workspaces#ClearWorkspaceRedundance(root) {{{
+" FUNCTION: s:clearWorkspaceRedundance(root) {{{
 " @param root: Project root where workspace redundance will be cleared.
-function! ctrlspace#workspaces#ClearWorkspaceRedundance(root)
-    if !empty(a:root)
-        call ctrlspace#roots#SetCurrentProjectRoot(a:root)
-    else
-        call ctrlspace#roots#SetCurrentProjectRoot(expand("%:p:h"))
-    endif
+function! s:clearWorkspaceRedundance(root)
+    call ctrlspace#roots#SetCurrentProjectRoot(a:root)
     call ctrlspace#workspaces#SetWorkspaceNames()
 	let l:root_dir = ctrlspace#roots#CurrentProjectRoot()
 
@@ -97,6 +99,13 @@ function! ctrlspace#workspaces#ClearWorkspaceRedundance(root)
     endfor
 
     let s:cache_workspaces = l:cache_new
+endfunction
+" }}}
+
+" FUNCTION: ctrlspace#workspaces#FindExistedWorkspace() {{{
+function! ctrlspace#workspaces#FindExistedWorkspace()
+    call s:clearWorkspaceRedundance(ctrlspace#util#UseSlashDir(expand("%:p:h")))
+    call s:writeCacheWorkspaces()
 endfunction
 " }}}
 

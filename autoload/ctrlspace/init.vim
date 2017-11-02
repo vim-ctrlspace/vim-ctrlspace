@@ -42,7 +42,7 @@ function! ctrlspace#init#Init()
     call s:initProjectRootsAndBookmarks()
     call ctrlspace#keys#Init()
 
-    au BufRead  * call ctrlspace#workspaces#ClearWorkspaceRedundance("")
+    au BufRead  * call ctrlspace#workspaces#FindExistedWorkspace()
     au BufEnter * call ctrlspace#buffers#AddBuffer()
     au VimEnter * call ctrlspace#buffers#Init()
     au TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
