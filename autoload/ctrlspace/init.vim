@@ -28,7 +28,7 @@ function! ctrlspace#init#Init()
     command! -nargs=0 -range CtrlSpaceNewWorkspace :call ctrlspace#workspaces#ClearWorkspace()
     command! -nargs=* -range -bang CtrlSpaceLoadWorkspace :call ctrlspace#workspaces#LoadWorkspaceFile(<bang>0, <q-args>)
     command! -nargs=* -range -complete=dir CtrlSpaceAddProjectRoot :call ctrlspace#roots#AddProjectRoot(<q-args>)
-    command! -nargs=* -range -complete=dir CtrlSpaceRemoveProjectRoot :call ctrlspace#roots#RemoveProjectRoot(<q-args>)
+    command! -nargs=+ -complete=customlist,ctrlspace#roots#GetProjectRootCompletion CtrlSpaceRemoveProjectRoot :call ctrlspace#roots#RemoveProjectRoot(<f-args>)
 
     hi def link CtrlSpaceNormal   PMenu
     hi def link CtrlSpaceSelected PMenuSel
