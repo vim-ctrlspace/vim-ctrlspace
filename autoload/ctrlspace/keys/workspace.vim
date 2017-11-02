@@ -166,6 +166,9 @@ function! ctrlspace#keys#workspace#Rename(k)
     endif
 
 	call ctrlspace#workspaces#RenameWorkspace(ctrlspace#window#SelectedIndex())
+
+	call ctrlspace#window#Kill(0, 0)
+	call ctrlspace#window#Toggle(1)
 	call ctrlspace#ui#DelayedMsg()
 endfunction
 " }}}

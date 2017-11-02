@@ -673,7 +673,6 @@ endfunction
 " FUNCTION" ctrlspace#workspaces#RenameWorkspace(nr) {{{
 function! ctrlspace#workspaces#RenameWorkspace(nr)
     let l:new_name = ctrlspace#ui#GetInput("Input new workspace name: ")
-
 	if empty(l:new_name)
 		return 0
 	endif
@@ -686,11 +685,8 @@ function! ctrlspace#workspaces#RenameWorkspace(nr)
 
     " Rename workspace in cs_cache file
     let s:cache_workspaces[a:nr]["Name"] = l:new_name
-
     call s:writeCacheWorkspaces()
 
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#Toggle(1)
 	call ctrlspace#ui#DelayedMsg("'" . l:new_name . "' has been set.")
 
     return 1
