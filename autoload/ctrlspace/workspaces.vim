@@ -82,6 +82,10 @@ function! s:clearWorkspaceRedundance(root)
         endif
     endfor
 
+    if empty(l:cache_ws) && empty(s:workspaces)
+        return 0
+    endif
+
     " Clear the redundance of workspaces that is in current project root
     for item in l:cache_ws
         if -1 != match(s:workspaces, '\C^' . item.Name . '$')
@@ -99,13 +103,15 @@ function! s:clearWorkspaceRedundance(root)
     endfor
 
     let s:cache_workspaces = l:cache_new
+    return 1
 endfunction
 " }}}
 
 " FUNCTION: ctrlspace#workspaces#FindExistedWorkspace() {{{
 function! ctrlspace#workspaces#FindExistedWorkspace()
-    call s:clearWorkspaceRedundance(ctrlspace#util#UseSlashDir(expand("%:p:h")))
-    call s:writeCacheWorkspaces()
+    if s:clearWorkspaceRedundance(ctrlspace#util#UseSlashDir(expand("%:p:h")))
+        call s:writeCacheWorkspaces()
+    endif
 endfunction
 " }}}
 
