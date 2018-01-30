@@ -26,9 +26,9 @@ function! ctrlspace#engine#Content()
 		if s:modes.Tab.Enabled
 			call sort(items, function("ctrlspace#engine#CompareByIndex"))
         elseif s:modes.Workspace.Enabled && s:modes.Workspace.Data.SortMode ==# "path"
-			call sort(items, function("ctrlspace#engine#CompareByTextTwo"))
+			call sort(items, function("ctrlspace#engine#CompareByText2"))
         elseif s:modes.Bookmark.Enabled && s:modes.Bookmark.Data.SortMode ==# "path"
-			call sort(items, function("ctrlspace#engine#CompareByTextTwo"))
+			call sort(items, function("ctrlspace#engine#CompareByText2"))
 		else
 			call sort(items, function("ctrlspace#engine#CompareByText"))
 		endif
@@ -74,8 +74,8 @@ function! ctrlspace#engine#CompareByText(a, b)
 	endif
 endfunction
 
-" FUNCTION: ctrlspace#engine#CompareByTextTwo(a, b) {{{
-function! ctrlspace#engine#CompareByTextTwo(a, b)
+" FUNCTION: ctrlspace#engine#CompareByText2(a, b) {{{
+function! ctrlspace#engine#CompareByText2(a, b)
     if a:a.position < a:b.position
         return -1
     elseif a:a.position > a:b.position

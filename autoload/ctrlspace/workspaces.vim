@@ -541,7 +541,7 @@ function! ctrlspace#workspaces#PreloadWorkspaces(type)
             if !empty(l:cur_project)
                 let l:cur_project = "(" . l:cur_project . ")."
             endif
-            call ctrlspace#ui#Msg("The workspace  you choose is not in Current Project". l:cur_project)
+            call ctrlspace#ui#Msg("The workspace you choose is not in Current Project". l:cur_project)
             return 0
         endif
     endif
@@ -676,7 +676,7 @@ function! s:deleteWorkspaceFile(name)
 endfunction
 " }}}
 
-" FUNCTION" ctrlspace#workspaces#RenameWorkspace(nr) {{{
+" FUNCTION: ctrlspace#workspaces#RenameWorkspace(nr) {{{
 function! ctrlspace#workspaces#RenameWorkspace(nr)
     let l:new_name = ctrlspace#ui#GetInput("Input new workspace name: ")
 	if empty(l:new_name)
