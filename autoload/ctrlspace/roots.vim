@@ -116,7 +116,7 @@ function! ctrlspace#roots#FindProjectRoot()
 
 	if !empty(s:config.ProjectRootMarkers)
 		let rootFound     = 0
-		let candidate     = fnamemodify(projectRoot, ":p:h")
+		let candidate     = ctrlspace#util#UseSlashDir(fnamemodify(projectRoot, ":p:h"))
 		let lastCandidate = ""
 
 		while candidate != lastCandidate
