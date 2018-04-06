@@ -61,7 +61,7 @@ functions have been renamed. Please check Vim help for more info:
 
 Vim-CtrlSpace interface is a window you can invoke by pressing
 `<C-Space>`. The window displays a list of items. You can select those
-items with `<h>`, `<j>`, and `<CR>` keys.
+items with `<j>`, `<k>`, and `<CR>` keys.
 
 <p align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />

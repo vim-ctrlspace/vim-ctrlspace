@@ -169,8 +169,8 @@ more info.
 2. Idea by Analogy                                          *ctrlspace-idea*
 
 Vim-CtrlSpace interface is a window you can invoke by pressing <C-Space>.
-The window displays a list of items. You can select those items with <h>,
-<j>, and <CR> keys.
+The window displays a list of items. You can select those items with <j>,
+<k>, and <CR> keys.
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists:
 
