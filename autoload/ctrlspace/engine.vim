@@ -59,9 +59,11 @@ function! s:contentFromFileEngine()
 endfunction
 
 function! ctrlspace#engine#CompareByText(a, b)
-	if a:a.text < a:b.text
+    let lhs = fnamemodify(a:a.text, ':p')
+    let rhs = fnamemodify(a:b.text, ':p')
+	if lhs < rhs
 		return -1
-	elseif a:a.text > a:b.text
+	elseif lhs > rhs
 		return 1
 	else
 		return 0
