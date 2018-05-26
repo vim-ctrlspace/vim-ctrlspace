@@ -359,12 +359,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 		let bufs = []
 
 		for [nr, bname] in items(ctrlspaceList)
-			let bufname = fnamemodify(bname, ":.")
-
-			if !filereadable(bufname)
-				continue
-			endif
-
+			let bufname = filereadable(bname) ? fnamemodify(bname, ":.") : bname
 			call add(bufs, bufname)
 		endfor
 
@@ -415,11 +410,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 
 			let tabIndex += 1
 		else
-			let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
-
-			if !(exists("baddList[1]") && !empty(baddList[1]) && !filereadable(baddList[1]))
-				call add(lines, cmd)
-			endif
+			call add(lines, cmd)
 		endif
 	endfor
 
