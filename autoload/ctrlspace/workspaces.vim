@@ -360,7 +360,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 		let bufs = []
 
 		for [nr, bname] in items(ctrlspaceList)
-			let bufname = filereadable(bname) ? fnamemodify(bname, ":.") : bname
+			let bufname = filereadable(bname) ? fnameescape(fnamemodify(bname, ":.")) : bname
 			call add(bufs, bufname)
 		endfor
 
@@ -403,7 +403,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 			endif
 
 			for b in data.bufs
-				call s:addMapped(lines, 'edit', fnameescape(b))
+				call s:addMapped(lines, 'edit', b)
 			endfor
 
 			if !empty(data.label)
@@ -421,6 +421,8 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 			endif
 
 			let tabIndex += 1
+		elseif cmd == 'edit'
+			call s:addMapped(lines, cmd, filereadable(args) ? args : expand(args))
 		else
 			call s:addMapped(lines, cmd, args)
 		endif
@@ -456,11 +458,11 @@ function! s:addMapped(lines, cmd, args)
 		call add(a:lines, a:cmd . ' ' . a:args)
 	elseif index(s:termbuffers, a:args) >= 0
 		" A terminal buffer has already been added to a:termbuffers
-		call add(a:lines, 'exe "' . a:cmd . ' " . s:termbuffers[''' . a:args . ''']')
+		call add(a:lines, 'exe "' . a:cmd . ' " . s:termbuffers[' . string(a:args) . ']')
 	else
 		" Buffer has not yet been added
 		call add(a:lines, a:cmd . ' ' . a:args)
-		call add(a:lines, 'let s:termbuffers[''' . a:args . ''']=buffer_name(''%'')')
+		call add(a:lines, 'let s:termbuffers[' . string(a:args) . ']=buffer_name(''%'')')
 		call add(s:termbuffers, a:args)
 	endif
 endfunction
