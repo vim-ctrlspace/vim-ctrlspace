@@ -383,7 +383,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	call add(lines, 'let s:termbuffers = {}')
 
 	for line in readfile("CS_SESSION")
-		let l:match = matchlist(line, '\m^\([a-z]\+\) \(.*\)$')
+		let l:match = matchlist(line, '\m^\([a-z]\+\)\%(\| \s*\(.*\)\)$')
 
 		if !exists("l:match[0]")
 			call add(lines, line)
