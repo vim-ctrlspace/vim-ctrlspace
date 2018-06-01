@@ -382,18 +382,28 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	let tabIndex = 0
 	call add(lines, 'let s:termbuffers = {}')
 
-	for cmd in readfile("CS_SESSION")
-		if cmd =~# "^lcd" || cmd =~# '^badd +\d\+ term://'
+	for line in readfile("CS_SESSION")
+		let l:match = matchlist(line, '\m^\([a-z]\+\) \(.*\)$')
+
+		if !exists("l:match[0]")
+			call add(lines, line)
 			continue
-		elseif ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+		endif
+
+		let cmd = l:match[1]
+		let args = l:match[2]
+
+		if cmd == 'lcd' || (cmd == 'badd' && args =~# '^+\d\+ term://')
+			continue
+		elseif (cmd == 'edit' && tabIndex == 0) || (cmd == 'tabnew') || (cmd == 'tabedit')
 			let data = tabData[tabIndex]
 
 			if tabIndex > 0
-				call s:addMapped(lines, cmd)
+				call s:addMapped(lines, cmd, args)
 			endif
 
 			for b in data.bufs
-				call s:addMapped(lines, "edit " . fnameescape(b))
+				call s:addMapped(lines, 'edit', fnameescape(b))
 			endfor
 
 			if !empty(data.label)
@@ -405,14 +415,14 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 			endif
 
 			if tabIndex == 0
-				call s:addMapped(lines, cmd)
-			elseif cmd =~# "^tabedit"
-				call s:addMapped(lines, cmd[3:])
+				call s:addMapped(lines, cmd, args)
+			elseif cmd == 'tabedit'
+				call s:addMapped(lines, 'edit', args)
 			endif
 
 			let tabIndex += 1
 		else
-			call s:addMapped(lines, cmd)
+			call s:addMapped(lines, cmd, args)
 		endif
 	endfor
 
@@ -436,24 +446,22 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	return 1
 endfunction
 
-function! s:addMapped(lines, cmd)
+function! s:addMapped(lines, cmd, args)
 	" Note that s:termbuffers is a list in this script and a dictionary in the 
 	" session script.  In this script it tracks which keys have been added to 
 	" the dictionary in the session script.
 
-	let l:match = matchlist(a:cmd, '\m^\([a-z]\+\) \s*\(.*\)$')
-
-	if !exists("l:match[0]") || l:match[2] !~# '^term://'
+	if a:args !~# '^term://'
 		" Ignore non-terminal buffers
-		call add(a:lines, a:cmd)
-	elseif index(s:termbuffers, l:match[2]) >= 0
-		" A terminal buffer has already been added to s:termbuffers
-		call add(a:lines, 'exe "' . l:match[1] . ' " . s:termbuffers[''' . l:match[2] . ''']')
+		call add(a:lines, a:cmd . ' ' . a:args)
+	elseif index(s:termbuffers, a:args) >= 0
+		" A terminal buffer has already been added to a:termbuffers
+		call add(a:lines, 'exe "' . a:cmd . ' " . s:termbuffers[''' . a:args . ''']')
 	else
 		" Buffer has not yet been added
-		call add(a:lines, a:cmd)
-		call add(a:lines, 'let s:termbuffers[''' . l:match[2] . ''']=buffer_name(''%'')')
-		call add(s:termbuffers, l:match[2])
+		call add(a:lines, a:cmd . ' ' . a:args)
+		call add(a:lines, 'let s:termbuffers[''' . a:args . ''']=buffer_name(''%'')')
+		call add(s:termbuffers, a:args)
 	endif
 endfunction
 
