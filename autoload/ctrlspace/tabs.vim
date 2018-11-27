@@ -4,6 +4,11 @@ let s:modes  = ctrlspace#modes#Modes()
 function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
 	call settabvar(a:tabnr, "CtrlSpaceLabel", a:label)
 	call settabvar(a:tabnr, "CtrlSpaceAutotab", a:auto)
+	if get(g:, 'loaded_airline', 0)
+		" Force Update of tabline in airline
+		call airline#extensions#tabline#ctrlspace#invalidate()
+		sil doautocmd <nomodeline> TabEnter
+	endif
 endfunction
 
 function! ctrlspace#tabs#NewTabLabel(tabnr)
