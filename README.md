@@ -131,6 +131,18 @@ cd ~/.vim
 git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 ```
 
+#### Neovim
+
+Neovim requires adding the following line to your `.vimrc`:
+
+```VimL
+let g:CtrlSpaceDefaultMappingKey = "<C-space> "
+```
+
+Note the trailing space at the end of the mapping. Neovim doesn't mind
+it, but it makes vim-ctrlspace's "is the mapping left at default" check 
+fail so it won't change the mapping to `<nul>`.
+
 ### Basic Settings
 
 First please make sure that you set `nocompatible` and `hidden` options
