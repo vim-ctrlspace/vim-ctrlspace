@@ -152,6 +152,19 @@ use of tabs intensively, tabline would just get in your way. **Tab List**
 (`<l>`) makes tabline obsolete ;).
 
 
+#### Neovim
+
+Neovim requires adding the following line to your `.vimrc` or `init.vim`:
+
+```VimL
+let g:CtrlSpaceDefaultMappingKey = "<C-space> "
+```
+
+Note the trailing space at the end of the mapping. Neovim doesn't mind
+it, but it makes vim-ctrlspace's "is the mapping left at default" check 
+fail so it won't change the mapping to `<nul>`.
+
+
 #### Go Engine
 
 The plugin provides engine compiled for popular operating systems and
