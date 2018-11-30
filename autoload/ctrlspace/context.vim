@@ -95,7 +95,7 @@ function! s:init()
 
 	if !empty(s:conf.FileEngine)
 		let s:conf.FileEngineName = s:conf.FileEngine
-		let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
+		let ebin = shellescape(s:pluginFolder . "/bin/" . s:conf.FileEngine)
 		let s:conf.FileEngine = executable(ebin) ? ebin : ""
 	endif
 
