@@ -49,7 +49,7 @@ function! s:contentFromFileEngine()
 				\ ',"Source":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
 				\ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
 
-	let results  = split(system(shellescape(s:config.FileEngine), context), "\n")
+	let results  = split(system(s:config.FileEngine, context), "\n")
 	let patterns = eval(results[0])
 	let indices  = eval(results[1])
 	let size     = str2nr(results[2])
