@@ -1,0 +1,79 @@
+# Test case
+Execute (Assert and AssertEqual command):
+  Assert 1 == 1
+  AssertEqual 'hey', tolower('HEY')
+  AssertEqual 'vader.vader', fnamemodify(g:vader_file, ':t')
+
+Execute (AssertThrows):
+  function! VaderThrows()
+    echoerr 'Error from VaderThrows'
+  endfunction
+  command! VaderThrows call VaderThrows()
+  AssertThrows call reverse('not a list')
+  AssertEqual g:vader_exception, 'Vim(call):E686: Argument of reverse() must be a List'
+  AssertEqual g:vader_throwpoint, 'function vader#assert#throws, line 5'
+  AssertThrows VaderThrows
+  AssertEqual g:vader_exception, 'Vim(echoerr):Error from VaderThrows'
+  AssertEqual g:vader_throwpoint, 'function vader#assert#throws[5]..VaderThrows, line 1'
+
+Execute (AssertEqual handles funcrefs):
+  function! F1()
+  endfunction
+  function! F2()
+  endfunction
+  AssertEqual function('F1'), function('F1')
+  AssertNotEqual function('F1'), function('F2')
+
+Execute (FIXME: AssertThrows expects an exception to be thrown):
+  AssertThrows call reverse([1, 2, 3])
+
+Execute (FIXME: Optional message parameter to Assert command):
+  Assert 1 == 2, '1 is not equal to 2'
+
+Execute (FIXME: Optional message parameter to AssertEqual):
+  AssertEqual 1, 2, '1 != 2'
+
+Execute (FIXME: Optional message parameter to AssertNotEqual):
+  AssertNotEqual 1, 1, '1 == 2'
+
+Execute (Save global option values before changing them):
+  Save &expandtab, &tabstop
+  set expandtab shiftwidth=2
+
+Given ruby (Block content is injected and highlighted as ruby code):
+  def a
+    a = 1
+    end
+
+Do (Do block content is keystrokes in normal mode):
+  vip
+  =
+
+Expect ruby (Expect block content should match the result of previous Do block):
+  def a
+    a = 1
+  end
+
+Do (FIXME: Nothing):
+
+Expect ruby (Previous Given block is repeated, thus this should fail):
+  def b
+    a = 1
+  end
+
+Do (Indent and shift given ruby code):
+  vip
+  =
+  gv
+  >
+
+Expect ruby (indented and shifted):
+    def a
+      a = 1
+    end
+
+Do (FIXME: Execute a non-existent command should raise an error):
+  :non-existent-command\<Enter>
+
+Execute (Revert changed option values):
+  Restore

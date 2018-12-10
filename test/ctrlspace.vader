@@ -1,0 +1,36 @@
+""" CtrlSpace Testing """
+
+# Log start, plus other pre-run taska
+Include: include/setup.vader
+
+# CtrlSpace feature tests:
+Include (Context):        feature/test_context.vader
+Include (Init):           feature/test_init.vader
+Include (Buffers):        feature/test_buffers.vader
+Include (Bookmarks):      feature/test_bookmarks.vader
+Include (Search):         feature/test_search.vader
+Include (Jumps):          feature/test_jumps.vader
+Include (Modes):          feature/test_modes.vader
+Include (Roots):          feature/test_roots.vader
+Include (Tabs):           feature/test_tabs.vader
+Include (Window):         feature/test_window.vader
+Include (Workspaces):     feature/test_workspaces.vader
+Include (UI):             feature/test_ui.vader
+Include (Util):           feature/test_util.vader
+Include (Engine):         feature/test_engine.vader
+Include (Files):          feature/test_files.vader
+Include (Help):           feature/test_help.vader
+Include (API):            feature/test_api.vader
+Include (Keys):           feature/test_keys.vader
+Include (Keys-Bookmark):  feature/test_keys-bookmark.vader
+Include (Keys-Buffer):    feature/test_keys-buffer.vader
+Include (Keys-Common):    feature/test_keys-common.vader
+Include (Keys-File):      feature/test_keys-file.vader
+Include (Keys-Help):      feature/test_keys-help.vader
+Include (Keys-Nop):       feature/test_keys-nop.vader
+Include (Keys-Search):    feature/test_keys-search.vader
+Include (Keys-Tab):       feature/test_keys-tab.vader
+Include (Keys-Workspace): feature/test_keys-workspace.vader
+
+# Log end, plus other cleanups
+Include: include/teardown.vader

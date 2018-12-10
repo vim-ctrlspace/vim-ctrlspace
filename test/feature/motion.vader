@@ -1,0 +1,63 @@
+# FIXME SLOW!
+Given vader:
+  * Comments
+  Given:
+    Text
+    More Text
+
+  # Comments
+  Do (things);
+  This key
+  That key
+
+  Expect (something):
+    Text
+    MORE Text
+
+Do (]]):
+  ]]dd
+  ]]
+  ]]dd
+
+Expect:
+  * Comments
+    Text
+    More Text
+
+  # Comments
+  Do (things);
+  This key
+  That key
+
+    Text
+    MORE Text
+
+Do ([[):
+  ]]
+  ]]
+  ]]
+  [[dgg
+
+Expect:
+  This key
+  That key
+
+  Expect (something):
+    Text
+    MORE Text
+
+Do (][ / []):
+  ]]]]][dd
+  [][]dk
+
+Expect:
+  * Comments
+  Given:
+    Text
+    More Text
+  Do (things);
+  This key
+  That key
+  Expect (something):
+    Text
+    MORE Text

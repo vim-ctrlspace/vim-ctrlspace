@@ -1,0 +1,39 @@
+Execute:
+  let g:counter = 0
+
+Before:
+  Log 'Before block increases counter by 1'
+  let g:counter += 1
+
+After:
+  Log 'After block increases counter by 2'
+  let g:counter += 2
+
+  AssertEqual g:vader_case_ok, 1
+
+Execute:
+  Log 'It should be 1'
+  AssertEqual 1, g:counter
+
+Execute:
+  Log 'It should be 4'
+  AssertEqual 4, g:counter
+
+# Remove Before and After hooks
+Before:
+After:
+
+Execute:
+  AssertEqual 6, g:counter
+  unlet g:counter
+
+
+# Test g:vader_case_ok with test failure.
+After (g:vader_case_ok should be 0):
+  AssertEqual g:vader_case_ok, 0
+
+Execute (TODO: expected failure):
+  Assert 0
+
+# Remove After hook
+After:

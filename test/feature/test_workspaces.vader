@@ -1,0 +1,8 @@
+Given (workspace name):
+  testapalooza
+
+Execute:
+  :CtrlSpaceSaveWorkspace testapalooza
+
+Expect:
+~?????
