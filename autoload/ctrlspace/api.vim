@@ -206,7 +206,7 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
 		if empty(bufname)
 			let title = "[" . bufnr . "*No Name]"
 		else
-			let title = "[" . fnamemodify(bufname, ':t') . "]"
+			let title = "[" . substitute(fnamemodify(bufname, ':t'), '%', '%%', 'g') . "]"
 		endif
 	endif
 
