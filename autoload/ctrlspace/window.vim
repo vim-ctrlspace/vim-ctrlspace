@@ -395,6 +395,7 @@ function! s:setUpBuffer()
 	setlocal nolist
 	setlocal cc=
 	setlocal filetype=ctrlspace
+	setlocal foldmethod=manual
 
 	call ctrlspace#context#SetPluginBuffer(bufnr("%"))
 
