@@ -1,6 +1,7 @@
 let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
 let s:workspaces = []
+let s:termbuffers = []
 
 function! ctrlspace#workspaces#Workspaces()
 	return s:workspaces
@@ -359,12 +360,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 		let bufs = []
 
 		for [nr, bname] in items(ctrlspaceList)
-			let bufname = fnamemodify(bname, ":.")
-
-			if !filereadable(bufname)
-				continue
-			endif
-
+			let bufname = filereadable(bname) ? fnameescape(fnamemodify(bname, ":.")) : bname
 			call add(bufs, bufname)
 		endfor
 
@@ -384,19 +380,30 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	endif
 
 	let tabIndex = 0
+	call add(lines, 'let s:termbuffers = {}')
 
-	for cmd in readfile("CS_SESSION")
-		if cmd =~# "^lcd"
+	for line in readfile("CS_SESSION")
+		let l:match = matchlist(line, '\m^\([a-z]\+\)\%(\| \s*\(.*\)\)$')
+
+		if !exists("l:match[0]")
+			call add(lines, line)
 			continue
-		elseif ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+		endif
+
+		let cmd = l:match[1]
+		let args = l:match[2]
+
+		if cmd == 'lcd' || (cmd == 'badd' && args =~# '^+\d\+ term://')
+			continue
+		elseif (cmd == 'edit' && tabIndex == 0) || (cmd == 'tabnew') || (cmd == 'tabedit')
 			let data = tabData[tabIndex]
 
 			if tabIndex > 0
-				call add(lines, cmd)
+				call s:addMapped(lines, cmd, args)
 			endif
 
 			for b in data.bufs
-				call add(lines, "edit " . fnameescape(b))
+				call s:addMapped(lines, 'edit', b)
 			endfor
 
 			if !empty(data.label)
@@ -408,18 +415,16 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 			endif
 
 			if tabIndex == 0
-				call add(lines, cmd)
-			elseif cmd =~# "^tabedit"
-				call add(lines, cmd[3:]) "make edit from tabedit
+				call s:addMapped(lines, cmd, args)
+			elseif cmd == 'tabedit'
+				call s:addMapped(lines, 'edit', args)
 			endif
 
 			let tabIndex += 1
+		elseif cmd == 'edit'
+			call s:addMapped(lines, cmd, filereadable(args) ? args : expand(args))
 		else
-			let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
-
-			if !(exists("baddList[1]") && !empty(baddList[1]) && !filereadable(baddList[1]))
-				call add(lines, cmd)
-			endif
+			call s:addMapped(lines, cmd, args)
 		endif
 	endfor
 
@@ -441,6 +446,25 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	call ctrlspace#ui#DelayedMsg(msg)
 
 	return 1
+endfunction
+
+function! s:addMapped(lines, cmd, args)
+	" Note that s:termbuffers is a list in this script and a dictionary in the 
+	" session script.  In this script it tracks which keys have been added to 
+	" the dictionary in the session script.
+
+	if a:args !~# '^term://'
+		" Ignore non-terminal buffers
+		call add(a:lines, a:cmd . ' ' . a:args)
+	elseif index(s:termbuffers, a:args) >= 0
+		" A terminal buffer has already been added to a:termbuffers
+		call add(a:lines, 'exe "' . a:cmd . ' " . s:termbuffers[' . string(a:args) . ']')
+	else
+		" Buffer has not yet been added
+		call add(a:lines, a:cmd . ' ' . a:args)
+		call add(a:lines, 'let s:termbuffers[' . string(a:args) . ']=buffer_name(''%'')')
+		call add(s:termbuffers, a:args)
+	endif
 endfunction
 
 function! ctrlspace#workspaces#CreateDigest()
