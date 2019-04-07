@@ -37,16 +37,18 @@ function! ctrlspace#init#Init()
 	call s:initProjectRootsAndBookmarks()
 	call ctrlspace#keys#Init()
 
-  let curaltBuff=bufnr('#')
-  let currBuff=bufnr('%')
+        if argc() > 1
+                let curaltBuff=bufnr('#')
+                let currBuff=bufnr('%')
 
-  silent bufdo call ctrlspace#buffers#AddBuffer()
-  silent bufdo call ctrlspace#buffers#Init()
+                silent argdo call ctrlspace#buffers#AddBuffer()
+                silent argdo call ctrlspace#buffers#Init()
 
-  if curaltBuff >= 0 
-    execute 'buffer ' . curaltBuff
-  endif
-  execute 'buffer ' . currBuff
+                if curaltBuff >= 0 
+                  execute 'buffer ' . curaltBuff
+                endif
+                execute 'buffer ' . currBuff
+        endif
 
 	au BufEnter * call ctrlspace#buffers#AddBuffer()
 	au VimEnter * call ctrlspace#buffers#Init()
