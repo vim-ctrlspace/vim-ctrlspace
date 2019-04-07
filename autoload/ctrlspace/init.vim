@@ -37,6 +37,17 @@ function! ctrlspace#init#Init()
 	call s:initProjectRootsAndBookmarks()
 	call ctrlspace#keys#Init()
 
+  let curaltBuff=bufnr('#')
+  let currBuff=bufnr('%')
+
+  silent bufdo call ctrlspace#buffers#AddBuffer()
+  silent bufdo call ctrlspace#buffers#Init()
+
+  if curaltBuff >= 0 
+    execute 'buffer ' . curaltBuff
+  endif
+  execute 'buffer ' . currBuff
+
 	au BufEnter * call ctrlspace#buffers#AddBuffer()
 	au VimEnter * call ctrlspace#buffers#Init()
 	au TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
