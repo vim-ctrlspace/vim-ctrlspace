@@ -388,7 +388,13 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
 	for cmd in readfile("CS_SESSION")
 		if cmd =~# "^lcd"
 			continue
-		elseif ((cmd =~# "^edit") && (tabIndex == 0)) || (cmd =~# "^tabnew") || (cmd =~# "^tabedit")
+
+		" NB: check patch-8.1.149 for backend vim mksession syntax change (tabnext)
+		elseif
+		\    ((cmd =~# "^edit") && (tabIndex == 0))
+		\ || (!has('patch-8.1.149') && ( (cmd =~# "^tabnew") || (cmd =~# "^tabedit") ))
+		\ ||  (has('patch-8.1.149') && (cmd =~# "^tabnext$"))
+
 			let data = tabData[tabIndex]
 
 			if tabIndex > 0
