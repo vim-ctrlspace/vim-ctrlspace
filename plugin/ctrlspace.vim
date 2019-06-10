@@ -31,32 +31,32 @@
 scriptencoding utf-8
 
 if exists("g:CtrlSpaceLoaded")
-	finish
+    finish
 endif
 
 let g:CtrlSpaceLoaded = 1
 let s:errors = []
 
 if &cp
-	call add(s:errors, "CtrlSpace requires 'nocompatible' option enabled!")
+    call add(s:errors, "CtrlSpace requires 'nocompatible' option enabled!")
 endif
 
 if !&hid
-	call add(s:errors, "CtrlSpace requires 'hidden' option enabled!")
+    call add(s:errors, "CtrlSpace requires 'hidden' option enabled!")
 endif
 
 if v:version < 703
-	call add(s:errors, "CtrlSpace requires Vim 7.3 or higher!")
+    call add(s:errors, "CtrlSpace requires Vim 7.3 or higher!")
 endif
 
 if !empty(s:errors)
-	echohl WarningMsg
-	for msg in s:errors
-		echom msg
-	endfor
-	echohl None
+    echohl WarningMsg
+    for msg in s:errors
+        echom msg
+    endfor
+    echohl None
 
-	finish
+    finish
 endif
 
 call ctrlspace#init#Init()

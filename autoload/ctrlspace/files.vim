@@ -4,440 +4,440 @@ let s:files  = []
 let s:items  = []
 
 function! ctrlspace#files#Files()
-	return s:files
+    return s:files
 endfunction
 
 function! ctrlspace#files#ClearAll()
-	let s:files = []
-	let s:items = []
+    let s:files = []
+    let s:items = []
 endfunction
 
 function! ctrlspace#files#Items()
-	return s:items
+    return s:items
 endfunction
 
 function! ctrlspace#files#SelectedFileName()
-	return s:modes.File.Enabled ? s:files[ctrlspace#window#SelectedIndex()] : ""
+    return s:modes.File.Enabled ? s:files[ctrlspace#window#SelectedIndex()] : ""
 endfunction
 
 function! ctrlspace#files#CollectFiles()
-	if empty(s:files)
-		let s:items = []
+    if empty(s:files)
+        let s:items = []
 
-		" try to pick up files from cache
-		call s:loadFilesFromCache()
+        " try to pick up files from cache
+        call s:loadFilesFromCache()
 
-		if empty(s:files)
-			let action = "Collecting files..."
-			call ctrlspace#ui#Msg(action)
+        if empty(s:files)
+            let action = "Collecting files..."
+            call ctrlspace#ui#Msg(action)
 
-			let uniqueFiles = {}
+            let uniqueFiles = {}
 
-			for fname in empty(s:config.GlobCommand) ? split(globpath('.', '**'), '\n') : split(system(s:config.GlobCommand), '\n')
-				let fnameModified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
+            for fname in empty(s:config.GlobCommand) ? split(globpath('.', '**'), '\n') : split(system(s:config.GlobCommand), '\n')
+                let fnameModified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
 
-				if isdirectory(fnameModified) || (fnameModified =~# s:config.IgnoredFiles)
-					continue
-				endif
+                if isdirectory(fnameModified) || (fnameModified =~# s:config.IgnoredFiles)
+                    continue
+                endif
 
-				let uniqueFiles[fnameModified] = 1
-			endfor
+                let uniqueFiles[fnameModified] = 1
+            endfor
 
-			let s:files = keys(uniqueFiles)
-			call s:saveFilesInCache()
-		else
-			let action = "Loading files..."
-			call ctrlspace#ui#Msg(action)
-		endif
+            let s:files = keys(uniqueFiles)
+            call s:saveFilesInCache()
+        else
+            let action = "Loading files..."
+            call ctrlspace#ui#Msg(action)
+        endif
 
-		let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
+        let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
 
-		redraw!
+        redraw!
 
-		call ctrlspace#ui#Msg(action . " Done (" . len(s:files) . ").")
-	endif
+        call ctrlspace#ui#Msg(action . " Done (" . len(s:files) . ").")
+    endif
 
-	return s:files
+    return s:files
 endfunction
 
 function! ctrlspace#files#LoadFile(...)
-	let idx = ctrlspace#window#SelectedIndex()
-	let file = fnamemodify(s:files[idx], ":p")
+    let idx = ctrlspace#window#SelectedIndex()
+    let file = fnamemodify(s:files[idx], ":p")
 
-	call ctrlspace#window#Kill(0, 1)
+    call ctrlspace#window#Kill(0, 1)
 
-	let commands = len(a:000)
+    let commands = len(a:000)
 
-	if commands > 0
-		exec ":" . a:1
-	endif
+    if commands > 0
+        exec ":" . a:1
+    endif
 
-	call s:loadFileOrBuffer(file)
+    call s:loadFileOrBuffer(file)
 
-	if commands > 1
-		silent! exe ":" . a:2
-	endif
+    if commands > 1
+        silent! exe ":" . a:2
+    endif
 endfunction
 
 function! ctrlspace#files#LoadManyFiles(...)
-	let idx   = ctrlspace#window#SelectedIndex()
-	let file  = fnamemodify(s:files[idx], ":p")
-	let curln = line(".")
+    let idx   = ctrlspace#window#SelectedIndex()
+    let file  = fnamemodify(s:files[idx], ":p")
+    let curln = line(".")
 
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#GoToStartWindow()
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#GoToStartWindow()
 
-	let commands = len(a:000)
+    let commands = len(a:000)
 
-	if commands > 0
-		exec ":" . a:1
-	endif
+    if commands > 0
+        exec ":" . a:1
+    endif
 
-	call s:loadFileOrBuffer(file)
-	normal! zb
+    call s:loadFileOrBuffer(file)
+    normal! zb
 
-	if commands > 1
-		silent! exe ":" . a:2
-	endif
+    if commands > 1
+        silent! exe ":" . a:2
+    endif
 
-	call ctrlspace#window#Toggle(1)
-	call ctrlspace#window#MoveSelectionBar(curln)
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
 function! ctrlspace#files#RefreshFiles()
-	let s:files = []
-	call s:saveFilesInCache()
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#Toggle(1)
+    let s:files = []
+    call s:saveFilesInCache()
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#files#RemoveFile()
-	let nr   = ctrlspace#window#SelectedIndex()
-	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
+    let nr   = ctrlspace#window#SelectedIndex()
+    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
-	if empty(path) || !filereadable(path) || isdirectory(path)
-		return
-	endif
+    if empty(path) || !filereadable(path) || isdirectory(path)
+        return
+    endif
 
-	if !ctrlspace#ui#Confirmed("Remove file '" . path . "'?")
-		return
-	endif
+    if !ctrlspace#ui#Confirmed("Remove file '" . path . "'?")
+        return
+    endif
 
-	call ctrlspace#buffers#DeleteBuffer()
-	call s:updateFileList(path, "")
-	call delete(resolve(expand(path)))
+    call ctrlspace#buffers#DeleteBuffer()
+    call s:updateFileList(path, "")
+    call delete(resolve(expand(path)))
 
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#files#ZoomFile()
-	if !s:modes.Zoom.Enabled
-		call s:modes.Zoom.Enable()
-		call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
-		call s:modes.Zoom.SetData("Mode", "File")
-		call s:modes.Zoom.SetData("Line", line("."))
-		call s:modes.Zoom.SetData("Letters", copy(s:modes.Search.Data.Letters))
-	endif
+    if !s:modes.Zoom.Enabled
+        call s:modes.Zoom.Enable()
+        call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
+        call s:modes.Zoom.SetData("Mode", "File")
+        call s:modes.Zoom.SetData("Line", line("."))
+        call s:modes.Zoom.SetData("Letters", copy(s:modes.Search.Data.Letters))
+    endif
 
-	let nr = ctrlspace#window#SelectedIndex()
-	let curln = line(".")
+    let nr = ctrlspace#window#SelectedIndex()
+    let curln = line(".")
 
-	call ctrlspace#window#Kill(0, 0)
-	call ctrlspace#window#GoToStartWindow()
-	call s:loadFileOrBuffer(fnamemodify(s:files[nr], ":p"))
+    call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#GoToStartWindow()
+    call s:loadFileOrBuffer(fnamemodify(s:files[nr], ":p"))
 
-	silent! exe "normal! zb"
+    silent! exe "normal! zb"
 
-	call ctrlspace#window#Toggle(1)
-	call ctrlspace#window#MoveSelectionBar(curln)
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
 function! ctrlspace#files#CopyFileOrBuffer()
-	let root = ctrlspace#roots#CurrentProjectRoot()
+    let root = ctrlspace#roots#CurrentProjectRoot()
 
-	if !empty(root)
-		call ctrlspace#util#ChDir(root)
-	endif
+    if !empty(root)
+        call ctrlspace#util#ChDir(root)
+    endif
 
-	let nr   = ctrlspace#window#SelectedIndex()
-	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
+    let nr   = ctrlspace#window#SelectedIndex()
+    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
-	let bufOnly = !filereadable(path) && !s:modes.File.Enabled
+    let bufOnly = !filereadable(path) && !s:modes.File.Enabled
 
-	if !(filereadable(path) || bufOnly) || isdirectory(path)
-		return
-	endif
+    if !(filereadable(path) || bufOnly) || isdirectory(path)
+        return
+    endif
 
-	let newFile = ctrlspace#ui#GetInput((bufOnly ? "Copy buffer as: " : "Copy file to: "), path, "file")
+    let newFile = ctrlspace#ui#GetInput((bufOnly ? "Copy buffer as: " : "Copy file to: "), path, "file")
 
-	if empty(newFile) || isdirectory(newFile) || !s:ensurePath(newFile)
-		return
-	endif
+    if empty(newFile) || isdirectory(newFile) || !s:ensurePath(newFile)
+        return
+    endif
 
-	if bufOnly
-		call ctrlspace#buffers#ZoomBuffer(str2nr(nr), ['normal! G""ygg'])
-		call ctrlspace#window#Kill(0, 1)
-		silent! exe "e " . fnameescape(newFile)
-		silent! exe 'normal! ""pgg"_dd'
-	else
-		let newFile = fnamemodify(newFile, ":p")
+    if bufOnly
+        call ctrlspace#buffers#ZoomBuffer(str2nr(nr), ['normal! G""ygg'])
+        call ctrlspace#window#Kill(0, 1)
+        silent! exe "e " . fnameescape(newFile)
+        silent! exe 'normal! ""pgg"_dd'
+    else
+        let newFile = fnamemodify(newFile, ":p")
 
-		let lines = readfile(path, "b")
-		call writefile(lines, newFile, "b")
+        let lines = readfile(path, "b")
+        call writefile(lines, newFile, "b")
 
-		call s:updateFileList("", newFile)
+        call s:updateFileList("", newFile)
 
-		call ctrlspace#window#Kill(0, 1)
+        call ctrlspace#window#Kill(0, 1)
 
-		if !s:modes.File.Enabled
-			silent! exe "e " . fnameescape(newFile)
-		endif
-	endif
+        if !s:modes.File.Enabled
+            silent! exe "e " . fnameescape(newFile)
+        endif
+    endif
 
-	call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#Toggle(1)
 
-	if !s:modes.File.Enabled
-		if !bufOnly
-			let newFile = fnamemodify(newFile, ":.")
-		endif
+    if !s:modes.File.Enabled
+        if !bufOnly
+            let newFile = fnamemodify(newFile, ":.")
+        endif
 
-		let names = ctrlspace#api#Buffers(tabpagenr())
+        let names = ctrlspace#api#Buffers(tabpagenr())
 
-		for i in range(b:size)
-			if names[b:indices[i]] ==# newFile
-				call ctrlspace#window#MoveSelectionBar(i + 1)
-				break
-			endif
-		endfor
-	endif
+        for i in range(b:size)
+            if names[b:indices[i]] ==# newFile
+                call ctrlspace#window#MoveSelectionBar(i + 1)
+                break
+            endif
+        endfor
+    endif
 endfunction
 
 function! ctrlspace#files#RenameFileOrBuffer()
-	let root = ctrlspace#roots#CurrentProjectRoot()
+    let root = ctrlspace#roots#CurrentProjectRoot()
 
-	if !empty(root)
-		call ctrlspace#util#ChDir(root)
-	endif
+    if !empty(root)
+        call ctrlspace#util#ChDir(root)
+    endif
 
-	let nr   = ctrlspace#window#SelectedIndex()
-	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
+    let nr   = ctrlspace#window#SelectedIndex()
+    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
-	let bufOnly = !filereadable(path) && !s:modes.File.Enabled
+    let bufOnly = !filereadable(path) && !s:modes.File.Enabled
 
-	if !(filereadable(path) || bufOnly) || isdirectory(path)
-		return
-	endif
+    if !(filereadable(path) || bufOnly) || isdirectory(path)
+        return
+    endif
 
-	let newFile = ctrlspace#ui#GetInput((bufOnly ? "New buffer name: " : "Move file to: "), path, "file")
+    let newFile = ctrlspace#ui#GetInput((bufOnly ? "New buffer name: " : "Move file to: "), path, "file")
 
-	if empty(newFile) || !s:ensurePath(newFile)
-		return
-	endif
+    if empty(newFile) || !s:ensurePath(newFile)
+        return
+    endif
 
-	if isdirectory(newFile)
-		if newFile !~ "/$"
-			let newFile .= "/"
-		endif
+    if isdirectory(newFile)
+        if newFile !~ "/$"
+            let newFile .= "/"
+        endif
 
-		let newFile .= fnamemodify(path, ":t")
-	endif
+        let newFile .= fnamemodify(path, ":t")
+    endif
 
-	let bufNames = {}
+    let bufNames = {}
 
-	" must be collected BEFORE actual file renaming
-	for b in range(1, bufnr("$"))
-		let bufNames[b] = fnamemodify(resolve(bufname(b)), ":.")
-	endfor
+    " must be collected BEFORE actual file renaming
+    for b in range(1, bufnr("$"))
+        let bufNames[b] = fnamemodify(resolve(bufname(b)), ":.")
+    endfor
 
-	if !bufOnly
-		call rename(resolve(expand(path)), resolve(expand(newFile)))
-	endif
+    if !bufOnly
+        call rename(resolve(expand(path)), resolve(expand(newFile)))
+    endif
 
-	for [b, name] in items(bufNames)
-		if name == path
-			let commands = ["f " . fnameescape(newFile)]
+    for [b, name] in items(bufNames)
+        if name == path
+            let commands = ["f " . fnameescape(newFile)]
 
-			if !bufOnly
-				call add(commands, "w!")
-			elseif !getbufvar(b, "&modified")
-				call add(commands, "e") "reload filetype and syntax
-			endif
+            if !bufOnly
+                call add(commands, "w!")
+            elseif !getbufvar(b, "&modified")
+                call add(commands, "e") "reload filetype and syntax
+            endif
 
-			call ctrlspace#buffers#ZoomBuffer(str2nr(b), commands)
-		endif
-	endfor
+            call ctrlspace#buffers#ZoomBuffer(str2nr(b), commands)
+        endif
+    endfor
 
-	if !bufOnly
-		call s:updateFileList(path, newFile)
-	endif
+    if !bufOnly
+        call s:updateFileList(path, newFile)
+    endif
 
-	call ctrlspace#window#Kill(0, 1)
-	call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#Kill(0, 1)
+    call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#files#GoToDirectory(back)
-	if !exists("s:goToDirectorySave")
-		let s:goToDirectorySave = []
-	endif
+    if !exists("s:goToDirectorySave")
+        let s:goToDirectorySave = []
+    endif
 
-	if a:back
-		if !empty(s:goToDirectorySave)
-			let path = s:goToDirectorySave[-1]
-		else
-			return
-		endif
-	else
-		let nr   = ctrlspace#window#SelectedIndex()
-		let path = s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr))
-	endif
+    if a:back
+        if !empty(s:goToDirectorySave)
+            let path = s:goToDirectorySave[-1]
+        else
+            return
+        endif
+    else
+        let nr   = ctrlspace#window#SelectedIndex()
+        let path = s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr))
+    endif
 
-	let oldBufferSubMode = s:modes.Buffer.Data.SubMode
-	let directory        = ctrlspace#util#NormalizeDirectory(fnamemodify(path, ":p:h"))
+    let oldBufferSubMode = s:modes.Buffer.Data.SubMode
+    let directory        = ctrlspace#util#NormalizeDirectory(fnamemodify(path, ":p:h"))
 
-	if !isdirectory(directory)
-		return
-	endif
+    if !isdirectory(directory)
+        return
+    endif
 
-	call ctrlspace#window#Kill(0, 1)
+    call ctrlspace#window#Kill(0, 1)
 
-	let cwd = ctrlspace#util#NormalizeDirectory(fnamemodify(getcwd(), ":p:h"))
+    let cwd = ctrlspace#util#NormalizeDirectory(fnamemodify(getcwd(), ":p:h"))
 
-	if cwd !=# directory
-		if a:back
-			call remove(s:goToDirectorySave, -1)
-		else
-			call add(s:goToDirectorySave, cwd)
-		endif
-	endif
+    if cwd !=# directory
+        if a:back
+            call remove(s:goToDirectorySave, -1)
+        else
+            call add(s:goToDirectorySave, cwd)
+        endif
+    endif
 
-	call ctrlspace#util#ChDir(directory)
+    call ctrlspace#util#ChDir(directory)
 
-	call ctrlspace#ui#DelayedMsg("CWD is now: " . directory)
+    call ctrlspace#ui#DelayedMsg("CWD is now: " . directory)
 
-	call ctrlspace#window#Toggle(0)
-	call ctrlspace#window#Kill(0, 0)
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
 
-	call s:modes.Buffer.SetData("SubMode", oldBufferSubMode)
+    call s:modes.Buffer.SetData("SubMode", oldBufferSubMode)
 
-	call ctrlspace#window#Toggle(1)
-	call ctrlspace#ui#DelayedMsg()
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#ui#DelayedMsg()
 endfunction
 
 function! ctrlspace#files#ExploreDirectory()
-	let nr   = ctrlspace#window#SelectedIndex()
-	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
+    let nr   = ctrlspace#window#SelectedIndex()
+    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
 
-	if !isdirectory(path)
-		return
-	endif
+    if !isdirectory(path)
+        return
+    endif
 
-	let path = fnamemodify(path, ":p")
+    let path = fnamemodify(path, ":p")
 
-	call ctrlspace#window#Kill(0, 1)
-	silent! exe "e " . fnameescape(path)
+    call ctrlspace#window#Kill(0, 1)
+    silent! exe "e " . fnameescape(path)
 endfunction
 
 function! ctrlspace#files#EditFile()
-	let nr   = ctrlspace#window#SelectedIndex()
-	let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
+    let nr   = ctrlspace#window#SelectedIndex()
+    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
 
-	if !isdirectory(path)
-		return
-	endif
+    if !isdirectory(path)
+        return
+    endif
 
-	let newFile = ctrlspace#ui#GetInput("Edit a new file: ", path . '/', "file")
+    let newFile = ctrlspace#ui#GetInput("Edit a new file: ", path . '/', "file")
 
-	if empty(newFile)
-		return
-	endif
+    if empty(newFile)
+        return
+    endif
 
-	let newFile = expand(newFile)
+    let newFile = expand(newFile)
 
-	if isdirectory(newFile)
-		call ctrlspace#window#Kill(0, 1)
-		enew
-		return
-	endif
+    if isdirectory(newFile)
+        call ctrlspace#window#Kill(0, 1)
+        enew
+        return
+    endif
 
-	if !s:ensurePath(newFile)
-		return
-	endif
+    if !s:ensurePath(newFile)
+        return
+    endif
 
-	let newFile = fnamemodify(newFile, ":p")
+    let newFile = fnamemodify(newFile, ":p")
 
-	call ctrlspace#window#Kill(0, 1)
-	silent! exe "e " . fnameescape(newFile)
+    call ctrlspace#window#Kill(0, 1)
+    silent! exe "e " . fnameescape(newFile)
 endfunction
 
 function! s:saveFilesInCache()
-	let filename = ctrlspace#util#FilesCache()
+    let filename = ctrlspace#util#FilesCache()
 
-	if empty(filename)
-		return
-	endif
+    if empty(filename)
+        return
+    endif
 
-	call writefile(s:files, filename)
+    call writefile(s:files, filename)
 endfunction
 
 function! s:loadFilesFromCache()
-	let filename = ctrlspace#util#FilesCache()
+    let filename = ctrlspace#util#FilesCache()
 
-	if empty(filename) || !filereadable(filename)
-		return
-	endif
+    if empty(filename) || !filereadable(filename)
+        return
+    endif
 
-	let s:files = readfile(filename)
+    let s:files = readfile(filename)
 endfunction
 
 function! s:loadFileOrBuffer(file)
-	if buflisted(a:file)
-		silent! exe ":b " . bufnr(a:file)
-	else
-		exec ":e " . fnameescape(a:file)
-	endif
+    if buflisted(a:file)
+        silent! exe ":b " . bufnr(a:file)
+    else
+        exec ":e " . fnameescape(a:file)
+    endif
 endfunction
 
 function! s:updateFileList(path, newPath)
-	if empty(s:files)
-		call s:loadFilesFromCache()
+    if empty(s:files)
+        call s:loadFilesFromCache()
 
-		if empty(s:files)
-			return
-		else
-			let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
-		endif
-	endif
+        if empty(s:files)
+            return
+        else
+            let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
+        endif
+    endif
 
-	let newPath = empty(a:newPath) ? "" : fnamemodify(a:newPath, ":.")
+    let newPath = empty(a:newPath) ? "" : fnamemodify(a:newPath, ":.")
 
-	if !empty(a:path)
-		let index = index(s:files, a:path)
+    if !empty(a:path)
+        let index = index(s:files, a:path)
 
-		if index >= 0
-			call remove(s:files, index)
-			call remove(s:items, index)
-		endif
-	endif
+        if index >= 0
+            call remove(s:files, index)
+            call remove(s:items, index)
+        endif
+    endif
 
-	if !empty(newPath)
-		call add(s:files, newPath)
-		call add(s:items, { "index": len(s:items), "text": newPath, "indicators": "" })
-	endif
+    if !empty(newPath)
+        call add(s:files, newPath)
+        call add(s:items, { "index": len(s:items), "text": newPath, "indicators": "" })
+    endif
 
-	call s:saveFilesInCache()
+    call s:saveFilesInCache()
 endfunction
 
 function! s:ensurePath(file)
-	let directory = fnamemodify(a:file, ":.:h")
+    let directory = fnamemodify(a:file, ":.:h")
 
-	if !isdirectory(directory)
-		if !ctrlspace#ui#Confirmed("Directory '" . directory . "' will be created. Continue?")
-			return 0
-		endif
+    if !isdirectory(directory)
+        if !ctrlspace#ui#Confirmed("Directory '" . directory . "' will be created. Continue?")
+            return 0
+        endif
 
-		call mkdir(fnamemodify(directory, ":p"), "p")
-	endif
+        call mkdir(fnamemodify(directory, ":p"), "p")
+    endif
 
-	return 1
+    return 1
 endfunction
