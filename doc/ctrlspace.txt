@@ -78,6 +78,7 @@ Table of Contents                                            *ctrlspace-toc*
    7.20 g:CtrlSpaceStatuslineFunction        |g:CtrlSpaceStatuslineFunction|
    7.21 g:CtrlSpaceSearchTiming                    |g:CtrlSpaceSearchTiming|
    7.22 g:CtrlSpaceFileEngine                        |g:CtrlSpaceFileEngine|
+   7.23 g:CtrlSpaceSortHelp                            |g:CtrlSpaceSortHelp|
  8. API                                                      |ctrlspace-api|
    8.1 Commands                                         |ctrlspace-commands|
      8.1.1 :CtrlSpace [keys]                                    |:CtrlSpace|
@@ -1185,6 +1186,19 @@ just provide an empty string: >
 Default value: >
 
     let g:CtrlSpaceFileEngine = "auto"
+<
+                                                             |ctrlspace-toc|
+--------------------------------------------------------------------------
+
+7.23 *g:CtrlSpaceSortHelp*
+
+Enables sorting the lines in help mode by the description. This is disabled by
+default for backwards compatibility. In a future version sorting might become
+the new default though.
+
+Default value: >
+
+    let g:CtrlSpaceSortHelp = 0
 <
                                                              |ctrlspace-toc|
 ==========================================================================
