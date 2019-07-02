@@ -312,8 +312,14 @@ function! s:keyHelp(key, description) abort
     endif
 endfunction
 
+function! s:sortKeyHelp(key1, key2) dict
+    let l:desc1 = get(s:descriptions, self[a:key1], "")
+    let l:desc2 = get(s:descriptions, self[a:key2], "")
+    return l:desc1 == l:desc2 ? 0 : l:desc1 > l:desc2 ? 1 : -1
+endfunction
+
 function! s:collectKeysInfo(mapName) abort
-    for key in sort(keys(s:helpMap[a:mapName]))
+    for key in sort(keys(s:helpMap[a:mapName]), "s:sortKeyHelp", s:helpMap[a:mapName])
         let FnKey = s:helpMap[a:mapName][key]
 
         " Due to the way 'ctrlspace#keys#nop#_ExecDbmdexAction' is called (as
