@@ -429,6 +429,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
         endif
     endfor
 
+    call add(line, 'doautoall SessionLoadPost')
     call add(lines, endMarker)
 
     call writefile(lines, filename)
