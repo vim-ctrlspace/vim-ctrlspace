@@ -1443,11 +1443,13 @@ pure Vim Script (like `CtrlP`) thus it affects the performance too.
 
 General Assumptions~
 
-The file engine binaries have been compiled for various OS's and cpu
-types.  The programs available in the primary repository include Linux,
-Windows, and MacOS.  Other OS versions can still be downloaded from a
-specific release `all_os_file_engines`, downloadable at:
-https://github.com/vim-ctrlspace/vim-ctrlspace/releases/all_os_file_engines
+The file engine binaries have been compiled for various OS's and CPU
+types, but only those for Linux, MacOS and Windows on 64 bit architectures
+are available in the git repository. The other versions for their 32 bit
+architecture counterparts, as well as for FreeBSD, NetBSD and OpenBSD
+on 32 and 64 bit architectures can still be dowloaded from a specific
+release `all_os_file_engines`, downloadable at:
+	https://git.io/vim-ctrlspace-release-all_os_file_engines
 
 By default the plugin shows at most 500 items per list and 200 when fuzzy
 searched. That rule is enforced by internal fuzzy searcher implementation
