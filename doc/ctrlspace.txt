@@ -1151,6 +1151,11 @@ several architectures:
  * `file_engine_linux_386`
  * `file_engine_linux_amd64`
  * `file_engine_linux_arm`
+ * `file_engine_linux_mips`
+ * `file_engine_linux_mips64`
+ * `file_engine_linux_mips64le`
+ * `file_engine_linux_mipsle`
+ * `file_engine_linux_s390x`
  * `file_engine_netbsd_386`
  * `file_engine_netbsd_amd64`
  * `file_engine_netbsd_arm`
