@@ -115,6 +115,8 @@ function! ctrlspace#keys#tab#MoveTab(k)
     silent! exe "normal! " . nr . "gt"
 
     let cmd = "tabm"
+    let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
 
     if v:version < 704
         if (a:k ==# "+") || (a:k ==# "}")
@@ -124,9 +126,17 @@ function! ctrlspace#keys#tab#MoveTab(k)
         endif
     else
         if (a:k ==# "+") || (a:k ==# "}")
+          if curTab == lstTab
+            let cmd = "tabm 0"
+          else
             let cmd .= "+1"
+          endif
         elseif (a:k ==# "-") || (a:k ==# "{")
+          if curTab == 1
+            let cmd = "tabm"
+          else
             let cmd .= "-1"
+          endif
         endif
     endif
 

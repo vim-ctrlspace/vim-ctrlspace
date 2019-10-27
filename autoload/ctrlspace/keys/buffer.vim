@@ -166,6 +166,9 @@ function! ctrlspace#keys#buffer#NewTabLabel(k)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveTab(k)
+    let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
+
     if v:version < 704
         if a:k ==# "+"
             silent! exe "tabm" . tabpagenr()
@@ -173,7 +176,13 @@ function! ctrlspace#keys#buffer#MoveTab(k)
             silent! exe "tabm" . (tabpagenr() - 2)
         endif
     else
-        silent! exe "tabm" . a:k . "1"
+        if a:k ==# "-" && curTab == 1
+          silent! exe "tabmove"
+        elseif a:k ==# "+" && curTab == lstTab
+          silent! exe "tabmove 0"
+        else
+          silent! exe "tabm" . a:k . "1"
+        endif
     endif
 
     call ctrlspace#util#SetStatusline()
@@ -204,14 +213,19 @@ function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     endif
 
     let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
 
     if a:k ==# "<"
         if curTab > 1
             call ctrlspace#buffers#CopyBufferToTab(curTab - 1)
+        elseif curTab == 1
+            call ctrlspace#buffers#CopyBufferToTab(lstTab)
         endif
     elseif a:k ==# ">"
         if curTab < tabpagenr("$")
             call ctrlspace#buffers#CopyBufferToTab(curTab + 1)
+        elseif curTab == lstTab
+            call ctrlspace#buffers#CopyBufferToTab(1)
         endif
     endif
 endfunction
@@ -222,14 +236,19 @@ function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     endif
 
     let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
 
     if a:k ==# "{"
         if curTab > 1
             call ctrlspace#buffers#MoveBufferToTab(curTab - 1)
+        elseif curTab == 1
+            call ctrlspace#buffers#MoveBufferToTab(lstTab)
         endif
     elseif a:k ==# "}"
         if curTab < tabpagenr("$")
             call ctrlspace#buffers#MoveBufferToTab(curTab + 1)
+        elseif curTab == lstTab
+            call ctrlspace#buffers#MoveBufferToTab(1)
         endif
     endif
 endfunction
