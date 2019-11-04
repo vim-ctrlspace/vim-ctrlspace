@@ -317,13 +317,13 @@ function! s:cpOrMvBuf2TabWithWraparound(cpOrMvFunc, mvDir)
     if a:mvDir ==# "-"
         if curTab > 1
             call a:cpOrMvFunc(curTab - 1)
-        elseif curTab == 1
+        elseif curTab == 1 && s:config.EnableWraparound
             call a:cpOrMvFunc(lstTab)
         endif
     elseif a:mvDir ==# "+"
         if curTab < lstTab
             call a:cpOrMvFunc(curTab + 1)
-        elseif curTab == lstTab
+        elseif curTab == lstTab && s:config.EnableWraparound
             call a:cpOrMvFunc(1)
         endif
     endif

@@ -119,10 +119,12 @@ function! ctrlspace#keys#tab#MoveHelper(k)
       let mvDir = "-"
     endif
 
-    if curTab == 1 && mvDir ==# "-"
-      let cmd = "tabm"
-    elseif curTab == lstTab && mvDir ==# "+"
-      let cmd = "tabm 0"
+    if s:config.EnableWraparound && 
+     \ curTab == 1 && mvDir == "-"
+        let cmd = "tabm"
+    elseif s:config.EnableWraparound && 
+         \ curTab == lstTab && mvDir == "+"
+        let cmd = "tabm 0"
     else
       let cmd = "tabm" . mvDir . "1"
     endif
