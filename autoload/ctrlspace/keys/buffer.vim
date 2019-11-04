@@ -177,9 +177,9 @@ function! ctrlspace#keys#buffer#MoveTab(k)
         endif
     else
         if a:k ==# "-" && curTab == 1
-          silent! exe "tabmove"
+          silent! exe "tabm"
         elseif a:k ==# "+" && curTab == lstTab
-          silent! exe "tabmove 0"
+          silent! exe "tabm 0"
         else
           silent! exe "tabm" . a:k . "1"
         endif
@@ -208,48 +208,26 @@ function! ctrlspace#keys#buffer#SwitchTab(k)
 endfunction
 
 function! ctrlspace#keys#buffer#CopyBufferToTab(k)
-    if s:modes.Buffer.Data.SubMode ==# "all"
-        return 0
-    endif
-
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
-
     if a:k ==# "<"
-        if curTab > 1
-            call ctrlspace#buffers#CopyBufferToTab(curTab - 1)
-        elseif curTab == 1
-            call ctrlspace#buffers#CopyBufferToTab(lstTab)
-        endif
+        call s:cpOrMvBuf2TabWithWraparound(
+             \ function('ctrlspace#buffers#CopyBufferToTab'),
+             \ "-")
     elseif a:k ==# ">"
-        if curTab < tabpagenr("$")
-            call ctrlspace#buffers#CopyBufferToTab(curTab + 1)
-        elseif curTab == lstTab
-            call ctrlspace#buffers#CopyBufferToTab(1)
-        endif
+        call s:cpOrMvBuf2TabWithWraparound(
+             \ function('ctrlspace#buffers#CopyBufferToTab'),
+             \ "+")
     endif
 endfunction
 
 function! ctrlspace#keys#buffer#MoveBufferToTab(k)
-    if s:modes.Buffer.Data.SubMode ==# "all"
-        return 0
-    endif
-
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
-
     if a:k ==# "{"
-        if curTab > 1
-            call ctrlspace#buffers#MoveBufferToTab(curTab - 1)
-        elseif curTab == 1
-            call ctrlspace#buffers#MoveBufferToTab(lstTab)
-        endif
+        call s:cpOrMvBuf2TabWithWraparound(
+             \ function('ctrlspace#buffers#MoveBufferToTab'),
+             \ "-")
     elseif a:k ==# "}"
-        if curTab < tabpagenr("$")
-            call ctrlspace#buffers#MoveBufferToTab(curTab + 1)
-        elseif curTab == lstTab
-            call ctrlspace#buffers#MoveBufferToTab(1)
-        endif
+        call s:cpOrMvBuf2TabWithWraparound(
+             \ function('ctrlspace#buffers#MoveBufferToTab'),
+             \ "+")
     endif
 endfunction
 
@@ -337,4 +315,27 @@ function! s:toggleAllMode()
 
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
+endfunction
+
+function! s:cpOrMvBuf2TabWithWraparound(cpOrMvFunc, mvDir)
+    if s:modes.Buffer.Data.SubMode ==# "all"
+        return 0
+    endif
+
+    let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
+
+    if a:mvDir ==# "-"
+        if curTab > 1
+            call a:cpOrMvFunc(curTab - 1)
+        elseif curTab == 1
+            call a:cpOrMvFunc(lstTab)
+        endif
+    elseif a:mvDir ==# "+"
+        if curTab < lstTab
+            call a:cpOrMvFunc(curTab + 1)
+        elseif curTab == lstTab
+            call a:cpOrMvFunc(1)
+        endif
+    endif
 endfunction
