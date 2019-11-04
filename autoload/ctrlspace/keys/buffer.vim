@@ -203,26 +203,20 @@ function! ctrlspace#keys#buffer#SwitchTab(k)
 endfunction
 
 function! ctrlspace#keys#buffer#CopyBufferToTab(k)
+    let FuncRef = function('ctrlspace#buffers#CopyBufferToTab')
     if a:k ==# "<"
-        call s:cpOrMvBuf2TabWithWraparound(
-             \ function('ctrlspace#buffers#CopyBufferToTab'),
-             \ "-")
+        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
     elseif a:k ==# ">"
-        call s:cpOrMvBuf2TabWithWraparound(
-             \ function('ctrlspace#buffers#CopyBufferToTab'),
-             \ "+")
+        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
     endif
 endfunction
 
 function! ctrlspace#keys#buffer#MoveBufferToTab(k)
+    let FuncRef = function('ctrlspace#buffers#MoveBufferToTab')
     if a:k ==# "{"
-        call s:cpOrMvBuf2TabWithWraparound(
-             \ function('ctrlspace#buffers#MoveBufferToTab'),
-             \ "-")
+        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
     elseif a:k ==# "}"
-        call s:cpOrMvBuf2TabWithWraparound(
-             \ function('ctrlspace#buffers#MoveBufferToTab'),
-             \ "+")
+        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
     endif
 endfunction
 
