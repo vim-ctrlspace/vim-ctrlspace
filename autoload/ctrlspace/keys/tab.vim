@@ -109,38 +109,42 @@ function! ctrlspace#keys#tab#RemoveTabLabel(k)
     endif
 endfunction
 
+function! ctrlspace#keys#tab#MoveHelper(k)
+    let curTab = tabpagenr()
+    let lstTab = tabpagenr('$')
+
+    if (a:k ==# "+") || (a:k ==# "}")
+      let mvDir = "+"
+    elseif (a:k ==# "-") || (a:k ==# "{")
+      let mvDir = "-"
+    endif
+
+    if curTab == 1 && mvDir ==# "-"
+      let cmd = "tabm"
+    elseif curTab == lstTab && mvDir ==# "+"
+      let cmd = "tabm 0"
+    else
+      let cmd = "tabm" . mvDir . "1"
+    endif
+
+    silent! exe cmd
+endfunction
+
 function! ctrlspace#keys#tab#MoveTab(k)
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
 
-    let cmd = "tabm"
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
-
+    " NOTE: this branch is likely legacy
     if v:version < 704
         if (a:k ==# "+") || (a:k ==# "}")
-            let cmd .= tabpagenr()
+            silent! exe "tabm" . tabpagenr()
         elseif (a:k ==# "-") || (a:k ==# "{")
-            let cmd .= (tabpagenr() - 2)
+            silent! exe "tabm" . (tabpagenr() - 2)
         endif
     else
-        if (a:k ==# "+") || (a:k ==# "}")
-          if curTab == lstTab
-            let cmd = "tabm 0"
-          else
-            let cmd .= "+1"
-          endif
-        elseif (a:k ==# "-") || (a:k ==# "{")
-          if curTab == 1
-            let cmd = "tabm"
-          else
-            let cmd .= "-1"
-          endif
-        endif
+        call ctrlspace#keys#tab#MoveHelper(a:k)
     endif
-
-    silent! exe cmd
 
     call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 0)

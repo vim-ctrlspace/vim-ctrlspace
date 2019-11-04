@@ -169,6 +169,7 @@ function! ctrlspace#keys#buffer#MoveTab(k)
     let curTab = tabpagenr()
     let lstTab = tabpagenr('$')
 
+    " NOTE: this branch is likely legacy
     if v:version < 704
         if a:k ==# "+"
             silent! exe "tabm" . tabpagenr()
@@ -176,13 +177,7 @@ function! ctrlspace#keys#buffer#MoveTab(k)
             silent! exe "tabm" . (tabpagenr() - 2)
         endif
     else
-        if a:k ==# "-" && curTab == 1
-          silent! exe "tabm"
-        elseif a:k ==# "+" && curTab == lstTab
-          silent! exe "tabm 0"
-        else
-          silent! exe "tabm" . a:k . "1"
-        endif
+        call ctrlspace#keys#tab#MoveHelper(a:k)
     endif
 
     call ctrlspace#util#SetStatusline()
