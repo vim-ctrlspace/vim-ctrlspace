@@ -88,20 +88,6 @@ function! s:init()
                       \ "IM":   strwidth(s:conf.Symbols.IM),
                       \ "Dots": strwidth(s:conf.Symbols.Dots)
                       \ }
-
-    if s:conf.FileEngine ==# "auto"
-        let s:conf.FileEngine = s:detectEngine()
-    endif
-
-    if !empty(s:conf.FileEngine)
-        let s:conf.FileEngineName = s:conf.FileEngine
-        let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
-        let s:conf.FileEngine = executable(ebin) ? shellescape(ebin) : ""
-    endif
-
-    if empty(s:conf.FileEngine)
-        let s:conf.FileEngineName = "VIM"
-    endif
 endfunction
 
 function! s:detectEngine()
@@ -160,5 +146,18 @@ function! ctrlspace#context#SymbolSizes()
 endfunction
 
 function! ctrlspace#context#Configuration()
+    " ensure system() called by autload function
+    if s:conf.FileEngine ==# "auto"
+      let s:conf.FileEngine = s:detectEngine()
+
+      if empty(s:conf.FileEngine)
+        let s:conf.FileEngineName = "VIM"
+      else
+        let s:conf.FileEngineName = s:conf.FileEngine
+        let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
+        let s:conf.FileEngine = executable(ebin) ? shellescape(ebin) : ""
+      endif
+    endif
+
     return s:conf
 endfunction
