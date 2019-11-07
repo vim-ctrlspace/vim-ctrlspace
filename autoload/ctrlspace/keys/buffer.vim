@@ -166,10 +166,7 @@ function! ctrlspace#keys#buffer#NewTabLabel(k)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveTab(k)
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
-
-    " NOTE: this branch is likely legacy
+    " NOTE: this branch is kept as legacy
     if v:version < 704
         if a:k ==# "+"
             silent! exe "tabm" . tabpagenr()
@@ -190,35 +187,89 @@ function! ctrlspace#keys#buffer#RemoveTabLabel(k)
     redraw!
 endfunction
 
+" function! ctrlspace#keys#buffer#SwitchTab(k)
+"     call ctrlspace#window#Kill(0, 1)
+"
+"     if a:k ==# "["
+"         silent! exe "normal! gT"
+"     elseif a:k ==# "]"
+"         silent! exe "normal! gt"
+"     endif
+"
+"     call ctrlspace#window#Toggle(0)
+" endfunction
+
 function! ctrlspace#keys#buffer#SwitchTab(k)
     call ctrlspace#window#Kill(0, 1)
 
-    if a:k ==# "["
-        silent! exe "normal! gT"
-    elseif a:k ==# "]"
-        silent! exe "normal! gt"
-    endif
+    let dir = {'[': 'B', ']': 'F'}[a:k]
+
+    let cmds = {
+          \ 'nb': {-> tabpagenr()!=1 ? 'normal! gT' : ''}(),
+          \ 'nf': {-> tabpagenr()!=tabpagenr('$') ? 'normal! gt' : ''}(),
+          \ 'wb': 'normal! gT',
+          \ 'wf': 'normal! gt',
+          \ }
+
+    let Action = ctrlspace#keys#changebuftab#RegisterCmds(cmds)
+    call ctrlspace#keys#changebuftab#Changer(Action, dir)
 
     call ctrlspace#window#Toggle(0)
 endfunction
 
+function! s:generateCpOrMvBufToTabCmdmap(funcstr)
+    let l:ct = tabpagenr()      " ct: current tab
+    let l:lt = tabpagenr('$')   " ct: last tab
+
+    return  {
+          \ 'nb': {-> l:ct-1>0 ?      'call '.a:funcstr.'('.(l:ct-1).')' : ''}(),
+          \ 'nf': {-> l:ct+1<l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''}(),
+          \ 'wb': 'call '.a:funcstr.'('.l:lt.')',
+          \ 'wf': 'call '.a:funcstr.'(1)',
+          \ }
+endfunction
+
 function! ctrlspace#keys#buffer#CopyBufferToTab(k)
-    let FuncRef = function('ctrlspace#buffers#CopyBufferToTab')
-    if a:k ==# "<"
-        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
-    elseif a:k ==# ">"
-        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
+    if s:modes.Buffer.Data.SubMode ==# "all"
+        return 0
     endif
+
+    let dir = {'<': 'B', '>': 'F'}[a:k]
+    " TODO: initialize these cmd_dicts once elsewhere, instead of at every single call of these movement functions
+    let cmdmap = s:generateCpOrMvBufToTabCmdmap('ctrlspace#buffers#CopyBufferToTab')
+    let CmdFnRef = ctrlspace#keys#changebuftab#RegisterCmds(cmdmap)
+    call ctrlspace#keys#changebuftab#Changer(CmdFnRef, dir)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveBufferToTab(k)
-    let FuncRef = function('ctrlspace#buffers#MoveBufferToTab')
-    if a:k ==# "{"
-        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
-    elseif a:k ==# "}"
-        call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
+    if s:modes.Buffer.Data.SubMode ==# "all"
+        return 0
     endif
+
+    let dir = {'{': 'B', '}': 'F'}[a:k]
+    " TODO: initialize these cmd_dicts once elsewhere, instead of at every single call of these movement functions
+    let cmdmap = s:generateCpOrMvBufToTabCmdmap('ctrlspace#buffers#MoveBufferToTab')
+    let CmdFnRef= ctrlspace#keys#changebuftab#RegisterCmds(cmdmap)
+    call ctrlspace#keys#changebuftab#Changer(CmdFnRef, dir)
 endfunction
+
+" function! ctrlspace#keys#buffer#CopyBufferToTab(k)
+"     let FuncRef = function('ctrlspace#buffers#CopyBufferToTab')
+"     if a:k ==# "<"
+"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
+"     elseif a:k ==# ">"
+"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
+"     endif
+" endfunction
+
+" function! ctrlspace#keys#buffer#MoveBufferToTab(k)
+"     let FuncRef = function('ctrlspace#buffers#MoveBufferToTab')
+"     if a:k ==# "{"
+"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
+"     elseif a:k ==# "}"
+"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
+"     endif
+" endfunction
 
 function! ctrlspace#keys#buffer#DeleteBuffer(k)
     call ctrlspace#buffers#DeleteBuffer()
@@ -306,25 +357,25 @@ function! s:toggleAllMode()
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! s:cpOrMvBuf2TabWithWraparound(cpOrMvFunc, mvDir)
-    if s:modes.Buffer.Data.SubMode ==# "all"
-        return 0
-    endif
-
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
-
-    if a:mvDir ==# "-"
-        if curTab > 1
-            call a:cpOrMvFunc(curTab - 1)
-        elseif curTab == 1 && s:config.EnableWraparound
-            call a:cpOrMvFunc(lstTab)
-        endif
-    elseif a:mvDir ==# "+"
-        if curTab < lstTab
-            call a:cpOrMvFunc(curTab + 1)
-        elseif curTab == lstTab && s:config.EnableWraparound
-            call a:cpOrMvFunc(1)
-        endif
-    endif
-endfunction
+" function! s:cpOrMvBuf2TabWithWraparound(cpOrMvFunc, mvDir)
+"     if s:modes.Buffer.Data.SubMode ==# "all"
+"         return 0
+"     endif
+"
+"     let curTab = tabpagenr()
+"     let lstTab = tabpagenr('$')
+"
+"     if a:mvDir ==# "-"
+"         if curTab > 1
+"             call a:cpOrMvFunc(curTab - 1)
+"         elseif curTab == 1 && s:config.EnableWraparound
+"             call a:cpOrMvFunc(lstTab)
+"         endif
+"     elseif a:mvDir ==# "+"
+"         if curTab < lstTab
+"             call a:cpOrMvFunc(curTab + 1)
+"         elseif curTab == lstTab && s:config.EnableWraparound
+"             call a:cpOrMvFunc(1)
+"         endif
+"     endif
+" endfunction

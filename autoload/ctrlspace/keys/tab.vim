@@ -109,27 +109,41 @@ function! ctrlspace#keys#tab#RemoveTabLabel(k)
     endif
 endfunction
 
+" function! ctrlspace#keys#tab#MoveHelper(k)
+"     let curTab = tabpagenr()
+"     let lstTab = tabpagenr('$')
+"
+"     if (a:k ==# "+") || (a:k ==# "}")
+"       let mvDir = "+"
+"     elseif (a:k ==# "-") || (a:k ==# "{")
+"       let mvDir = "-"
+"     endif
+"
+"     if s:config.EnableWraparound &&
+"      \ curTab == 1 && mvDir == "-"
+"         let cmd = "tabm"
+"     elseif s:config.EnableWraparound &&
+"          \ curTab == lstTab && mvDir == "+"
+"         let cmd = "tabm 0"
+"     else
+"       let cmd = "tabm" . mvDir . "1"
+"     endif
+"
+"     silent! exe cmd
+" endfunction
+
 function! ctrlspace#keys#tab#MoveHelper(k)
-    let curTab = tabpagenr()
-    let lstTab = tabpagenr('$')
+    let dir = {'-': 'B', '+': 'F', '{': 'B', '}': 'F'}[a:k]
 
-    if (a:k ==# "+") || (a:k ==# "}")
-      let mvDir = "+"
-    elseif (a:k ==# "-") || (a:k ==# "{")
-      let mvDir = "-"
-    endif
+    let cmds = {
+          \ 'nb': {-> tabpagenr()!=1 ? 'tabm-1' : ''}(),
+          \ 'nf': {-> tabpagenr()!=tabpagenr('$') ? 'tabm+1' : ''}(),
+          \ 'wb': 'tabm $',
+          \ 'wf': 'tabm 0',
+          \ }
+    let Action = ctrlspace#keys#changebuftab#RegisterCmds(cmds)
 
-    if s:config.EnableWraparound && 
-     \ curTab == 1 && mvDir == "-"
-        let cmd = "tabm"
-    elseif s:config.EnableWraparound && 
-         \ curTab == lstTab && mvDir == "+"
-        let cmd = "tabm 0"
-    else
-      let cmd = "tabm" . mvDir . "1"
-    endif
-
-    silent! exe cmd
+    call ctrlspace#keys#changebuftab#Changer(Action, dir)
 endfunction
 
 function! ctrlspace#keys#tab#MoveTab(k)
@@ -137,7 +151,7 @@ function! ctrlspace#keys#tab#MoveTab(k)
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
 
-    " NOTE: this branch is likely legacy
+    " NOTE: this branch is kept as legacy
     if v:version < 704
         if (a:k ==# "+") || (a:k ==# "}")
             silent! exe "tabm" . tabpagenr()
