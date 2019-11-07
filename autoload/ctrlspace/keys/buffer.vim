@@ -166,17 +166,7 @@ function! ctrlspace#keys#buffer#NewTabLabel(k)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveTab(k)
-    " NOTE: this branch is kept as legacy
-    if v:version < 704
-        if a:k ==# "+"
-            silent! exe "tabm" . tabpagenr()
-        elseif a:k ==# "-"
-            silent! exe "tabm" . (tabpagenr() - 2)
-        endif
-    else
-        call ctrlspace#keys#tab#MoveHelper(a:k)
-    endif
-
+    call ctrlspace#keys#tab#MoveHelper(a:k)
     call ctrlspace#util#SetStatusline()
     redraws
 endfunction
@@ -187,45 +177,18 @@ function! ctrlspace#keys#buffer#RemoveTabLabel(k)
     redraw!
 endfunction
 
-" function! ctrlspace#keys#buffer#SwitchTab(k)
-"     call ctrlspace#window#Kill(0, 1)
-"
-"     if a:k ==# "["
-"         silent! exe "normal! gT"
-"     elseif a:k ==# "]"
-"         silent! exe "normal! gt"
-"     endif
-"
-"     call ctrlspace#window#Toggle(0)
-" endfunction
-
 function! ctrlspace#keys#buffer#SwitchTab(k)
     call ctrlspace#window#Kill(0, 1)
-
-    let dir = {'[': 'B', ']': 'F'}[a:k]
+    let dir = {'[': 'BWD', ']': 'FWD'}[a:k]
     call ctrlspace#changebuftab#Execute("SwitchTabInBufMode", dir)
-
     call ctrlspace#window#Toggle(0)
 endfunction
-
-" function! s:generateCpOrMvBufToTabCmdmap(funcstr)
-"     let l:ct = tabpagenr()      " ct: current tab
-"     let l:lt = tabpagenr('$')   " ct: last tab
-"
-"     return  {
-"           \ 'nb': {-> l:ct-1>0 ?      'call '.a:funcstr.'('.(l:ct-1).')' : ''}(),
-"           \ 'nf': {-> l:ct+1<l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''}(),
-"           \ 'wb': 'call '.a:funcstr.'('.l:lt.')',
-"           \ 'wf': 'call '.a:funcstr.'(1)',
-"           \ }
-" endfunction
 
 function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
-
-    let dir = {'<': 'B', '>': 'F'}[a:k]
+    let dir = {'<': 'BWD', '>': 'FWD'}[a:k]
     call ctrlspace#changebuftab#Execute('CopyBufferToTab', dir)
 endfunction
 
@@ -233,28 +196,9 @@ function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
-
-    let dir = {'{': 'B', '}': 'F'}[a:k]
+    let dir = {'{': 'BWD', '}': 'FWD'}[a:k]
     call ctrlspace#changebuftab#Execute('MoveBufferToTab', dir)
 endfunction
-
-" function! ctrlspace#keys#buffer#CopyBufferToTab(k)
-"     let FuncRef = function('ctrlspace#buffers#CopyBufferToTab')
-"     if a:k ==# "<"
-"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
-"     elseif a:k ==# ">"
-"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
-"     endif
-" endfunction
-
-" function! ctrlspace#keys#buffer#MoveBufferToTab(k)
-"     let FuncRef = function('ctrlspace#buffers#MoveBufferToTab')
-"     if a:k ==# "{"
-"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '-')
-"     elseif a:k ==# "}"
-"         call s:cpOrMvBuf2TabWithWraparound(FuncRef, '+')
-"     endif
-" endfunction
 
 function! ctrlspace#keys#buffer#DeleteBuffer(k)
     call ctrlspace#buffers#DeleteBuffer()
@@ -341,26 +285,3 @@ function! s:toggleAllMode()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
 endfunction
-
-" function! s:cpOrMvBuf2TabWithWraparound(cpOrMvFunc, mvDir)
-"     if s:modes.Buffer.Data.SubMode ==# "all"
-"         return 0
-"     endif
-"
-"     let curTab = tabpagenr()
-"     let lstTab = tabpagenr('$')
-"
-"     if a:mvDir ==# "-"
-"         if curTab > 1
-"             call a:cpOrMvFunc(curTab - 1)
-"         elseif curTab == 1 && s:config.EnableWraparound
-"             call a:cpOrMvFunc(lstTab)
-"         endif
-"     elseif a:mvDir ==# "+"
-"         if curTab < lstTab
-"             call a:cpOrMvFunc(curTab + 1)
-"         elseif curTab == lstTab && s:config.EnableWraparound
-"             call a:cpOrMvFunc(1)
-"         endif
-"     endif
-" endfunction

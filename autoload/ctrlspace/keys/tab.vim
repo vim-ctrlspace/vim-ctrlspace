@@ -80,11 +80,8 @@ endfunction
 
 function! ctrlspace#keys#tab#SwitchTab(k)
     call ctrlspace#window#MoveSelectionBar(tabpagenr())
-    if a:k ==# "["
-        call feedkeys("k\<Space>")
-    elseif a:k ==# "]"
-        call feedkeys("j\<Space>")
-    endif
+    let dir = {'[': 'BWD', ']': 'FWD'}[a:k]
+    call ctrlspace#changebuftab#Execute("SwitchTabInTabMode", dir)
 endfunction
 
 function! ctrlspace#keys#tab#NewTabLabel(k)
@@ -109,59 +106,23 @@ function! ctrlspace#keys#tab#RemoveTabLabel(k)
     endif
 endfunction
 
-" function! ctrlspace#keys#tab#MoveHelper(k)
-"     let curTab = tabpagenr()
-"     let lstTab = tabpagenr('$')
-"
-"     if (a:k ==# "+") || (a:k ==# "}")
-"       let mvDir = "+"
-"     elseif (a:k ==# "-") || (a:k ==# "{")
-"       let mvDir = "-"
-"     endif
-"
-"     if s:config.EnableWraparound &&
-"      \ curTab == 1 && mvDir == "-"
-"         let cmd = "tabm"
-"     elseif s:config.EnableWraparound &&
-"          \ curTab == lstTab && mvDir == "+"
-"         let cmd = "tabm 0"
-"     else
-"       let cmd = "tabm" . mvDir . "1"
-"     endif
-"
-"     silent! exe cmd
-" endfunction
-
+" this function is also used to move tabs in Buffer mode
 function! ctrlspace#keys#tab#MoveHelper(k)
-    let dir = {'-': 'B', '+': 'F', '{': 'B', '}': 'F'}[a:k]
-
-    let cmds = {
-          \ 'nb': {-> tabpagenr()!=1 ? 'tabm-1' : ''}(),
-          \ 'nf': {-> tabpagenr()!=tabpagenr('$') ? 'tabm+1' : ''}(),
-          \ 'wb': 'tabm $',
-          \ 'wf': 'tabm 0',
-          \ }
-    let Action = ctrlspace#keys#changebuftab#RegisterCmds(cmds)
-
-    call ctrlspace#keys#changebuftab#Changer(Action, dir)
+    let dir = {'-': 'BWD', '+': 'FWD', '{': 'BWD', '}': 'FWD'}[a:k]
+    if v:version < 704
+        " NOTE: the tabmove cmds used here are directly copied from the existing code,
+        " and are assumed to work for <704 on faith, as they don't work for newer vers.
+        call ctrlspace#changebuftab#Execute("MoveTabLegacy", dir)
+    else
+        call ctrlspace#changebuftab#Execute("MoveTab", dir)
+    endif
 endfunction
 
 function! ctrlspace#keys#tab#MoveTab(k)
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
-
-    " NOTE: this branch is kept as legacy
-    if v:version < 704
-        if (a:k ==# "+") || (a:k ==# "}")
-            silent! exe "tabm" . tabpagenr()
-        elseif (a:k ==# "-") || (a:k ==# "{")
-            silent! exe "tabm" . (tabpagenr() - 2)
-        endif
-    else
-        call ctrlspace#keys#tab#MoveHelper(a:k)
-    endif
-
+    call ctrlspace#keys#tab#MoveHelper(a:k)
     call ctrlspace#window#Toggle(0)
     call ctrlspace#window#Kill(0, 0)
     call s:modes.Tab.Enable()
