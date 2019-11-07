@@ -203,31 +203,22 @@ function! ctrlspace#keys#buffer#SwitchTab(k)
     call ctrlspace#window#Kill(0, 1)
 
     let dir = {'[': 'B', ']': 'F'}[a:k]
-
-    let cmds = {
-          \ 'nb': {-> tabpagenr()!=1 ? 'normal! gT' : ''}(),
-          \ 'nf': {-> tabpagenr()!=tabpagenr('$') ? 'normal! gt' : ''}(),
-          \ 'wb': 'normal! gT',
-          \ 'wf': 'normal! gt',
-          \ }
-
-    let Action = ctrlspace#keys#changebuftab#RegisterCmds(cmds)
-    call ctrlspace#keys#changebuftab#Changer(Action, dir)
+    call ctrlspace#changebuftab#Execute("SwitchTabInBufMode", dir)
 
     call ctrlspace#window#Toggle(0)
 endfunction
 
-function! s:generateCpOrMvBufToTabCmdmap(funcstr)
-    let l:ct = tabpagenr()      " ct: current tab
-    let l:lt = tabpagenr('$')   " ct: last tab
-
-    return  {
-          \ 'nb': {-> l:ct-1>0 ?      'call '.a:funcstr.'('.(l:ct-1).')' : ''}(),
-          \ 'nf': {-> l:ct+1<l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''}(),
-          \ 'wb': 'call '.a:funcstr.'('.l:lt.')',
-          \ 'wf': 'call '.a:funcstr.'(1)',
-          \ }
-endfunction
+" function! s:generateCpOrMvBufToTabCmdmap(funcstr)
+"     let l:ct = tabpagenr()      " ct: current tab
+"     let l:lt = tabpagenr('$')   " ct: last tab
+"
+"     return  {
+"           \ 'nb': {-> l:ct-1>0 ?      'call '.a:funcstr.'('.(l:ct-1).')' : ''}(),
+"           \ 'nf': {-> l:ct+1<l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''}(),
+"           \ 'wb': 'call '.a:funcstr.'('.l:lt.')',
+"           \ 'wf': 'call '.a:funcstr.'(1)',
+"           \ }
+" endfunction
 
 function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
@@ -235,10 +226,7 @@ function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     endif
 
     let dir = {'<': 'B', '>': 'F'}[a:k]
-    " TODO: initialize these cmd_dicts once elsewhere, instead of at every single call of these movement functions
-    let cmdmap = s:generateCpOrMvBufToTabCmdmap('ctrlspace#buffers#CopyBufferToTab')
-    let CmdFnRef = ctrlspace#keys#changebuftab#RegisterCmds(cmdmap)
-    call ctrlspace#keys#changebuftab#Changer(CmdFnRef, dir)
+    call ctrlspace#changebuftab#Execute('CopyBufferToTab', dir)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveBufferToTab(k)
@@ -247,10 +235,7 @@ function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     endif
 
     let dir = {'{': 'B', '}': 'F'}[a:k]
-    " TODO: initialize these cmd_dicts once elsewhere, instead of at every single call of these movement functions
-    let cmdmap = s:generateCpOrMvBufToTabCmdmap('ctrlspace#buffers#MoveBufferToTab')
-    let CmdFnRef= ctrlspace#keys#changebuftab#RegisterCmds(cmdmap)
-    call ctrlspace#keys#changebuftab#Changer(CmdFnRef, dir)
+    call ctrlspace#changebuftab#Execute('MoveBufferToTab', dir)
 endfunction
 
 " function! ctrlspace#keys#buffer#CopyBufferToTab(k)
