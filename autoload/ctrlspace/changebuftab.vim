@@ -8,8 +8,8 @@ function! s:genCpOrMvBufToTabCmdmap(funcstr)
     let l:ct = tabpagenr()      " ct: current tab
     let l:lt = tabpagenr('$')   " lt: last tab
     return  {
-          \ 'nb': {-> l:ct-1 > 0      ? 'call '.a:funcstr.'('.(l:ct-1).')' : ''}(),
-          \ 'nf': {-> l:ct+1 < l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''}(),
+          \ 'nb': eval("l:ct-1 > 0      ? 'call '.a:funcstr.'('.(l:ct-1).')' : ''"),
+          \ 'nf': eval("l:ct+1 < l:lt+1 ? 'call '.a:funcstr.'('.(l:ct+1).')' : ''"),
           \ 'wb': 'call '.a:funcstr.'('.l:lt.')',
           \ 'wf': 'call '.a:funcstr.'(1)',
           \ }
@@ -17,8 +17,8 @@ endfunction
 
 function! s:genSwitchTabCmdmap(tabBwd, tabFwd)
     return  {
-          \ 'nb': {-> tabpagenr() != 1              ? a:tabBwd : ''}(),
-          \ 'nf': {-> tabpagenr() != tabpagenr('$') ? a:tabFwd : ''}(),
+          \ 'nb': eval("tabpagenr() != 1              ? a:tabBwd : ''"),
+          \ 'nf': eval("tabpagenr() != tabpagenr('$') ? a:tabFwd : ''"),
           \ 'wb': a:tabBwd,
           \ 'wf': a:tabFwd,
           \ }
@@ -26,8 +26,8 @@ endfunction
 
 function! s:genMoveTabCmdmap(tmvBwd, tmvFwd)
     return {
-           \ 'nb': {-> tabpagenr() != 1              ? a:tmvBwd : ''}(),
-           \ 'nf': {-> tabpagenr() != tabpagenr('$') ? a:tmvFwd : ''}(),
+           \ 'nb': eval("tabpagenr() != 1              ? a:tmvBwd : ''"),
+           \ 'nf': eval("tabpagenr() != tabpagenr('$') ? a:tmvFwd : ''"),
            \ 'wb': 'tabm $',
            \ 'wf': 'tabm 0',
            \ }
