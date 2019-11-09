@@ -60,7 +60,7 @@ let s:configuration = {
                     \ "SaveWorkspaceOnExit":      0,
                     \ "SaveWorkspaceOnSwitch":    0,
                     \ "LoadLastWorkspaceOnStart": 0,
-                    \ "EnableWraparound":         1,
+                    \ "ChangeBufTabWrapsAround":  1,
                     \ "CacheDir":                 expand($HOME),
                     \ "ProjectRootMarkers":       [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"],
                     \ "UseUnicode":               1,
