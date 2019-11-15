@@ -314,10 +314,19 @@ endfunction
 
 function! s:collectKeysInfo(mapName)
     for key in sort(keys(s:helpMap[a:mapName]))
-        let fn = s:helpMap[a:mapName][key]
+        let FnName = s:helpMap[a:mapName][key]
 
-        if has_key(s:descriptions, fn) && !empty(s:descriptions[fn])
-            call s:keyHelp(key, s:descriptions[fn])
+        if type(FnName) == v:t_func && get(FnName, 'name') == "ctrlspace#keys#nop#_ExecException"
+            let excpMode = get(FnName, 'args')[0]
+            let descFunc = get(FnName, 'args')[1]
+            let extrInfo = ' (NOP Mode exception with ' . toupper(excpMode) . ' LIST)'
+        elseif type(FnName) == v:t_string
+            let descFunc = FnName
+            let extrInfo = ''
+        endif
+
+        if has_key(s:descriptions, descFunc) && !empty(s:descriptions[descFunc])
+            call s:keyHelp(key, s:descriptions[descFunc] . extrInfo)
         endif
     endfor
 endfunction

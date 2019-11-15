@@ -35,3 +35,24 @@ function! ctrlspace#keys#nop#ToggleAllModeAndSearch(k)
         call ctrlspace#keys#buffer#ToggleAllModeAndSearch(a:k)
     endif
 endfunction
+
+
+function! ctrlspace#keys#nop#ExceptionsInit() abort
+    call s:AddExceptionMapping("ctrlspace#keys#buffer#MoveTab",       "Buffer", ["+", "-"])
+    call s:AddExceptionMapping("ctrlspace#keys#buffer#SwitchTab",     "Buffer", ["[", "]"])
+    call s:AddExceptionMapping("ctrlspace#keys#file#Refresh",         "File",   ["r"])
+endfunction
+
+function! s:AddExceptionMapping(actionName, excpMode, keys) abort
+    call ctrlspace#keys#AddMapping(function('ctrlspace#keys#nop#_ExecException', 
+                                           \ [a:excpMode, a:actionName]), 
+                                  \ "Nop", a:keys)
+endfunction
+
+function! ctrlspace#keys#nop#_ExecException(excpMode, actionName, k) abort
+    if s:modes[a:excpMode].Enabled
+        call function(a:actionName)(a:k)
+    else
+        call ctrlspace#keys#Undefined(a:k)
+    endif
+endfunction
