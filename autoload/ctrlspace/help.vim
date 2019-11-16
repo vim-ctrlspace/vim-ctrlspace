@@ -318,7 +318,7 @@ function! s:collectKeysInfo(mapName)
 
         if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecException"
             let [md, fn] = get(FnKey, 'args')
-            let extrInfo = ' (NOP + ' . toupper(md) . ' Modes Only)'
+            let extrInfo = ' (NOP + ' . toupper(md) . ' only)'
         elseif type(FnKey) == v:t_string
             let fn = FnKey
             let extrInfo = ''
