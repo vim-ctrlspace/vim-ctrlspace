@@ -37,19 +37,27 @@ function! ctrlspace#keys#nop#ToggleAllModeAndSearch(k)
 endfunction
 
 
+" -----------------------------
 " Dbmdex: DouBle MoDe EXception
+" -----------------------------
+
+" Define NOP + <Mode> excepted mappings in the following Initiator
 function! ctrlspace#keys#nop#DbmdexInit() abort
     call s:AddDbmdexMapping("ctrlspace#keys#buffer#MoveTab",       "Buffer", ["+", "-"])
     call s:AddDbmdexMapping("ctrlspace#keys#buffer#SwitchTab",     "Buffer", ["[", "]"])
     call s:AddDbmdexMapping("ctrlspace#keys#file#Refresh",         "File",   ["r"])
 endfunction
 
+" Function used to add these Dbmdex mappings
+" Its signature is the same as that of ctrlspace#keys#AddMapping
 function! s:AddDbmdexMapping(actionName, excpMode, keys) abort
     call ctrlspace#keys#AddMapping(function('ctrlspace#keys#nop#_ExecDbmdexAction', 
                                            \ [a:excpMode, a:actionName]), 
                                   \ "Nop", a:keys)
 endfunction
 
+" Function that wraps the action normally available in <Mode>, and makes it
+" available when CtrlSpace is in the double-mode enabled state of NOP + <Mode>
 function! ctrlspace#keys#nop#_ExecDbmdexAction(excpMode, actionName, k) abort
     if s:modes[a:excpMode].Enabled
         call function(a:actionName)(a:k)
