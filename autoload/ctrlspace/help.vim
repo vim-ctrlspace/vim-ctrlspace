@@ -318,14 +318,13 @@ function! s:collectKeysInfo(mapName)
 
         if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecException"
             let [md, fn] = get(FnKey, 'args')
-            let extrInfo = ' (NOP + ' . toupper(md) . ' only)'
+            let fn = s:modes[md].Enabled ? fn : ''
         elseif type(FnKey) == v:t_string
             let fn = FnKey
-            let extrInfo = ''
         endif
 
         if has_key(s:descriptions, fn) && !empty(s:descriptions[fn])
-            call s:keyHelp(key, s:descriptions[fn] . extrInfo)
+            call s:keyHelp(key, s:descriptions[fn])
         endif
     endfor
 endfunction
