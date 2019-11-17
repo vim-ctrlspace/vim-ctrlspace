@@ -316,7 +316,7 @@ function! s:collectKeysInfo(mapName)
     for key in sort(keys(s:helpMap[a:mapName]))
         let FnKey = s:helpMap[a:mapName][key]
 
-        if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecException"
+        if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecDbmdexAction"
             let [md, fn] = get(FnKey, 'args')
             let fn = s:modes[md].Enabled ? fn : ''
         elseif type(FnKey) == v:t_string

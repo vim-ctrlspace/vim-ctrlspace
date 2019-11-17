@@ -37,19 +37,20 @@ function! ctrlspace#keys#nop#ToggleAllModeAndSearch(k)
 endfunction
 
 
-function! ctrlspace#keys#nop#ExceptionsInit() abort
-    call s:AddExceptionMapping("ctrlspace#keys#buffer#MoveTab",       "Buffer", ["+", "-"])
-    call s:AddExceptionMapping("ctrlspace#keys#buffer#SwitchTab",     "Buffer", ["[", "]"])
-    call s:AddExceptionMapping("ctrlspace#keys#file#Refresh",         "File",   ["r"])
+" Dbmdex: DouBle MoDe EXception
+function! ctrlspace#keys#nop#DbmdexInit() abort
+    call s:AddDbmdexMapping("ctrlspace#keys#buffer#MoveTab",       "Buffer", ["+", "-"])
+    call s:AddDbmdexMapping("ctrlspace#keys#buffer#SwitchTab",     "Buffer", ["[", "]"])
+    call s:AddDbmdexMapping("ctrlspace#keys#file#Refresh",         "File",   ["r"])
 endfunction
 
-function! s:AddExceptionMapping(actionName, excpMode, keys) abort
-    call ctrlspace#keys#AddMapping(function('ctrlspace#keys#nop#_ExecException', 
+function! s:AddDbmdexMapping(actionName, excpMode, keys) abort
+    call ctrlspace#keys#AddMapping(function('ctrlspace#keys#nop#_ExecDbmdexAction', 
                                            \ [a:excpMode, a:actionName]), 
                                   \ "Nop", a:keys)
 endfunction
 
-function! ctrlspace#keys#nop#_ExecException(excpMode, actionName, k) abort
+function! ctrlspace#keys#nop#_ExecDbmdexAction(excpMode, actionName, k) abort
     if s:modes[a:excpMode].Enabled
         call function(a:actionName)(a:k)
     else
