@@ -41,7 +41,8 @@ endfunction
 " Dbmdex: DouBle MoDe EXception
 " -----------------------------
 
-" Define NOP + <Mode> excepted mappings in the following Initiator
+" Define keymappings for combined NOP+<Mode> mode inside the following Initiator,
+" where <Mode> is a ListView mode such as BUFFER, FILE, BOOKMARK, etc.
 function! ctrlspace#keys#nop#DbmdexInit() abort
     call s:AddDbmdexMapping("ctrlspace#keys#buffer#MoveTab",       "Buffer", ["+", "-"])
     call s:AddDbmdexMapping("ctrlspace#keys#buffer#SwitchTab",     "Buffer", ["[", "]"])
