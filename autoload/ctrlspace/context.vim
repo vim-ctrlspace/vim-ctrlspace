@@ -120,10 +120,20 @@ function! s:detectEngine()
             endif
         endfor
 
-        if uname =~? "64"
-            let arch = "amd64"
+        if uname =~? "mips64le"
+            let arch = "mips64le"
+        elseif uname =~? "mips64"
+            let arch = "mips64"
+        elseif uname =~? "mipsle"
+            let arch = "mipsle"
+        elseif uname =~? "mips"
+            let arch = "mips"
+        elseif uname =~? "s390x"
+            let arch = "s390x"
         elseif uname =~? "arm"
             let arch = "arm"
+        elseif uname =~? "64"
+            let arch = "amd64"
         else
             let arch = "386"
         endif
