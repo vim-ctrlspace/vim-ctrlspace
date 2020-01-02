@@ -89,6 +89,20 @@ function! s:init()
                       \ "IM":   strwidth(s:conf.Symbols.IM),
                       \ "Dots": strwidth(s:conf.Symbols.Dots)
                       \ }
+
+    if s:conf.FileEngine ==# "auto"
+        let s:conf.FileEngine = s:detectEngine()
+    endif
+
+    if !empty(s:conf.FileEngine)
+        let s:conf.FileEngineName = s:conf.FileEngine
+        let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
+        let s:conf.FileEngine = executable(ebin) ? shellescape(ebin) : ""
+    endif
+
+    if empty(s:conf.FileEngine)
+        let s:conf.FileEngineName = "VIM"
+    endif
 endfunction
 
 function! s:detectEngine()
@@ -107,10 +121,20 @@ function! s:detectEngine()
             endif
         endfor
 
-        if uname =~? "64"
-            let arch = "amd64"
+        if uname =~? "mips64le"
+            let arch = "mips64le"
+        elseif uname =~? "mips64"
+            let arch = "mips64"
+        elseif uname =~? "mipsle"
+            let arch = "mipsle"
+        elseif uname =~? "mips"
+            let arch = "mips"
+        elseif uname =~? "s390x"
+            let arch = "s390x"
         elseif uname =~? "arm"
             let arch = "arm"
+        elseif uname =~? "64"
+            let arch = "amd64"
         else
             let arch = "386"
         endif
@@ -147,18 +171,5 @@ function! ctrlspace#context#SymbolSizes()
 endfunction
 
 function! ctrlspace#context#Configuration()
-    " ensure system() called by autload function
-    if s:conf.FileEngine ==# "auto"
-      let s:conf.FileEngine = s:detectEngine()
-
-      if empty(s:conf.FileEngine)
-        let s:conf.FileEngineName = "VIM"
-      else
-        let s:conf.FileEngineName = s:conf.FileEngine
-        let ebin = s:pluginFolder . "/bin/" . s:conf.FileEngine
-        let s:conf.FileEngine = executable(ebin) ? shellescape(ebin) : ""
-      endif
-    endif
-
     return s:conf
 endfunction

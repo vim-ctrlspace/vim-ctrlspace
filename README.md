@@ -24,8 +24,7 @@ pet project now :). If you have a question, a feature request, or a new
 idea, don't hesitate to post new issues or pull requests. Collaboration is
 the most awesome thing in the open source community!
 
-
-### Version 5
+# Version 5
 
 Vim-CtrlSpace started over 2 years ago as a fork of [another
 plugin](https://github.com/roblillack/vim-bufferlist) and the Version
@@ -56,8 +55,7 @@ functions have been renamed. Please check Vim help for more info:
 :help ctrlspace-configuration
 ```
 
-
-## Idea by Analogy
+# Idea by Analogy
 
 Vim-CtrlSpace interface is a window you can invoke by pressing
 `<C-Space>`. The window displays a list of items. You can select those
@@ -114,9 +112,9 @@ It's like taking a picture of your desk with an instant camera. You can
 save multiple workspaces per project with **Workspace List**.
 
 
-## Getting Started
+# Getting Started
 
-### Installation
+## Installation
 
 If you use Vundle add to your `.vimrc`:
 
@@ -131,7 +129,7 @@ cd ~/.vim
 git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 ```
 
-### Basic Settings
+## Basic Settings
 
 First please make sure that you set `nocompatible` and `hidden` options
 (required by the plugin) in your `.vimrc`:
@@ -152,7 +150,7 @@ use of tabs intensively, tabline would just get in your way. **Tab List**
 (`<l>`) makes tabline obsolete ;).
 
 
-#### Neovim
+### Neovim
 
 Neovim requires adding the following line to your `.vimrc` or `init.vim`:
 
@@ -161,24 +159,54 @@ let g:CtrlSpaceDefaultMappingKey = "<C-space> "
 ```
 
 Note the trailing space at the end of the mapping. Neovim doesn't mind
-it, but it makes vim-ctrlspace's "is the mapping left at default" check 
+it, but it makes vim-ctrlspace's "is the mapping left at default" check
 fail so it won't change the mapping to `<nul>`.
 
 
-#### Go Engine
+### Go Engine
 
 The plugin provides engine compiled for popular operating systems and
 architectures. By default it will attempt to detect your os and
 architecture. To see if auto detection was successful press `<?>`.
 
-To find more about file engines check:
+To speed up the startup of Vim, replace it by a custom simpler one that
+restricts to those architectures most probably used by you, and does not
+involve system calls. For example, if you use
+[vim-plug](https://github.com/junegunn/vim-plug), then by adding to your
+`vimrc`:
+
+```vim
+if has('win32')
+    let s:vimfiles = '~/vimfiles'
+    let s:os   = 'windows'
+else
+    let s:vimfiles = '~/.vim'
+    if has('mac') || has('gui_macvim')
+        let s:os = 'darwin'
+    else
+    " elseif has('gui_gtk2') || has('gui_gtk3')
+        let s:os = 'linux'
+    endif
+endif
+
+let g:CtrlSpaceFileEngine = s:vimfiles . '/plugged/vim-ctrlspace' . '/bin/file_engine_' . s:os . '_amd64'
+```
+
+The file engine binaries have been compiled for various OS's and CPU
+types, but only those for Linux, MacOS and Windows on 64 bit architectures
+are available in the git repository. The other versions for their 32 bit
+architecture counterparts, as well as for FreeBSD, NetBSD and OpenBSD
+on `ARM`, `MIPS`, `amd64` and `32` bit architectures can be downloaded at:
+
+	<https://git.io/vim-ctrlspace-release-all_os_file_engines>
+
+To find more about setting up the file engines, check:
 
 ```VimL
 :help g:CtrlSpaceFileEngine
 ```
 
-
-#### Symbols
+### Symbols
 
 Vim-Ctrlspace displays icons in the UI if your font supports UTF8, or
 ASCII characters as a fallback. Some symbols (glyphs) might not look well
@@ -206,7 +234,7 @@ If you feel that you have found a better symbol for a given view, you are
 more than welcome to open a pull request.
 
 
-#### Glob Command
+### Glob Command
 
 Another important setting is the *Glob* command. This command is used to
 collect all files in your project directory. Specifically, I recommend
@@ -219,7 +247,7 @@ if executable("ag")
 endif
 ```
 
-#### Search Timing
+### Search Timing
 
 If you usually have to deal with huge projects having 100 000 files you
 can increase plugin fuzzy search delay to make it even more responsible by
@@ -229,7 +257,7 @@ providing a higher `g:CtrlSpaceSearchTiming` value:
 let g:CtrlSpaceSearchTiming = 500
 ```
 
-#### Colors
+### Colors
 
 Finally, you can adjust some plugin colors. By default plugin uses
 the following setup:
@@ -256,7 +284,7 @@ hi CtrlSpaceSearch guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term
 ```
 
 
-### First Steps
+## First Steps
 
 Alright! You've hopefully installed, configured Vim-CtrlSpace, and
 restarted Vim (otherwise do it!). Now you're wondering how to start using
@@ -287,7 +315,7 @@ For more information please check out Vim-CtrlSpace help directly in Vim:
 
 For key reference press `<?>` inside the plugin window.
 
-### Fuzzy Search Hints
+## Fuzzy Search Hints
 
 If you are used to hitting the `<ctrl-P>` key combination for fuzzy search, add
 this to your .vimrc file:
@@ -298,7 +326,7 @@ nnoremap <silent><C-p> :CtrlSpace O<CR>
 
 Be sure to remember to refresh your search file list using `<r>` command.
 
-### Automatically Saving Workspace
+## Automatically Saving Workspace
 
 Ctrl-Space can automatically save your workspace status based on configurations below:
 
@@ -308,7 +336,7 @@ let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
 let g:CtrlSpaceSaveWorkspaceOnExit = 1
 ```
 
-## Authors and License
+# Authors and License
 
 Copyright &copy; 2013-2015 [Szymon Wrozynski and
 Contributors](https://github.com/vim-ctrlspace/vim-ctrlspace/graphs/contributors).
