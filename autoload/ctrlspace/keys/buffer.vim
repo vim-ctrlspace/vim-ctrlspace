@@ -166,16 +166,7 @@ function! ctrlspace#keys#buffer#NewTabLabel(k)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveTab(k)
-    if v:version < 704
-        if a:k ==# "+"
-            silent! exe "tabm" . tabpagenr()
-        elseif a:k ==# "-"
-            silent! exe "tabm" . (tabpagenr() - 2)
-        endif
-    else
-        silent! exe "tabm" . a:k . "1"
-    endif
-
+    call ctrlspace#keys#tab#MoveHelper(a:k)
     call ctrlspace#util#SetStatusline()
     redraws
 endfunction
@@ -188,13 +179,8 @@ endfunction
 
 function! ctrlspace#keys#buffer#SwitchTab(k)
     call ctrlspace#window#Kill(0, 1)
-
-    if a:k ==# "["
-        silent! exe "normal! gT"
-    elseif a:k ==# "]"
-        silent! exe "normal! gt"
-    endif
-
+    let dir = {'[': 'BWD', ']': 'FWD'}[a:k]
+    call ctrlspace#changebuftab#Execute("SwitchTabInBufMode", dir)
     call ctrlspace#window#Toggle(0)
 endfunction
 
@@ -202,36 +188,16 @@ function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
-
-    let curTab = tabpagenr()
-
-    if a:k ==# "<"
-        if curTab > 1
-            call ctrlspace#buffers#CopyBufferToTab(curTab - 1)
-        endif
-    elseif a:k ==# ">"
-        if curTab < tabpagenr("$")
-            call ctrlspace#buffers#CopyBufferToTab(curTab + 1)
-        endif
-    endif
+    let dir = {'<': 'BWD', '>': 'FWD'}[a:k]
+    call ctrlspace#changebuftab#Execute('CopyBufferToTab', dir)
 endfunction
 
 function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
-
-    let curTab = tabpagenr()
-
-    if a:k ==# "{"
-        if curTab > 1
-            call ctrlspace#buffers#MoveBufferToTab(curTab - 1)
-        endif
-    elseif a:k ==# "}"
-        if curTab < tabpagenr("$")
-            call ctrlspace#buffers#MoveBufferToTab(curTab + 1)
-        endif
-    endif
+    let dir = {'{': 'BWD', '}': 'FWD'}[a:k]
+    call ctrlspace#changebuftab#Execute('MoveBufferToTab', dir)
 endfunction
 
 function! ctrlspace#keys#buffer#DeleteBuffer(k)
