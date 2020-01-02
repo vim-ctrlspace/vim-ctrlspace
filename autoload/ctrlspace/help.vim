@@ -314,7 +314,18 @@ endfunction
 
 function! s:collectKeysInfo(mapName)
     for key in sort(keys(s:helpMap[a:mapName]))
-        let fn = s:helpMap[a:mapName][key]
+        let FnKey = s:helpMap[a:mapName][key]
+
+        " Due to the way 'ctrlspace#keys#nop#_ExecDbmdexAction' is called (as
+        " a Partial, in order to capture runtime info), it is keyed as a
+        " Funcref, instead of a string like other functions, in s:helpMap
+        " TODO: please improve if better implementation allowing use of string key is known
+        if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecDbmdexAction"
+            let [md, fn] = get(FnKey, 'args')
+            let fn = s:modes[md].Enabled ? fn : ''    " only generate help if the appropriate mode is enabled
+        elseif type(FnKey) == v:t_string
+            let fn = FnKey
+        endif
 
         if has_key(s:descriptions, fn) && !empty(s:descriptions[fn])
             call s:keyHelp(key, s:descriptions[fn])

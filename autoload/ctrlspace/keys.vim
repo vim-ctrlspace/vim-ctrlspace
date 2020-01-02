@@ -34,6 +34,7 @@ function! ctrlspace#keys#Init()
     call ctrlspace#keys#workspace#Init()
     call ctrlspace#keys#bookmark#Init()
     call s:initCustomMappings()
+    call ctrlspace#keys#nop#DbmdexInit()
 endfunction
 
 function! s:initCustomMappings()
