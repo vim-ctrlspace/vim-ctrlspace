@@ -451,7 +451,7 @@ function! s:setUpBuffer()
             let k = '\' . k
         endif
 
-        silent! exe "noremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . k . "\")<CR>"
+        silent! exe "nnoremap <silent><buffer> " . key . " :call ctrlspace#keys#Keypressed(\"" . k . "\")<CR>"
     endfor
 endfunction
 
