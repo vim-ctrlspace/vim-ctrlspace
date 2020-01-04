@@ -33,8 +33,8 @@ function! ctrlspace#files#CollectFiles()
 
             let uniqueFiles = {}
 
-            for fname in empty(s:config.GlobCommand) ? split(globpath('.', '**'), '\n') : split(system(s:config.GlobCommand), '\n')
-                let fnameModified = fnamemodify(has("win32") ? substitute(fname, "\r$", "", "") : fname, ":.")
+            for fname in empty(s:config.GlobCommand) ? split(globpath('.', '**'), '\n') : split(ctrlspace#util#system(s:config.GlobCommand), '\n')
+                let fnameModified = fnamemodify(fname, ":.")
 
                 if isdirectory(fnameModified) || (fnameModified =~# s:config.IgnoredFiles)
                     continue
