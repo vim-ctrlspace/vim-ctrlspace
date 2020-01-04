@@ -131,12 +131,13 @@ git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 
 ## Basic Settings
 
-First please make sure that you set `nocompatible` and `hidden` options
-(required by the plugin) in your `.vimrc`:
+First please make sure that you set `nocompatible` and `hidden` options,
+and set `encoding=utf-8` (as required by the plugin) in your `.vimrc`: >
 
 ```VimL
 set nocompatible
 set hidden
+set encoding=utf-8
 ```
 
 If you feel brave enough **turn off** tabline:
