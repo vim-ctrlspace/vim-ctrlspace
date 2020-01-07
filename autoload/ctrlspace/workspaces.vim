@@ -423,7 +423,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
         else
             let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
 
-            if !(exists("baddList[1]") && !empty(baddList[1]) && !filereadable(baddList[1]))
+            if exists("baddList[1]") && !empty(baddList[1]) && filereadable(baddList[1])
                 call add(lines, cmd)
             endif
         endif
