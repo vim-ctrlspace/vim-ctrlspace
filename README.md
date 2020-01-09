@@ -26,7 +26,7 @@ the most awesome thing in the open source community!
 
 # Version 5
 
-Vim-CtrlSpace started over 2 years ago as a fork of [another
+Vim-CtrlSpace started over 6 years ago as a fork of [another
 plugin](https://github.com/roblillack/vim-bufferlist) and the Version
 **5** is the result of the experience gained during that period and
 cooperation with the community.
@@ -339,7 +339,7 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 
 # Authors and License
 
-Copyright &copy; 2013-2015 [Szymon Wrozynski and
+Copyright &copy; 2013-2020 [Szymon Wrozynski and
 Contributors](https://github.com/vim-ctrlspace/vim-ctrlspace/graphs/contributors).
 Licensed under [MIT
 License](https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
