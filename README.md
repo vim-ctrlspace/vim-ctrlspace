@@ -37,7 +37,7 @@ of ideas and challenges into account. Thanks to users the plugin has
 configurable key mappings and allows you to handle projects with **100
 000** files!
 
-In case you're curious, Vim-CtrlSpace 5 took me 5 months of spare evenings
+In case you're curious, Vim-CtrlSpace 5 took **szw** 5 months of spare evenings
 to complete :).
 
 The most exciting **Vim-CtrlSpace 5** features are:

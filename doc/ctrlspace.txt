@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2015.11.17
+*ctrlspace.txt*             For Vim version 7.3+      Last change: 2020.01.09
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -16,7 +16,7 @@
 
 
 
-Copyright (c) 2013-2015 Szymon Wrozynski and Contributors
+Copyright (c) 2013-2020 Szymon Wrozynski and Contributors
 
 ==========================================================================
 
@@ -139,7 +139,7 @@ is the most awesome thing in the open source community!
 
 1.1 Version 5                                          *ctrlspace-version-5*
 
-Vim-CtrlSpace started over 2 years ago as a fork of another plugin and the
+Vim-CtrlSpace started over 6 years ago as a fork of another plugin and the
 Version 5 is the result of the experience gained during that period and
 cooperation with the community.
 
@@ -149,7 +149,7 @@ of ideas and challenges into account. Thanks to users the plugin has
 configurable key mappings and allows you to handle projects with 100 000
 files!
 
-In case you're curious, Vim-CtrlSpace 5 took me 5 months of spare evenings
+In case you're curious, Vim-CtrlSpace 5 took `szw` 5 months of spare evenings
 to complete :).
 
 The most exciting features of Vim-CtrlSpace 5 are:
@@ -1581,7 +1581,7 @@ should be placed at the bottom (as last ones).
 
 10. Authors and License                      *ctrlspace-authors-and-license*
 
-Copyright (c) 2013-2019 Szymon Wrozynski and Contributors.
+Copyright (c) 2013-2020 Szymon Wrozynski and Contributors.
 
  * https://github.com/vim-ctrlspace/vim-ctrlspace/commits/master
 
