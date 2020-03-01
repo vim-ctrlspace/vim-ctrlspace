@@ -244,7 +244,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     endfor
 
     call s:puts("")
-    call s:puts("Copyright (c) 2013-2015 Szymon Wrozynski and Contributors")
+    call s:puts("Copyright (c) 2013-2020 Szymon Wrozynski and Contributors")
 
     setlocal modifiable
 
