@@ -1,4 +1,4 @@
-*ctrlspace.txt*             For Vim version 7.3+      Last change: 2020.01.09
+*ctrlspace.txt*           For Vim version 7.3+      Last change: 2020.01.09
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -23,7 +23,6 @@ Copyright (c) 2013-2020 Szymon Wrozynski and Contributors
 Table of Contents                                            *ctrlspace-toc*
 
  1. Overview                                            |ctrlspace-overview|
-   1.1 Version 5                                       |ctrlspace-version-5|
  2. Idea by Analogy                                         |ctrlspace-idea|
  3. Getting Started                              |ctrlspace-getting-started|
    3.1 Installation                                 |ctrlspace-installation|
@@ -125,44 +124,12 @@ The plugin name follows the convention of naming fuzzy search plugins
 after their default mappings (like Command-T or CtrlP), hence the plugin
 mapping is by default `Ctrl` + `Space`.
 
-If you like the plugin please don't forget to leave a star for this
-project! This will help me to estimate the plugin popularity and plan
-further development :).
+If you have already starred this repo, thank you!
 
-If you have already starred this repo, thank you! Thanks to you it's my
-pet project now :). If you have a question, a feature request, or a new
-idea, don't hesitate to post new issues or pull requests. Collaboration
-is the most awesome thing in the open source community!
+If you have a question, a feature request, or a new
+idea, don't hesitate to post new issues or pull requests.
 
-                                                             |ctrlspace-toc|
---------------------------------------------------------------------------
-
-1.1 Version 5                                          *ctrlspace-version-5*
-
-Vim-CtrlSpace started over 6 years ago as a fork of another plugin and the
-Version 5 is the result of the experience gained during that period and
-cooperation with the community.
-
-Version 5 is the biggest upgrade in the plugin history. All plugin code
-has been rewritten from scratch taking user feedback as a great resource
-of ideas and challenges into account. Thanks to users the plugin has
-configurable key mappings and allows you to handle projects with 100 000
-files!
-
-In case you're curious, Vim-CtrlSpace 5 took `szw` 5 months of spare evenings
-to complete :).
-
-The most exciting features of Vim-CtrlSpace 5 are:
-
- * better, modular, and extensible code base
- * simplified, well thought-out, and clear design
- * new fuzzy search engine for files (written in Go)
- * more effective and responsive behavior
- * fine-grained configuration
-
-Version 5 is not backward compatible. All configuration variables and API
-functions have been renamed. Please check |ctrlspace-configuration| for
-more info.
+Collaboration is the most awesome thing in the open source community!
 
                                                              |ctrlspace-toc|
 ==========================================================================
@@ -1595,6 +1562,8 @@ Vim-Tabber by Jim Steward and Tabline by Matthew Kitt.
 
 Special thanks to Wojtek Ryrych (https://github.com/ryrych) for help and
 patience ;) and all Contributors.
+
+See `CHANGELOG.md` and the `git log` for descriptions of significant changes.
 
                                                              |ctrlspace-toc|
 ==========================================================================
