@@ -41,6 +41,8 @@ function! s:initCustomMappings()
     for m in ["Search", "Help", "Nop", "Buffer", "File", "Tab", "Workspace", "Bookmark"]
         if has_key(s:config.Keys, m)
             for [k, fn] in items(s:config.Keys[m])
+                " normalize synomymous keynames Enter, Return and CR all to CR
+                let k = (k ==? 'return' || k ==? 'enter' ? 'CR' : k)
                 call ctrlspace#keys#AddMapping(fn, m, [k])
             endfor
         endif
@@ -63,10 +65,10 @@ function! s:initKeyNames()
     let controls = join(controlList, " ")
 
     let numbers  = "1 2 3 4 5 6 7 8 9 0"
-    let specials = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " .
+    let specials = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " . '" ' .
                  \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
                  \ "Down Up Home End Left Right PageUp PageDown " .
-                 \ 'F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 "'
+                 \ "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12"
 
     if !s:config.UseMouseAndArrowsInTerm || has("gui_running")
         let specials .= " Esc"
