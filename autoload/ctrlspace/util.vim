@@ -1,6 +1,40 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
+function! ctrlspace#util#system(cmd, ...)
+    if has('win32')
+        if &shell !~? 'cmd'
+            let saved_shell = [
+                \ &shell,
+                \ &shellcmdflag,
+                \ &shellxquote,
+                \ &shellxescape,
+                \ &shellquote,
+                \ &shellpipe,
+                \ &shellredir,
+                \ &shellslash
+                \]
+            set shell& shellcmdflag& shellxquote& shellxescape&
+            set shellquote& shellpipe& shellredir& shellslash&
+        endif
+    endif
+
+    let output = a:0 > 0 ? system(a:cmd, a:1) : system(a:cmd)
+    return has('win32') ? substitute(output, "\r", '', 'g') : output
+
+    if exists('saved_shell')
+        let [   &shell,
+            \ &shellcmdflag,
+            \ &shellxquote,
+            \ &shellxescape,
+            \ &shellquote,
+            \ &shellpipe,
+            \ &shellredir,
+            \ &shellslash] = saved_shell
+        endif
+    endif
+endfunction
+
 function! ctrlspace#util#NormalizeDirectory(directory)
     let directory = resolve(expand(a:directory))
 
