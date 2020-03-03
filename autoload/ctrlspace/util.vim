@@ -2,21 +2,19 @@ let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
 function! ctrlspace#util#system(cmd, ...)
-    if has('win32')
-        if &shell !~? 'cmd'
-            let saved_shell = [
-                \ &shell,
-                \ &shellcmdflag,
-                \ &shellxquote,
-                \ &shellxescape,
-                \ &shellquote,
-                \ &shellpipe,
-                \ &shellredir,
-                \ &shellslash
-                \]
-            set shell& shellcmdflag& shellxquote& shellxescape&
-            set shellquote& shellpipe& shellredir& shellslash&
-        endif
+    if has('win32') && &shell !~? 'cmd'
+        let saved_shell = [
+            \ &shell,
+            \ &shellcmdflag,
+            \ &shellxquote,
+            \ &shellxescape,
+            \ &shellquote,
+            \ &shellpipe,
+            \ &shellredir,
+            \ &shellslash
+            \]
+        set shell& shellcmdflag& shellxquote& shellxescape&
+        set shellquote& shellpipe& shellredir& shellslash&
     endif
 
     let output = a:0 > 0 ? system(a:cmd, a:1) : system(a:cmd)
@@ -30,7 +28,6 @@ function! ctrlspace#util#system(cmd, ...)
             \ &shellpipe,
             \ &shellredir,
             \ &shellslash ] = saved_shell
-        endif
     endif
 
     return has('win32') ? substitute(output, "\r", '', 'g') : output
