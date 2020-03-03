@@ -20,19 +20,20 @@ function! ctrlspace#util#system(cmd, ...)
     endif
 
     let output = a:0 > 0 ? system(a:cmd, a:1) : system(a:cmd)
-    return has('win32') ? substitute(output, "\r", '', 'g') : output
 
     if exists('saved_shell')
-        let [   &shell,
+        let [ &shell,
             \ &shellcmdflag,
             \ &shellxquote,
             \ &shellxescape,
             \ &shellquote,
             \ &shellpipe,
             \ &shellredir,
-            \ &shellslash] = saved_shell
+            \ &shellslash ] = saved_shell
         endif
     endif
+
+    return has('win32') ? substitute(output, "\r", '', 'g') : output
 endfunction
 
 function! ctrlspace#util#NormalizeDirectory(directory)
