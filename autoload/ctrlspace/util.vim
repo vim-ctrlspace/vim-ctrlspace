@@ -1,6 +1,3 @@
-let s:config = ctrlspace#context#Configuration()
-let s:modes  = ctrlspace#modes#Modes()
-
 function! ctrlspace#util#system(cmd, ...)
     if has('win32') && &shell !~? 'cmd'
         let saved_shell = [
@@ -100,11 +97,12 @@ function! ctrlspace#util#ChDir(dir)
 endfunction
 
 function! s:internalFilePath(name)
+    let config = ctrlspace#context#Configuration()
     let root = ctrlspace#roots#CurrentProjectRoot()
     let fullPart = empty(root) ? "" : (root . "/")
 
-    if !empty(s:config.ProjectRootMarkers)
-        for candidate in s:config.ProjectRootMarkers
+    if !empty(config.ProjectRootMarkers)
+        for candidate in config.ProjectRootMarkers
             let candidatePath = fullPart . candidate
 
             if isdirectory(candidatePath)
@@ -143,6 +141,7 @@ endfunction
 
 function! ctrlspace#util#SetStatusline()
     if has("statusline")
-        silent! exe "let &l:statusline = " . s:config.StatuslineFunction
+        let config = ctrlspace#context#Configuration()
+        silent! exe "let &l:statusline = " . config.StatuslineFunction
     endif
 endfunction
