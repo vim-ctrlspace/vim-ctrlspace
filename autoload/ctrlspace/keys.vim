@@ -65,7 +65,9 @@ function! s:initKeyNames()
     let controls = join(controlList, " ")
 
     let numbers  = "1 2 3 4 5 6 7 8 9 0"
-    let specials = "Space CR BS Tab S-Tab / ? ; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * C-f C-b C-u C-d C-h C-w " . '" ' .
+    let punctuation = "; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * " . 
+                \ '"'
+    let specials = "Space CR BS Tab S-Tab / ? C-f C-b C-u C-d C-h C-w " .
                  \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
                  \ "Down Up Home End Left Right PageUp PageDown " .
                  \ "F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12"
@@ -76,7 +78,7 @@ function! s:initKeyNames()
 
     let specials .= (has("gui_running") || has("win32")) ? " C-Space" : " Nul"
 
-    let keyNames = split(join([lowercase, uppercase, controls, numbers, specials], " "), " ")
+    let keyNames = split(join([lowercase, uppercase, controls, numbers, punctuation, specials], " "), " ")
 
     " won't work with leader mappings
     if ctrlspace#keys#IsDefaultKey()
@@ -95,6 +97,7 @@ function! s:initKeyNames()
     let s:characters.uppercase = split(uppercase, " ")
     let s:characters.controls  = split(controls, " ")
     let s:characters.numbers   = split(numbers, " ")
+    let s:characters.punctuation   = split(punctuation, " ")
     let s:characters.specials  = split(specials, " ")
 endfunction
 
