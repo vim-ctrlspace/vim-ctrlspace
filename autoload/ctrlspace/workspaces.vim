@@ -386,46 +386,45 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     let tabIndex = 0
 
     for cmd in readfile("CS_SESSION")
-        if cmd =~# "^lcd"
+        if cmd =~# "^lcd "
             continue
-
-        " NB: check patch-8.1.149 for backend vim mksession syntax change (tabnext)
+        elseif cmd =~# "^badd\>"
+            let baddList = matchlist(cmd, '\v^badd \+\d+ (\f+)$')
+            if exists("baddList[1]") && filereadable(baddList[1])
+                call add(lines, cmd)
+            endif
         elseif
-        \    ((cmd =~# "^edit") && (tabIndex == 0))
-        \ || (!has('patch-8.1.149') && ( (cmd =~# "^tabnew") || (cmd =~# "^tabedit") ))
-        \ ||  (has('patch-8.1.149') && (cmd =~# "^tabnext$"))
-
+        \    ((cmd =~# '^edit \f\+') && (tabIndex == 0))
+        \ || (!has('patch-8.1.149') && cmd =~# '^tabedit \f\+')
+        \ || ( has('patch-8.1.149') && cmd ==# 'tabnext')
+        " NB: check patch-8.1.149 for backend vim mksession change
             let data = tabData[tabIndex]
 
-            if tabIndex > 0
+            if cmd =~# '^tabedit \f\+'
+                call add(lines, 'tabedit')
+            elseif cmd ==# 'tabnext'
                 call add(lines, cmd)
             endif
 
             for b in data.bufs
-                call add(lines, "edit " . fnameescape(b))
+                call add(lines, 'edit ' . fnameescape(b))
             endfor
+
+            if cmd =~# '^tabedit \f\+'
+                " turn 'tabedit ...' into 'edit ...'
+                call add(lines, cmd[3:])
+            endif
 
             if !empty(data.label)
                 call add(lines, "let t:CtrlSpaceLabel = '" . substitute(data.label, "'", "''","g") . "'")
             endif
-
             if !empty(data.autotab)
                 call add(lines, "let t:CtrlSpaceAutotab = " . data.autotab)
             endif
 
-            if tabIndex == 0
-                call add(lines, cmd)
-            elseif cmd =~# "^tabedit"
-                call add(lines, cmd[3:]) "make edit from tabedit
-            endif
-
             let tabIndex += 1
         else
-            let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
-
-            if exists("baddList[1]") && !empty(baddList[1]) && filereadable(baddList[1])
-                call add(lines, cmd)
-            endif
+            call add(lines, cmd)
         endif
     endfor
 
