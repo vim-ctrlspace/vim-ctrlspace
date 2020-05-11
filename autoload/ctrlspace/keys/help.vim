@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#help#Init()
+function! ctrlspace#keys#help#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#common#ToggleHelp", "Help", ["BS", "?"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#common#Close",      "Help", ["q", "Esc", "C-c"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#common#Quit",       "Help", ["Q"])
@@ -27,103 +27,103 @@ function! ctrlspace#keys#help#Init()
     call s:map("OpenInNewWindow", "CR")
 endfunction
 
-function! s:map(fn, ...)
+function! s:map(fn, ...) abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#help#" . a:fn, "Help", a:000)
 endfunction
 
-function! ctrlspace#keys#help#OpenInNewWindow(k)
+function! ctrlspace#keys#help#OpenInNewWindow(k) abort
     call ctrlspace#help#OpenInNewWindow()
 endfunction
 
-function! ctrlspace#keys#help#Up(k)
+function! ctrlspace#keys#help#Up(k) abort
     call ctrlspace#window#MoveCursor("up")
 endfunction
 
-function! ctrlspace#keys#help#Down(k)
+function! ctrlspace#keys#help#Down(k) abort
     call ctrlspace#window#MoveCursor("down")
 endfunction
 
-function! ctrlspace#keys#help#MouseUp(k)
+function! ctrlspace#keys#help#MouseUp(k) abort
     if s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("down")
     endif
 endfunction
 
-function! ctrlspace#keys#help#MouseDown(k)
+function! ctrlspace#keys#help#MouseDown(k) abort
     if s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("up")
     endif
 endfunction
 
-function! ctrlspace#keys#help#LeftRelease(k)
+function! ctrlspace#keys#help#LeftRelease(k) abort
     if s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("mouse")
     endif
 endfunction
 
-function! ctrlspace#keys#help#LeftMouse2(k)
+function! ctrlspace#keys#help#LeftMouse2(k) abort
     if s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("mouse")
         call feedkeys("\<CR>")
     endif
 endfunction
 
-function! ctrlspace#keys#help#DownArrow(k)
+function! ctrlspace#keys#help#DownArrow(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("down")
     endif
 endfunction
 
-function! ctrlspace#keys#help#UpArrow(k)
+function! ctrlspace#keys#help#UpArrow(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("up")
     endif
 endfunction
 
-function! ctrlspace#keys#help#Home(k)
+function! ctrlspace#keys#help#Home(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor(1)
     endif
 endfunction
 
-function! ctrlspace#keys#help#Top(k)
+function! ctrlspace#keys#help#Top(k) abort
     call ctrlspace#window#MoveCursor(1)
 endfunction
 
-function! ctrlspace#keys#help#End(k)
+function! ctrlspace#keys#help#End(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor(line("$"))
     endif
 endfunction
 
-function! ctrlspace#keys#help#Bottom(k)
+function! ctrlspace#keys#help#Bottom(k) abort
     call ctrlspace#window#MoveCursor(line("$"))
 endfunction
 
-function! ctrlspace#keys#help#PageDown(k)
+function! ctrlspace#keys#help#PageDown(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("pgdown")
     endif
 endfunction
 
-function! ctrlspace#keys#help#ScrollDown(k)
+function! ctrlspace#keys#help#ScrollDown(k) abort
     call ctrlspace#window#MoveCursor("pgdown")
 endfunction
 
-function! ctrlspace#keys#help#PageUp(k)
+function! ctrlspace#keys#help#PageUp(k) abort
     if s:config.UseArrowsInTerm || s:config.UseMouseAndArrowsInTerm || has("gui_running")
         call ctrlspace#window#MoveCursor("pgup")
     endif
 endfunction
 
-function! ctrlspace#keys#help#ScrollUp(k)
+function! ctrlspace#keys#help#ScrollUp(k) abort
     call ctrlspace#window#MoveCursor("pgup")
 endfunction
 
-function! ctrlspace#keys#help#HalfScrollDown(k)
+function! ctrlspace#keys#help#HalfScrollDown(k) abort
     call ctrlspace#window#MoveCursor("half_pgdown")
 endfunction
 
-function! ctrlspace#keys#help#HalfScrollUp(k)
+function! ctrlspace#keys#help#HalfScrollUp(k) abort
     call ctrlspace#window#MoveCursor("half_pgup")
 endfunction

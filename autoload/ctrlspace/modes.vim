@@ -10,7 +10,7 @@ let s:mode = {
     \ "ListView": 0
     \ }
 
-function! s:mode.new(name, listView, data) dict
+function! s:mode.new(name, listView, data) dict abort
     let instance          = copy(self)
     let instance.Name     = a:name
     let instance.Data     = a:data
@@ -27,16 +27,16 @@ function! s:mode.new(name, listView, data) dict
     return instance
 endfunction
 
-function! s:mode.SetData(key, value) dict
+function! s:mode.SetData(key, value) dict abort
     let self.Data[a:key] = a:value
     return a:value
 endfunction
 
-function! s:mode.HasData(key) dict
+function! s:mode.HasData(key) dict abort
     return has_key(self.Data, a:key)
 endfunction
 
-function! s:mode.RemoveData(key) dict
+function! s:mode.RemoveData(key) dict abort
     if self.HasData(a:key)
         call remove(self.Data, a:key)
         return 1
@@ -44,7 +44,7 @@ function! s:mode.RemoveData(key) dict
     return 0
 endfunction
 
-function! s:mode.Enable() dict
+function! s:mode.Enable() dict abort
     if self.ListView
         for m in s:lists
             call m.Disable()
@@ -56,11 +56,11 @@ function! s:mode.Enable() dict
     let self.Enabled = 1
 endfunction
 
-function! s:mode.Disable() dict
+function! s:mode.Disable() dict abort
     let self.Enabled = 0
 endfunction
 
-function! s:init()
+function! s:init() abort
     call s:mode.new("Zoom", 0, { "Buffer": 0, "Mode": "", "SubMode": "", "Line": "", "Letters": [] })
     call s:mode.new("NextTab", 0, {})
     call s:mode.new("Search", 0, { "Letters": [], "NewSearchPerformed": 0, "Restored": 0, "HistoryIndex": -1 })
@@ -75,11 +75,11 @@ endfunction
 
 call s:init()
 
-function! ctrlspace#modes#Modes()
+function! ctrlspace#modes#Modes() abort
     return s:collection
 endfunction
 
-function! ctrlspace#modes#Enabled()
+function! ctrlspace#modes#Enabled() abort
     let result = []
 
     for m in values(s:collection)
@@ -91,10 +91,10 @@ function! ctrlspace#modes#Enabled()
     return result
 endfunction
 
-function! ctrlspace#modes#ListViews()
+function! ctrlspace#modes#ListViews() abort
     return s:lists
 endfunction
 
-function! ctrlspace#modes#CurrentListView()
+function! ctrlspace#modes#CurrentListView() abort
     return s:currentListView
 endfunction

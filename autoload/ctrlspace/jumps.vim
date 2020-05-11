@@ -2,12 +2,12 @@ let s:config      = ctrlspace#context#Configuration()
 let s:modes       = ctrlspace#modes#Modes()
 let s:jumpCounter = 0
 
-function! ctrlspace#jumps#IncrementJumpCounter()
+function! ctrlspace#jumps#IncrementJumpCounter() abort
     let s:jumpCounter += 1
     return s:jumpCounter
 endfunction
 
-function! s:compareJumps(a, b)
+function! s:compareJumps(a, b) abort
     if a:a.counter > a:b.counter
         return -1
     elseif a:a.counter < a:b.counter
@@ -17,7 +17,7 @@ function! s:compareJumps(a, b)
     endif
 endfunction
 
-function! s:createTabJumps()
+function! s:createTabJumps() abort
     let b:jumplines    = []
     let b:jumplinesLen = tabpagenr("$")
 
@@ -27,7 +27,7 @@ function! s:createTabJumps()
     endfor
 endfunction
 
-function! s:createBookmarkJumps()
+function! s:createBookmarkJumps() abort
     let b:jumplines    = []
     let b:jumplinesLen = b:size
     let bookmarks      = ctrlspace#bookmarks#Bookmarks()
@@ -38,7 +38,7 @@ function! s:createBookmarkJumps()
     endfor
 endfunction
 
-function! s:createBufferJumps()
+function! s:createBufferJumps() abort
     let b:jumplines    = []
     let b:jumplinesLen = b:size
 
@@ -48,7 +48,7 @@ function! s:createBufferJumps()
     endfor
 endfunction
 
-function! ctrlspace#jumps#Jump(direction)
+function! ctrlspace#jumps#Jump(direction) abort
     if !exists("b:jumplines")
         let clv = ctrlspace#modes#CurrentListView()
 
@@ -67,13 +67,13 @@ function! ctrlspace#jumps#Jump(direction)
         let b:jumppos = 0
     endif
 
-    if a:direction == "previous"
+    if a:direction ==# "previous"
         let b:jumppos += 1
 
         if b:jumppos == b:jumplinesLen
             let b:jumppos = b:jumplinesLen - 1
         endif
-    elseif a:direction == "next"
+    elseif a:direction ==# "next"
         let b:jumppos -= 1
 
         if b:jumppos < 0

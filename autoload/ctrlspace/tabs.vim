@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
+function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto) abort
     call settabvar(a:tabnr, "CtrlSpaceLabel", a:label)
     call settabvar(a:tabnr, "CtrlSpaceAutotab", a:auto)
     if get(g:, 'loaded_airline', 0)
@@ -11,7 +11,7 @@ function! ctrlspace#tabs#SetTabLabel(tabnr, label, auto)
     endif
 endfunction
 
-function! ctrlspace#tabs#NewTabLabel(tabnr)
+function! ctrlspace#tabs#NewTabLabel(tabnr) abort
     let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
     let label = ctrlspace#ui#GetInput("Label for tab " . tabnr . ": ", ctrlspace#util#Gettabvar(tabnr, "CtrlSpaceLabel"))
     if empty(label)
@@ -22,7 +22,7 @@ function! ctrlspace#tabs#NewTabLabel(tabnr)
     return 1
 endfunction
 
-function! ctrlspace#tabs#RemoveTabLabel(tabnr)
+function! ctrlspace#tabs#RemoveTabLabel(tabnr) abort
     let tabnr = a:tabnr > 0 ? a:tabnr : tabpagenr()
 
     if empty(ctrlspace#util#Gettabvar(tabnr, "CtrlSpaceLabel"))
@@ -33,7 +33,7 @@ function! ctrlspace#tabs#RemoveTabLabel(tabnr)
     return 1
 endfunction
 
-function! ctrlspace#tabs#CloseTab()
+function! ctrlspace#tabs#CloseTab() abort
     if tabpagenr("$") == 1
         return
     endif
@@ -58,7 +58,7 @@ function! ctrlspace#tabs#CloseTab()
     call ctrlspace#window#Toggle(0)
 endfunction
 
-function! ctrlspace#tabs#CollectUnsavedBuffers()
+function! ctrlspace#tabs#CollectUnsavedBuffers() abort
     let buffers = []
 
     for i in range(1, bufnr("$"))
@@ -89,7 +89,7 @@ function! ctrlspace#tabs#CollectUnsavedBuffers()
     return 1
 endfunction
 
-function! ctrlspace#tabs#CollectForeignBuffers()
+function! ctrlspace#tabs#CollectForeignBuffers() abort
     let buffers = {}
 
     for t in range(1, tabpagenr("$"))

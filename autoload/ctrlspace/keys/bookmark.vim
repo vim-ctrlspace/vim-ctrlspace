@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#bookmark#Init()
+function! ctrlspace#keys#bookmark#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#GoToBookmark", "Bookmark", ["Tab", "CR", "Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Rename", "Bookmark", ["=", "m"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Edit", "Bookmark", ["e"])
@@ -9,7 +9,7 @@ function! ctrlspace#keys#bookmark#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#bookmark#Delete", "Bookmark", ["d"])
 endfunction
 
-function! ctrlspace#keys#bookmark#GoToBookmark(k)
+function! ctrlspace#keys#bookmark#GoToBookmark(k) abort
     let nr = ctrlspace#window#SelectedIndex()
 
     call ctrlspace#window#Kill(0, 1)
@@ -27,7 +27,7 @@ function! ctrlspace#keys#bookmark#GoToBookmark(k)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#bookmark#Rename(k)
+function! ctrlspace#keys#bookmark#Rename(k) abort
     let curline = line(".")
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#bookmarks#ChangeBookmarkName(nr)
@@ -37,7 +37,7 @@ function! ctrlspace#keys#bookmark#Rename(k)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#bookmark#Edit(k)
+function! ctrlspace#keys#bookmark#Edit(k) abort
     let curline = line(".")
     let nr = ctrlspace#window#SelectedIndex()
 
@@ -52,7 +52,7 @@ function! ctrlspace#keys#bookmark#Edit(k)
     endif
 endfunction
 
-function! ctrlspace#keys#bookmark#Add(k)
+function! ctrlspace#keys#bookmark#Add(k) abort
     if a:k ==# "a"
         let result = ctrlspace#bookmarks#AddNewBookmark(ctrlspace#window#SelectedIndex())
     else
@@ -69,7 +69,7 @@ function! ctrlspace#keys#bookmark#Add(k)
     endif
 endfunction
 
-function! ctrlspace#keys#bookmark#Delete(k)
+function! ctrlspace#keys#bookmark#Delete(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#bookmarks#RemoveBookmark(nr)
     call ctrlspace#window#Kill(0, 1)

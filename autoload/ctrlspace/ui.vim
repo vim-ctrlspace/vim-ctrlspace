@@ -1,11 +1,11 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#ui#Msg(message)
+function! ctrlspace#ui#Msg(message) abort
     echo s:config.Symbols.CS . "  " . a:message
 endfunction
 
-function! ctrlspace#ui#DelayedMsg(...)
+function! ctrlspace#ui#DelayedMsg(...) abort
     if !empty(a:000)
         let s:delayedMessage = a:1
     elseif exists("s:delayedMessage") && !empty(s:delayedMessage)
@@ -15,7 +15,7 @@ function! ctrlspace#ui#DelayedMsg(...)
     endif
 endfunction
 
-function! ctrlspace#ui#GetInput(msg, ...)
+function! ctrlspace#ui#GetInput(msg, ...) abort
     let msg = s:config.Symbols.CS . "  " . a:msg
 
     call inputsave()
@@ -34,11 +34,11 @@ function! ctrlspace#ui#GetInput(msg, ...)
     return answer
 endfunction
 
-function! ctrlspace#ui#Confirmed(msg)
+function! ctrlspace#ui#Confirmed(msg) abort
     return ctrlspace#ui#GetInput(a:msg . " (yN): ") =~? "y"
 endfunction
 
-function! ctrlspace#ui#ProceedIfModified()
+function! ctrlspace#ui#ProceedIfModified() abort
     for i in range(1, bufnr("$"))
         if getbufvar(i, "&modified")
             return ctrlspace#ui#Confirmed("Some buffers not saved. Proceed anyway?")

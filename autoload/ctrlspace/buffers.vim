@@ -2,11 +2,11 @@ let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
 let s:allBuffers = {}
 
-function! ctrlspace#buffers#SelectedBufferName()
+function! ctrlspace#buffers#SelectedBufferName() abort
     return s:modes.Buffer.Enabled ? bufname(ctrlspace#window#SelectedIndex()) : ""
 endfunction
 
-function! ctrlspace#buffers#Init()
+function! ctrlspace#buffers#Init() abort
     for current in range(1, bufnr("$"))
         if !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
             break
@@ -18,7 +18,7 @@ function! ctrlspace#buffers#Init()
     endfor
 endfunction
 
-function! ctrlspace#buffers#AddBuffer()
+function! ctrlspace#buffers#AddBuffer() abort
     let current = bufnr('%')
 
     if !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
@@ -44,7 +44,7 @@ function! ctrlspace#buffers#AddBuffer()
     endif
 endfunction
 
-function! ctrlspace#buffers#Buffers(tabnr)
+function! ctrlspace#buffers#Buffers(tabnr) abort
     if a:tabnr
         let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
 
@@ -67,7 +67,7 @@ function! ctrlspace#buffers#Buffers(tabnr)
     return filter(buffers, "buflisted(str2nr(v:key))") " modify proper dictionary and return it
 endfunction
 
-function! ctrlspace#buffers#LoadBuffer(...)
+function! ctrlspace#buffers#LoadBuffer(...) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
 
@@ -84,7 +84,7 @@ function! ctrlspace#buffers#LoadBuffer(...)
     endif
 endfunction
 
-function! ctrlspace#buffers#LoadManyBuffers(...)
+function! ctrlspace#buffers#LoadManyBuffers(...) abort
     let nr    = ctrlspace#window#SelectedIndex()
     let curln = line(".")
 
@@ -108,7 +108,7 @@ function! ctrlspace#buffers#LoadManyBuffers(...)
     call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
-function! ctrlspace#buffers#ZoomBuffer(nr, ...)
+function! ctrlspace#buffers#ZoomBuffer(nr, ...) abort
     if !s:modes.Zoom.Enabled
         call s:modes.Zoom.Enable()
         call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
@@ -134,17 +134,17 @@ function! ctrlspace#buffers#ZoomBuffer(nr, ...)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#buffers#CopyBufferToTab(tab)
+function! ctrlspace#buffers#CopyBufferToTab(tab) abort
     return s:copyOrMoveSelectedBufferIntoTab(a:tab, 0)
 endfunction
 
-function! ctrlspace#buffers#MoveBufferToTab(tab)
+function! ctrlspace#buffers#MoveBufferToTab(tab) abort
     return s:copyOrMoveSelectedBufferIntoTab(a:tab, 1)
 endfunction
 
 " Detach a buffer if it belongs to other tabs or delete it otherwise.
 " It means, this function doesn't leave buffers without tabs.
-function! ctrlspace#buffers#CloseBuffer()
+function! ctrlspace#buffers#CloseBuffer() abort
     let nr = ctrlspace#window#SelectedIndex()
     let foundTabs = 0
 
@@ -163,7 +163,7 @@ function! ctrlspace#buffers#CloseBuffer()
 endfunction
 
 " deletes the selected buffer
-function! ctrlspace#buffers#DeleteBuffer()
+function! ctrlspace#buffers#DeleteBuffer() abort
     let nr = ctrlspace#window#SelectedIndex()
     let modified = getbufvar(str2nr(nr), "&modified")
 
@@ -236,7 +236,7 @@ function! ctrlspace#buffers#DeleteBuffer()
     call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
-function! ctrlspace#buffers#DetachBuffer()
+function! ctrlspace#buffers#DetachBuffer() abort
     let nr = ctrlspace#window#SelectedIndex()
 
     if exists("t:CtrlSpaceList[nr]")
@@ -275,7 +275,7 @@ function! ctrlspace#buffers#DetachBuffer()
     return nr
 endfunction
 
-function! ctrlspace#buffers#GoToBufferOrFile(direction)
+function! ctrlspace#buffers#GoToBufferOrFile(direction) abort
     let nr      = ctrlspace#window#SelectedIndex()
     let curTab  = tabpagenr()
     let lastTab = tabpagenr("$")
@@ -344,7 +344,7 @@ function! ctrlspace#buffers#GoToBufferOrFile(direction)
     endif
 endfunction
 
-function! ctrlspace#buffers#DeleteHiddenNonameBuffers(internal)
+function! ctrlspace#buffers#DeleteHiddenNonameBuffers(internal) abort
     let keep = {}
 
     " keep visible ones
@@ -378,7 +378,7 @@ function! ctrlspace#buffers#DeleteHiddenNonameBuffers(internal)
 endfunction
 
 " deletes all foreign buffers
-function! ctrlspace#buffers#DeleteForeignBuffers(internal)
+function! ctrlspace#buffers#DeleteForeignBuffers(internal) abort
     let buffers = {}
 
     for t in range(1, tabpagenr("$"))
@@ -397,7 +397,7 @@ function! ctrlspace#buffers#DeleteForeignBuffers(internal)
     endif
 endfunction
 
-function! s:copyOrMoveSelectedBufferIntoTab(tab, move)
+function! s:copyOrMoveSelectedBufferIntoTab(tab, move) abort
     let nr = ctrlspace#window#SelectedIndex()
 
     if !getbufvar(str2nr(nr), "&buflisted") || empty(bufname(str2nr(nr)))
@@ -435,7 +435,7 @@ function! s:copyOrMoveSelectedBufferIntoTab(tab, move)
     endfor
 endfunction
 
-function! s:keepBuffersForKeys(dict)
+function! s:keepBuffersForKeys(dict) abort
     let removed = []
 
     for b in range(1, bufnr("$"))
@@ -448,14 +448,14 @@ function! s:keepBuffersForKeys(dict)
     return removed
 endfunction
 
-function! s:loadBufferIntoWindow(winnr)
+function! s:loadBufferIntoWindow(winnr) abort
     let old = t:CtrlSpaceStartWindow
     let t:CtrlSpaceStartWindow = a:winnr
     call ctrlspace#buffers#LoadBuffer()
     let t:CtrlSpaceStartWindow = old
 endfunction
 
-function! s:forgetBuffersInAllTabs(numbers)
+function! s:forgetBuffersInAllTabs(numbers) abort
     for t in range(1, tabpagenr("$"))
         let cslist = copy(ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
 

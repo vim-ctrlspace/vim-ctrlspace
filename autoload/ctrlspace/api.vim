@@ -1,7 +1,9 @@
+scriptencoding utf-8
+
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#api#BufferList(tabnr)
+function! ctrlspace#api#BufferList(tabnr) abort
     let bufferList     = []
     let singleList     = ctrlspace#buffers#Buffers(a:tabnr)
     let visibleBuffers = tabpagebuflist(a:tabnr)
@@ -27,7 +29,7 @@ function! ctrlspace#api#BufferList(tabnr)
     return bufferList
 endfunction
 
-function! ctrlspace#api#Buffers(tabnr)
+function! ctrlspace#api#Buffers(tabnr) abort
     let bufferList     = {}
     let ctrlspaceList  = ctrlspace#buffers#Buffers(a:tabnr)
     let visibleBuffers = tabpagebuflist(a:tabnr)
@@ -49,7 +51,7 @@ function! ctrlspace#api#Buffers(tabnr)
     return bufferList
 endfunction
 
-function! ctrlspace#api#TabModified(tabnr)
+function! ctrlspace#api#TabModified(tabnr) abort
     for b in map(keys(ctrlspace#buffers#Buffers(a:tabnr)), "str2nr(v:val)")
         if getbufvar(b, '&modified')
             return 1
@@ -58,7 +60,7 @@ function! ctrlspace#api#TabModified(tabnr)
     return 0
 endfunction
 
-function! ctrlspace#api#Statusline()
+function! ctrlspace#api#Statusline() abort
     hi def link User1 CtrlSpaceStatus
 
     let statusline = "%1*" . s:config.Symbols.CS . "    " . ctrlspace#api#StatuslineModeSegment("    ")
@@ -70,7 +72,7 @@ function! ctrlspace#api#Statusline()
     return statusline
 endfunction
 
-function! ctrlspace#api#StatuslineTabSegment()
+function! ctrlspace#api#StatuslineTabSegment() abort
     let currentTab = tabpagenr()
     let winnr      = tabpagewinnr(currentTab)
     let buflist    = tabpagebuflist(currentTab)
@@ -94,7 +96,7 @@ function! ctrlspace#api#StatuslineTabSegment()
     return tabinfo
 endfunction
 
-function! s:createStatusTabline()
+function! s:createStatusTabline() abort
     let current = tabpagenr()
     let line    = ""
 
@@ -105,7 +107,7 @@ function! s:createStatusTabline()
     return line
 endfunction
 
-function! ctrlspace#api#StatuslineModeSegment(...)
+function! ctrlspace#api#StatuslineModeSegment(...) abort
     let statuslineElements = []
 
     let clv = ctrlspace#modes#CurrentListView()
@@ -124,11 +126,11 @@ function! ctrlspace#api#StatuslineModeSegment(...)
         if clv.Name ==# "File"
             let symbol = s:config.Symbols.File
         elseif clv.Name ==# "Buffer"
-            if clv.Data.SubMode == "visible"
+            if clv.Data.SubMode ==? "visible"
                 let symbol = s:config.Symbols.Vis
-            elseif clv.Data.SubMode == "single"
+            elseif clv.Data.SubMode ==? "single"
                 let symbol = s:config.Symbols.Sin
-            elseif clv.Data.SubMode == "all"
+            elseif clv.Data.SubMode ==? "all"
                 let symbol = s:config.Symbols.All
             endif
         endif
@@ -165,7 +167,7 @@ function! ctrlspace#api#StatuslineModeSegment(...)
     return join(statuslineElements, separator)
 endfunction
 
-function! ctrlspace#api#TabBuffersNumber(tabnr)
+function! ctrlspace#api#TabBuffersNumber(tabnr) abort
     let buffersNumber = len(ctrlspace#api#Buffers(a:tabnr))
     let numberToShow  = ""
 
@@ -185,7 +187,7 @@ function! ctrlspace#api#TabBuffersNumber(tabnr)
     return numberToShow
 endfunction
 
-function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
+function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname) abort
     let bufname = a:bufname
     let bufnr   = a:bufnr
     let title   = ctrlspace#util#Gettabvar(a:tabnr, "CtrlSpaceLabel")
@@ -213,7 +215,7 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname)
     return title
 endfunction
 
-function! ctrlspace#api#Guitablabel()
+function! ctrlspace#api#Guitablabel() abort
     let winnr      = tabpagewinnr(v:lnum)
     let buflist    = tabpagebuflist(v:lnum)
     let bufnr      = buflist[winnr - 1]
@@ -236,7 +238,7 @@ function! ctrlspace#api#Guitablabel()
     return label
 endfunction
 
-function! ctrlspace#api#TabList()
+function! ctrlspace#api#TabList() abort
     let tabList     = []
     let lastTab    = tabpagenr("$")
     let currentTab = tabpagenr()
@@ -256,7 +258,7 @@ function! ctrlspace#api#TabList()
         return tabList
 endfunction
 
-function! ctrlspace#api#Tabline()
+function! ctrlspace#api#Tabline() abort
     let lastTab    = tabpagenr("$")
     let currentTab = tabpagenr()
     let tabline    = ''
@@ -294,6 +296,6 @@ function! ctrlspace#api#Tabline()
     return tabline
 endfunction
 
-function! ctrlspace#api#BufNr()
+function! ctrlspace#api#BufNr() abort
     return bufexists(ctrlspace#context#PluginBuffer()) ? ctrlspace#context#PluginBuffer() : -1
 endfunction

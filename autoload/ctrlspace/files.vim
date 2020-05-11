@@ -3,24 +3,24 @@ let s:modes  = ctrlspace#modes#Modes()
 let s:files  = []
 let s:items  = []
 
-function! ctrlspace#files#Files()
+function! ctrlspace#files#Files() abort
     return s:files
 endfunction
 
-function! ctrlspace#files#ClearAll()
+function! ctrlspace#files#ClearAll() abort
     let s:files = []
     let s:items = []
 endfunction
 
-function! ctrlspace#files#Items()
+function! ctrlspace#files#Items() abort
     return s:items
 endfunction
 
-function! ctrlspace#files#SelectedFileName()
+function! ctrlspace#files#SelectedFileName() abort
     return s:modes.File.Enabled ? s:files[ctrlspace#window#SelectedIndex()] : ""
 endfunction
 
-function! ctrlspace#files#CollectFiles()
+function! ctrlspace#files#CollectFiles() abort
     if empty(s:files)
         let s:items = []
 
@@ -60,7 +60,7 @@ function! ctrlspace#files#CollectFiles()
     return s:files
 endfunction
 
-function! ctrlspace#files#LoadFile(...)
+function! ctrlspace#files#LoadFile(...) abort
     let idx = ctrlspace#window#SelectedIndex()
     let file = fnamemodify(s:files[idx], ":p")
 
@@ -79,7 +79,7 @@ function! ctrlspace#files#LoadFile(...)
     endif
 endfunction
 
-function! ctrlspace#files#LoadManyFiles(...)
+function! ctrlspace#files#LoadManyFiles(...) abort
     let idx   = ctrlspace#window#SelectedIndex()
     let file  = fnamemodify(s:files[idx], ":p")
     let curln = line(".")
@@ -104,14 +104,14 @@ function! ctrlspace#files#LoadManyFiles(...)
     call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
-function! ctrlspace#files#RefreshFiles()
+function! ctrlspace#files#RefreshFiles() abort
     let s:files = []
     call s:saveFilesInCache()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#files#RemoveFile()
+function! ctrlspace#files#RemoveFile() abort
     let nr   = ctrlspace#window#SelectedIndex()
     let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
 
@@ -131,7 +131,7 @@ function! ctrlspace#files#RemoveFile()
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#files#ZoomFile()
+function! ctrlspace#files#ZoomFile() abort
     if !s:modes.Zoom.Enabled
         call s:modes.Zoom.Enable()
         call s:modes.Zoom.SetData("Buffer", winbufnr(t:CtrlSpaceStartWindow))
@@ -153,7 +153,7 @@ function! ctrlspace#files#ZoomFile()
     call ctrlspace#window#MoveSelectionBar(curln)
 endfunction
 
-function! ctrlspace#files#CopyFileOrBuffer()
+function! ctrlspace#files#CopyFileOrBuffer() abort
     let root = ctrlspace#roots#CurrentProjectRoot()
 
     if !empty(root)
@@ -213,7 +213,7 @@ function! ctrlspace#files#CopyFileOrBuffer()
     endif
 endfunction
 
-function! ctrlspace#files#RenameFileOrBuffer()
+function! ctrlspace#files#RenameFileOrBuffer() abort
     let root = ctrlspace#roots#CurrentProjectRoot()
 
     if !empty(root)
@@ -276,7 +276,7 @@ function! ctrlspace#files#RenameFileOrBuffer()
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#files#GoToDirectory(back)
+function! ctrlspace#files#GoToDirectory(back) abort
     if !exists("s:goToDirectorySave")
         let s:goToDirectorySave = []
     endif
@@ -324,7 +324,7 @@ function! ctrlspace#files#GoToDirectory(back)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#files#ExploreDirectory()
+function! ctrlspace#files#ExploreDirectory() abort
     let nr   = ctrlspace#window#SelectedIndex()
     let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
 
@@ -338,7 +338,7 @@ function! ctrlspace#files#ExploreDirectory()
     silent! exe "e " . fnameescape(path)
 endfunction
 
-function! ctrlspace#files#EditFile()
+function! ctrlspace#files#EditFile() abort
     let nr   = ctrlspace#window#SelectedIndex()
     let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
 
@@ -370,7 +370,7 @@ function! ctrlspace#files#EditFile()
     silent! exe "e " . fnameescape(newFile)
 endfunction
 
-function! s:saveFilesInCache()
+function! s:saveFilesInCache() abort
     let filename = ctrlspace#util#FilesCache()
 
     if empty(filename)
@@ -380,7 +380,7 @@ function! s:saveFilesInCache()
     call writefile(s:files, filename)
 endfunction
 
-function! s:loadFilesFromCache()
+function! s:loadFilesFromCache() abort
     let filename = ctrlspace#util#FilesCache()
 
     if empty(filename) || !filereadable(filename)
@@ -390,7 +390,7 @@ function! s:loadFilesFromCache()
     let s:files = readfile(filename)
 endfunction
 
-function! s:loadFileOrBuffer(file)
+function! s:loadFileOrBuffer(file) abort
     if buflisted(a:file)
         silent! exe ":b " . bufnr(a:file)
     else
@@ -398,7 +398,7 @@ function! s:loadFileOrBuffer(file)
     endif
 endfunction
 
-function! s:updateFileList(path, newPath)
+function! s:updateFileList(path, newPath) abort
     if empty(s:files)
         call s:loadFilesFromCache()
 
@@ -428,7 +428,7 @@ function! s:updateFileList(path, newPath)
     call s:saveFilesInCache()
 endfunction
 
-function! s:ensurePath(file)
+function! s:ensurePath(file) abort
     let directory = fnamemodify(a:file, ":.:h")
 
     if !isdirectory(directory)
