@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#init#Init()
+function! ctrlspace#init#Init() abort
     if s:config.UseTabline
         set tabline=%!ctrlspace#api#Tabline()
 
@@ -62,7 +62,7 @@ function! ctrlspace#init#Init()
     endif
 endfunction
 
-function! s:initProjectRootsAndBookmarks()
+function! s:initProjectRootsAndBookmarks() abort
     let cacheFile    = s:config.CacheDir . "/.cs_cache"
     let projectRoots = {}
     let bookmarks    = []

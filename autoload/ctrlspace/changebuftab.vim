@@ -4,7 +4,7 @@
 let s:WrapEnabled = ctrlspace#context#Configuration().EnableBufferTabWrapAround
 
 
-function! s:genCpOrMvBufToTabCmdmap(funcstr)
+function! s:genCpOrMvBufToTabCmdmap(funcstr) abort
     let l:ct = tabpagenr()      " ct: current tab
     let l:lt = tabpagenr('$')   " lt: last tab
     return  { 'nb': eval("l:ct-1 > 0      ? 'call '.a:funcstr.'('.(l:ct-1).')' : ''"),
@@ -13,14 +13,14 @@ function! s:genCpOrMvBufToTabCmdmap(funcstr)
             \ 'wf': 'call '.a:funcstr.'(1)', }
 endfunction
 
-function! s:genSwitchTabCmdmap(tabBwd, tabFwd)
+function! s:genSwitchTabCmdmap(tabBwd, tabFwd) abort
     return  { 'nb': eval("tabpagenr() != 1              ? a:tabBwd : ''"),
             \ 'nf': eval("tabpagenr() != tabpagenr('$') ? a:tabFwd : ''"),
             \ 'wb': a:tabBwd,
             \ 'wf': a:tabFwd, }
 endfunction
 
-function! s:genMoveTabCmdmap(tmvBwd, tmvFwd)
+function! s:genMoveTabCmdmap(tmvBwd, tmvFwd) abort
     return { 'nb': eval("tabpagenr() != 1              ? a:tmvBwd : ''"),
            \ 'nf': eval("tabpagenr() != tabpagenr('$') ? a:tmvFwd : ''"),
            \ 'wb': 'tabm $',
@@ -41,7 +41,7 @@ let s:CmdmapGenerators = { "CopyBufferToTab"    : function('s:genCpOrMvBufToTabC
 
 " Generates a Funcref of the passed change movement cmdmap. This Funcref when called
 " w/ an orientation [nb|nf|wb|wf] will correctly execute the directed change movement
-function! s:genCmdmapFuncref(cmdmap)
+function! s:genCmdmapFuncref(cmdmap) abort
     func! s:_execute_oriented_cmd(orientation) closure
         if     a:orientation ==# 'nb'          " nb: nowrap backwards
             execute a:cmdmap.nb
@@ -58,7 +58,7 @@ endfunc
 
 " Based on user input for movement direction, their current tabpage number & whether wraparound is 
 " enabled, determine which orientation [nb|nf|wb|wf] to call the passed Cmdmap Funcref (Cmfr) with
-function! s:orientCmdmap(Cmfr, dir)
+function! s:orientCmdmap(Cmfr, dir) abort
     if     s:WrapEnabled && a:dir ==# 'BWD' && tabpagenr() == 1
         call a:Cmfr('wb')
     elseif s:WrapEnabled && a:dir ==# 'FWD' && tabpagenr() == tabpagenr('$')
@@ -72,7 +72,7 @@ endfunction
 
 " Publicly exposed wrapper, requiring only the passing of the desired change movement type (CopyBufferToTab,
 " MoveTab, etc.) & its direction (backwards OR forwards), and it'll execute the correctly oriented Ex command
-function! ctrlspace#changebuftab#Execute(changeType, dir)
+function! ctrlspace#changebuftab#Execute(changeType, dir) abort
     let cmdmap = s:CmdmapGenerators[a:changeType]()
     let Cmfr   = s:genCmdmapFuncref(cmdmap)
     call s:orientCmdmap(Cmfr, a:dir)

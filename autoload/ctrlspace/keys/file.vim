@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#file#Init()
+function! ctrlspace#keys#file#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#SearchParentDirectory",   "File", ["BSlash", "Bar"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#ZoomMode",                "File", ["z"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#file#LoadFile",                "File", ["CR"])
@@ -29,11 +29,11 @@ function! ctrlspace#keys#file#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#CollectUnsavedBuffers", "File", ["U"])
 endfunction
 
-function! ctrlspace#keys#file#SearchParentDirectory(k)
+function! ctrlspace#keys#file#SearchParentDirectory(k) abort
     call ctrlspace#search#SearchParentDirectoryCycle()
 endfunction
 
-function! ctrlspace#keys#file#ZoomMode(k)
+function! ctrlspace#keys#file#ZoomMode(k) abort
     if !s:modes.Zoom.Enabled
         call ctrlspace#files#ZoomFile()
     else
@@ -51,35 +51,35 @@ function! ctrlspace#keys#file#ZoomMode(k)
     endif
 endfunction
 
-function! ctrlspace#keys#file#LoadFile(k)
+function! ctrlspace#keys#file#LoadFile(k) abort
     call ctrlspace#files#LoadFile()
 endfunction
 
-function! ctrlspace#keys#file#LoadManyFiles(k)
+function! ctrlspace#keys#file#LoadManyFiles(k) abort
     call ctrlspace#files#LoadManyFiles()
 endfunction
 
-function! ctrlspace#keys#file#LoadFileVS(k)
+function! ctrlspace#keys#file#LoadFileVS(k) abort
     call ctrlspace#files#LoadFile("vs")
 endfunction
 
-function! ctrlspace#keys#file#LoadManyFilesVS(k)
+function! ctrlspace#keys#file#LoadManyFilesVS(k) abort
     call ctrlspace#files#LoadManyFiles("vs")
 endfunction
 
-function! ctrlspace#keys#file#LoadFileSP(k)
+function! ctrlspace#keys#file#LoadFileSP(k) abort
     call ctrlspace#files#LoadFile("sp")
 endfunction
 
-function! ctrlspace#keys#file#LoadManyFilesSP(k)
+function! ctrlspace#keys#file#LoadManyFilesSP(k) abort
     call ctrlspace#files#LoadManyFiles("sp")
 endfunction
 
-function! ctrlspace#keys#file#LoadFileT(k)
+function! ctrlspace#keys#file#LoadFileT(k) abort
     call ctrlspace#files#LoadFile("tabnew")
 endfunction
 
-function! ctrlspace#keys#file#LoadManyFilesT(k)
+function! ctrlspace#keys#file#LoadManyFilesT(k) abort
     if s:modes.NextTab.Enabled
         call ctrlspace#files#LoadManyFiles("tabnext", "tabprevious")
     else
@@ -88,35 +88,35 @@ function! ctrlspace#keys#file#LoadManyFilesT(k)
     endif
 endfunction
 
-function! ctrlspace#keys#file#LoadManyFilesCT(k)
+function! ctrlspace#keys#file#LoadManyFilesCT(k) abort
     call s:modes.NextTab.Enable()
     call ctrlspace#files#LoadManyFiles("tabnew", "tabprevious")
 endfunction
 
-function! ctrlspace#keys#file#Refresh(k)
+function! ctrlspace#keys#file#Refresh(k) abort
     call ctrlspace#files#RefreshFiles()
 endfunction
 
-function! ctrlspace#keys#file#EditFile(k)
+function! ctrlspace#keys#file#EditFile(k) abort
     call ctrlspace#files#EditFile()
 endfunction
 
-function! ctrlspace#keys#file#ExploreDirectory(k)
+function! ctrlspace#keys#file#ExploreDirectory(k) abort
     call ctrlspace#files#ExploreDirectory()
 endfunction
 
-function! ctrlspace#keys#file#GoToDirectory(k)
+function! ctrlspace#keys#file#GoToDirectory(k) abort
     call ctrlspace#files#GoToDirectory(a:k ==# "I")
 endfunction
 
-function! ctrlspace#keys#file#RemoveFile(k)
+function! ctrlspace#keys#file#RemoveFile(k) abort
     call ctrlspace#files#RemoveFile()
 endfunction
 
-function! ctrlspace#keys#file#RenameFileOrBuffer(k)
+function! ctrlspace#keys#file#RenameFileOrBuffer(k) abort
     call ctrlspace#files#RenameFileOrBuffer()
 endfunction
 
-function! ctrlspace#keys#file#CopyFileOrBuffer(k)
+function! ctrlspace#keys#file#CopyFileOrBuffer(k) abort
     call ctrlspace#files#CopyFileOrBuffer()
 endfunction

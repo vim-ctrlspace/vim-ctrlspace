@@ -5,23 +5,23 @@ let s:keyMap         = {}
 let s:characters     = {}
 let s:keyEscSequence = 0
 
-function! ctrlspace#keys#KeyNames()
+function! ctrlspace#keys#KeyNames() abort
     return s:keyNames
 endfunction
 
-function! ctrlspace#keys#CharacterClasses()
+function! ctrlspace#keys#CharacterClasses() abort
     return s:characters
 endfunction
 
-function! ctrlspace#keys#KeyMap()
+function! ctrlspace#keys#KeyMap() abort
     return s:keyMap
 endfunction
 
-function! ctrlspace#keys#MarkKeyEscSequence()
+function! ctrlspace#keys#MarkKeyEscSequence() abort
     let s:keyEscSequence = 1
 endfunction
 
-function! ctrlspace#keys#Init()
+function! ctrlspace#keys#Init() abort
     call s:initKeyNames()
     call s:initKeyMap()
     call ctrlspace#keys#common#Init()
@@ -37,7 +37,7 @@ function! ctrlspace#keys#Init()
     call ctrlspace#keys#nop#DbmdexInit()
 endfunction
 
-function! s:initCustomMappings()
+function! s:initCustomMappings() abort
     for m in ["Search", "Help", "Nop", "Buffer", "File", "Tab", "Workspace", "Bookmark"]
         if has_key(s:config.Keys, m)
             for [k, fn] in items(s:config.Keys[m])
@@ -49,7 +49,7 @@ function! s:initCustomMappings()
     endfor
 endfunction
 
-function! s:initKeyNames()
+function! s:initKeyNames() abort
     let lowercase = "q w e r t y u i o p a s d f g h j k l z x c v b n m"
     let uppercase = toupper(lowercase)
 
@@ -98,11 +98,11 @@ function! s:initKeyNames()
     let s:characters.specials  = split(specials, " ")
 endfunction
 
-function! ctrlspace#keys#Undefined(k)
+function! ctrlspace#keys#Undefined(k) abort
     call ctrlspace#ui#Msg("Key '" . a:k . "' doesn't work in this view.")
 endfunction
 
-function! s:initKeyMap()
+function! s:initKeyMap() abort
     let Undefined = function("ctrlspace#keys#Undefined")
     let blankMap    = {}
 
@@ -115,7 +115,7 @@ function! s:initKeyMap()
     endfor
 endfunction
 
-function! ctrlspace#keys#AddMapping(funcName, mapName, keys)
+function! ctrlspace#keys#AddMapping(funcName, mapName, keys) abort
     let keys = []
 
     for entry in a:keys
@@ -135,7 +135,7 @@ function! ctrlspace#keys#AddMapping(funcName, mapName, keys)
     endfor
 endfunction
 
-function! ctrlspace#keys#Keypressed(key)
+function! ctrlspace#keys#Keypressed(key) abort
     let key = (s:keyEscSequence && (a:key ==# "Z")) ? "S-Tab" : a:key
     let s:keyEscSequence = 0
 
@@ -152,7 +152,7 @@ function! ctrlspace#keys#Keypressed(key)
     call s:keyMap[mapName][key](key)
 endfunction
 
-function! ctrlspace#keys#SetDefaultMapping(key, action)
+function! ctrlspace#keys#SetDefaultMapping(key, action) abort
     let s:defaultKey = a:key
     if !empty(s:defaultKey)
         if s:defaultKey ==? "<C-Space>" && !has("gui_running") && !has("win32")
@@ -163,10 +163,10 @@ function! ctrlspace#keys#SetDefaultMapping(key, action)
     endif
 endfunction
 
-function! ctrlspace#keys#IsDefaultKey()
+function! ctrlspace#keys#IsDefaultKey() abort
     return exists("s:defaultKey")
 endfunction
 
-function! ctrlspace#keys#DefaultKey()
+function! ctrlspace#keys#DefaultKey() abort
     return s:defaultKey
 endfunction

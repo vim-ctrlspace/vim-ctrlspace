@@ -2,7 +2,7 @@ let s:config              = ctrlspace#context#Configuration()
 let s:modes               = ctrlspace#modes#Modes()
 let s:updateSearchResults = 0
 
-function! ctrlspace#search#UpdateSearchResults()
+function! ctrlspace#search#UpdateSearchResults() abort
     if s:updateSearchResults
         let s:updateSearchResults = 0
         call ctrlspace#window#Kill(0, 0)
@@ -10,7 +10,7 @@ function! ctrlspace#search#UpdateSearchResults()
     endif
 endfunction
 
-function! ctrlspace#search#ClearSearchMode()
+function! ctrlspace#search#ClearSearchMode() abort
     call s:modes.Search.Disable()
     call s:modes.Search.SetData("Letters", [])
 
@@ -21,7 +21,7 @@ function! ctrlspace#search#ClearSearchMode()
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#search#AddSearchLetter(letter)
+function! ctrlspace#search#AddSearchLetter(letter) abort
     call add(s:modes.Search.Data.Letters, a:letter)
     call s:modes.Search.SetData("NewSearchPerformed", 1)
 
@@ -33,7 +33,7 @@ function! ctrlspace#search#AddSearchLetter(letter)
     redraws
 endfunction
 
-function! ctrlspace#search#RemoveSearchLetter()
+function! ctrlspace#search#RemoveSearchLetter() abort
     call remove(s:modes.Search.Data.Letters, -1)
     call s:modes.Search.SetData("NewSearchPerformed", 1)
 
@@ -45,7 +45,7 @@ function! ctrlspace#search#RemoveSearchLetter()
     redraws
 endfunction
 
-function! ctrlspace#search#ClearSearchLetters()
+function! ctrlspace#search#ClearSearchLetters() abort
     if !empty(s:modes.Search.Data.Letters)
         call s:modes.Search.SetData("Letters", [])
         call s:modes.Search.SetData("NewSearchPerformed", 1)
@@ -59,7 +59,7 @@ function! ctrlspace#search#ClearSearchLetters()
     endif
 endfunction
 
-function! ctrlspace#search#SwitchSearchMode(switch)
+function! ctrlspace#search#SwitchSearchMode(switch) abort
     if (a:switch == 0) && !empty(s:modes.Search.Data.Letters)
         call ctrlspace#search#AppendToSearchHistory()
     endif
@@ -74,7 +74,7 @@ function! ctrlspace#search#SwitchSearchMode(switch)
     call ctrlspace#search#UpdateSearchResults()
 endfunction
 
-function! ctrlspace#search#InsertSearchText(text)
+function! ctrlspace#search#InsertSearchText(text) abort
     let letters = []
 
     for i in range(strlen(a:text))
@@ -95,7 +95,7 @@ function! ctrlspace#search#InsertSearchText(text)
     return 0
 endfunction
 
-function! ctrlspace#search#SearchHistoryIndex()
+function! ctrlspace#search#SearchHistoryIndex() abort
     if !s:modes.Search.HasData("HistoryIndex")
         call s:modes.Search.SetData("HistoryIndex", -1)
     endif
@@ -103,7 +103,7 @@ function! ctrlspace#search#SearchHistoryIndex()
     return s:modes.Search.Data.HistoryIndex
 endfunction
 
-function! ctrlspace#search#AppendToSearchHistory()
+function! ctrlspace#search#AppendToSearchHistory() abort
     if empty(s:modes.Search.Data.Letters)
         return
     endif
@@ -115,7 +115,7 @@ function! ctrlspace#search#AppendToSearchHistory()
     let s:modes.Search.Data.History[join(s:modes.Search.Data.Letters)] = ctrlspace#jumps#IncrementJumpCounter()
 endfunction
 
-function! ctrlspace#search#RestoreSearchLetters(direction)
+function! ctrlspace#search#RestoreSearchLetters(direction) abort
     if !s:modes.Search.HasData("History") || empty(s:modes.Search.Data.History)
         return
     endif
@@ -157,7 +157,7 @@ function! ctrlspace#search#RestoreSearchLetters(direction)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! s:compareEntries(a, b)
+function! s:compareEntries(a, b) abort
     if a:a.counter > a:b.counter
         return -1
     elseif a:a.counter < a:b.counter
@@ -167,7 +167,7 @@ function! s:compareEntries(a, b)
     endif
 endfunction
 
-function! s:getSelectedDirectory()
+function! s:getSelectedDirectory() abort
     if s:modes.File.Enabled
         let name = ctrlspace#files#SelectedFileName()
     elseif s:modes.Buffer.Enabled
@@ -179,7 +179,7 @@ function! s:getSelectedDirectory()
     return fnamemodify(name, ":h")
 endfunction
 
-function! ctrlspace#search#SearchParentDirectoryCycle()
+function! ctrlspace#search#SearchParentDirectoryCycle() abort
     let candidate = s:getSelectedDirectory()
 
     if empty(candidate)

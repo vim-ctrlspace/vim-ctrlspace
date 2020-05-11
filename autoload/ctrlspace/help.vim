@@ -126,27 +126,27 @@ let s:descriptions = {
     \ "ctrlspace#keys#nop#ToggleAllModeAndSearch":          "Enter the Search Mode combined with the All mode if in Buffer Mode already",
     \ }
 
-function! ctrlspace#help#AddMapping(funcName, mapName, entry)
+function! ctrlspace#help#AddMapping(funcName, mapName, entry) abort
     if has_key(s:helpMap, a:mapName)
         let s:helpMap[a:mapName][a:entry] = a:funcName
     endif
 endfunction
 
-function! ctrlspace#help#HelpMap()
+function! ctrlspace#help#HelpMap() abort
     return s:helpMap
 endfunction
 
-function! ctrlspace#help#Descriptions()
+function! ctrlspace#help#Descriptions() abort
     return s:descriptions
 endfunction
 
-function! s:init()
+function! s:init() abort
     call extend(s:descriptions, s:config.Help)
 endfunction
 
 call s:init()
 
-function! ctrlspace#help#CloseExternalWindow()
+function! ctrlspace#help#CloseExternalWindow() abort
     if bufexists(s:externalBufnr)
         let curtab = tabpagenr()
 
@@ -168,7 +168,7 @@ function! ctrlspace#help#CloseExternalWindow()
     endif
 endfunction
 
-function! ctrlspace#help#OpenInNewWindow()
+function! ctrlspace#help#OpenInNewWindow() abort
     let mi     = s:modeInfo()
     let header = "Key Reference for " . mi[0] . " LIST"
     let fname  = fnameescape(mi[0] . " LIST KEY REFERENCE")
@@ -217,7 +217,7 @@ function! ctrlspace#help#OpenInNewWindow()
     setlocal nomodifiable
 endfunction
 
-function! ctrlspace#help#DisplayHelp(fill)
+function! ctrlspace#help#DisplayHelp(fill) abort
     if s:modes.Nop.Enabled
         let mapName = "Nop"
     elseif s:modes.Search.Enabled
@@ -273,7 +273,7 @@ function! ctrlspace#help#DisplayHelp(fill)
     setlocal nomodifiable
 endfunction
 
-function! s:puts(str)
+function! s:puts(str) abort
     let str = "  " . a:str
 
     if &columns < (strwidth(str) + 2)
@@ -287,13 +287,13 @@ function! s:puts(str)
     call add(s:textBuffer, str)
 endfunction
 
-function! s:flushTextBuffer()
+function! s:flushTextBuffer() abort
     let text = join(s:textBuffer, "\n")
     let s:textBuffer = []
     return text
 endfunction
 
-function! s:keyHelp(key, description)
+function! s:keyHelp(key, description) abort
     if !exists("b:helpKeyDescriptions")
         let b:helpKeyDescriptions = []
         let b:helpKeyWidth = 0
@@ -312,7 +312,7 @@ function! s:keyHelp(key, description)
     endif
 endfunction
 
-function! s:collectKeysInfo(mapName)
+function! s:collectKeysInfo(mapName) abort
     for key in sort(keys(s:helpMap[a:mapName]))
         let FnKey = s:helpMap[a:mapName][key]
 
@@ -333,7 +333,7 @@ function! s:collectKeysInfo(mapName)
     endfor
 endfunction
 
-function! s:modeInfo()
+function! s:modeInfo() abort
     let info = []
     let clv  = ctrlspace#modes#CurrentListView()
 

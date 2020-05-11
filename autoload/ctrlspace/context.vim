@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 let s:pluginBuffer = -1
 let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h')
 
@@ -69,7 +71,7 @@ let s:configuration = {
                     \ "FileEngine":                "auto",
                     \ }
 
-function! s:init()
+function! s:init() abort
     let s:conf = copy(s:configuration)
 
     for name in keys(s:conf)
@@ -105,7 +107,7 @@ function! s:init()
     endif
 endfunction
 
-function! s:detectEngine()
+function! s:detectEngine() abort
     let [os, arch] = ["", ""]
 
     if has("win32")
@@ -149,27 +151,27 @@ endfunction
 
 call s:init()
 
-function! ctrlspace#context#PluginFolder()
+function! ctrlspace#context#PluginFolder() abort
     return s:pluginFolder
 endfunction
 
-function! ctrlspace#context#Separator()
+function! ctrlspace#context#Separator() abort
     return "|CS_###_CS|"
 endfunction
 
-function! ctrlspace#context#PluginBuffer()
+function! ctrlspace#context#PluginBuffer() abort
     return s:pluginBuffer
 endfunction
 
-function! ctrlspace#context#SetPluginBuffer(value)
+function! ctrlspace#context#SetPluginBuffer(value) abort
     let s:pluginBuffer = a:value
     return s:pluginBuffer
 endfunction
 
-function! ctrlspace#context#SymbolSizes()
+function! ctrlspace#context#SymbolSizes() abort
     return s:symbolSizes
 endfunction
 
-function! ctrlspace#context#Configuration()
+function! ctrlspace#context#Configuration() abort
     return s:conf
 endfunction

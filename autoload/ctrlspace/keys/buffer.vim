@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#buffer#Init()
+function! ctrlspace#keys#buffer#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#SearchParentDirectory",       "Buffer", ["BSlash"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#SearchParentDirectoryInFile", "Buffer", ["Bar"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#LoadBuffer",                  "Buffer", ["CR"])
@@ -43,28 +43,28 @@ function! ctrlspace#keys#buffer#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#buffer#NewWorkspace",                "Buffer", ["N"])
 endfunction
 
-function! ctrlspace#keys#buffer#SearchParentDirectory(k)
+function! ctrlspace#keys#buffer#SearchParentDirectory(k) abort
     call ctrlspace#search#SearchParentDirectoryCycle()
 endfunction
 
-function! ctrlspace#keys#buffer#SearchParentDirectoryInFile(k)
+function! ctrlspace#keys#buffer#SearchParentDirectoryInFile(k) abort
     call ctrlspace#search#SearchParentDirectoryCycle()
     call ctrlspace#keys#common#ToggleFileMode(a:k)
 endfunction
 
-function! ctrlspace#keys#buffer#LoadBuffer(k)
+function! ctrlspace#keys#buffer#LoadBuffer(k) abort
     call ctrlspace#buffers#LoadBuffer()
 endfunction
 
-function! ctrlspace#keys#buffer#LoadManyBuffers(k)
+function! ctrlspace#keys#buffer#LoadManyBuffers(k) abort
     call ctrlspace#buffers#LoadManyBuffers()
 endfunction
 
-function! ctrlspace#keys#buffer#GoToWindow(k)
+function! ctrlspace#keys#buffer#GoToWindow(k) abort
     call ctrlspace#window#GoToWindow()
 endfunction
 
-function! ctrlspace#keys#buffer#GoToWindowAndBack(k)
+function! ctrlspace#keys#buffer#GoToWindowAndBack(k) abort
     let subMode = s:modes.Buffer.Data.SubMode
 
     if ctrlspace#window#GoToWindow()
@@ -78,7 +78,7 @@ function! ctrlspace#keys#buffer#GoToWindowAndBack(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#VisibleMode(k)
+function! ctrlspace#keys#buffer#VisibleMode(k) abort
     if s:modes.Buffer.Data.SubMode ==# "visible"
         call s:modes.Buffer.SetData("SubMode", "single")
     else
@@ -89,7 +89,7 @@ function! ctrlspace#keys#buffer#VisibleMode(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#buffer#ZoomMode(k)
+function! ctrlspace#keys#buffer#ZoomMode(k) abort
     if !s:modes.Zoom.Enabled
         call ctrlspace#buffers#ZoomBuffer(0)
     else
@@ -107,23 +107,23 @@ function! ctrlspace#keys#buffer#ZoomMode(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#LoadBufferVS(k)
+function! ctrlspace#keys#buffer#LoadBufferVS(k) abort
     call ctrlspace#buffers#LoadBuffer("vs")
 endfunction
 
-function! ctrlspace#keys#buffer#LoadManyBuffersVS(k)
+function! ctrlspace#keys#buffer#LoadManyBuffersVS(k) abort
     call ctrlspace#buffers#LoadManyBuffers("vs")
 endfunction
 
-function! ctrlspace#keys#buffer#LoadBufferSP(k)
+function! ctrlspace#keys#buffer#LoadBufferSP(k) abort
     call ctrlspace#buffers#LoadBuffer("sp")
 endfunction
 
-function! ctrlspace#keys#buffer#LoadManyBuffersSP(k)
+function! ctrlspace#keys#buffer#LoadManyBuffersSP(k) abort
     call ctrlspace#buffers#LoadManyBuffers("sp")
 endfunction
 
-function! ctrlspace#keys#buffer#CloseWindow(k)
+function! ctrlspace#keys#buffer#CloseWindow(k) abort
     let curln = line(".")
     if (winnr("$") > 2) && ctrlspace#window#GoToWindow()
         silent! exe "wincmd c"
@@ -132,7 +132,7 @@ function! ctrlspace#keys#buffer#CloseWindow(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#CloseManyWindows(k)
+function! ctrlspace#keys#buffer#CloseManyWindows(k) abort
     let curln = line(".")
     if (winnr("$") > 2) && ctrlspace#window#GoToWindow()
         only
@@ -141,11 +141,11 @@ function! ctrlspace#keys#buffer#CloseManyWindows(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#LoadBufferT(k)
+function! ctrlspace#keys#buffer#LoadBufferT(k) abort
     call ctrlspace#buffers#LoadBuffer("tabnew")
 endfunction
 
-function! ctrlspace#keys#buffer#LoadManyBuffersT(k)
+function! ctrlspace#keys#buffer#LoadManyBuffersT(k) abort
     if s:modes.NextTab.Enabled
         call ctrlspace#buffers#LoadManyBuffers("tabnext", "tabprevious")
     else
@@ -154,37 +154,37 @@ function! ctrlspace#keys#buffer#LoadManyBuffersT(k)
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#LoadManyBuffersCT(k)
+function! ctrlspace#keys#buffer#LoadManyBuffersCT(k) abort
     call s:modes.NextTab.Enable()
     call ctrlspace#buffers#LoadManyBuffers("tabnew", "tabprevious")
 endfunction
 
-function! ctrlspace#keys#buffer#NewTabLabel(k)
+function! ctrlspace#keys#buffer#NewTabLabel(k) abort
     call ctrlspace#tabs#NewTabLabel(0)
     call ctrlspace#util#SetStatusline()
     redraws
 endfunction
 
-function! ctrlspace#keys#buffer#MoveTab(k)
+function! ctrlspace#keys#buffer#MoveTab(k) abort
     call ctrlspace#keys#tab#MoveHelper(a:k)
     call ctrlspace#util#SetStatusline()
     redraws
 endfunction
 
-function! ctrlspace#keys#buffer#RemoveTabLabel(k)
+function! ctrlspace#keys#buffer#RemoveTabLabel(k) abort
     call ctrlspace#tabs#RemoveTabLabel(0)
     call ctrlspace#util#SetStatusline()
     redraw!
 endfunction
 
-function! ctrlspace#keys#buffer#SwitchTab(k)
+function! ctrlspace#keys#buffer#SwitchTab(k) abort
     call ctrlspace#window#Kill(0, 1)
     let dir = {'[': 'BWD', ']': 'FWD'}[a:k]
     call ctrlspace#changebuftab#Execute("SwitchTabInBufMode", dir)
     call ctrlspace#window#Toggle(0)
 endfunction
 
-function! ctrlspace#keys#buffer#CopyBufferToTab(k)
+function! ctrlspace#keys#buffer#CopyBufferToTab(k) abort
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
@@ -192,7 +192,7 @@ function! ctrlspace#keys#buffer#CopyBufferToTab(k)
     call ctrlspace#changebuftab#Execute('CopyBufferToTab', dir)
 endfunction
 
-function! ctrlspace#keys#buffer#MoveBufferToTab(k)
+function! ctrlspace#keys#buffer#MoveBufferToTab(k) abort
     if s:modes.Buffer.Data.SubMode ==# "all"
         return 0
     endif
@@ -200,51 +200,51 @@ function! ctrlspace#keys#buffer#MoveBufferToTab(k)
     call ctrlspace#changebuftab#Execute('MoveBufferToTab', dir)
 endfunction
 
-function! ctrlspace#keys#buffer#DeleteBuffer(k)
+function! ctrlspace#keys#buffer#DeleteBuffer(k) abort
     call ctrlspace#buffers#DeleteBuffer()
 endfunction
 
-function! ctrlspace#keys#buffer#DeleteHiddenNonameBuffers(k)
+function! ctrlspace#keys#buffer#DeleteHiddenNonameBuffers(k) abort
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(0)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#buffer#DetachBuffer(k)
+function! ctrlspace#keys#buffer#DetachBuffer(k) abort
     if s:modes.Buffer.Data.SubMode ==# "single"
         call ctrlspace#buffers#DetachBuffer()
     endif
 endfunction
 
-function! ctrlspace#keys#buffer#DeleteForeignBuffers(k)
+function! ctrlspace#keys#buffer#DeleteForeignBuffers(k) abort
     call ctrlspace#buffers#DeleteForeignBuffers(0)
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#buffer#CloseBuffer(k)
+function! ctrlspace#keys#buffer#CloseBuffer(k) abort
     call ctrlspace#buffers#CloseBuffer()
 endfunction
 
-function! ctrlspace#keys#buffer#CloseTab(k)
+function! ctrlspace#keys#buffer#CloseTab(k) abort
     call ctrlspace#tabs#CloseTab()
     call ctrlspace#ui#Msg("Current tab closed.")
 endfunction
 
-function! ctrlspace#keys#buffer#ToggleAllMode(k)
+function! ctrlspace#keys#buffer#ToggleAllMode(k) abort
     call s:toggleAllMode()
 endfunction
 
-function! ctrlspace#keys#buffer#ToggleAllModeAndSearch(k)
+function! ctrlspace#keys#buffer#ToggleAllModeAndSearch(k) abort
     if s:modes.Buffer.Data.SubMode !=# "all"
         call s:toggleAllMode()
     endif
     call ctrlspace#search#SwitchSearchMode(1)
 endfunction
 
-function! ctrlspace#keys#buffer#GoToBufferOrFile(k)
+function! ctrlspace#keys#buffer#GoToBufferOrFile(k) abort
     call ctrlspace#buffers#GoToBufferOrFile(a:k ==# "g" ? "next" : "previous")
 endfunction
 
-function! ctrlspace#keys#buffer#NewWorkspace(k)
+function! ctrlspace#keys#buffer#NewWorkspace(k) abort
     let saveWorkspaceBefore = 0
     let active = ctrlspace#workspaces#ActiveWorkspace()
 
@@ -271,7 +271,7 @@ function! ctrlspace#keys#buffer#NewWorkspace(k)
     return 1
 endfunction
 
-function! s:toggleAllMode()
+function! s:toggleAllMode() abort
     if s:modes.Buffer.Data.SubMode !=# "all"
         call s:modes.Buffer.SetData("SubMode", "all")
     else
