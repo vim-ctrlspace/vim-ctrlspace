@@ -14,8 +14,9 @@ function! ctrlspace#init#Init() abort
 
             " Fix MacVim issues:
             " http://stackoverflow.com/questions/11595301/controlling-tab-names-in-vim
-            au BufEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
+            if has('gui_macvim')
                 autocmd CtrlSpaceInit BufWinEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
+            endif
         endif
     endif
 
