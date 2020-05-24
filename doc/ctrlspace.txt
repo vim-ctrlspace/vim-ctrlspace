@@ -636,8 +636,13 @@ Load Mode. To open Workspace List press <w>. Then press <s> to select the
 mode (toggles between Save and Load modes), <m>, <=> to rename, and <d> to
 delete.
 
-The word "workspace" can be considered a synonym of a "session". The
-ability of having so many sessions available at hand creates a lot of
+The word "workspace" can be considered a synonym of a "session" and all
+your buffers, tabs, and tab layouts are persisted. It's like taking a
+picture of your desk with an instant camera.
+
+You can save multiple workspaces per project with Workspace List.
+
+The ability of having so many sessions available at hand creates a lot of
 interesting use cases! For example, you can have a workspace for each task
 or feature you are working on. It's very easy to switch from one workspace
 to another.
