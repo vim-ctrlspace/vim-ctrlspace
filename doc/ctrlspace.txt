@@ -106,7 +106,8 @@ Table of Contents                                            *ctrlspace-toc*
      8.2.11 ctrlspace#api#TabList()                |ctrlspace#api#TabList()|
      8.2.12 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
  9. File Engine Specifications                      |ctrlspace-engine-specs|
-10. Authors and License                      |ctrlspace-authors-and-license|
+10. FAQ                                                      |ctrlspace-FAQ|
+11. Authors and License                      |ctrlspace-authors-and-license|
 
 ==========================================================================
 
@@ -636,8 +637,13 @@ Load Mode. To open Workspace List press <w>. Then press <s> to select the
 mode (toggles between Save and Load modes), <m>, <=> to rename, and <d> to
 delete.
 
-The word "workspace" can be considered a synonym of a "session". The
-ability of having so many sessions available at hand creates a lot of
+The word "workspace" can be considered a synonym of a "session" and all
+your buffers, tabs, and tab layouts are persisted. It's like taking a
+picture of your desk with an instant camera.
+
+You can save multiple workspaces per project with Workspace List.
+
+The ability of having so many sessions available at hand creates a lot of
 interesting use cases! For example, you can have a workspace for each task
 or feature you are working on. It's very easy to switch from one workspace
 to another.
@@ -1546,7 +1552,18 @@ should be placed at the bottom (as last ones).
                                                              |ctrlspace-toc|
 ==========================================================================
 
-10. Authors and License                      *ctrlspace-authors-and-license*
+10. FAQ                                                      *ctrlspace-FAQ*
+
+Q: How to delete a buffer while leaving the tab page intact?
+A: Make good use of *CtrlSpace* [keys]! For example, the mapping
+>
+  nnoremap <silent> Q        :<c-u>CtrlSpace p<space>pcq<CR>
+<
+  opens the alternate buffer instead and keeps the tab page.
+
+==========================================================================
+
+11. Authors and License                      *ctrlspace-authors-and-license*
 
 Copyright (c) 2013-2020 Szymon Wrozynski and Contributors.
 

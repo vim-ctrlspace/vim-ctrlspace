@@ -3,81 +3,66 @@
 <br><br>
 </div>
 
-Welcome to **Vim-CtrlSpace**, a comprehensive solution for your Vim editor
-providing:
+Welcome to **Vim-CtrlSpace** which provides
 
-* tabs / buffers / files management
-* fast fuzzy searching **powered by Go**
-* workspaces (sessions)
-* bookmarks for your favorite projects
-
-The plugin name follows the convention of naming fuzzy search plugins
-after their default mappings (like _Command-T_ or _CtrlP_), hence the
-plugin mapping is by default `Ctrl` + `Space`.
+* tabs / buffers / files management,
+* fast fuzzy searching (powered by Go),
+* workspaces (sessions), and
+* bookmarks for your favorite projects.
 
 If you have already starred this repo, thank you!
-
-If you have a question, a feature request, or a new
-idea, don't hesitate to post new issues or pull requests.
-
+If you have a question, a feature request, or a new idea, then don't hesitate to post new issues or pull requests:
 Collaboration is the most awesome thing in the open source community!
 
 # Idea by Analogy
 
-Vim-CtrlSpace interface is a window you can invoke by pressing `<C-Space>`.
-The window displays a list of items. You can select those items with `<j>`,
+`Vim-CtrlSpace` interface is a window you can invoke by pressing `<C-Space>`.
+(The plugin name follows the convention of naming fuzzy-search plugins after their default mappings, like _Command-T_ or _CtrlP_)
+The window displays a list of items that you can select with the `<j>`,
 `<k>`, and `<CR>` keys.
 
 <p align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
-Generally speaking Vim-CtrlSpace can display 5 types of lists:
+`Vim-CtrlSpace` can display five lists of:
 
-* Buffer List
-* File List
-* Tab List
-* Workspace List
-* Bookmark List
+* Buffers
+* Files
+* Tabs
+* Workspaces and
+* Bookmarks.
 
-Lists can be explained with a simple analogy. Let's imagine Vim is
-a writing desk. Your projects are like drawers. The **Bookmark List**
-simply displays your favorite projects.
+If Vim is a writing desk, then your projects are like drawers:
 
-To get documents from a drawer you would need a **File List**. It allows
-you to easily look up contents of a given project. Once you locate and
-pick up a file it becomes a **buffer**.
+- The **Bookmark List** simply displays your favorite projects.
+- To get documents from a drawer you would need a **File List**.
+    It allows you to easily look up contents of a given project.
+- Once you locate and pick up a file it becomes a **buffer**.
+    A buffer is like a sheet of paper lying on the desk.
+    Sometimes you can have a blank piece of paper -- that's a new unsaved buffer.
+    It would become eventually a file on the disk once saved (put into a drawer).
+    To manage all buffers on the desk you would need a **Buffer List**.
 
-A buffer is like a sheet of paper lying on the desk. Sometimes you can
-have a blank piece of paper – that's a new unsaved buffer. It would become
-eventually a file on the disk once saved (put into a drawer). To manage
-all buffers on the desk you would need a **Buffer List**.
-
-So far our analogy is fairly simple. This workflow is straightforward but
-inefficient in the long run with a large amount of files. How could we
-optimize it?
-
-The answer are **tabs** – a secret weapon of **Vim-CtrlSpace**. Each tab
-holds a **separate** list of buffers. And this is something very different
-when compared to plain Vim. Tabs powered by the plugin can be seen as
-piles of documents on the desk.
+So far our analogy is fairly simple.
+This workflow is straightforward but with a large amount of files it is hard to keep an overview.
+Therefore each tab holds a **separate** list of buffers, so that each tab, along the work space analogy, is a pile of documents.
 
 With tabs you can, for example:
 
-* group related buffers
-* extract to other tabs
-* name them accordingly
-* move or copy them
+* group related buffers,
+* extract to other tabs,
+* name them accordingly, or
+* move or copy them.
 
-Tabs usage in **Vim-CtrlSpace** is quite more extensive than in Vim. This
-is because they serve mainly as independent buffer lists, so you are
-likely to have plenty of them. Tabs can be accessed and managed within
-**Tab List**.
+Tabs usage in **Vim-CtrlSpace** is quite more extensive than in Vim.
+This is because they serve mainly as independent buffer lists, so you are
+likely to have plenty of them.
+Tabs can be accessed and managed within **Tab List**.
 
-All your buffers, tabs, and tab layouts can be persisted as a workspace.
-It's like taking a picture of your desk with an instant camera. You can
-save multiple workspaces per project with **Workspace List**.
-
+- All your buffers, tabs, and tab layouts can be persisted as a workspace.
+    It's like taking a picture of your desk with an instant camera.
+    You can save multiple workspaces per project with **Workspace List**.
 
 # Getting Started
 
