@@ -1,7 +1,7 @@
 " This script manages change movements (copy, move & switch) of buffers & tabs. Concretely,
 " it implements an interface with optional wraparound for all these change movement types
 
-let s:WrapEnabled = ctrlspace#context#Configuration().ChangeBufTabWrapsAround
+let s:WrapEnabled = ctrlspace#context#Configuration().EnableBufferTabWrapAround
 
 
 function! s:genCpOrMvBufToTabCmdmap(funcstr)
