@@ -1,4 +1,5 @@
 let s:config = ctrlspace#context#Configuration()
+let s:cache  = ctrlspace#files_cache#Init()
 let s:modes  = ctrlspace#modes#Modes()
 let s:files  = []
 let s:items  = []
@@ -21,42 +22,7 @@ function! ctrlspace#files#SelectedFileName() abort
 endfunction
 
 function! ctrlspace#files#CollectFiles() abort
-    if empty(s:files)
-        let s:items = []
-
-        " try to pick up files from cache
-        call s:loadFilesFromCache()
-
-        if empty(s:files)
-            let action = "Collecting files..."
-            call ctrlspace#ui#Msg(action)
-
-            let uniqueFiles = {}
-
-            for fname in empty(s:config.GlobCommand) ? split(globpath('.', '**'), '\n') : split(ctrlspace#util#system(s:config.GlobCommand), '\n')
-                let fnameModified = fnamemodify(fname, ":.")
-
-                if isdirectory(fnameModified) || (fnameModified =~# s:config.IgnoredFiles)
-                    continue
-                endif
-
-                let uniqueFiles[fnameModified] = 1
-            endfor
-
-            let s:files = keys(uniqueFiles)
-            call s:saveFilesInCache()
-        else
-            let action = "Loading files..."
-            call ctrlspace#ui#Msg(action)
-        endif
-
-        let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
-
-        redraw!
-
-        call ctrlspace#ui#Msg(action . " Done (" . len(s:files) . ").")
-    endif
-
+    let [s:files, s:items] = s:cache.getFilesAndItems(s:files, s:items)
     return s:files
 endfunction
 
@@ -106,7 +72,7 @@ endfunction
 
 function! ctrlspace#files#RefreshFiles() abort
     let s:files = []
-    call s:saveFilesInCache()
+    call s:cache.refresh()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
 endfunction
@@ -370,26 +336,6 @@ function! ctrlspace#files#EditFile() abort
     silent! exe "e " . fnameescape(newFile)
 endfunction
 
-function! s:saveFilesInCache() abort
-    let filename = ctrlspace#util#FilesCache()
-
-    if empty(filename)
-        return
-    endif
-
-    call writefile(s:files, filename)
-endfunction
-
-function! s:loadFilesFromCache() abort
-    let filename = ctrlspace#util#FilesCache()
-
-    if empty(filename) || !filereadable(filename)
-        return
-    endif
-
-    let s:files = readfile(filename)
-endfunction
-
 function! s:loadFileOrBuffer(file) abort
     if buflisted(a:file)
         silent! exe ":b " . bufnr(a:file)
@@ -400,7 +346,7 @@ endfunction
 
 function! s:updateFileList(path, newPath) abort
     if empty(s:files)
-        call s:loadFilesFromCache()
+        let s:files = s:cache.loadFiles()
 
         if empty(s:files)
             return
@@ -425,7 +371,7 @@ function! s:updateFileList(path, newPath) abort
         call add(s:items, { "index": len(s:items), "text": newPath, "indicators": "" })
     endif
 
-    call s:saveFilesInCache()
+    call s:cache.saveThese(s:files)
 endfunction
 
 function! s:ensurePath(file) abort
