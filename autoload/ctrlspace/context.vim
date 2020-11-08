@@ -56,6 +56,7 @@ let s:configuration = {
                     \ "Help":                      {},
                     \ "SortHelp":                  0,
                     \ "GlobCommand":               "",
+                    \ "EnableFilesCache":          1,
                     \ "UseTabline":                1,
                     \ "UseArrowsInTerm":           0,
                     \ "UseMouseAndArrowsInTerm":   0,

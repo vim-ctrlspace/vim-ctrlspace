@@ -1,4 +1,4 @@
-*ctrlspace.txt*           For Vim version 7.3+      Last change: 2020.01.09
+*ctrlspace.txt*           For Vim version 7.3+      Last change: 2020.12.01
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -60,25 +60,26 @@ Table of Contents                                            *ctrlspace-toc*
    7.5 g:CtrlSpaceKeys                                     |g:CtrlSpaceKeys|
    7.6 g:CtrlSpaceHelp                                     |g:CtrlSpaceHelp|
    7.7 g:CtrlSpaceGlobCommand                       |g:CtrlSpaceGlobCommand|
-   7.8 g:CtrlSpaceUseTabline                         |g:CtrlSpaceUseTabline|
-   7.9 g:CtrlSpaceUseArrowsInTerm               |g:CtrlSpaceUseArrowsInTerm|
-   7.10 g:CtrlSpaceUseMouseAndArrowsInTerm
+   7.8 g:CtrlSpaceEnableFilesCache             |g:CtrlSpaceEnableFilesCache|
+   7.9 g:CtrlSpaceUseTabline                         |g:CtrlSpaceUseTabline|
+   7.10 g:CtrlSpaceUseArrowsInTerm              |g:CtrlSpaceUseArrowsInTerm|
+   7.11 g:CtrlSpaceUseMouseAndArrowsInTerm
                                         |g:CtrlSpaceUseMouseAndArrowsInTerm|
-   7.11 g:CtrlSpaceSaveWorkspaceOnExit      |g:CtrlSpaceSaveWorkspaceOnExit|
-   7.12 g:CtrlSpaceSaveWorkspaceOnSwitch  |g:CtrlSpaceSaveWorkspaceOnSwitch|
-   7.13 g:CtrlSpaceLoadLastWorkspaceOnStart
+   7.12 g:CtrlSpaceSaveWorkspaceOnExit      |g:CtrlSpaceSaveWorkspaceOnExit|
+   7.13 g:CtrlSpaceSaveWorkspaceOnSwitch  |g:CtrlSpaceSaveWorkspaceOnSwitch|
+   7.14 g:CtrlSpaceLoadLastWorkspaceOnStart
                                        |g:CtrlSpaceLoadLastWorkspaceOnStart|
-   7.14 g:CtrlSpaceEnableBufferTabWrapAround
+   7.15 g:CtrlSpaceEnableBufferTabWrapAround
                                       |g:CtrlSpaceEnableBufferTabWrapAround|
-   7.15 g:CtrlSpaceCacheDir                            |g:CtrlSpaceCacheDir|
-   7.16 g:CtrlSpaceProjectRootMarkers        |g:CtrlSpaceProjectRootMarkers|
-   7.17 g:CtrlSpaceUseUnicode                        |g:CtrlSpaceUseUnicode|
-   7.18 g:CtrlSpaceSymbols                              |g:CtrlSpaceSymbols|
-   7.19 g:CtrlSpaceIgnoredFiles                    |g:CtrlSpaceIgnoredFiles|
-   7.20 g:CtrlSpaceStatuslineFunction        |g:CtrlSpaceStatuslineFunction|
-   7.21 g:CtrlSpaceSearchTiming                    |g:CtrlSpaceSearchTiming|
-   7.22 g:CtrlSpaceFileEngine                        |g:CtrlSpaceFileEngine|
-   7.23 g:CtrlSpaceSortHelp                            |g:CtrlSpaceSortHelp|
+   7.16 g:CtrlSpaceCacheDir                            |g:CtrlSpaceCacheDir|
+   7.17 g:CtrlSpaceProjectRootMarkers        |g:CtrlSpaceProjectRootMarkers|
+   7.18 g:CtrlSpaceUseUnicode                        |g:CtrlSpaceUseUnicode|
+   7.19 g:CtrlSpaceSymbols                              |g:CtrlSpaceSymbols|
+   7.20 g:CtrlSpaceIgnoredFiles                    |g:CtrlSpaceIgnoredFiles|
+   7.21 g:CtrlSpaceStatuslineFunction        |g:CtrlSpaceStatuslineFunction|
+   7.22 g:CtrlSpaceSearchTiming                    |g:CtrlSpaceSearchTiming|
+   7.23 g:CtrlSpaceFileEngine                        |g:CtrlSpaceFileEngine|
+   7.24 g:CtrlSpaceSortHelp                            |g:CtrlSpaceSortHelp|
  8. API                                                      |ctrlspace-api|
    8.1 Commands                                         |ctrlspace-commands|
      8.1.1 :CtrlSpace [keys]                                    |:CtrlSpace|
@@ -917,7 +918,25 @@ You can even make `Ag` to show hidden files by providing `--hidden` option: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.8 *g:CtrlSpaceUseTabline*
+7.8 *g:CtrlSpaceEnableFilesCache*
+
+Enable to store a cache file (cs_files) inside .git/ of each project. More
+suited for very large projects (>10k+ files at least, likely even more).
+
+Disable to load project files by simply re-globbing each time FILE mode is
+activated. More suited for small to medium sized projects, or for projects
+where switching to branches with different file layouts is common.
+
+Supported globbers are: rg, fd & ag (auto-detected in that order)
+
+Default value: >
+
+    let g:CtrlSpaceEnableFilesCache = 1
+<
+                                                             |ctrlspace-toc|
+--------------------------------------------------------------------------
+
+7.9 *g:CtrlSpaceUseTabline*
 
 Should Vim-CtrlSpace change your default tabline to its own?
 
@@ -928,7 +947,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.9 *g:CtrlSpaceUseArrowsInTerm*
+7.10 *g:CtrlSpaceUseArrowsInTerm*
 
 Should the plugin use arrows and <Home>, <End>, <PageUp>, <PageDown> keys
 in a terminal Vim.
@@ -940,7 +959,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.10 *g:CtrlSpaceUseMouseAndArrowsInTerm*
+7.11 *g:CtrlSpaceUseMouseAndArrowsInTerm*
 
 Should the plugin use mouse, arrows and <Home>, <End>, <PageUp>,
 <PageDown> keys in a terminal Vim. Disables the <Esc> key if turned on.
@@ -952,7 +971,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.11 *g:CtrlSpaceSaveWorkspaceOnExit*
+7.12 *g:CtrlSpaceSaveWorkspaceOnExit*
 
 Saves the active workspace (if present) on Vim quit. If this option is
 set, the Vim quit (<Q>) action in the plugin does not check for workspace
@@ -965,7 +984,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.12 *g:CtrlSpaceSaveWorkspaceOnSwitch*
+7.13 *g:CtrlSpaceSaveWorkspaceOnSwitch*
 
 Saves the active workspace (if present) on switching to another workspace
 or clearing (closing) the current one. If this option is set, the plugin
@@ -978,7 +997,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.13 *g:CtrlSpaceLoadLastWorkspaceOnStart*
+7.14 *g:CtrlSpaceLoadLastWorkspaceOnStart*
 
 Loads the last active workspace (if found) on Vim startup.
 
@@ -989,7 +1008,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.14 *g:CtrlSpaceEnableBufferTabWrapAround*
+7.15 *g:CtrlSpaceEnableBufferTabWrapAround*
 
 Determines whether changing (i.e. switching, moving or copying) buffers or
 tabs in BUFFER and TAB LIST modes wraps-around when the active/selected
@@ -1006,7 +1025,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.15 *g:CtrlSpaceCacheDir*
+7.16 *g:CtrlSpaceCacheDir*
 
 A directory for the Vim-CtrlSpace cache file (`.cs_cache`). By default
 your `$HOME` directory will be used.
@@ -1018,7 +1037,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.16 *g:CtrlSpaceProjectRootMarkers*
+7.17 *g:CtrlSpaceProjectRootMarkers*
 
 An array of directory names which presence indicates the project root. If
 no marker is found, you will be asked to confirm the project root
@@ -1042,7 +1061,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.17 *g:CtrlSpaceUseUnicode*
+7.18 *g:CtrlSpaceUseUnicode*
 
 Set to `1` if you want to use Unicode symbols, or `0` otherwise.
 
@@ -1053,7 +1072,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.18 *g:CtrlSpaceSymbols*
+7.19 *g:CtrlSpaceSymbols*
 
 Enables you to provide your own symbols. It's useful if, for example, your
 font doesn't contain enough symbols or the glyphs are poorly rendered.
@@ -1093,7 +1112,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.19 *g:CtrlSpaceIgnoredFiles*
+7.20 *g:CtrlSpaceIgnoredFiles*
 
 The expression used to ignore some files during file collecting. It is
 used in addition to the `wildignore` option in Vim (see |wildignore|).
@@ -1108,7 +1127,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.20 *g:CtrlSpaceStatuslineFunction*
+7.21 *g:CtrlSpaceStatuslineFunction*
 
 Allows to provide custom statusline function used by the CtrlSpace window.
 
@@ -1119,7 +1138,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.21 *g:CtrlSpaceSearchTiming*
+7.22 *g:CtrlSpaceSearchTiming*
 
 Allows you to adjust search smoothness by providing a delay on search
 input. By default the delay is set to 200 ms. That way the plugin ensures
@@ -1132,7 +1151,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.22 *g:CtrlSpaceFileEngine*
+7.23 *g:CtrlSpaceFileEngine*
 
 The plugin provides fuzzy search engine written in Go and compiled for
 several architectures:
@@ -1190,7 +1209,7 @@ Default value: >
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-7.23 *g:CtrlSpaceSortHelp*
+7.24 *g:CtrlSpaceSortHelp*
 
 Enables sorting the lines in help mode by the description. This is disabled by
 default for backwards compatibility. In a future version sorting might become

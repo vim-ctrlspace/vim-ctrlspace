@@ -227,6 +227,18 @@ To find more about setting up the file engines, check:
 :help g:CtrlSpaceFileEngine
 ```
 
+Lastly, this file engine sources the list of files it searches through from
+a text file cache (`cs_files`, typically stored under `.git/`). For small to
+medium-sized projects (say <1k files as a cautious estimate), where loading
+from this files cache isn't likely to yield a noticeable speed boost, and you
+might instead rather not think about when to refresh the cache (for instance
+on switching to a branch with different files), you may disable the cache and
+by extension forgo using the Go file engine by setting the option below:
+
+```VimL
+let g:CtrlSpaceEnableFilesCache = 0
+```
+
 ## Symbols
 
 Vim-Ctrlspace displays icons in the UI if your font supports UTF8, or
@@ -262,7 +274,7 @@ They can be used by adding the following lines to `vimrc`:
 
 ```VimL
 if executable('rg')
-    let g:CtrlSpaceGlobCommand = 'rg --files'
+    let g:CtrlSpaceGlobCommand = 'rg --color=never --files'
 elseif executable('fd')
     let g:CtrlSpaceGlobCommand = 'fd --type=file --color=never'
 elseif executable('ag')
