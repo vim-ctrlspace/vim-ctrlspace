@@ -8,7 +8,7 @@ endif
 
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content() abort
-    if !empty(s:config.FileEngine) && s:modes.File.Enabled
+    if s:config.EnableFilesCache && s:modes.File.Enabled
         return s:contentFromFileEngine()
     endif
 
