@@ -288,7 +288,7 @@ function! s:findSubsequence(text, offset)
     let currentOffset = a:offset
 
     for letter in s:modes.Search.Data.Letters
-        let matchedPosition = match(a:text, "\\m\\c" . letter, currentOffset)
+        let matchedPosition = match(a:text, "\\V\\c" . escape(letter, '\'), currentOffset)
 
         if matchedPosition == -1
             return [-1, []]
@@ -312,7 +312,7 @@ function! s:findLowestSearchNoise(text)
     let textLen       = strlen(a:text)
 
     if ltrLen == 1
-        let noise = match(a:text, "\\m\\c" . s:modes.Search.Data.Letters[0])
+        let noise = match(a:text, "\\V\\c" . escape(s:modes.Search.Data.Letters[0], '\'))
 
         if noise > -1
             let matchedString = s:modes.Search.Data.Letters[0]
