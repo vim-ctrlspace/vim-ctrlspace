@@ -1,34 +1,64 @@
 let s:config = ctrlspace#context#Configuration()
-let s:cache  = ctrlspace#files_cache#Init()
 let s:modes  = ctrlspace#modes#Modes()
-let s:files  = []
-let s:items  = []
+let s:Cache = ctrlspace#cache#Init()
+
+function! s:file_obj_init() abort
+    let s:File = {}
+    let s:File.raw_fname = function('s:get_selected_file')          " filename from Cache's files list
+    let s:File.abs_fpath = function('s:get_selected_file', [':p'])  " absolute filepath
+    let s:File.rel_fpath = function('s:get_selected_file', [':.'])  " relative filepath
+    let s:File.abs_fob_p = function('s:get_selected_file_or_buff', [':p'])   " absolute filepath of selected file or buffer
+    let s:File.rel_fob_p = function('s:get_selected_file_or_buff', [':.'])   " relative filepath of selected file or buffer
+    let s:File.abs_fob_d = function('s:get_selected_file_or_buff', [':p:h']) " absolute path of directory containing file or buffer
+    let s:File.rel_fob_d = function('s:get_selected_file_or_buff', [':.:h']) " relative path of directory containing file or buffer
+    return s:File
+endfunction
+
+function! s:get_selected_file(...) abort
+    let idx = ctrlspace#window#SelectedIndex()
+    let file = s:Cache.get_files()[idx]
+    return a:0 == 0 ? file : fnamemodify(file, a:1)
+endfunction
+
+function! s:get_selected_file_or_buff(mod) abort
+    let file = s:get_selected_file(':p')
+    return fnamemodify(s:modes.File.Enabled ? file : resolve(bufname(idx)), a:mod)
+endfunction
+
+let s:File = s:file_obj_init()
+
+" comparison check helper
+function! s:isValidFilePath(path) abort
+    if empty(a:path) || !filereadable(a:path) || isdirectory(a:path)
+      return v:false
+    else
+      return v:true
+    endif
+endfunction
 
 function! ctrlspace#files#Files() abort
-    return s:files
+    return s:Cache.get_files()
 endfunction
 
 function! ctrlspace#files#ClearAll() abort
-    let s:files = []
-    let s:items = []
+    call s:Cache.clear_all()
 endfunction
 
 function! ctrlspace#files#Items() abort
-    return s:items
+    return s:Cache.get_items()
 endfunction
 
 function! ctrlspace#files#SelectedFileName() abort
-    return s:modes.File.Enabled ? s:files[ctrlspace#window#SelectedIndex()] : ""
+    return s:modes.File.Enabled ? s:File.raw_fname() : ""
 endfunction
 
 function! ctrlspace#files#CollectFiles() abort
-    let [s:files, s:items] = s:cache.getFilesAndItems(s:files, s:items)
-    return s:files
+    call s:Cache.collect()
+    return ctrlspace#files#Files()
 endfunction
 
 function! ctrlspace#files#LoadFile(...) abort
-    let idx = ctrlspace#window#SelectedIndex()
-    let file = fnamemodify(s:files[idx], ":p")
+    let file = s:File.abs_fpath()
 
     call ctrlspace#window#Kill(0, 1)
 
@@ -46,8 +76,7 @@ function! ctrlspace#files#LoadFile(...) abort
 endfunction
 
 function! ctrlspace#files#LoadManyFiles(...) abort
-    let idx   = ctrlspace#window#SelectedIndex()
-    let file  = fnamemodify(s:files[idx], ":p")
+    let file = s:File.abs_fpath()
     let curln = line(".")
 
     call ctrlspace#window#Kill(0, 0)
@@ -71,17 +100,14 @@ function! ctrlspace#files#LoadManyFiles(...) abort
 endfunction
 
 function! ctrlspace#files#RefreshFiles() abort
-    let s:files = []
-    call s:cache.refresh()
+    call s:Cache.refresh()
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
 endfunction
 
 function! ctrlspace#files#RemoveFile() abort
-    let nr   = ctrlspace#window#SelectedIndex()
-    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
-
-    if empty(path) || !filereadable(path) || isdirectory(path)
+    let path = s:File.rel_fob_p()
+    if !s:isValidFilePath(path)
         return
     endif
 
@@ -111,7 +137,7 @@ function! ctrlspace#files#ZoomFile() abort
 
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#GoToStartWindow()
-    call s:loadFileOrBuffer(fnamemodify(s:files[nr], ":p"))
+    call s:loadFileOrBuffer(fnamemodify(s:Cache.files[nr], ":p"))
 
     silent! exe "normal! zb"
 
@@ -126,8 +152,7 @@ function! ctrlspace#files#CopyFileOrBuffer() abort
         call ctrlspace#util#ChDir(root)
     endif
 
-    let nr   = ctrlspace#window#SelectedIndex()
-    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
+    let path = s:File.rel_fob_p()
 
     let bufOnly = !filereadable(path) && !s:modes.File.Enabled
 
@@ -186,8 +211,7 @@ function! ctrlspace#files#RenameFileOrBuffer() abort
         call ctrlspace#util#ChDir(root)
     endif
 
-    let nr   = ctrlspace#window#SelectedIndex()
-    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.")
+    let path = s:File.rel_fob_p()
 
     let bufOnly = !filereadable(path) && !s:modes.File.Enabled
 
@@ -254,8 +278,7 @@ function! ctrlspace#files#GoToDirectory(back) abort
             return
         endif
     else
-        let nr   = ctrlspace#window#SelectedIndex()
-        let path = s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr))
+        let path = s:File.abs_fob_p()
     endif
 
     let oldBufferSubMode = s:modes.Buffer.Data.SubMode
@@ -291,23 +314,17 @@ function! ctrlspace#files#GoToDirectory(back) abort
 endfunction
 
 function! ctrlspace#files#ExploreDirectory() abort
-    let nr   = ctrlspace#window#SelectedIndex()
-    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
-
+    let path = s:File.abs_fob_d()
     if !isdirectory(path)
         return
     endif
-
-    let path = fnamemodify(path, ":p")
 
     call ctrlspace#window#Kill(0, 1)
     silent! exe "e " . fnameescape(path)
 endfunction
 
 function! ctrlspace#files#EditFile() abort
-    let nr   = ctrlspace#window#SelectedIndex()
-    let path = fnamemodify(s:modes.File.Enabled ? s:files[nr] : resolve(bufname(nr)), ":.:h")
-
+    let path = s:File.rel_fob_d()
     if !isdirectory(path)
         return
     endif
@@ -345,33 +362,33 @@ function! s:loadFileOrBuffer(file) abort
 endfunction
 
 function! s:updateFileList(path, newPath) abort
-    if empty(s:files)
-        let s:files = s:cache.loadFiles()
+    if empty(s:Cache.files)
+        call s:Cache.load()
 
-        if empty(s:files)
+        if empty(s:Cache.files)
             return
         else
-            let s:items = map(copy(s:files), '{ "index": v:key, "text": v:val, "indicators": "" }')
+            call s:Cache.map_files2items()
         endif
     endif
 
     let newPath = empty(a:newPath) ? "" : fnamemodify(a:newPath, ":.")
 
     if !empty(a:path)
-        let index = index(s:files, a:path)
+        let idx = index(s:Cache.files, a:path)
 
-        if index >= 0
-            call remove(s:files, index)
-            call remove(s:items, index)
+        if idx >= 0
+            call remove(s:Cache.files, idx)
+            call remove(s:Cache.items, idx)
         endif
     endif
 
     if !empty(newPath)
-        call add(s:files, newPath)
-        call add(s:items, { "index": len(s:items), "text": newPath, "indicators": "" })
+        call add(s:Cache.files, newPath)
+        call add(s:Cache.items, { "index": len(s:Cache.items), "text": newPath, "indicators": "" })
     endif
 
-    call s:cache.saveThese(s:files)
+    call s:Cache.save()
 endfunction
 
 function! s:ensurePath(file) abort
