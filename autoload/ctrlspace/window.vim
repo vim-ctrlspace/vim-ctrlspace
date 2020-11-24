@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#window#MaxHeight()
+function! ctrlspace#window#MaxHeight() abort
     let maxFromConfig = s:config.MaxHeight
 
     if maxFromConfig
@@ -11,7 +11,7 @@ function! ctrlspace#window#MaxHeight()
     endif
 endfunction
 
-function! ctrlspace#window#Toggle(internal)
+function! ctrlspace#window#Toggle(internal) abort
     if !a:internal
         call s:resetWindow()
     endif
@@ -92,7 +92,7 @@ function! ctrlspace#window#Toggle(internal)
     normal! zb
 endfunction
 
-function! ctrlspace#window#GoToBufferListPosition(direction)
+function! ctrlspace#window#GoToBufferListPosition(direction) abort
     let bufferList    = ctrlspace#api#BufferList(tabpagenr())
     let currentBuffer = bufnr("%")
     let currentIndex  = -1
@@ -126,7 +126,7 @@ function! ctrlspace#window#GoToBufferListPosition(direction)
     silent! exe ":b " . bufferList[targetIndex]["index"]
 endfunction
 
-function! ctrlspace#window#GoToStartWindow()
+function! ctrlspace#window#GoToStartWindow() abort
     silent! exe t:CtrlSpaceStartWindow . "wincmd w"
 
     if winrestcmd() != t:CtrlSpaceWinrestcmd
@@ -138,7 +138,7 @@ function! ctrlspace#window#GoToStartWindow()
     endif
 endfunction
 
-function! ctrlspace#window#Kill(pluginBuffer, final)
+function! ctrlspace#window#Kill(pluginBuffer, final) abort
     " added workaround for strange Vim behavior when, when kill starts with some delay
     " (in a wrong buffer). This happens in some Nop modes (in a File List view).
     if (exists("s:killingNow") && s:killingNow) || (!a:pluginBuffer && &ft != "ctrlspace")
@@ -193,7 +193,7 @@ function! ctrlspace#window#Kill(pluginBuffer, final)
     unlet s:killingNow
 endfunction
 
-function! ctrlspace#window#QuitVim()
+function! ctrlspace#window#QuitVim() abort
     if !s:config.SaveWorkspaceOnExit
         let aw = ctrlspace#workspaces#ActiveWorkspace()
 
@@ -210,7 +210,7 @@ function! ctrlspace#window#QuitVim()
     qa!
 endfunction
 
-function! ctrlspace#window#MoveSelectionBar(where)
+function! ctrlspace#window#MoveSelectionBar(where) abort
     if b:size < 1
         return
     endif
@@ -278,7 +278,7 @@ function! ctrlspace#window#MoveSelectionBar(where)
     setlocal nomodifiable
 endfunction
 
-function! ctrlspace#window#MoveCursor(where)
+function! ctrlspace#window#MoveCursor(where) abort
     if a:where == "up"
         call s:goto(line(".") - 1)
     elseif a:where == "down"
@@ -314,11 +314,11 @@ function! ctrlspace#window#MoveCursor(where)
     endif
 endfunction
 
-function! ctrlspace#window#SelectedIndex()
+function! ctrlspace#window#SelectedIndex() abort
     return b:indices[line(".") - 1]
 endfunction
 
-function! ctrlspace#window#GoToWindow()
+function! ctrlspace#window#GoToWindow() abort
     let nr = ctrlspace#window#SelectedIndex()
 
     if bufwinnr(nr) != -1
@@ -331,7 +331,7 @@ function! ctrlspace#window#GoToWindow()
 endfunction
 
 " tries to set the cursor to a line of the buffer list
-function! s:goto(line)
+function! s:goto(line) abort
     if b:size < 1
         return
     endif
@@ -345,7 +345,7 @@ function! s:goto(line)
     endif
 endfunction
 
-function! s:resetWindow()
+function! s:resetWindow() abort
     call s:modes.Help.Disable()
     call s:modes.Nop.Disable()
     call s:modes.Search.Disable()
@@ -378,7 +378,7 @@ function! s:resetWindow()
     call ctrlspace#util#HandleVimSettings("start")
 endfunction
 
-function! s:setUpBuffer()
+function! s:setUpBuffer() abort
     setlocal noswapfile
     setlocal buftype=nofile
     setlocal bufhidden=delete
@@ -455,7 +455,7 @@ function! s:setUpBuffer()
     endfor
 endfunction
 
-function! s:setActiveLine()
+function! s:setActiveLine() abort
     if !empty(s:modes.Search.Data.Letters) && s:modes.Search.Data.NewSearchPerformed
         call ctrlspace#window#MoveSelectionBar(line("$"))
 
@@ -536,7 +536,7 @@ function! s:setActiveLine()
     endif
 endfunction
 
-function! s:filler()
+function! s:filler() abort
     " generate a variable to fill the buffer afterwards
     " (we need this for "full window" color :)
     if !exists("s:filler['" . &columns . "']")
@@ -558,7 +558,7 @@ function! s:filler()
     return s:filler[string(&columns)]
 endfunction
 
-function! s:fillBufferSpace()
+function! s:fillBufferSpace() abort
     let fill = s:filler()
 
     while winheight(0) > line(".")
@@ -566,7 +566,7 @@ function! s:fillBufferSpace()
     endwhile
 endfunction
 
-function! s:displayContent()
+function! s:displayContent() abort
     setlocal modifiable
 
     if b:size > 0

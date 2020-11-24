@@ -2,22 +2,22 @@ let s:config    = ctrlspace#context#Configuration()
 let s:modes     = ctrlspace#modes#Modes()
 let s:bookmarks = []
 
-function! ctrlspace#bookmarks#Bookmarks()
+function! ctrlspace#bookmarks#Bookmarks() abort
     return s:bookmarks
 endfunction
 
-function! ctrlspace#bookmarks#SetBookmarks(value)
+function! ctrlspace#bookmarks#SetBookmarks(value) abort
     let s:bookmarks = a:value
     return s:bookmarks
 endfunction
 
-function! ctrlspace#bookmarks#GoToBookmark(nr)
+function! ctrlspace#bookmarks#GoToBookmark(nr) abort
     let newBookmark = s:bookmarks[a:nr]
     call ctrlspace#util#ChDir(newBookmark.Directory)
     call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
 endfunction
 
-function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
+function! ctrlspace#bookmarks#ChangeBookmarkName(nr) abort
     let bookmark = s:bookmarks[a:nr]
     let newName = ctrlspace#ui#GetInput("New bookmark name: ", bookmark.Name)
 
@@ -27,7 +27,7 @@ function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
     endif
 endfunction
 
-function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr)
+function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr) abort
     let bookmark  = s:bookmarks[a:nr]
     let current   = bookmark.Directory
     let name      = bookmark.Name
@@ -59,7 +59,7 @@ function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr)
     return 1
 endfunction
 
-function! ctrlspace#bookmarks#RemoveBookmark(nr)
+function! ctrlspace#bookmarks#RemoveBookmark(nr) abort
     let name = s:bookmarks[a:nr].Name
 
     if !ctrlspace#ui#Confirmed("Delete bookmark '" . name . "'?")
@@ -88,7 +88,7 @@ function! ctrlspace#bookmarks#RemoveBookmark(nr)
     call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
 endfunction
 
-function! ctrlspace#bookmarks#AddFirstBookmark()
+function! ctrlspace#bookmarks#AddFirstBookmark() abort
     if ctrlspace#bookmarks#AddNewBookmark()
         call ctrlspace#window#Kill(0, 1)
         call ctrlspace#window#Toggle(0)
@@ -98,7 +98,7 @@ function! ctrlspace#bookmarks#AddFirstBookmark()
     endif
 endfunction
 
-function! ctrlspace#bookmarks#AddNewBookmark(...)
+function! ctrlspace#bookmarks#AddNewBookmark(...) abort
     if a:0
         let current = s:bookmarks[a:1].Directory
     else
@@ -137,7 +137,7 @@ function! ctrlspace#bookmarks#AddNewBookmark(...)
     return 1
 endfunction
 
-function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
+function! ctrlspace#bookmarks#AddToBookmarks(directory, name) abort
     let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
     let jumpCounter = 0
 
@@ -182,7 +182,7 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
     return bookmark
 endfunction
 
-function! ctrlspace#bookmarks#FindActiveBookmark()
+function! ctrlspace#bookmarks#FindActiveBookmark() abort
     let root = ctrlspace#roots#CurrentProjectRoot()
 
     if empty(root)

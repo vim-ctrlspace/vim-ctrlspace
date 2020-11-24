@@ -7,7 +7,7 @@ if has("win32")
 endif
 
 " returns [patterns, indices, size, text]
-function! ctrlspace#engine#Content()
+function! ctrlspace#engine#Content() abort
     if !empty(s:config.FileEngine) && s:modes.File.Enabled
         return s:contentFromFileEngine()
     endif
@@ -41,7 +41,7 @@ function! ctrlspace#engine#Content()
     return s:prepareContent(items)
 endfunction
 
-function! s:contentFromFileEngine()
+function! s:contentFromFileEngine() abort
     call ctrlspace#files#CollectFiles()
 
     let context = '{"Query":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
@@ -58,7 +58,7 @@ function! s:contentFromFileEngine()
     return [patterns, indices, size, text]
 endfunction
 
-function! ctrlspace#engine#CompareByText(a, b)
+function! ctrlspace#engine#CompareByText(a, b) abort
     let lhs = fnamemodify(a:a.text, ':p')
     let rhs = fnamemodify(a:b.text, ':p')
     if lhs < rhs
@@ -70,7 +70,7 @@ function! ctrlspace#engine#CompareByText(a, b)
     endif
 endfunction
 
-function! ctrlspace#engine#CompareByIndex(a, b)
+function! ctrlspace#engine#CompareByIndex(a, b) abort
     if a:a.index < a:b.index
         return -1
     elseif a:a.index > a:b.index
@@ -80,7 +80,7 @@ function! ctrlspace#engine#CompareByIndex(a, b)
     endif
 endfunction
 
-function! ctrlspace#engine#CompareByNoiseAndText(a, b)
+function! ctrlspace#engine#CompareByNoiseAndText(a, b) abort
     if a:a.noise < a:b.noise
         return 1
     elseif a:a.noise > a:b.noise
@@ -102,7 +102,7 @@ function! ctrlspace#engine#CompareByNoiseAndText(a, b)
     endif
 endfunction
 
-function! s:computeLowestNoises(source)
+function! s:computeLowestNoises(source) abort
     let results       = []
     let noises        = []
     let resultsCount  = 0
@@ -138,7 +138,7 @@ function! s:computeLowestNoises(source)
     return results
 endfunction
 
-function! s:contentSource()
+function! s:contentSource() abort
     let clv = ctrlspace#modes#CurrentListView()
 
     if clv.Name ==# "Buffer"
@@ -154,7 +154,7 @@ function! s:contentSource()
     endif
 endfunction
 
-function! s:bookmarkListContent(clv)
+function! s:bookmarkListContent(clv) abort
     let content   = []
     let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
@@ -171,7 +171,7 @@ function! s:bookmarkListContent(clv)
     return content
 endfunction
 
-function! s:workspaceListContent(clv)
+function! s:workspaceListContent(clv) abort
     let content    = []
     let workspaces = ctrlspace#workspaces#Workspaces()
     let active     = ctrlspace#workspaces#ActiveWorkspace()
@@ -196,7 +196,7 @@ function! s:workspaceListContent(clv)
     return content
 endfunction
 
-function! s:tabContent(clv)
+function! s:tabContent(clv) abort
     let content    = []
     let currentTab = tabpagenr()
 
@@ -228,12 +228,12 @@ function! s:tabContent(clv)
     return content
 endfunction
 
-function! s:fileListContent(clv)
+function! s:fileListContent(clv) abort
     call ctrlspace#files#CollectFiles()
     return deepcopy(ctrlspace#files#Items())
 endfunction
 
-function! s:bufferListContent(clv)
+function! s:bufferListContent(clv) abort
     let content = []
 
     if a:clv.Data.SubMode ==# "single"
@@ -254,7 +254,7 @@ function! s:bufferListContent(clv)
     return content
 endfunction
 
-function! s:bufferEntry(bufnr)
+function! s:bufferEntry(bufnr) abort
     let bufname  = fnamemodify(bufname(a:bufnr), ":.")
     let modified = getbufvar(a:bufnr, "&modified")
     let winnr    = bufwinnr(a:bufnr)
@@ -282,7 +282,7 @@ function! s:bufferEntry(bufnr)
     endif
 endfunction
 
-function! s:findSubsequence(text, offset)
+function! s:findSubsequence(text, offset) abort
     let positions     = []
     let noise         = 0
     let currentOffset = a:offset
@@ -304,7 +304,7 @@ function! s:findSubsequence(text, offset)
     return [noise, positions]
 endfunction
 
-function! s:findLowestSearchNoise(text)
+function! s:findLowestSearchNoise(text) abort
     let noise         = -1
     let smallnoise    = 0
     let matchedString = ""
@@ -365,7 +365,7 @@ function! s:findLowestSearchNoise(text)
     return [noise, smallnoise, pattern]
 endfunction
 
-function! s:prepareContent(items)
+function! s:prepareContent(items) abort
     let sizes = ctrlspace#context#SymbolSizes()
 
     if s:modes.File.Enabled

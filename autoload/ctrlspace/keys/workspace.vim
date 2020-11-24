@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#workspace#Init()
+function! ctrlspace#keys#workspace#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#LoadOrSave",    "Workspace", ["Tab", "CR", "Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Append",        "Workspace", ["a"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#NewWorkspace",  "Workspace", ["N"])
@@ -10,17 +10,17 @@ function! ctrlspace#keys#workspace#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#workspace#Rename",        "Workspace", ["=", "m"])
 endfunction
 
-function! ctrlspace#keys#workspace#Delete(k)
+function! ctrlspace#keys#workspace#Delete(k) abort
     call ctrlspace#workspaces#DeleteWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#workspace#Rename(k)
+function! ctrlspace#keys#workspace#Rename(k) abort
     call ctrlspace#workspaces#RenameWorkspace(ctrlspace#workspaces#SelectedWorkspaceName())
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#workspace#LoadOrSave(k)
+function! ctrlspace#keys#workspace#LoadOrSave(k) abort
     if s:modes.Workspace.Data.SubMode ==# "load"
         if !s:loadWorkspace(0, ctrlspace#workspaces#SelectedWorkspaceName())
             return
@@ -43,12 +43,12 @@ function! ctrlspace#keys#workspace#LoadOrSave(k)
     endif
 endfunction
 
-function! ctrlspace#keys#workspace#Append(k)
+function! ctrlspace#keys#workspace#Append(k) abort
     call s:loadWorkspace(1, ctrlspace#workspaces#SelectedWorkspaceName())
     call ctrlspace#ui#DelayedMsg()
 endfunction
 
-function! ctrlspace#keys#workspace#NewWorkspace(k)
+function! ctrlspace#keys#workspace#NewWorkspace(k) abort
     if !ctrlspace#keys#buffer#NewWorkspace(a:k)
         return
     endif
@@ -58,11 +58,11 @@ function! ctrlspace#keys#workspace#NewWorkspace(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#workspace#ToggleSubmode(k)
+function! ctrlspace#keys#workspace#ToggleSubmode(k) abort
     call s:modes.Workspace.SetData("LastBrowsed", line("."))
     call ctrlspace#window#Kill(0, 0)
 
-    if s:modes.Workspace.Data.SubMode == "load"
+    if s:modes.Workspace.Data.SubMode ==# "load"
         call s:modes.Workspace.SetData("SubMode", "save")
     else
         call s:modes.Workspace.SetData("SubMode", "load")
@@ -71,7 +71,7 @@ function! ctrlspace#keys#workspace#ToggleSubmode(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! s:saveWorkspace(name)
+function! s:saveWorkspace(name) abort
     let name = ctrlspace#ui#GetInput("Save current workspace as: ", a:name)
 
     if empty(name)
@@ -82,7 +82,7 @@ function! s:saveWorkspace(name)
     return ctrlspace#workspaces#SaveWorkspace(name)
 endfunction
 
-function! s:loadWorkspace(bang, name)
+function! s:loadWorkspace(bang, name) abort
     let saveWorkspaceBefore = 0
     let active = ctrlspace#workspaces#ActiveWorkspace()
 

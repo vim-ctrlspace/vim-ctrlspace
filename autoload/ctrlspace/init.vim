@@ -1,16 +1,22 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#init#Init()
+function! ctrlspace#init#Init() abort
+    augroup CtrlSpaceInit
+        autocmd!
+    augroup END
+
     if s:config.UseTabline
         set tabline=%!ctrlspace#api#Tabline()
 
-        if has("gui_running") && (&go =~# "e")
+        if has('gui_running') && (&guioptions =~# 'e')
             set guitablabel=%{ctrlspace#api#Guitablabel()}
 
             " Fix MacVim issues:
             " http://stackoverflow.com/questions/11595301/controlling-tab-names-in-vim
-            au BufEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
+            if has('gui_macvim')
+                autocmd CtrlSpaceInit BufWinEnter * set guitablabel=%{ctrlspace#api#Guitablabel()}
+            endif
         endif
     endif
 
@@ -49,20 +55,20 @@ function! ctrlspace#init#Init()
         execute 'buffer ' . currBuff
     endif
 
-    au BufEnter * call ctrlspace#buffers#AddBuffer()
-    au VimEnter * call ctrlspace#buffers#Init()
-    au TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
+    autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
+    autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
+    autocmd CtrlSpaceInit TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
     if s:config.SaveWorkspaceOnExit
-        au VimLeavePre * if ctrlspace#workspaces#ActiveWorkspace().Status | call ctrlspace#workspaces#SaveWorkspace("") | endif
+        autocmd CtrlSpaceInit VimLeavePre * if ctrlspace#workspaces#ActiveWorkspace().Status | call ctrlspace#workspaces#SaveWorkspace("") | endif
     endif
 
     if s:config.LoadLastWorkspaceOnStart
-        au VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#workspaces#LoadWorkspace(0, "") | endif
+        autocmd CtrlSpaceInit VimEnter * nested if (argc() == 0) && !empty(ctrlspace#roots#FindProjectRoot()) | call ctrlspace#workspaces#LoadWorkspace(0, "") | endif
     endif
 endfunction
 
-function! s:initProjectRootsAndBookmarks()
+function! s:initProjectRootsAndBookmarks() abort
     let cacheFile    = s:config.CacheDir . "/.cs_cache"
     let projectRoots = {}
     let bookmarks    = []

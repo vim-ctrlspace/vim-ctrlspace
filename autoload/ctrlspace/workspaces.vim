@@ -2,11 +2,11 @@ let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
 let s:workspaces = []
 
-function! ctrlspace#workspaces#Workspaces()
+function! ctrlspace#workspaces#Workspaces() abort
     return s:workspaces
 endfunction
 
-function! ctrlspace#workspaces#SetWorkspaceNames()
+function! ctrlspace#workspaces#SetWorkspaceNames() abort
     let filename     = ctrlspace#util#WorkspaceFile()
     let s:workspaces = []
 
@@ -23,7 +23,7 @@ function! ctrlspace#workspaces#SetWorkspaceNames()
     endif
 endfunction
 
-function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
+function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...) abort
     if a:0 > 0
         let digest = a:1
     else
@@ -51,7 +51,7 @@ function! ctrlspace#workspaces#SetActiveWorkspaceName(name, ...)
     call writefile(lines, filename)
 endfunction
 
-function! ctrlspace#workspaces#ActiveWorkspace()
+function! ctrlspace#workspaces#ActiveWorkspace() abort
     let aw = s:modes.Workspace.Data.Active
     let aw.Status = 0
 
@@ -66,7 +66,7 @@ function! ctrlspace#workspaces#ActiveWorkspace()
     return aw
 endfunction
 
-function! ctrlspace#workspaces#NewWorkspace()
+function! ctrlspace#workspaces#NewWorkspace() abort
     tabe
     tabo!
     call ctrlspace#buffers#DeleteHiddenNonameBuffers(1)
@@ -74,11 +74,11 @@ function! ctrlspace#workspaces#NewWorkspace()
     call s:modes.Workspace.SetData("Active", { "Name": "", "Digest": "", "Root": "" })
 endfunction
 
-function! ctrlspace#workspaces#SelectedWorkspaceName()
+function! ctrlspace#workspaces#SelectedWorkspaceName() abort
     return s:modes.Workspace.Enabled ? s:workspaces[ctrlspace#window#SelectedIndex()] : ""
 endfunction
 
-function! ctrlspace#workspaces#RenameWorkspace(name)
+function! ctrlspace#workspaces#RenameWorkspace(name) abort
     let newName = ctrlspace#ui#GetInput("Rename workspace '" . a:name . "' to: ", a:name)
 
     if empty(newName)
@@ -127,7 +127,7 @@ function! ctrlspace#workspaces#RenameWorkspace(name)
     return 1
 endfunction
 
-function! ctrlspace#workspaces#DeleteWorkspace(name)
+function! ctrlspace#workspaces#DeleteWorkspace(name) abort
     if !ctrlspace#ui#Confirmed("Delete workspace '" . a:name . "'?")
         return 0
     endif
@@ -177,7 +177,7 @@ endfunction
 
 " bang == 0) load
 " bang == 1) append
-function! ctrlspace#workspaces#LoadWorkspace(bang, name)
+function! ctrlspace#workspaces#LoadWorkspace(bang, name) abort
     if !ctrlspace#roots#ProjectRootFound()
         return 0
     endif
@@ -259,7 +259,7 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name)
     return 1
 endfunction
 
-function! s:execWorkspaceCommands(bang, name, lines)
+function! s:execWorkspaceCommands(bang, name, lines) abort
     let commands = []
 
     if !a:bang
@@ -291,7 +291,7 @@ function! s:execWorkspaceCommands(bang, name, lines)
     call delete("CS_SESSION")
 endfunction
 
-function! ctrlspace#workspaces#SaveWorkspace(name)
+function! ctrlspace#workspaces#SaveWorkspace(name) abort
     if !ctrlspace#roots#ProjectRootFound()
         return 0
     endif
@@ -386,46 +386,45 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     let tabIndex = 0
 
     for cmd in readfile("CS_SESSION")
-        if cmd =~# "^lcd"
+        if cmd =~# "^lcd "
             continue
-
-        " NB: check patch-8.1.149 for backend vim mksession syntax change (tabnext)
+        elseif cmd =~# "^badd\>"
+            let baddList = matchlist(cmd, '\v^badd \+\d+ (\f+)$')
+            if exists("baddList[1]") && filereadable(baddList[1])
+                call add(lines, cmd)
+            endif
         elseif
-        \    ((cmd =~# "^edit") && (tabIndex == 0))
-        \ || (!has('patch-8.1.149') && ( (cmd =~# "^tabnew") || (cmd =~# "^tabedit") ))
-        \ ||  (has('patch-8.1.149') && (cmd =~# "^tabnext$"))
-
+        \    ((cmd =~# '^edit \f\+') && (tabIndex == 0))
+        \ || (!has('patch-8.1.149') && cmd =~# '^tabedit \f\+')
+        \ || ( has('patch-8.1.149') && cmd ==# 'tabnext')
+        " NB: check patch-8.1.149 for backend vim mksession change
             let data = tabData[tabIndex]
 
-            if tabIndex > 0
+            if cmd =~# '^tabedit \f\+'
+                call add(lines, 'tabedit')
+            elseif cmd ==# 'tabnext'
                 call add(lines, cmd)
             endif
 
             for b in data.bufs
-                call add(lines, "edit " . fnameescape(b))
+                call add(lines, 'edit ' . fnameescape(b))
             endfor
+
+            if cmd =~# '^tabedit \f\+'
+                " turn 'tabedit ...' into 'edit ...'
+                call add(lines, cmd[3:])
+            endif
 
             if !empty(data.label)
                 call add(lines, "let t:CtrlSpaceLabel = '" . substitute(data.label, "'", "''","g") . "'")
             endif
-
             if !empty(data.autotab)
                 call add(lines, "let t:CtrlSpaceAutotab = " . data.autotab)
             endif
 
-            if tabIndex == 0
-                call add(lines, cmd)
-            elseif cmd =~# "^tabedit"
-                call add(lines, cmd[3:]) "make edit from tabedit
-            endif
-
             let tabIndex += 1
         else
-            let baddList = matchlist(cmd, "\\m^badd \+\\d* \\(.*\\)$")
-
-            if exists("baddList[1]") && !empty(baddList[1]) && filereadable(baddList[1])
-                call add(lines, cmd)
-            endif
+            call add(lines, cmd)
         endif
     endfor
 
@@ -449,7 +448,7 @@ function! ctrlspace#workspaces#SaveWorkspace(name)
     return 1
 endfunction
 
-function! ctrlspace#workspaces#CreateDigest()
+function! ctrlspace#workspaces#CreateDigest() abort
     let useNossl = exists("b:nosslSave") && b:nosslSave
 
     if useNossl

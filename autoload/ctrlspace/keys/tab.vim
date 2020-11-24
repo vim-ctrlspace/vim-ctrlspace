@@ -1,7 +1,7 @@
 let s:config = ctrlspace#context#Configuration()
 let s:modes  = ctrlspace#modes#Modes()
 
-function! ctrlspace#keys#tab#Init()
+function! ctrlspace#keys#tab#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#GoToTab",               "Tab", ["Tab", "CR", "Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#CloseTab",              "Tab", ["c"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#AddTab",                "Tab", ["t", "a"])
@@ -15,7 +15,7 @@ function! ctrlspace#keys#tab#Init()
     call ctrlspace#keys#AddMapping("ctrlspace#keys#tab#NewWorkspace",          "Tab", ["N"])
 endfunction
 
-function! ctrlspace#keys#tab#GoToTab(k)
+function! ctrlspace#keys#tab#GoToTab(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
@@ -30,7 +30,7 @@ function! ctrlspace#keys#tab#GoToTab(k)
     endif
 endfunction
 
-function! ctrlspace#keys#tab#CloseTab(k)
+function! ctrlspace#keys#tab#CloseTab(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
@@ -41,7 +41,7 @@ function! ctrlspace#keys#tab#CloseTab(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#tab#AddTab(k)
+function! ctrlspace#keys#tab#AddTab(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
@@ -52,7 +52,7 @@ function! ctrlspace#keys#tab#AddTab(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#tab#CopyTab(k)
+function! ctrlspace#keys#tab#CopyTab(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
@@ -78,13 +78,13 @@ function! ctrlspace#keys#tab#CopyTab(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#tab#SwitchTab(k)
+function! ctrlspace#keys#tab#SwitchTab(k) abort
     call ctrlspace#window#MoveSelectionBar(tabpagenr())
     let dir = {'[': 'BWD', ']': 'FWD'}[a:k]
     call ctrlspace#changebuftab#Execute("SwitchTabInTabMode", dir)
 endfunction
 
-function! ctrlspace#keys#tab#NewTabLabel(k)
+function! ctrlspace#keys#tab#NewTabLabel(k) abort
     let l = line(".")
 
     if ctrlspace#tabs#NewTabLabel(ctrlspace#window#SelectedIndex())
@@ -94,7 +94,7 @@ function! ctrlspace#keys#tab#NewTabLabel(k)
     endif
 endfunction
 
-function! ctrlspace#keys#tab#RemoveTabLabel(k)
+function! ctrlspace#keys#tab#RemoveTabLabel(k) abort
     let l = line(".")
 
     if ctrlspace#tabs#RemoveTabLabel(ctrlspace#window#SelectedIndex())
@@ -107,7 +107,7 @@ function! ctrlspace#keys#tab#RemoveTabLabel(k)
 endfunction
 
 " this function is also used to move tabs in Buffer mode
-function! ctrlspace#keys#tab#MoveHelper(k)
+function! ctrlspace#keys#tab#MoveHelper(k) abort
     let dir = {'-': 'BWD', '+': 'FWD', '{': 'BWD', '}': 'FWD'}[a:k]
     if v:version < 704
         " NOTE: the tabmove cmds used here are directly copied from the existing code,
@@ -118,7 +118,7 @@ function! ctrlspace#keys#tab#MoveHelper(k)
     endif
 endfunction
 
-function! ctrlspace#keys#tab#MoveTab(k)
+function! ctrlspace#keys#tab#MoveTab(k) abort
     let nr = ctrlspace#window#SelectedIndex()
     call ctrlspace#window#Kill(0, 1)
     silent! exe "normal! " . nr . "gt"
@@ -129,15 +129,15 @@ function! ctrlspace#keys#tab#MoveTab(k)
     call ctrlspace#window#Toggle(1)
 endfunction
 
-function! ctrlspace#keys#tab#CollectUnsavedBuffers(k)
+function! ctrlspace#keys#tab#CollectUnsavedBuffers(k) abort
     call ctrlspace#tabs#CollectUnsavedBuffers()
 endfunction
 
-function! ctrlspace#keys#tab#CollectForeignBuffers(k)
+function! ctrlspace#keys#tab#CollectForeignBuffers(k) abort
     call ctrlspace#tabs#CollectForeignBuffers()
 endfunction
 
-function! ctrlspace#keys#tab#NewWorkspace(k)
+function! ctrlspace#keys#tab#NewWorkspace(k) abort
     if !ctrlspace#keys#buffer#NewWorkspace(a:k)
         return
     endif

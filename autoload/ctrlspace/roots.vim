@@ -5,34 +5,34 @@ let s:projectRoots       = {}
 let s:lastProjectRoot    = ""
 let s:currentProjectRoot = ""
 
-function! ctrlspace#roots#ProjectRoots()
+function! ctrlspace#roots#ProjectRoots() abort
     return s:projectRoots
 endfunction
 
-function! ctrlspace#roots#SetProjectRoots(value)
+function! ctrlspace#roots#SetProjectRoots(value) abort
     let s:projectRoots = a:value
     return s:projectRoots
 endfunction
 
-function! ctrlspace#roots#CurrentProjectRoot()
+function! ctrlspace#roots#CurrentProjectRoot() abort
     return s:currentProjectRoot
 endfunction
 
-function! ctrlspace#roots#SetCurrentProjectRoot(value)
+function! ctrlspace#roots#SetCurrentProjectRoot(value) abort
     let s:currentProjectRoot = a:value
     return s:currentProjectRoot
 endfunction
 
-function! ctrlspace#roots#LastProjectRoot()
+function! ctrlspace#roots#LastProjectRoot() abort
     return s:lastProjectRoot
 endfunction
 
-function! ctrlspace#roots#SetLastProjectRoot(value)
+function! ctrlspace#roots#SetLastProjectRoot(value) abort
     let s:lastProjectRoot = a:value
     return s:lastProjectRoot
 endfunction
 
-function! ctrlspace#roots#AddProjectRoot(directory)
+function! ctrlspace#roots#AddProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
 
     if !isdirectory(directory)
@@ -55,7 +55,7 @@ function! ctrlspace#roots#AddProjectRoot(directory)
     call ctrlspace#ui#Msg("Directory '" . directory . "' has been added as a permanent project root.")
 endfunction
 
-function! ctrlspace#roots#RemoveProjectRoot(directory)
+function! ctrlspace#roots#RemoveProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
 
     if !exists("s:projectRoots[directory]")
@@ -67,7 +67,7 @@ function! ctrlspace#roots#RemoveProjectRoot(directory)
     call ctrlspace#ui#Msg("Project root '" . directory . "' has been removed.")
 endfunction
 
-function! s:removeProjectRoot(directory)
+function! s:removeProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
     if exists("s:projectRoots[directory]")
@@ -92,7 +92,7 @@ function! s:removeProjectRoot(directory)
     call writefile(lines, cacheFile)
 endfunction
 
-function! s:addProjectRoot(directory)
+function! s:addProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
     let s:projectRoots[directory] = 1
@@ -122,7 +122,7 @@ function! s:addProjectRoot(directory)
     call writefile(lines, cacheFile)
 endfunction
 
-function! ctrlspace#roots#FindProjectRoot()
+function! ctrlspace#roots#FindProjectRoot() abort
     let projectRoot = fnamemodify(".", ":p:h")
 
     if !empty(s:config.ProjectRootMarkers)
@@ -158,7 +158,7 @@ function! ctrlspace#roots#FindProjectRoot()
     return projectRoot
 endfunction
 
-function! ctrlspace#roots#ProjectRootFound()
+function! ctrlspace#roots#ProjectRootFound() abort
     if empty(s:currentProjectRoot)
         let s:currentProjectRoot = ctrlspace#roots#FindProjectRoot()
 
