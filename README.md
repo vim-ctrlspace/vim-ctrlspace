@@ -13,10 +13,7 @@ including fuzzy search (*powered by Go*);
 reachable by the default mapping `Ctrl` + `Space`.
 
 If you have already starred this repo, thank you!
-
-If you have a question, a feature request, or a new
-idea, don't hesitate to post new issues or pull requests.
-
+If you have a question, a feature request, or a new idea, then don't hesitate to post new issues or pull requests:
 Collaboration is the most awesome thing in the open source community!
 
 # Idea by Analogy
@@ -41,14 +38,14 @@ Imagine Vim is a writing desk.
 Your projects are like drawers.
 The **Bookmark List** simply displays your favorite projects.
 
-To get documents from a drawer you would need a **File List**. It allows
-you to easily look up contents of a given project. Once you locate and
-pick up a file it becomes a **buffer**.
-
-A buffer is like a sheet of paper lying on the desk. Sometimes you can
-have a blank piece of paper --- that's a new unsaved buffer. It would become
-eventually a file on the disk once saved (put into a drawer). To manage
-all buffers on the desk you would need a **Buffer List**.
+- The **Bookmark List** simply displays your favorite projects.
+- To get documents from a drawer you would need a **File List**.
+    It allows you to easily look up contents of a given project.
+- Once you locate and pick up a file it becomes a **buffer**.
+    A buffer is like a sheet of paper lying on the desk.
+    Sometimes you can have a blank piece of paper -- that's a new unsaved buffer.
+    It would become eventually a file on the disk once saved (put into a drawer).
+    To manage all buffers on the desk you would need a **Buffer List**.
 
 **Tabs** are the secret weapon of **Vim-CtrlSpace**:
 Each tab holds a **separate** list of buffers and is like a pile of documents on the desk.
