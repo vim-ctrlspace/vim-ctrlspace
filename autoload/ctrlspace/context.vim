@@ -54,6 +54,7 @@ let s:configuration = {
                     \ "DefaultMappingKey":         "<C-Space>",
                     \ "Keys":                      {},
                     \ "Help":                      {},
+                    \ "SortHelp":                  0,
                     \ "GlobCommand":               "",
                     \ "UseTabline":                1,
                     \ "UseArrowsInTerm":           0,

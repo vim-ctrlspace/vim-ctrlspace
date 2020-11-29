@@ -319,7 +319,11 @@ function! s:sortKeyHelp(key1, key2) dict
 endfunction
 
 function! s:collectKeysInfo(mapName) abort
-    for key in sort(keys(s:helpMap[a:mapName]), "s:sortKeyHelp", s:helpMap[a:mapName])
+    let l:keys = keys(s:helpMap[a:mapName])
+    if s:config.SortHelp
+      let l:keys = sort(l:keys, "s:sortKeyHelp", s:helpMap[a:mapName])
+    endif
+    for key in l:keys
         let FnKey = s:helpMap[a:mapName][key]
 
         " Due to the way 'ctrlspace#keys#nop#_ExecDbmdexAction' is called (as
