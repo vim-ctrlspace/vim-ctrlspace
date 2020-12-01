@@ -1,3 +1,4 @@
+
 <div align="center">
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/logo5.png" />
 <br><br>
@@ -10,14 +11,7 @@ Welcome to the **Vim-CtrlSpace** plug-in for managing
 * bookmarks for your favorite projects
 
 including fuzzy search (*powered by Go*);
-reachable by the default mapping `Ctrl` + `Space`.
-
-If you have already starred this repo, thank you!
-If you have a question, a feature request, or a new idea, then don't hesitate to post new issues or pull requests:
-Collaboration is the most awesome thing in the open source community!
-
-# Idea by Analogy
-
+reachable by the default mapping `Ctrl` + `Space`:
 Pressing `<C-Space>` opens a window listing
 
 * Buffers,
@@ -32,24 +26,45 @@ selectable by the `j`, `k`, and `<CR>` keys.
 <img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
+# Table of Contents
+
+   * [Idea by Analogy](#idea-by-analogy)
+   * [Getting Started](#getting-started)
+      * [Installation](#installation)
+      * [Basic Settings](#basic-settings)
+         * [Tabline](#tabline)
+         * [Neovim](#neovim)
+      * [First Steps](#first-steps)
+      * [Fuzzy Search Hints](#fuzzy-search-hints)
+      * [Automatically Saving Workspace](#automatically-saving-workspace)
+   * [Advanced Settings](#advanced-settings)
+      * [Go Engine](#go-engine)
+      * [Symbols](#symbols)
+      * [Glob Command](#glob-command)
+      * [Search Timing](#search-timing)
+      * [Colors](#colors)
+   * [Authors and License](#authors-and-license)
+
+If you have already starred this repo, thank you!
+If you have a question, a feature request, or a new idea, then don't hesitate to post new issues or pull requests:
+Collaboration is the most awesome thing in the open source community!
+
+# Idea by Analogy
+
 These Lists can be explained with a simple analogy:
 Imagine Vim is a writing desk.
 
-Your projects are like drawers.
-The **Bookmark List** simply displays your favorite projects.
-
-- The **Bookmark List** simply displays your favorite projects.
-- To get documents from a drawer you would need a **File List**.
-    It allows you to easily look up contents of a given project.
+- The **Bookmarks List** lists your favorite projects that are like drawers.
+- To look up the documents in a drawer you need the **File List**.
 - Once you locate and pick up a file it becomes a **buffer**.
     A buffer is like a sheet of paper lying on the desk.
-    Sometimes you can have a blank piece of paper -- that's a new unsaved buffer.
-    It would become eventually a file on the disk once saved (put into a drawer).
-    To manage all buffers on the desk you would need a **Buffer List**.
+    Sometimes you can have a blank piece of paper --- that's a new unsaved buffer.
+    Eventually, once saved (put into a drawer), it becomes a file.
+    The **Buffer List** lets you manage all papers on the desk.
 
-**Tabs** are the secret weapon of **Vim-CtrlSpace**:
-Each tab holds a **separate** list of buffers and is like a pile of documents on the desk.
-
+The strongest point of **Vim-CtrlSpace** is its handling of  **Tab pages**:
+**Each** tab holds a **separate** list of buffers;
+like a pile of documents on the desk.
 With tabs you can, for example:
 
 * group related buffers
@@ -91,6 +106,8 @@ set hidden
 set encoding=utf-8
 ```
 
+### Tabline
+
 If you feel brave enough **turn off** tabline:
 
 ```VimL
@@ -100,7 +117,6 @@ set showtabline=0
 Tabline in Vim has very limited capabilities and as Vim-CtrlSpace makes
 use of tabs intensively, tabline would just get in your way. **Tab List**
 (`<l>`) makes tabline obsolete ;).
-
 
 ### Neovim
 
