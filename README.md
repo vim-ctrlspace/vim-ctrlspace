@@ -82,16 +82,15 @@ You can save multiple workspaces per project with the **Workspace List**.
 
 ## Installation
 
-If you use Vundle add to your `.vimrc`:
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then add to your `vimrc` file (whose path is shown by `:help vimrc`):
 
 ```VimL
-Plugin 'vim-ctrlspace/vim-ctrlspace'
+Plug 'vim-ctrlspace/vim-ctrlspace'
 ```
 
-You can also clone the repository to your `.vim` directory:
+You can also clone the repository to your `vimfiles` directory (whose path is shown by `:help vimrc`):
 
 ```Shell
-cd ~/.vim
 git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 ```
 
@@ -188,7 +187,7 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 ## Go Engine
 
 The plugin provides engine compiled for popular operating systems and
-architectures. By default it will attempt to detect your os and
+architectures. By default it will attempt to detect your OS and
 architecture. To see if auto detection was successful press `<?>`.
 
 To speed up the startup of Vim, replace it by a custom simpler one that
@@ -234,7 +233,7 @@ Vim-Ctrlspace displays icons in the UI if your font supports UTF8, or
 ASCII characters as a fallback. Some symbols (glyphs) might not look well
 with the font you are using, so feel free to change and adjust them.
 
-This is the config I use for Inconsolata font in MacVim:
+I use the following symbols of the Inconsolata font in MacVim :
 
 ```VimL
 if has("gui_running")
@@ -244,7 +243,7 @@ endif
 ```
 
 Since it's impossible to provide universal character set that would look well
-on any machine, therefore the fine tuning is left up to you.
+on any machine, the fine tuning is left to you.
 
 You can find more about this tuning option in the plugin help:
 
@@ -254,7 +253,6 @@ You can find more about this tuning option in the plugin help:
 
 If you feel that you have found a better symbol for a given view, you are
 more than welcome to open a pull request.
-
 
 ## Glob Command
 
@@ -274,9 +272,7 @@ endif
 
 ## Search Timing
 
-If you usually have to deal with huge projects having 100 000 files you
-can increase plugin fuzzy search delay to make it even more responsible by
-providing a higher `g:CtrlSpaceSearchTiming` value:
+If your projects have more than 100 000 files, then you can make the file search more responsive by increasing the plugin's fuzzy search delay timing value:
 
 ```VimL
 let g:CtrlSpaceSearchTiming = 500
