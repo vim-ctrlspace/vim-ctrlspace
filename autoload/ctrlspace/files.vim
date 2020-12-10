@@ -16,19 +16,13 @@ endfunction
 
 function! s:get_selected_file(...) abort
     let idx = ctrlspace#window#SelectedIndex()
-    try
-      let file = s:Cache.get_files()[idx]
-    catch /^Vim\%((\a\+)\)\=:E684/  " E684 is index (out of bounds) error
-      call s:Cache.load()
-      let file = s:Cache.get_files()[idx]
-    endtry
+    let file = s:Cache.get_files()[idx]
     return a:0 == 0 ? file : fnamemodify(file, a:1)
 endfunction
 
 function! s:get_selected_file_or_buff(mod) abort
-    let idx = ctrlspace#window#SelectedIndex()
-    let file = s:get_selected_file(':p')
-    return fnamemodify(s:modes.File.Enabled ? file : resolve(bufname(idx)), a:mod)
+    let target = s:modes.File.Enabled ? s:get_selected_file(':p') : resolve(bufname(ctrlspace#window#SelectedIndex()))
+    return fnamemodify(target, a:mod)
 endfunction
 
 let s:File = s:file_obj_init()
