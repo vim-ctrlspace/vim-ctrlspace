@@ -90,7 +90,7 @@ let s:file_cache = {}
 
 function! s:file_cache.save() dict abort
     let filename = ctrlspace#util#FilesCache()
-    if empty(filename) || !filewritable(filename)
+    if empty(filename)
         return
     endif
     call writefile(self.files, filename)
