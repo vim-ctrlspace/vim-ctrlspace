@@ -395,9 +395,10 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
             endif
         elseif
         \    ((cmd =~# '^edit \f\+') && (tabIndex == 0))
-        \ || (!has('patch-8.1.149') && cmd =~# '^tabedit \f\+')
-        \ || ( has('patch-8.1.149') && cmd ==# 'tabnext')
+        \ || ( (has('patch-8.1.149') || has('nvim-0.5')) && cmd ==# 'tabnext')
+        \ || (!(has('patch-8.1.149') || has('nvim-0.5')) && cmd =~# '^tabedit \f\+')
         " NB: check patch-8.1.149 for backend vim mksession change
+        " NB: check nvim-0.5 for port of patch-8.1.149 from Vim to Nvim
             let data = tabData[tabIndex]
 
             if cmd =~# '^tabedit \f\+'
