@@ -9,7 +9,7 @@ function! ctrlspace#keys#search#Init() abort
     call ctrlspace#keys#AddMapping("ctrlspace#keys#search#SwitchOffCR",         "Search", ["Tab"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#search#SwitchOffSpace",      "Search", ["Space"])
     call ctrlspace#keys#AddMapping("ctrlspace#keys#search#ClearLetters",        "Search", ['C-u', 'C-w'])
-    call ctrlspace#keys#AddMapping("ctrlspace#keys#search#AddLetter",           "Search", ["lowercase", "uppercase", "numbers"])
+    call ctrlspace#keys#AddMapping("ctrlspace#keys#search#AddLetter",           "Search", ["lowercase", "uppercase", "numbers", "punctuation"])
 endfunction
 
 function! ctrlspace#keys#search#ClearOrRemoveLetter(k) abort
