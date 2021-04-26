@@ -65,7 +65,7 @@ function! s:initKeyNames() abort
     let controls = join(controlList, " ")
 
     let numbers  = "1 2 3 4 5 6 7 8 9 0"
-    let punctuation = "; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * / \ | " . 
+    let punctuation = "; : , . < > [ ] { } ( ) ' ` ~ + - _ = ! @ # $ % ^ & * / \ " . 
                 \ '"'
     let specials = "Space CR BS Tab S-Tab / ? C-f C-b C-u C-d C-h C-w " .
                  \ "Bar BSlash MouseDown MouseUp LeftDrag LeftRelease 2-LeftMouse " .
