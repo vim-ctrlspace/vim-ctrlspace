@@ -42,7 +42,7 @@ function! s:glob_project_files() abort
     let uniqueFiles = {}
     for fname in empty(s:glob_cmd) ? split(globpath('.', '**'), '\n') : split(ctrlspace#util#system(s:glob_cmd), '\n')
         let fnameModified = fnamemodify(fname, ":.")
-        if isdirectory(fnameModified) || (fnameModified =~# s:config.IgnoredFiles)
+        if fnameModified =~# s:config.IgnoredFiles
             continue
         endif
         let uniqueFiles[fnameModified] = 1
