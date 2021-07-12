@@ -39,15 +39,9 @@ endfunction
 " script local helper used for globbing in both cache systems
 
 function! s:glob_project_files() abort
-    let uniqueFiles = {}
-    for fname in empty(s:glob_cmd) ? split(globpath('.', '**'), '\n') : split(ctrlspace#util#system(s:glob_cmd), '\n')
-        let fnameModified = fnamemodify(fname, ":.")
-        if fnameModified =~# s:config.IgnoredFiles
-            continue
-        endif
-        let uniqueFiles[fnameModified] = 1
-    endfor
-    return keys(uniqueFiles)
+    let files = empty(s:glob_cmd) ?
+          \ globpath('.', '**') : ctrlspace#util#system(s:glob_cmd)
+    return map(split(files, '\n'), { _, fname -> fnamemodify(fname, ":.")})
 endfunction
 
 
