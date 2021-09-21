@@ -44,9 +44,14 @@ function! ctrlspace#window#Toggle(internal) abort
     endif
 
     " create the buffer first & set it up
-    silent! exe "noautocmd botright pedit CtrlSpace"
-    silent! exe "noautocmd wincmd P"
-    silent! exe "resize" s:config.Height
+    try
+        silent exe "noautocmd botright pedit CtrlSpace"
+        silent exe "noautocmd wincmd P"
+        silent exe "resize" s:config.Height
+    catch
+        echoerr 'cannot open CtrlSpace window here'
+        return
+    endtry
 
     " zoom start window in Zoom Mode
     if s:modes.Zoom.Enabled
