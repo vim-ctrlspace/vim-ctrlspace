@@ -1055,7 +1055,8 @@ Default value: >
          \ ".svn",
          \ ".bzr",
          \ "_darcs",
-         \ "CVS"
+         \ "CVS",
+         \ ".cs_workspaces"
          \ ]
 <
                                                              |ctrlspace-toc|

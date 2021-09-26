@@ -66,7 +66,7 @@ let s:configuration = {
                     \ "LoadLastWorkspaceOnStart":  0,
                     \ "EnableBufferTabWrapAround": 1,
                     \ "CacheDir":                  expand($HOME),
-                    \ "ProjectRootMarkers":        [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"],
+                    \ "ProjectRootMarkers":        [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS", ".cs_workspaces"],
                     \ "UseUnicode":                1,
                     \ "IgnoredFiles":              '\v(tmp|temp)[\/]',
                     \ "SearchTiming":              200,
