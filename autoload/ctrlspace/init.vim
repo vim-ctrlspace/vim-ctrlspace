@@ -48,6 +48,7 @@ function! ctrlspace#init#Init() abort
         let currBuff=bufnr('%')
 
         silent argdo call ctrlspace#buffers#AddBuffer()
+        silent argdo silent echo ''
         
         if curaltBuff >= 0 
             execute 'buffer ' . curaltBuff
