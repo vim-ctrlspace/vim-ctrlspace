@@ -288,6 +288,8 @@ function! s:execWorkspaceCommands(bang, name, lines) abort
         silent exe c
     endfor
 
+    call ctrlspace#util#ChDir(fnamemodify(".", ":p:h"))
+
     call delete("CS_SESSION")
 endfunction
 
