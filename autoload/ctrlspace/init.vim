@@ -47,13 +47,12 @@ function! ctrlspace#init#Init() abort
         let curaltBuff=bufnr('#')
         let currBuff=bufnr('%')
 
-        silent argdo call ctrlspace#buffers#AddBuffer()
-        silent argdo silent echo ''
-        
         if curaltBuff >= 0 
             execute 'buffer ' . curaltBuff
         endif
         execute 'buffer ' . currBuff
+
+        autocmd CtrlSpaceInit VimEnter * silent argdo call ctrlspace#buffers#AddBuffer()
     endif
 
     autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
