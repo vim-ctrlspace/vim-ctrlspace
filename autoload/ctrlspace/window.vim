@@ -134,6 +134,10 @@ endfunction
 function! ctrlspace#window#GoToStartWindow() abort
     silent! exe t:CtrlSpaceStartWindow . "wincmd w"
 
+    if winrestcmd() != t:CtrlSpaceWinrestcmd && !has('nvim')
+        silent! exe t:CtrlSpaceWinrestcmd
+    endif
+
     if winrestcmd() != t:CtrlSpaceWinrestcmd
         wincmd =
     endif
