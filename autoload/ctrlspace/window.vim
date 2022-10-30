@@ -135,11 +135,7 @@ function! ctrlspace#window#GoToStartWindow() abort
     silent! exe t:CtrlSpaceStartWindow . "wincmd w"
 
     if winrestcmd() != t:CtrlSpaceWinrestcmd
-        silent! exe t:CtrlSpaceWinrestcmd
-
-        if winrestcmd() != t:CtrlSpaceWinrestcmd
-            wincmd =
-        endif
+        wincmd =
     endif
 endfunction
 
