@@ -52,7 +52,7 @@ function! ctrlspace#init#Init() abort
         endif
         execute 'buffer ' . currBuff
 
-        autocmd CtrlSpaceInit VimEnter * exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind
+        autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind
     endif
 
     autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
