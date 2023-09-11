@@ -53,9 +53,10 @@ function! ctrlspace#init#Init() abort
         execute 'buffer ' . currBuff
 
         autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind
+    else
+        autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
     endif
 
-    autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
     autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
     autocmd CtrlSpaceInit TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
 
