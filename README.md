@@ -1,7 +1,48 @@
 <div align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/logo5.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/logo5.png" />
 <br><br>
 </div>
+
+
+**This is a fork of [vim-ctrlspace](https://github.com/vim-ctrlspace/vim-ctrlspace). The main changes are listed following:**
+- **(20170903) Change bookmark list as files bookmark list.**
+All your bookmarked files will be listed with filename and filepath. For example, there 3 bookmarked files in the list in the picutre following.
+
+<div align="center">
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_bm.png" />
+</div>
+
+| **Key**        | **Action**                                                         |
+| :---:          | :---                                                               |
+| Tab, CR, Space | Edit bookmarked file (Tab - goto buffer, CR - close, Space - stay) |
+| a              | Add bookmark                                                       |
+| d              | Delete bookmark                                                    |
+| t              | Append bookmarked file in new tab                                  |
+| s              | Append bookmarked file in split window                             |
+| v              | Append bookmarked file in vsplit window                            |
+| g              | Toggle sort mode between path and name                             |
+
+- **(20170905) Change workspace list as all workspace list.**
+Now workspace list will show all workspaces of projects with workspace name and projects path. For example, there 2 projects and 4 workspaces in the picture following.
+
+<div align="center">
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/new_ws.png" />
+</div>
+
+| **Key**        | **Action**                                                   |
+| :---:          | :---                                                         |
+| Tab, CR, Space | Load workspace (Tab - goto buffer, CR - close, Space - stay) |
+| t              | Append workspace in new tab                                  |
+| a              | Add new workspace                                            |
+| s              | Save workspace                                               |
+| d              | Delete workspace                                             |
+| m, =           | Rename workspace                                             |
+| g              | Toggle sort mode between path and name                       |
+| C              | Clear all buffers and tabs of workspace                      |
+
+<br><br>
+
+---
 
 Welcome to **Vim-CtrlSpace**, a comprehensive solution for your Vim editor
 providing:
@@ -64,7 +105,7 @@ Vim-CtrlSpace interface is a window you can invoke by pressing
 items with `<j>`, `<k>`, and `<CR>` keys.
 
 <p align="center">
-<img alt="Vim-CtrlSpace" src="https://raw.github.com/vim-ctrlspace/vim-ctrlspace/master/gfx/cs5_window.png" />
+<img alt="Vim-CtrlSpace" src="https://raw.github.com/yehuohan/vim-ctrlspace/master/gfx/cs5_window.png" />
 </p>
 
 Generally speaking Vim-CtrlSpace can display 5 types of lists:

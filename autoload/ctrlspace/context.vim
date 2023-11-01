@@ -1,3 +1,7 @@
+"
+" Init ctrlspace configuration
+"
+
 let s:pluginBuffer = -1
 let s:pluginFolder = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h')
 
@@ -12,8 +16,7 @@ let s:configuration = {
 					\ "Tabs":   "▫",
 					\ "CTab":   "▪",
 					\ "NTM":    "⁺",
-					\ "WLoad":  "⬆",
-					\ "WSave":  "⬇",
+					\ "WS":     "≡",
 					\ "Zoom":   "⌕",
 					\ "SLeft":  "›",
 					\ "SRight": "‹",
@@ -33,8 +36,7 @@ let s:configuration = {
 					\ "Tabs":   "-",
 					\ "CTab":   "+",
 					\ "NTM":    "+",
-					\ "WLoad":  "|*|",
-					\ "WSave":  "[*]",
+					\ "WS":     "[*]",
 					\ "Zoom":   "*",
 					\ "SLeft":  "[",
 					\ "SRight": "]",
@@ -68,9 +70,11 @@ let s:configuration = {
 			\ "FileEngine":               "auto",
 		\ }
 
+" Init s:conf with s:configuration  and user's configuration
 function! s:init()
 	let s:conf = copy(s:configuration)
 
+    " override s:conf by user's configuration
 	for name in keys(s:conf)
 		if exists("g:CtrlSpace" . name)
 			let s:conf[name] = g:{"CtrlSpace" . name}
@@ -104,6 +108,7 @@ function! s:init()
 	endif
 endfunction
 
+" Detect file-searching engine according platform
 function! s:detectEngine()
 	let [os, arch] = ["", ""]
 
@@ -159,6 +164,7 @@ function! ctrlspace#context#SymbolSizes()
 	return s:symbolSizes
 endfunction
 
+" Interface of accessing ctrlspace configuration
 function! ctrlspace#context#Configuration()
 	return s:conf
 endfunction

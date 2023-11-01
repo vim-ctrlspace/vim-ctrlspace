@@ -218,6 +218,7 @@ function! s:toggleListView(k, mode)
 		call s:modes.Workspace.SetData("LastBrowsed", line("."))
 	endif
 
+    " For toggle back
 	if s:modes[a:mode].Enabled
 		if s:lastListView ==# a:mode
 			return 0
@@ -271,13 +272,15 @@ function! ctrlspace#keys#common#ToggleWorkspaceModeAndSearch(k)
 	return s:toggleListViewAndSearch(a:k, "Workspace")
 endfunction
 
+" FUNCTION: ctrlspace#keys#common#ToggleWorkspaceMode(k) {{{
 function! ctrlspace#keys#common#ToggleWorkspaceMode(k)
-	if empty(ctrlspace#workspaces#Workspaces())
-		return s:saveFirstWorkspace()
+    if empty(ctrlspace#workspaces#CacheWorkspaces())
+        return ctrlspace#workspaces#AddNewWorkspace()
 	else
 		return s:toggleListView(a:k, "Workspace")
 	endif
 endfunction
+" }}}
 
 function! ctrlspace#keys#common#ToggleTabModeAndSearch(k)
 	return s:toggleListViewAndSearch(a:k, "Tab")
@@ -300,40 +303,3 @@ function! ctrlspace#keys#common#ToggleBookmarkMode(k)
 	endif
 endfunction
 
-function! s:saveFirstWorkspace()
-	let labels = []
-
-	for t in range(1, tabpagenr("$"))
-		let label = ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel")
-		if !empty(label)
-			call add(labels, label)
-		endif
-	endfor
-
-	let name = ctrlspace#ui#GetInput("Save first workspace as: ", join(labels, " "))
-
-	if empty(name)
-		return 0
-	endif
-
-	let lv = ctrlspace#modes#CurrentListView()
-
-	call ctrlspace#window#Kill(0, 1)
-
-	let ok = ctrlspace#workspaces#SaveWorkspace(name)
-
-	call ctrlspace#window#Toggle(0)
-
-	if ok
-		let lv = s:modes.Workspace
-	elseif lv.Name ==# "Buffer"
-		return 0
-	endif
-
-	call ctrlspace#window#Kill(0, 0)
-	call lv.Enable()
-	call ctrlspace#window#Toggle(1)
-	call ctrlspace#ui#DelayedMsg()
-
-	return ok
-endfunction

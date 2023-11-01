@@ -1,202 +1,148 @@
+
 let s:config    = ctrlspace#context#Configuration()
 let s:modes     = ctrlspace#modes#Modes()
+" s:bookmarks is for cache_bookmarks
 let s:bookmarks = []
 
 function! ctrlspace#bookmarks#Bookmarks()
-	return s:bookmarks
+    return s:bookmarks
 endfunction
 
 function! ctrlspace#bookmarks#SetBookmarks(value)
-	let s:bookmarks = a:value
-	return s:bookmarks
+    let s:bookmarks = a:value
+    return s:bookmarks
 endfunction
 
+" FUNCTION: ctrlspace#bookmarks#GoToBookmark(nr) {{{
 function! ctrlspace#bookmarks#GoToBookmark(nr)
-	let newBookmark = s:bookmarks[a:nr]
-	call ctrlspace#util#ChDir(newBookmark.Directory)
-	call ctrlspace#ui#DelayedMsg("CWD is now: " . newBookmark.Directory)
+    let newBookmark = s:bookmarks[a:nr]
+
+    " Edit bookmarked file
+    execute "edit " . newBookmark.Directory. "/" . newBookmark.Name
+    call ctrlspace#ui#DelayedMsg("Directory: " . newBookmark.Directory)
 endfunction
+" }}}
 
-function! ctrlspace#bookmarks#ChangeBookmarkName(nr)
-	let bookmark = s:bookmarks[a:nr]
-	let newName = ctrlspace#ui#GetInput("New bookmark name: ", bookmark.Name)
-
-	if !empty(newName)
-		call ctrlspace#bookmarks#AddToBookmarks(bookmark.Directory, newName)
-		call ctrlspace#ui#DelayedMsg("Bookmark '" . bookmark.Name . "' has been renamed to '" . newName . "'.")
-	endif
-endfunction
-
-function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr)
-	let bookmark  = s:bookmarks[a:nr]
-	let current   = bookmark.Directory
-	let name      = bookmark.Name
-	let directory = ctrlspace#ui#GetInput("Edit directory for bookmark '" . name . "': ", current, "dir")
-
-	if empty(directory)
-		return 0
-	endif
-
-	let directory = ctrlspace#util#NormalizeDirectory(directory)
-
-	if !isdirectory(directory)
-		call ctrlspace#ui#Msg("Directory incorrect.")
-		return 0
-	endif
-
-	for bookmark in s:bookmarks
-		if bookmark.Directory ==# directory
-			call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . name . "'.")
-			return 0
-		endif
-	endfor
-
-	call remove(s:bookmarks, a:nr)
-
-	call ctrlspace#bookmarks#AddToBookmarks(directory, name)
-	call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
-
-	return 1
-endfunction
-
+" FUNCTION: ctrlspace#bookmarks#RemoveBookmark(nr) {{{
 function! ctrlspace#bookmarks#RemoveBookmark(nr)
-	let name = s:bookmarks[a:nr].Name
+    let name = s:bookmarks[a:nr].Name
 
-	if !ctrlspace#ui#Confirmed("Delete bookmark '" . name . "'?")
-		return
-	endif
+    if !ctrlspace#ui#Confirmed("Delete bookmark '" . name . "'?")
+        return
+    endif
 
-	call remove(s:bookmarks, a:nr)
+    call remove(s:bookmarks, a:nr)
 
-	let lines     = []
-	let cacheFile = s:config.CacheDir . "/.cs_cache"
+    let lines     = []
+    let cacheFile = s:config.CacheDir . "/.cs_cache"
 
-	if filereadable(cacheFile)
-		for oldLine in readfile(cacheFile)
-			if oldLine !~# "CS_BOOKMARK: "
-				call add(lines, oldLine)
-			endif
-		endfor
-	endif
+    if filereadable(cacheFile)
+        for oldLine in readfile(cacheFile)
+            " cache non-bookmark lines
+            if oldLine !~# "CS_BOOKMARK: "
+                call add(lines, oldLine)
+            endif
+        endfor
+    endif
 
-	for bm in s:bookmarks
-		call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
-	endfor
+    for bm in s:bookmarks
+        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
+    endfor
 
-	call writefile(lines, cacheFile)
+    call writefile(lines, cacheFile)
 
-	call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
+    call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#bookmarks#AddFirstBookmark() {{{
 function! ctrlspace#bookmarks#AddFirstBookmark()
-	if ctrlspace#bookmarks#AddNewBookmark()
-		call ctrlspace#window#Kill(0, 1)
-		call ctrlspace#window#Toggle(0)
-		call ctrlspace#window#Kill(0, 0)
-		call s:modes.Bookmark.Enable()
-		call ctrlspace#window#Toggle(1)
-	endif
+    if ctrlspace#bookmarks#AddNewBookmark()
+        call ctrlspace#window#Kill(0, 1)
+        call ctrlspace#window#Toggle(0)
+        call ctrlspace#window#Kill(0, 0)
+        call s:modes.Bookmark.Enable()
+        call ctrlspace#window#Toggle(1)
+    endif
 endfunction
+" }}}
 
-function! ctrlspace#bookmarks#AddNewBookmark(...)
-	if a:0
-		let current = s:bookmarks[a:1].Directory
-	else
-		let root    = ctrlspace#roots#CurrentProjectRoot()
-		let current = empty(root) ? fnamemodify(".", ":p:h") : root
-	endif
+" FUNCTION: ctrlspace#bookmarks#AddNewBookmark() {{{
+function! ctrlspace#bookmarks#AddNewBookmark()
+    " Get current filename and directory.
+    let l:start_file = ctrlspace#util#NormalizeDirectory(ctrlspace#window#GetStartFile())
+    let l:filename = fnamemodify(l:start_file, ":p:t")
+    let l:directory = fnamemodify(l:start_file, ":p:h")
 
-	let directory = ctrlspace#ui#GetInput("Add directory to bookmarks: ", current, "dir")
+    " Detect whether existing
+    for bm in s:bookmarks
+        if ctrlspace#util#IsSameDirectory(bm.Directory, l:directory) && bm.Name == l:filename
+            call ctrlspace#ui#Msg("'" . l:filename . "' bookmark has been already existed")
+            return 0
+        endif
+    endfor
 
-	if empty(directory)
-		return 0
-	endif
+    if !ctrlspace#ui#Confirmed("Add to bookmarks: " . l:start_file . " ?")
+        return 0
+    endif
 
-	let directory = ctrlspace#util#NormalizeDirectory(directory)
+    call ctrlspace#bookmarks#AddToBookmarks(l:directory, l:filename)
+    call ctrlspace#ui#DelayedMsg("'" . l:filename . "' was bookmarked successful")
 
-	if !isdirectory(directory)
-		call ctrlspace#ui#Msg("Directory incorrect.")
-		return 0
-	endif
-
-	for bm in s:bookmarks
-		if bm.Directory == directory
-			call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . bm.Name . "'.")
-			return 0
-		endif
-	endfor
-
-	let name = ctrlspace#ui#GetInput("New bookmark name: ", fnamemodify(directory, ":t"))
-
-	if empty(name)
-		return 0
-	endif
-
-	call ctrlspace#bookmarks#AddToBookmarks(directory, name)
-	call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
-	return 1
+    return 1
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#bookmarks#AddToBookmarks(directory, name) {{{
 function! ctrlspace#bookmarks#AddToBookmarks(directory, name)
-	let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
-	let jumpCounter = 0
+    let directory   = ctrlspace#util#NormalizeDirectory(a:directory)
+    let jumpCounter = 0
 
-	for i in range(len(s:bookmarks))
-		if s:bookmarks[i].Directory == directory
-			let jumpCounter = s:bookmarks[i].JumpCounter
-			call remove(s:bookmarks, i)
-			break
-		endif
-	endfor
+    let bookmark = { "Name": a:name,
+                   \ "Directory": ctrlspace#util#UseSlashDir(directory),
+                   \ "JumpCounter": jumpCounter }
 
-	let bookmark = { "Name": a:name, "Directory": directory, "JumpCounter": jumpCounter }
+    call add(s:bookmarks, bookmark)
 
-	call add(s:bookmarks, bookmark)
+    let lines     = []
+    let cacheFile = s:config.CacheDir . "/.cs_cache"
 
-	let lines     = []
-	let bmRoots   = {}
-	let cacheFile = s:config.CacheDir . "/.cs_cache"
+    if filereadable(cacheFile)
+        for oldLine in readfile(cacheFile)
+            " cache non-bookmark lines
+            if (oldLine !~# "CS_BOOKMARK: ")
+                call add(lines, oldLine)
+            endif
+        endfor
+    endif
 
-	if filereadable(cacheFile)
-		for oldLine in readfile(cacheFile)
-			if (oldLine !~# "CS_BOOKMARK: ") && (oldLine !~# "CS_PROJECT_ROOT: ")
-				call add(lines, oldLine)
-			endif
-		endfor
-	endif
+    for bm in s:bookmarks
+        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
+    endfor
 
-	for bm in s:bookmarks
-		call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
-		let bmRoots[bm.Directory] = 1
-	endfor
+    call writefile(lines, cacheFile)
 
-	for root in keys(ctrlspace#roots#ProjectRoots())
-		if !has_key(bmRoots, root)
-			call add(lines, "CS_PROJECT_ROOT: " . root)
-		endif
-	endfor
-
-	call writefile(lines, cacheFile)
-	call extend(ctrlspace#roots#ProjectRoots(), { bookmark.Directory: 1 })
-
-	return bookmark
+    return bookmark
 endfunction
+" }}}
 
+" FUNCTION: ctrlspace#bookmarks#FindActiveBookmark() {{{
 function! ctrlspace#bookmarks#FindActiveBookmark()
-	let root = ctrlspace#roots#CurrentProjectRoot()
+    let root = ctrlspace#roots#CurrentProjectRoot()
 
-	if empty(root)
-		let root = fnamemodify(".", ":p:h")
-	endif
+    if empty(root)
+        let root = fnamemodify(".", ":p:h")
+    endif
 
-	let root = ctrlspace#util#NormalizeDirectory(root)
+    let root = ctrlspace#util#NormalizeDirectory(root)
 
-	for bm in s:bookmarks
-		if ctrlspace#util#NormalizeDirectory(bm.Directory) == root
-			let bm.JumpCounter = ctrlspace#jumps#IncrementJumpCounter()
-			return bm
-		endif
-	endfor
+    for bm in s:bookmarks
+        if ctrlspace#util#NormalizeDirectory(bm.Directory) == root
+            let bm.JumpCounter = ctrlspace#jumps#IncrementJumpCounter()
+            return bm
+        endif
+    endfor
 
-	return {}
+    return {}
 endfunction
+" }}}

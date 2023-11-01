@@ -6,6 +6,7 @@ if has("win32")
 	call add(s:resonators, '\')
 endif
 
+" FUNCTION: ctrlspace#engine#Content() {{{
 " returns [patterns, indices, size, text]
 function! ctrlspace#engine#Content()
 	if !empty(s:config.FileEngine) && s:modes.File.Enabled
@@ -24,6 +25,10 @@ function! ctrlspace#engine#Content()
 
 		if s:modes.Tab.Enabled
 			call sort(items, function("ctrlspace#engine#CompareByIndex"))
+        elseif s:modes.Workspace.Enabled && s:modes.Workspace.Data.SortMode ==# "path"
+			call sort(items, function("ctrlspace#engine#CompareByText2"))
+        elseif s:modes.Bookmark.Enabled && s:modes.Bookmark.Data.SortMode ==# "path"
+			call sort(items, function("ctrlspace#engine#CompareByText2"))
 		else
 			call sort(items, function("ctrlspace#engine#CompareByText"))
 		endif
@@ -40,6 +45,7 @@ function! ctrlspace#engine#Content()
 
 	return s:prepareContent(items)
 endfunction
+" }}}
 
 function! s:contentFromFileEngine()
 	call ctrlspace#files#CollectFiles()
@@ -67,6 +73,24 @@ function! ctrlspace#engine#CompareByText(a, b)
 		return 0
 	endif
 endfunction
+
+" FUNCTION: ctrlspace#engine#CompareByText2(a, b) {{{
+function! ctrlspace#engine#CompareByText2(a, b)
+    if a:a.position < a:b.position
+        return -1
+    elseif a:a.position > a:b.position
+        return 1
+    else
+        if a:a.text < a:b.text
+            return -1
+        elseif a:a.text > a:b.text
+            return 1
+        else
+            return 0
+        endif
+    endif
+endfunction
+" }}}
 
 function! ctrlspace#engine#CompareByIndex(a, b)
 	if a:a.index < a:b.index
@@ -152,10 +176,19 @@ function! s:contentSource()
 	endif
 endfunction
 
+" FUNCTION: s:bookmarkListContent(clv) {{{
 function! s:bookmarkListContent(clv)
 	let content   = []
 	let bookmarks = ctrlspace#bookmarks#Bookmarks()
 
+    " Get max name text width
+    let l:max_name_wid = 0
+    for item in bookmarks
+        let l:wid = strwidth(item["Name"])
+        let l:max_name_wid = (l:wid > l:max_name_wid) ? l:wid : l:max_name_wid
+    endfor
+
+    " Get content
 	for i in range(len(bookmarks))
 		let indicators = ""
 
@@ -163,36 +196,65 @@ function! s:bookmarkListContent(clv)
 			let indicators .= s:config.Symbols.IA
 		endif
 
-		call add(content, { "index": i, "text": bookmarks[i].Name, "indicators": indicators })
+        " Tabular linetext of bookmark-content
+        let l:linetext = bookmarks[i].Name
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  →  "
+        let l:linetext .= bookmarks[i].Directory
+
+		call add(content, { "index": i, 
+                          \ "text": l:linetext,  
+                          \ "position" : bookmarks[i].Directory,
+                          \ "indicators": indicators })
 	endfor
 
 	return content
 endfunction
+" }}}
 
+" FUNCTION: s:workspaceListContent(clv) {{{
 function! s:workspaceListContent(clv)
-	let content    = []
-	let workspaces = ctrlspace#workspaces#Workspaces()
-	let active     = ctrlspace#workspaces#ActiveWorkspace()
+	let l:content    = []
+    let l:cache_workspaces = ctrlspace#workspaces#CacheWorkspaces()
+	let l:active     = ctrlspace#workspaces#ActiveWorkspace()
 
-	for i in range(len(workspaces))
-		let name = workspaces[i]
-		let indicators = ""
+    " Get max name text width
+    let l:max_name_wid = 0
+    for item in l:cache_workspaces 
+        let l:wid = strwidth(item["Name"])
+        let l:max_name_wid = (l:wid > l:max_name_wid) ? l:wid : l:max_name_wid
+    endfor
 
-		if name ==# active.Name && active.Status
+    " Get content
+    for item in range(len(l:cache_workspaces))
+        let l:name = l:cache_workspaces[item].Name
+        let l:directory = l:cache_workspaces[item].Directory
+        let l:linetext = ""
+        let l:indicators = ""
+
+        " Set inidicators
+		if l:name ==# active.Name && active.Status
 			if active.Status == 2
-				let indicators .= s:config.Symbols.IM
+				let l:indicators .= s:config.Symbols.IM
 			endif
-
-			let indicators .= s:config.Symbols.IA
+			let l:indicators .= s:config.Symbols.IA
 		elseif name ==# a:clv.Data.LastActive
-			let indicators .= s:config.Symbols.IV
+			let l:indicators .= s:config.Symbols.IV
 		endif
 
-		call add(content, { "index": i, "text": name, "indicators": indicators })
-	endfor
+        " Tabular linetext of bookmark-content
+        let l:linetext = l:name
+        let l:linetext .= repeat(' ', l:max_name_wid - strwidth(l:linetext)) . "  →  "
+        let l:linetext .= l:directory
 
-	return content
+		call add(l:content, { "index": item, 
+                            \ "text": l:linetext, 
+                            \ "position" : l:directory,
+                            \ "indicators": l:indicators })
+    endfor
+
+    return l:content
 endfunction
+" }}}
 
 function! s:tabContent(clv)
 	let content    = []

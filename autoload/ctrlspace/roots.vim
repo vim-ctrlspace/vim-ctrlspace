@@ -32,48 +32,8 @@ function! ctrlspace#roots#SetLastProjectRoot(value)
 	return s:lastProjectRoot
 endfunction
 
-function! ctrlspace#roots#AddProjectRoot(directory)
-	let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
-
-	if !isdirectory(directory)
-		call ctrlspace#ui#Msg("Invalid directory: '" . directory . "'")
-		return
-	endif
-
-	let roots = copy(s:projectRoots)
-
-	for bm in ctrlspace#bookmarks#Bookmarks()
-		let roots[bm.Directory] = 1
-	endfor
-
-	if exists("roots[directory]")
-		call ctrlspace#ui#Msg("Directory '" . directory . "' is already a permanent project root!")
-		return
-	endif
-
-	call s:addProjectRoot(directory)
-	call ctrlspace#ui#Msg("Directory '" . directory . "' has been added as a permanent project root.")
-endfunction
-
-function! ctrlspace#roots#RemoveProjectRoot(directory)
-	let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
-
-	if !exists("s:projectRoots[directory]")
-		call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
-		return
-	endif
-
-	call s:removeProjectRoot(directory)
-	call ctrlspace#ui#Msg("Project root '" . directory . "' has been removed.")
-endfunction
-
-function! s:removeProjectRoot(directory)
-	let directory = ctrlspace#util#NormalizeDirectory(a:directory)
-
-	if exists("s:projectRoots[directory]")
-		unlet s:projectRoots[directory]
-	endif
-
+" FUNCTION: s:writeCacheProjectRoot() {{{
+function! s:writeCacheProjectRoot()
 	let lines     = []
 	let cacheFile = s:config.CacheDir . "/.cs_cache"
 
@@ -91,43 +51,72 @@ function! s:removeProjectRoot(directory)
 
 	call writefile(lines, cacheFile)
 endfunction
+" }}}
 
-function! s:addProjectRoot(directory)
-	let directory = ctrlspace#util#NormalizeDirectory(a:directory)
+" FUNCTION: ctrlspace#roots#GetProjectRootCompletion(arglead, cmdline, cursorpos) {{{
+function! ctrlspace#roots#GetProjectRootCompletion(arglead, cmdline, cursorpos)
+    let l:completion = []
 
-	let s:projectRoots[directory] = 1
+    " search fitable args
+    for key in keys(s:projectRoots)
+        if key =~ "^".a:arglead
+            call add(l:completion, key)
+        endif
+    endfor
 
-	let lines     = []
-	let bmRoots   = {}
-	let cacheFile = s:config.CacheDir . "/.cs_cache"
+    return l:completion
+endfunction
+" }}}
 
-	for bm in ctrlspace#bookmarks#Bookmarks()
-		let bmRoots[bm.Directory] = 1
-	endfor
+" FUNCTION: ctrlspace#roots#AddProjectRoot(directory) {{{
+function! ctrlspace#roots#AddProjectRoot(directory)
+	let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
+	let directory = ctrlspace#util#UseSlashDir(directory)
 
-	if filereadable(cacheFile)
-		for oldLine in readfile(cacheFile)
-			if oldLine !~# "CS_PROJECT_ROOT: "
-				call add(lines, oldLine)
-			endif
-		endfor
+	if !isdirectory(directory)
+		call ctrlspace#ui#Msg("Invalid directory: '" . directory . "'")
+		return
 	endif
 
-	for root in keys(s:projectRoots)
-		if !exists("bmRoots[root]")
-			call add(lines, "CS_PROJECT_ROOT: " . root)
-		endif
-	endfor
+	let roots = copy(s:projectRoots)
 
-	call writefile(lines, cacheFile)
+	if exists("roots[directory]")
+		call ctrlspace#ui#Msg("Directory '" . directory . "' is already a permanent project root!")
+		return
+	endif
+
+	let s:projectRoots[directory] = 1
+    call s:writeCacheProjectRoot()
+
+	call ctrlspace#ui#Msg("Directory '" . directory . "' has been added as a permanent project root.")
 endfunction
+" }}}
+
+" FUNCTION: ctrlspace#roots#RemoveProjectRoot(directory) {{{
+function! ctrlspace#roots#RemoveProjectRoot(directory)
+    if (empty(a:directory))
+        return
+    endif
+	let directory = ctrlspace#util#UseSlashDir(a:directory)
+
+	if !exists("s:projectRoots[directory]")
+		call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
+		return
+	endif
+
+    unlet s:projectRoots[directory]
+    call s:writeCacheProjectRoot()
+
+	call ctrlspace#ui#Msg("Project root '" . directory . "' has been removed.")
+endfunction
+" }}}
 
 function! ctrlspace#roots#FindProjectRoot()
 	let projectRoot = fnamemodify(".", ":p:h")
 
 	if !empty(s:config.ProjectRootMarkers)
 		let rootFound     = 0
-		let candidate     = fnamemodify(projectRoot, ":p:h")
+		let candidate     = ctrlspace#util#UseSlashDir(fnamemodify(projectRoot, ":p:h"))
 		let lastCandidate = ""
 
 		while candidate != lastCandidate
@@ -167,7 +156,9 @@ function! ctrlspace#roots#ProjectRootFound()
 
 			if !empty(projectRoot) && isdirectory(projectRoot)
 				call ctrlspace#files#ClearAll() " clear current files - force reload
-				call s:addProjectRoot(projectRoot)
+                let projectRoot = ctrlspace#util#UseSlashDir(projectRoot)
+                let s:projectRoots[projectRoot] = 1
+                call s:writeCacheProjectRoot()
 				let s:currentProjectRoot = projectRoot
 			else
 				call ctrlspace#ui#Msg("Cannot continue with the project root not set.")
