@@ -44,15 +44,15 @@ function! ctrlspace#init#Init() abort
     call ctrlspace#keys#Init()
 
     if argc() > 1
-        let curaltBuff=bufnr('#')
-        let currBuff=bufnr('%')
+        let curAltBuf=bufnr('#')
+        let curBuf=bufnr('%')
 
-        if curaltBuff >= 0
-            execute 'buffer ' . curaltBuff
+        if curAltBuf >= 0
+            execute 'buffer ' . curAltBuf
         endif
-        execute 'buffer ' . currBuff
+        execute 'buffer ' . curBuf
 
-        autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind
+        autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | syntax on
     else
         autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
     endif
