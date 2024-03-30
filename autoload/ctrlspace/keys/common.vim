@@ -44,6 +44,8 @@ function! ctrlspace#keys#common#Init() abort
     call s:map("ToggleBookmarkMode",           "b")
     call s:map("ToggleBookmarkModeAndSearch",  "B")
 
+    call s:map("CountPrefix2",                 "2")
+
     let keyMap  = ctrlspace#keys#KeyMap()
     let helpMap = ctrlspace#help#HelpMap()
 
@@ -289,6 +291,20 @@ endfunction
 
 function! ctrlspace#keys#common#ToggleBookmarkModeAndSearch(k) abort
     return s:toggleListViewAndSearch(a:k, "Bookmark")
+endfunction
+
+function! ctrlspace#keys#common#CountPrefix2(k) abort
+  let count = 0
+  let key = input('Press key:' )
+  while count < 2
+    if key == "k"
+      call ctrlspace#window#MoveSelectionBar("up")
+    elseif key == "j"
+      call ctrlspace#window#MoveSelectionBar("down")
+    endif
+    let count += 1
+  endwhile
+  return 1
 endfunction
 
 function! ctrlspace#keys#common#ToggleBookmarkMode(k) abort
