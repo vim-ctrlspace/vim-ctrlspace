@@ -44,6 +44,8 @@ function! ctrlspace#keys#common#Init() abort
     call s:map("ToggleBookmarkMode",           "b")
     call s:map("ToggleBookmarkModeAndSearch",  "B")
 
+    call s:map("CountPrefix2",                 "2")
+
     let keyMap  = ctrlspace#keys#KeyMap()
     let helpMap = ctrlspace#help#HelpMap()
 
@@ -289,6 +291,29 @@ endfunction
 
 function! ctrlspace#keys#common#ToggleBookmarkModeAndSearch(k) abort
     return s:toggleListViewAndSearch(a:k, "Bookmark")
+endfunction
+
+function! ctrlspace#keys#common#CountPrefix2(k) abort
+  let count = 0
+  " Get character input. (Only one character is accepted. See `:h getchar`.)
+  let charInput = nr2char(getchar())
+
+  " Check if the input character is either k or j
+  if charInput == "k" || charInput == "j"
+    while count < 2
+      if charInput == "k"
+        call ctrlspace#window#MoveSelectionBar("up")
+      elseif charInput == "j"
+        call ctrlspace#window#MoveSelectionBar("down")
+      endif
+      let count += 1
+    endwhile
+
+  " If the input character is not k or j, print warning
+  else
+    echo 'Only "k" or "j" available'
+  endif
+  return 1
 endfunction
 
 function! ctrlspace#keys#common#ToggleBookmarkMode(k) abort
