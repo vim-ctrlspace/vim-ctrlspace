@@ -329,22 +329,39 @@ function! ctrlspace#keys#common#CountPrefix9(k) abort
   return s:CountPrefix(9)
 endfunction
 
-function! s:CountPrefix(maxCount) abort
-  let l:count = 0
-  " Get character input. (Only one character is accepted. See `:h getchar`.)
-  let charInput = nr2char(getchar())
+function! s:CountPrefix(initial_digit) abort
+  let digitString = '' . a:initial_digit
+  let nonDigitChar = ''
+
+  while 1
+    let char = nr2char(getchar())
+
+    if char =~# '[0-9]'
+      let digitString .= char
+    else
+      let nonDigitChar = char
+      break
+    endif
+  endwhile
+
+  let l:number = str2nr(digitString)
 
   " Check if the input character is either k or j
-  if charInput == "k" || charInput == "j"
-    " Process input character up to maxCount times
-    while l:count < a:maxCount
-      " Move selection bar up or down based on input
-      call ctrlspace#window#MoveSelectionBar(charInput == "k" ? "up" : "down")
+  if nonDigitChar =~# 'j'
+  	let l:count = 0
+    while l:count < l:number
+      call ctrlspace#window#MoveSelectionBar('down')
       let l:count += 1
+    endwhile
+  elseif nonDigitChar =~# 'k'
+  	let l:count = 0
+    while l:count < l:number
+      	call ctrlspace#window#MoveSelectionBar('up')
+      	let l:count += 1
     endwhile
   " If the input character is not k or j, print warning
   else
-    echo 'Only "k" or "j" available'
+    echo 'Only "j" and "k" accept counts!'
   endif
   return 1
 endfunction
