@@ -43,18 +43,10 @@ function! ctrlspace#init#Init() abort
     call s:initProjectRootsAndBookmarks()
     call ctrlspace#keys#Init()
 
+    autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
+
     if argc() > 1
-        let curAltBuf=bufnr('#')
-        let curBuf=bufnr('%')
-
-        if curAltBuf >= 0
-            execute 'buffer ' . curAltBuf
-        endif
-        execute 'buffer ' . curBuf
-
-        autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | exe exists('syntax_on') ? 'syntax on' : ''
-    else
-        autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
+        autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | exe exists('syntax_off') ? 'syntax on' : ''
     endif
 
     autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
