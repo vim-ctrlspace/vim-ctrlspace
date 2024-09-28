@@ -48,6 +48,7 @@ function! ctrlspace#init#Init() abort
     if argc() > 1
         autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | exe exists('syntax_off') ? 'syntax on' : ''
     endif
+    autocmd CtrlSpaceInit SessionLoadPost * if fnamemodify(v:this_session, ':t') !=# 'CS_SESSION' | exe 'silent bufdo call ctrlspace#buffers#AddBuffer()' | endif
 
     autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
     autocmd CtrlSpaceInit TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
