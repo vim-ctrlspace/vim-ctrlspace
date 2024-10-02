@@ -48,7 +48,14 @@ function! ctrlspace#init#Init() abort
     if argc() > 1
         autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | exe exists('syntax_off') ? 'syntax on' : ''
     endif
-    autocmd CtrlSpaceInit SessionLoadPost * if fnamemodify(v:this_session, ':t') !=# 'CS_SESSION' | exe 'silent bufdo call ctrlspace#buffers#AddBuffer()' | endif
+    " Since view session files do not set v:this_session and keep the global
+    " current working directory, we skip those for reloading viminfo.
+    let v:this_session = ''
+    let s:last_session = ''
+    autocmd CtrlSpaceInit SessionLoadPost * ++nested
+                \ if v:this_session !=# s:last_session && fnamemodify(v:this_session, ':t') !=# 'CS_SESSION' |
+                \   let s:last_session = v:this_session | exe 'silent bufdo call ctrlspace#buffers#AddBuffer()' | exe exists('syntax_off') ? 'syntax on' : '' |
+                \ endif
 
     autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
     autocmd CtrlSpaceInit TabEnter * let t:CtrlSpaceTabJumpCounter = ctrlspace#jumps#IncrementJumpCounter()
