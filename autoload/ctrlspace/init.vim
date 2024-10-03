@@ -53,8 +53,10 @@ function! ctrlspace#init#Init() abort
     let v:this_session = ''
     let s:last_session = ''
     autocmd CtrlSpaceInit SessionLoadPost * ++nested
-                \ if v:this_session !=# s:last_session && fnamemodify(v:this_session, ':t') !=# 'CS_SESSION' |
-                \   let s:last_session = v:this_session | exe 'silent bufdo call ctrlspace#buffers#AddBuffer()' | exe exists('syntax_off') ? 'syntax on' : '' |
+                \ if v:this_session !=# s:last_session | let s:last_session = v:this_session |
+                \     if fnamemodify(v:this_session, ':t') !=# 'CS_SESSION' |
+                \         exe 'silent bufdo call ctrlspace#buffers#AddBuffer()' | exe exists('syntax_off') ? 'syntax on' : '' |
+                \     endif |
                 \ endif
 
     autocmd CtrlSpaceInit VimEnter * call ctrlspace#buffers#Init()
