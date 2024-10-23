@@ -387,8 +387,12 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
 
     let tabIndex = 0
 
+    call add(lines,"cd " . fnameescape(root)) 
+
     for cmd in readfile("CS_SESSION")
-        if cmd =~# "^lcd "
+        if cmd =~# "\<sfile\>:p:h"
+            continue
+        elseif cmd =~# "^lcd "
             continue
         elseif cmd =~# "^badd\>"
             let baddList = matchlist(cmd, '\v^badd \+\d+ (\f+)$')
