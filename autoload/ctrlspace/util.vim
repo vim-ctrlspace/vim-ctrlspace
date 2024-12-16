@@ -66,12 +66,7 @@ function! s:handleAutochdir(switch) abort
 endfunction
 
 function! ctrlspace#util#WorkspaceFile() abort
-    if exists('g:CtrlSpaceWorkspaceFile')
-        return g:CtrlSpaceWorkspaceFile
-    else
-        echoerr "Workspaces file not defined"
-        return s:internalFilePath("cs_workspaces")
-    endif
+    return filereadable(g:CtrlSpaceWorkspaceFile) ? g:CtrlSpaceWorkspaceFile : s:internalFilePath("cs_workspaces")
 endfunction
 
 function! ctrlspace#util#FilesCache() abort

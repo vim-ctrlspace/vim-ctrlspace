@@ -387,10 +387,15 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
 
     let tabIndex = 0
 
-    call add(lines,"cd " . fnameescape(root)) 
+    if filereadable(g:CtrlSpaceWorkspaceFile)
+        call add(lines, "cd " . fnameescape(root))
+        let useWorkspaceFile = 1
+    else
+        let useWorkspaceFile = 0
+    endif
 
     for cmd in readfile("CS_SESSION")
-        if cmd =~# "\<sfile\>:p:h"
+        if useWorkspaceFile && cmd ==# 'exe "cd " . escape(expand("<sfile>:p:h"), '' '')'
             continue
         elseif cmd =~# "^lcd "
             continue
