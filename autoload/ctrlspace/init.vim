@@ -45,7 +45,7 @@ function! ctrlspace#init#Init() abort
 
     autocmd CtrlSpaceInit BufEnter * call ctrlspace#buffers#AddBuffer()
 
-    if argc() > 1
+    if argc() > 1 && !&diff
         autocmd CtrlSpaceInit VimEnter * ++nested exe 'silent argdo call ctrlspace#buffers#AddBuffer()' | rewind | exe exists('syntax_off') ? 'syntax on' : ''
     endif
     " Since view session files do not set v:this_session and keep the global
