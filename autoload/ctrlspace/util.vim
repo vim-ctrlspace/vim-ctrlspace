@@ -66,7 +66,7 @@ function! s:handleAutochdir(switch) abort
 endfunction
 
 function! ctrlspace#util#WorkspaceFile() abort
-    return s:internalFilePath("cs_workspaces")
+    return filereadable(g:CtrlSpaceWorkspaceFile) ? g:CtrlSpaceWorkspaceFile : s:internalFilePath("cs_workspaces")
 endfunction
 
 function! ctrlspace#util#FilesCache() abort

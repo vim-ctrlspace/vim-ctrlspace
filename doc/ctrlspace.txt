@@ -80,6 +80,7 @@ Table of Contents                                            *ctrlspace-toc*
    7.22 g:CtrlSpaceSearchTiming                    |g:CtrlSpaceSearchTiming|
    7.23 g:CtrlSpaceFileEngine                        |g:CtrlSpaceFileEngine|
    7.24 g:CtrlSpaceSortHelp                            |g:CtrlSpaceSortHelp|
+   7.25 g:CtrlSpaceWorkspaceFile                  |g:CtrlSpaceWorkspaceFile|
  8. API                                                      |ctrlspace-api|
    8.1 Commands                                         |ctrlspace-commands|
      8.1.1 :CtrlSpace [keys]                                    |:CtrlSpace|
@@ -1221,6 +1222,26 @@ Default value: >
     let g:CtrlSpaceSortHelp = 0
 <
                                                              |ctrlspace-toc|
+--------------------------------------------------------------------------
+
+7.25 *g:CtrlSpaceWorkspaceFile*
+
+Set a custom path for the workspace file to store all your workspace
+configurations for different projects. If unset, the default internal file
+path 'cs_workspaces' in the project root directory is used.
+It is unset by default.
+
+Example: >
+
+    let g:CtrlSpaceWorkspaceFile = '~/.vim/ctrlspace_workspaces'
+<
+
+Note: Make sure the directory exists before setting this variable. The plugin
+will not automatically create the directory for you.
+
+Default: '' (empty string, which means use the default internal file path)
+
+                                                             |ctrlspace-toc|
 ==========================================================================
 
 8. API                                                       *ctrlspace-api*
@@ -1257,8 +1278,8 @@ in the plugin window.
 
 8.1.2 *:CtrlSpaceGoUp*
 
-Opens the previous buffer from the current Buffer List in Single Mode
-(without opening the plugin window).
+Opens the previous buffer from the current Buffer List in Single Mode (without
+opening the plugin window).
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
