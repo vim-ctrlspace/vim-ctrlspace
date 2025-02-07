@@ -66,7 +66,8 @@ function! s:handleAutochdir(switch) abort
 endfunction
 
 function! ctrlspace#util#WorkspaceFile() abort
-    return filereadable(g:CtrlSpaceWorkspaceFile) ? g:CtrlSpaceWorkspaceFile : s:internalFilePath("cs_workspaces")
+    let config = ctrlspace#context#Configuration()
+    return filereadable(config.WorkspaceFile) ? config.WorkspaceFile : s:internalFilePath("cs_workspaces")
 endfunction
 
 function! ctrlspace#util#FilesCache() abort
