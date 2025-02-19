@@ -387,7 +387,8 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
 
     let tabIndex = 0
 
-    if filereadable(g:CtrlSpaceWorkspaceFile)
+    let config = ctrlspace#context#Configuration()
+    if filereadable(config.WorkspaceFile)
         call add(lines, "cd " . fnameescape(root))
         let useWorkspaceFile = 1
     else
