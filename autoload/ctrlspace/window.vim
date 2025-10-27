@@ -45,7 +45,15 @@ function! ctrlspace#window#Toggle(internal) abort
 
     " create the buffer first & set it up
     try
+        if has('patch-8.1.1714') && !empty(&previewpopup)
+            let previewpopup_save = &previewpopup
+            set previewpopup=
+        endif
         silent exe "noautocmd botright pedit CtrlSpace"
+        if exists("previewpopup_save")
+            let &previewpopup = previewpopup_save
+            unlet previewpopup_save
+        endif
         silent exe "noautocmd wincmd P"
         silent exe "resize" s:config.Height
     catch
