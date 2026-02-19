@@ -316,7 +316,26 @@ Of course nothing prevents you from providing your own highlighting, for example
 hi CtrlSpaceSearch guifg=#cb4b16 guibg=NONE gui=bold ctermfg=9 ctermbg=NONE term=bold cterm=bold
 ```
 
+## Tmux-Resurrect
 
+If you use [tmux](https://github.com/tmux/tmux/wiki) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect),
+you can configure it to save and restore Vim-CtrlSpace workspaces by adding the following lines to your `~/.tmux.conf` file (falling back to a Session file if a workspace file is not found, and to just `vim` or `nvim` if no workspace files are found):
+
+```
+set -g @plugin 'tmux-plugins/tmux-resurrect'    # save/restore layout
+set -g @resurrect-processes '"~vim" -> "if [ -f .git/cs_workspaces ]; then vim +CtrlSpaceLoadWorkspace; elif [ -f .git/Session.vim ]; then vim -S .git/Session.vim; else vim; fi"'
+set -g @resurrect-processes '"~nvim" -> "if [ -f .git/cs_workspaces ]; then nvim +CtrlSpaceLoadWorkspace; elif [ -f .git/Session.nvim ]; then nvim -S .git/Session.nvim; else nvim; fi"'
+```
+
+Additionally, to save the workspace continually, add to Vim an `autocmd` such as
+
+```
+augroup vimrcCtrlSpace
+  autocmd!
+  autocmd FocusLost,VimLeavePre *
+        \ if ctrlspace#workspaces#ActiveWorkspace().Status | call ctrlspace#workspaces#SaveWorkspace("") | endif
+augroup END
+```
 
 # Authors and License
 
