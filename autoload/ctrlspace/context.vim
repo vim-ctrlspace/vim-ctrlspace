@@ -110,6 +110,7 @@ function! s:init() abort
     endif
 endfunction
 
+" TODO: refactor/change func below for if/when g:CtrlSpaceFileEngine gets deprecated
 function! s:detectEngine() abort
     let [os, arch] = ["", ""]
 

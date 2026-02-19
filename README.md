@@ -94,6 +94,50 @@ You can also clone the repository to your `vimfiles` directory (whose path is sh
 git clone https://github.com/vim-ctrlspace/vim-ctrlspace.git .
 ```
 
+Installing using [vim-plug](https://github.com/junegunn/vim-plug) is
+recommended for its post-install/post-update hook support, which enables
+Linux/macOS/*BSD users to simply add the following line to their `.vimrc` or
+`init.vim`:
+
+```VimL
+Plug 'vim-ctrlspace/vim-ctrlspace', {'do': 'bin/fetch-engine.sh'}
+```
+
+Other plugin managers supporting install/update hooks, such as
+[dein.vim](https://github.com/Shougo/dein.vim) can also be used to
+automatically fetch the appropriate engine binaries by adjusting the above
+installation line accordingly.
+
+The `fetch-engine.sh` script detects your system's OS and
+architecture, and downloads the corresponding pre-compiled
+binary stored in the repo's [`file_engine_binaries`
+branch](https://github.com/vim-ctrlspace/vim-ctrlspace/tree/file_engine_binaries/bin).
+
+The script can optionally accept one argument, the name of the file engine.
+So if for example you know you'd need `file_engine_linux_mips64`, which is an
+architecture the script does not handle, you can just do:
+
+```VimL
+Plug 'vim-ctrlspace/vim-ctrlspace', {'do': 'bin/fetch-engine.sh file_engine_linux_mips64'}
+```
+
+When all that fails (incorrect hardware detection, no `curl`, etc.), you
+can always just manually download the needed file engine binary from the
+storage branch above, place it in the `bin/` directory of your installed
+`vim-ctrlspace`, and should be good to go. Alternatively, compiling the binary
+yourself, whose source can be found at `go/file_engine.go`, is also an option.
+
+If you're using Cygwin, MinGW or WSL, the shell script should work
+(though this isn't tested). However as of right now, there is no
+`fetch-engine.cmd` script supporting Windows proper (PR welcome!), so users
+wishing to use the file engine under Windows must also manually fetch
+`file_engine_windows_amd64.exe` from the above location.
+
+And if all of the above still fails, `vim-ctrlSpace` will simply fall back to
+using Vim built-ins as its file engine. You can check if this is the case by
+pressing `<?>` from any of the list modes, where the name of the engine in use
+will be shown at the top.
+
 ## Basic Settings
 
 First please make sure that you set `nocompatible` and `hidden` options,
@@ -226,6 +270,9 @@ To find more about setting up the file engines, check:
 ```VimL
 :help g:CtrlSpaceFileEngine
 ```
+<!-- __NOTE__: in a future major release of the plugin, the `g:CtrlSpaceFileEngine` -->
+<!-- option will be deprected and eventually removed, as we move towards automatic -->
+<!-- engine detection out of the box (see [Installation](#Installation)). -->
 
 Lastly, this file engine sources the list of files it searches through from
 a text file cache (`cs_files`, typically stored under `.git/`). For small to
