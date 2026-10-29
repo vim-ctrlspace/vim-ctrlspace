@@ -1,4 +1,4 @@
-*ctrlspace.txt*           For Vim version 7.3+      Last change: 2020.12.01
+*ctrlspace.txt*           Vim 9.0+ / Neovim 0.9+    Last change: 2026.10.29
 *ctrlspace*
 *vim-ctrlspace*
 
@@ -27,7 +27,7 @@ Table of Contents                                            *ctrlspace-toc*
  3. Getting Started                              |ctrlspace-getting-started|
    3.1 Installation                                 |ctrlspace-installation|
    3.2 Basic Settings                             |ctrlspace-basic-settings|
-     3.2.1 Go Engine                                   |ctrlspace-go-engine|
+     3.2.1 Native Search                           |ctrlspace-native-search|
      3.2.2 Symbols                                       |ctrlspace-symbols|
      3.2.3 Glob Command                             |ctrlspace-glob-command|
      3.2.4 Search Timing                           |ctrlspace-search-timing|
@@ -110,7 +110,7 @@ Table of Contents                                            *ctrlspace-toc*
      8.2.10 ctrlspace#api#Tabline()                |ctrlspace#api#Tabline()|
      8.2.11 ctrlspace#api#TabList()                |ctrlspace#api#TabList()|
      8.2.12 ctrlspace#api#BufNr()                    |ctrlspace#api#BufNr()|
- 9. File Engine Specifications                      |ctrlspace-engine-specs|
+ 9. Native Search Internals                          |ctrlspace-engine-specs|
 10. FAQ                                                      |ctrlspace-FAQ|
 11. Authors and License                      |ctrlspace-authors-and-license|
 
@@ -122,7 +122,7 @@ Welcome to Vim-CtrlSpace, a comprehensive solution for your Vim editor
 providing:
 
  * tabs / buffers / files management
- * fast fuzzy searching powered by Go
+ * native fuzzy searching in Vim9 and Neovim, without a search executable
  * workspaces (sessions)
  * bookmarks for your favorite projects
 
@@ -201,6 +201,12 @@ save multiple workspaces per project with Workspace List.
 
 3.1 Installation                                    *ctrlspace-installation*
 
+Requires Vim 9.0 or later with +vim9script and |matchfuzzypos()|, or Neovim
+0.9 or later with matchfuzzypos(). Install only this repository. No Go
+toolchain, compiled search executable, or separate fuzzy finder plugin is
+required. File collection can use optional external tools; see
+|g:CtrlSpaceGlobCommand|.
+
 If you use Vundle add to your `.vimrc`: >
 
     Plugin 'vim-ctrlspace/vim-ctrlspace'
@@ -233,13 +239,27 @@ use of tabs intensively, tabline would just get in your way. Tab List
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
-3.2.1 Go Engine                                        *ctrlspace-go-engine*
+3.2.1 Native Search                                *ctrlspace-native-search*
+                                                      *ctrlspace-go-engine*
 
-The plugin provides engine compiled for popular operating systems and
-architectures. By default it will attempt to detect your os and
-architecture. To see if auto detection was successful press <?>.
+All five lists use |matchfuzzypos()| inside the editor. Vim loads a bundled
+Vim9 adaptation of fuzzbox's matching and highlight conversion code. Neovim
+loads a Lua counterpart using vim.fn.matchfuzzypos(). CtrlSpace retains its
+list window, keys, tab management, and workspaces. Fuzzbox's popup interface
+is not loaded, and fuzzbox.vim does not need to be installed separately.
 
-To find more about file engines check |g:CtrlSpaceFileEngine|.
+The active engine appears in Help Mode (<?>), as "Vim9 (fuzzbox)" or
+"Neovim native (Lua)". The former |g:CtrlSpaceFileEngine| option is ignored;
+there is no executable selection, architecture detection, or subprocess
+protocol. |ctrlspace-go-engine| remains as an alias for this section.
+
+File caching is independent of matching. Keep |g:CtrlSpaceEnableFilesCache|
+enabled to reuse the cs_files cache, or disable it to collect files afresh.
+Use <r> in the File List to refresh a cached list. Optional rg, fd, and ag
+commands can accelerate file collection; built-in |globpath()| works when
+none are installed. Search always runs inside the editor.
+
+See |ctrlspace-engine-specs| for matching behavior and source provenance.
 
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
@@ -765,6 +785,14 @@ entering press <?>.
 To clear the search query press <BS>. To use previous queries from history
 press <C-p> (previous) or <C-n> (next).
 
+Queries match a case-insensitive, ordered subsequence. Spaces are literal
+parts of the query. Matching scores every candidate before keeping the best
+200 results; the best result appears at the bottom. Native editor scoring
+replaces the old noise algorithm, so result order can differ from earlier
+CtrlSpace releases and between Vim and Neovim versions. Highlighting marks
+the matching characters, including multibyte characters. See
+|ctrlspace-engine-specs|.
+
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
@@ -897,9 +925,10 @@ Default value: >
 
 7.7 *g:CtrlSpaceGlobCommand*
 
-If not empty, the provided command will be used to list all files instead
-of Vim |globpath()| function. For example, if you have `Ag` installed that
-could be: >
+If not empty, this command lists project files. Otherwise CtrlSpace detects
+rg, fd, and ag in that order, then falls back to Vim's |globpath()|. External
+file collection tools are optional and do not perform fuzzy matching.
+For example, if you have `ag` installed, you can explicitly select it: >
 
     if executable("ag")
         let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
@@ -928,7 +957,9 @@ Disable to load project files by simply re-globbing each time FILE mode is
 activated. More suited for small to medium sized projects, or for projects
 where switching to branches with different file layouts is common.
 
-Supported globbers are: rg, fd & ag (auto-detected in that order)
+Supported globbers are rg, fd, and ag (auto-detected in that order), with
+built-in |globpath()| as the fallback. Caching does not select a search
+engine: both settings use the same native matcher.
 
 Default value: >
 
@@ -1155,59 +1186,15 @@ Default value: >
 
 7.23 *g:CtrlSpaceFileEngine*
 
-The plugin provides fuzzy search engine written in Go and compiled for
-several architectures:
+Obsolete and ignored. Remove this setting from existing configurations.
+CtrlSpace automatically uses its bundled Vim9 matcher in Vim and its native
+Lua counterpart in Neovim. No executable is selected or invoked, even when
+an old configuration specifies "auto" or a path to a Go engine.
 
- * `file_engine_darwin_386`
- * `file_engine_darwin_amd64`
- * `file_engine_freebsd_386`
- * `file_engine_freebsd_amd64`
- * `file_engine_freebsd_arm`
- * `file_engine_linux_386`
- * `file_engine_linux_amd64`
- * `file_engine_linux_arm`
- * `file_engine_linux_mips`
- * `file_engine_linux_mips64`
- * `file_engine_linux_mips64le`
- * `file_engine_linux_mipsle`
- * `file_engine_linux_s390x`
- * `file_engine_netbsd_386`
- * `file_engine_netbsd_amd64`
- * `file_engine_netbsd_arm`
- * `file_engine_openbsd_386`
- * `file_engine_openbsd_amd64`
- * `file_engine_windows_386.exe`
- * `file_engine_windows_amd64.exe`
+The FileEngine field returned by ctrlspace#context#Configuration() remains
+an empty string for integrations that read it. FileEngineName identifies
+the native backend shown in Help Mode (<?>). See |ctrlspace-native-search|.
 
-The engine protocol is relatively simple and it's possible to implement an
-engine in any technology (see |ctrlspace-engine-specs|). The engine
-must be provided as an executable file in the `bin` directory in the plugin
-folder.
-
-To enable your custom engine provide the executable name as a string to
-|g:CtrlSpaceFileEngine| variable. You can also force plugin to use
-a certain implementation of your choice. For example, a Go version
-for Mac OS X could look like: >
-
-    let g:CtrlSpaceFileEngine = "file_engine_darwin_amd64"
-<
-Another way of enabling a Go implementation is file engine auto detection.
-Plugin can try to infer matching os and architecture and use proper Go
-binary. To enable it provide a string `"auto"` (or leave default value): >
-
-    let g:CtrlSpaceFileEngine = "auto"
-<
-To make sure a correct file engine is in use check the Help View (<?>).
-
-To disable external file engines and stick to pure Vim implementation,
-just provide an empty string: >
-
-    let g:CtrlSpaceFileEngine = ""
-<
-Default value: >
-
-    let g:CtrlSpaceFileEngine = "auto"
-<
                                                              |ctrlspace-toc|
 --------------------------------------------------------------------------
 
@@ -1483,145 +1470,77 @@ otherwise.
                                                              |ctrlspace-toc|
 ==========================================================================
 
-9. File Engine Specifications                       *ctrlspace-engine-specs*
+9. Native Search Internals                          *ctrlspace-engine-specs*
 
-It's fairly easy to provide your own implementation of a fuzzy searcher
-for files. The main reason for enabling such external searcher is the
-limited speed of Vim Script processing.
+CtrlSpace runs matching inside Vim or Neovim for files, buffers, tabs,
+workspaces, and bookmarks. The old external file-engine protocol has been
+removed. This help tag is retained for existing links.
 
-Moreover the amount of data returned by the search algorithm is
-significantly greater than in other popular fuzzy searchers implemented in
-pure Vim Script (like `CtrlP`) thus it affects the performance too.
+Backend selection~
 
+The legacy Vimscript dispatcher, autoload/ctrlspace/matcher.vim, selects:
 
-General Assumptions~
+ * Vim: autoload/ctrlspace/vendor/fuzzbox.vim, a bundled Vim9 extraction.
+ * Neovim: lua/ctrlspace/matcher.lua, a native Lua counterpart.
 
-The file engine binaries have been compiled for various OS's and CPU
-types, but only those for Linux, MacOS and Windows on 64 bit architectures
-are available in the git repository. The other versions for their 32 bit
-architecture counterparts, as well as for FreeBSD, NetBSD and OpenBSD
-on 32 and 64 bit architectures can still be dowloaded from a specific
-release `all_os_file_engines`, downloadable at:
+Neovim never sources the Vim9 module. Both backends use the editor's
+|matchfuzzypos()|, so no search executable, compiler, or other plugin is
+needed. Vim requires version 9.0+ with +vim9script; Neovim requires 0.9+.
+Neovim 0.7 supplies matchfuzzypos() but has incomplete match positions for
+some queries containing spaces, so it is not supported by this adapter.
 
-	https://git.io/vim-ctrlspace-release-all_os_file_engines
+Matching contract~
 
-By default the plugin shows at most 500 items per list and 200 when fuzzy
-searched. That rule is enforced by internal fuzzy searcher implementation
-and by the external engine written in Go.
+Candidates are dictionaries containing text, index, and indicators. Search
+matches text and preserves each candidate's index and other fields, even
+when several candidates have identical text. Returned candidates are copies
+with score and positions fields; the source dictionaries are not modified.
 
-More items make the plugin window sluggish and inconvenient to browse. If
-something you are looking for is not immediately available within those
-limits then most likely you should refine your search criteria.
+Queries are lowercased before matching, and matchseq is enabled. This keeps
+CtrlSpace's case-insensitive, ordered-subsequence matching, including spaces
+and literal punctuation. The native matcher supplies ranking and character
+positions. Scores are editor implementation details and can change between
+versions; they do not reproduce the old noise scores.
 
-Of course your are not forced to follow those limitations. Feel free to
-change the limits in your own implementation if you think it would work
-better for you.
+The full candidate list is scored before keeping the best 200 matches.
+Passing a limit to matchfuzzypos() would instead stop at the first matching
+candidates and could miss better matches later in the list. Equal scores
+retain their source order. CtrlSpace displays results in reverse relevance
+order so the best match is at the bottom. Unfiltered lists show at most 500
+items. While entering a query, results are further limited to window height.
 
-The external engine is designed specifically for searching and displaying
-files. All other search in the plugin is performed by an internal engine.
-The communication with external processes involves some latency as Vim
-must execute an external command in the system shell.
+Highlight positions are converted from character offsets to one-based byte
+columns and byte lengths for |matchaddpos()|. Adjacent positions are combined
+into ranges. Rendering adjusts these ranges for the left margin and any
+truncated prefix, so highlighting follows the displayed text. This supports
+multibyte characters and composing marks without constructing search regexes.
 
-However, such latency is acceptable for files, where we might have a great
-volume to search and show. It is much less likely that you hit thousands
-of buffers, tabs, workspaces, or bookmarks. But for files that is a common
-scenario on everyday basis.
+File collection and caching~
 
-The responsibility of an external engine is also to render the exact
-response - text that would be displayed in the plugin window together with
-all metadata that allow plugin proceed it further. This is because of the
-massive scale of processing needed in case of files. The engine technology
-is assumed to be a lot faster than Vim Script with string concatenation
-either.
+File collection remains separate from matching. The cache supplies filenames
+and their stable list indices to both native backends. Set
+|g:CtrlSpaceEnableFilesCache| to choose persistent caching, and use <r> in
+the File List after files change outside CtrlSpace.
 
+|g:CtrlSpaceGlobCommand| can select a collection command. With the default
+setting, rg, fd, and ag are tried in order, followed by built-in |globpath()|.
+Installing one of these tools is optional. Collection may run an external
+command; fuzzy matching never does.
 
-The Request~
+Source provenance~
 
-The plugin attempts to query data by executing the engine program and
-passing just a single line of text to the program Standard Input (`STDIN`).
-That line contains an object definition in JSON format describing the
-current context of Vim-CtrlSpace.
+The Vim9 matching and highlight code is adapted from fuzzbox.vim:
 
-The JSON object has the following structure (with sample data): >
+    https://github.com/vim-fuzzbox/fuzzbox.vim
+    Revision: 006fffcec7f67fd19ec56f35ba45dabfcac73d64
+    Source: autoload/fuzzbox/internal/selector.vim
 
-    {
-        "Query":    "gfx",
-        "Columns":  170,
-        "Limit":    0,
-        "Source":   "/Users/szw/Projects/vim-ctrlspace/.git/cs_files",
-        "Dots":     "…",
-        "DotsSize": 1
-    }
-<
-The fields mean:
-
- * `Query`    - Characters placed in the plugin search input
-              (`[A-Za-z0-9]`). The query might be empty - then the engine
-              should just display items.
-
- * `Columns`  - The width of the plugin window. Lines rendered in the
-              response should have extact width provided by this value.
-
- * `Limit`    - If greater than 0 then results should be trimmed to that
-              value - otherwise they should follow 500 / 200 rule.
-              The limit is used while Search Mode is enabled. In that
-              mode you cannot move the bar and browse List View.
-              Since you are just supposed to type search characters
-              there is no point to render more items than would be visible
-              at that moment.
-
- * `Source`   - The path to file containing list to files to be searched.
-              The source is a text file containg file paths. Each line
-              is a separate file path. The line number minus 1 is
-              considered as a correspondent index value.
-
- * `Dots`     - The character(s) used to trim the item text that exceeds
-              plugin window width. See also |g:CtrlSpaceSymbols|.
-
- * `DotsSize` - The visual size of the `Dots` symbol.
-
-
-The Response~
-
-The engine should generate output to its Standard Output (`STDOUT`). The
-expected response should be composed of a few lines. Each line provides
-different type of data and metadata. A sample response might look like
-this one: >
-
-    ["gfx"]
-    [31,44]
-    2
-      gfx/cs5_window.png
-      gfx/logo5.png
-<
-The first line should contain unique search patterns that will be used to
-highlight search results with `CtrlSpaceSearch` group. Those patterns
-should be expressed as a |list| definition in Vim Script, for example: >
-
-    ["gfx"]
-<
-The second line must be a list of indices (line numbers of the source file
-minus 1) sorted accordingly to search algorithm relevance (reversed).
-This order should also match to the order of text lines explained below.
-The list should be formatted as a Vim Script |list|: >
-
-    [31,44]
-<
-Third line is the results size: >
-
-    2
-<
-The next lines are just content lines. They must be of size given by
-context `Columns` field. That means all remaining characters should be
-filled with spaces (`'` `'`). Also first 2 and last 3 characters of each
-line should be always blank spaces. That format is strictly required
-by plugin rendering algorithm: >
-
-      gfx/cs5_window.png
-      gfx/logo5.png
-<
-The order reflects the reversed results relevance. The most relevant items
-should be placed at the bottom (as last ones).
+The extraction adapts FuzzySearch, ProcessResults, and AddHlPositions to
+CtrlSpace's candidate dictionaries and existing window. It does not include
+fuzzbox's popup UI, commands, configuration, or asynchronous selector state.
+The Lua module implements the same adapter contract for Neovim. See
+third_party/fuzzbox/README.md and third_party/fuzzbox/LICENSE for provenance
+and the preserved MIT license.
 
                                                              |ctrlspace-toc|
 ==========================================================================
@@ -1646,6 +1565,10 @@ Copyright (c) 2013-2020 Szymon Wrozynski and Contributors.
 Licensed under MIT License conditions.
 
  * https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26
+
+The bundled fuzzbox adapter and Lua port include code adapted from
+vim-fuzzbox, copyright (c) 2023, under the MIT license. The upstream notice
+is preserved in third_party/fuzzbox/LICENSE. See |ctrlspace-engine-specs|.
 
 Vim-CtrlSpace is inspired by Robert Lillack plugin VIM bufferlist (c) 2005
 Robert Lillack. Moreover some concepts and inspiration has been taken from

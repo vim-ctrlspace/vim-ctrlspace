@@ -34,7 +34,6 @@ if exists("g:CtrlSpaceLoaded")
     finish
 endif
 
-let g:CtrlSpaceLoaded = 1
 let s:errors = []
 
 if &cp
@@ -45,8 +44,16 @@ if !&hid
     call add(s:errors, "CtrlSpace requires 'hidden' option enabled!")
 endif
 
-if v:version < 703
-    call add(s:errors, "CtrlSpace requires Vim 7.3 or higher!")
+if has('nvim')
+    if !has('nvim-0.9')
+        call add(s:errors, "CtrlSpace requires Neovim 0.9 or higher!")
+    endif
+elseif v:version < 900 || !has('vim9script')
+    call add(s:errors, "CtrlSpace requires Vim 9.0 or higher with Vim9script!")
+endif
+
+if !exists('*matchfuzzypos')
+    call add(s:errors, "CtrlSpace requires the built-in matchfuzzypos() function!")
 endif
 
 if !empty(s:errors)
@@ -59,4 +66,5 @@ if !empty(s:errors)
     finish
 endif
 
+let g:CtrlSpaceLoaded = 1
 call ctrlspace#init#Init()

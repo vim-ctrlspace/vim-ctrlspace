@@ -1,27 +1,17 @@
 let s:config     = ctrlspace#context#Configuration()
 let s:modes      = ctrlspace#modes#Modes()
-let s:resonators = ['.', '/', '_', '-', ' ']
 
-if has("win32")
-    call add(s:resonators, '\')
-endif
-
-" returns [patterns, indices, size, text]
+" Returns [highlight positions, original indices, visible size, rendered text].
 function! ctrlspace#engine#Content() abort
-    if s:config.EnableFilesCache && s:modes.File.Enabled
-        return s:contentFromFileEngine()
-    endif
-
     let items = s:contentSource()
 
     if !empty(s:modes.Search.Data.Letters)
-        let items = s:computeLowestNoises(items)
-        call sort(items, function("ctrlspace#engine#CompareByNoiseAndText"))
+        " Native matchers return best first; CtrlSpace selects the bottom row.
+        let items = reverse(ctrlspace#matcher#Search(items,
+                    \ join(s:modes.Search.Data.Letters, ''), 200))
     else
-        if len(items) > 500
-            let items = items[0:499]
-        endif
-
+        " Never sort the shared file cache in place: its indices identify files.
+        let items = copy(items[:499])
         if s:modes.Tab.Enabled
             call sort(items, function("ctrlspace#engine#CompareByIndex"))
         else
@@ -29,33 +19,14 @@ function! ctrlspace#engine#Content() abort
         endif
     endif
 
-    " trim the list in search mode
     if s:modes.Search.Enabled
-        let maxHeight = ctrlspace#window#MaxHeight()
-
+        let maxHeight = max([1, ctrlspace#window#MaxHeight()])
         if len(items) > maxHeight
             let items = items[-maxHeight : -1]
         endif
     endif
 
     return s:prepareContent(items)
-endfunction
-
-function! s:contentFromFileEngine() abort
-    call ctrlspace#files#CollectFiles()
-
-    let context = '{"Query":"' . join(s:modes.Search.Data.Letters, "") . '","Columns":' . &columns .
-                \ ',"Limit":' . (s:modes.Search.Enabled ? ctrlspace#window#MaxHeight() : 0) .
-                \ ',"Source":"' . escape(fnamemodify(ctrlspace#util#FilesCache(), ":p"), '\"') .
-                \ '","Dots":"' . s:config.Symbols.Dots . '","DotsSize":' . ctrlspace#context#SymbolSizes().Dots . '}'
-
-    let results  = split(ctrlspace#util#system(s:config.FileEngine, context), "\n")
-    let patterns = eval(results[0])
-    let indices  = eval(results[1])
-    let size     = str2nr(results[2])
-    let text     = join(results[3:], "\n")
-
-    return [patterns, indices, size, text]
 endfunction
 
 function! ctrlspace#engine#CompareByText(a, b) abort
@@ -78,64 +49,6 @@ function! ctrlspace#engine#CompareByIndex(a, b) abort
     else
         return 0
     endif
-endfunction
-
-function! ctrlspace#engine#CompareByNoiseAndText(a, b) abort
-    if a:a.noise < a:b.noise
-        return 1
-    elseif a:a.noise > a:b.noise
-        return -1
-    elseif a:a.smallnoise < a:b.smallnoise
-        return 1
-    elseif a:a.smallnoise > a:b.smallnoise
-        return -1
-    elseif strlen(a:a.text) < strlen(a:b.text)
-        return 1
-    elseif strlen(a:a.text) > strlen(a:b.text)
-        return -1
-    elseif a:a.text < a:b.text
-        return -1
-    elseif a:a.text > a:b.text
-        return 1
-    else
-        return 0
-    endif
-endfunction
-
-function! s:computeLowestNoises(source) abort
-    let results       = []
-    let noises        = []
-    let resultsCount  = 0
-
-    for index in range(len(a:source))
-        let item = a:source[index]
-        let [noise, smallnoise, pattern] = s:findLowestSearchNoise(item.text)
-
-        if noise == -1
-            continue
-        else
-            let item.noise      = noise
-            let item.smallnoise = smallnoise
-            let item.pattern    = pattern
-
-            if resultsCount < 200
-                let resultsCount += 1
-                call add(results, item)
-                call add(noises, noise)
-            else
-                let maxIndex = index(noises, max(noises))
-
-                if noises[maxIndex] > noise
-                    call remove(noises, maxIndex)
-                    call insert(noises, noise, maxIndex)
-                    call remove(results, maxIndex)
-                    call insert(results, item, maxIndex)
-                endif
-            endif
-        endif
-    endfor
-
-    return results
 endfunction
 
 function! s:contentSource() abort
@@ -230,7 +143,7 @@ endfunction
 
 function! s:fileListContent(clv) abort
     call ctrlspace#files#CollectFiles()
-    return deepcopy(ctrlspace#files#Items())
+    return ctrlspace#files#Items()
 endfunction
 
 function! s:bufferListContent(clv) abort
@@ -282,87 +195,31 @@ function! s:bufferEntry(bufnr) abort
     endif
 endfunction
 
-function! s:findSubsequence(text, offset) abort
-    let positions     = []
-    let noise         = 0
-    let currentOffset = a:offset
-
-    for letter in s:modes.Search.Data.Letters
-        let matchedPosition = match(a:text, "\\V\\c" . escape(letter, '\'), currentOffset)
-
-        if matchedPosition == -1
-            return [-1, []]
-        else
-            if !empty(positions)
-                let noise += abs(matchedPosition - positions[-1]) - 1
-            endif
-            call add(positions, matchedPosition)
-            let currentOffset = matchedPosition + 1
-        endif
-    endfor
-
-    return [noise, positions]
-endfunction
-
-function! s:findLowestSearchNoise(text) abort
-    let noise         = -1
-    let smallnoise    = 0
-    let matchedString = ""
-    let ltrLen        = len(s:modes.Search.Data.Letters)
-    let textLen       = strlen(a:text)
-
-    if ltrLen == 1
-        let noise = match(a:text, "\\V\\c" . escape(s:modes.Search.Data.Letters[0], '\'))
-
-        if noise > -1
-            let matchedString = s:modes.Search.Data.Letters[0]
-        endif
-    else
-        let offset    = 0
-        let positions = []
-
-        while ltrLen <= textLen - offset
-            let subseq = s:findSubsequence(a:text, offset)
-
-            if subseq[0] == -1
-                break
-            elseif (noise == -1) || (subseq[0] < noise)
-                let [noise, positions] = subseq
-                let offset = positions[0] + 1
-            else
-                let offset += 1
-            endif
-        endwhile
-
-        if noise > -1
-            let matchedString = a:text[positions[0]:positions[-1]]
-            let smallnoise = 0
-
-            if positions[0] != 0
-                let smallnoise += 1
-
-                if index(s:resonators, a:text[positions[0] - 1]) == -1
-                    let smallnoise += 1
-                endif
-            endif
-
-            if positions[-1] != textLen - 1
-                let smallnoise += 1
-
-                if index(s:resonators, a:text[positions[-1] + 1]) == -1
-                    let smallnoise += 1
-                endif
-            endif
-        endif
+" Return the visible suffix, removed byte count, and ellipsis byte count.
+" Crop whole characters (including composing marks), using display cells for
+" width and bytes for highlight positions. Never slice into a UTF-8 character.
+function! s:clipText(text, width) abort
+    let width = max([0, a:width])
+    if strdisplaywidth(a:text) <= width
+        return [a:text, 0, 0]
     endif
 
-    let pattern = ""
+    let dots = s:config.Symbols.Dots
+    while strdisplaywidth(dots) > width
+        let dots = strpart(dots, 0, byteidx(dots, strchars(dots, 1) - 1))
+    endwhile
 
-    if (noise > -1) && !empty(matchedString)
-        let pattern = matchedString
-    endif
-
-    return [noise, smallnoise, pattern]
+    let start = strchars(a:text, 1)
+    let tail = ''
+    while start > 0
+        let candidate = strpart(a:text, byteidx(a:text, start - 1))
+        if strdisplaywidth(dots . candidate) > width
+            break
+        endif
+        let tail = candidate
+        let start -= 1
+    endwhile
+    return [dots . tail, byteidx(a:text, start), strlen(dots)]
 endfunction
 
 function! s:prepareContent(items) abort
@@ -376,33 +233,34 @@ function! s:prepareContent(items) abort
         let itemSpace = 5 + sizes.IAV + sizes.IM
     endif
 
-    let content  = ""
-    let patterns = {}
-    let indices  = []
+    let content = []
+    let highlights = []
+    let indices = []
 
     for item in a:items
-        let line = item.text
+        let [line, removed, prefix] = s:clipText(item.text, &columns - itemSpace)
+        let lnum = len(content) + 1
 
-        if strwidth(line) + itemSpace > &columns
-            let line = s:config.Symbols.Dots . strpart(line, strwidth(line) - &columns + itemSpace + sizes.Dots)
+        if has_key(item, 'positions')
+            for pos in ctrlspace#matcher#HighlightPositions(item.text, item.positions, lnum)
+                let start = pos[1] - 1
+                let end = start + pos[2]
+                if end > removed
+                    let start = max([start, removed])
+                    " Two columns are reserved for the selection marker.
+                    call add(highlights, [lnum, 3 + prefix + start - removed, end - start])
+                endif
+            endfor
         endif
 
         if !empty(item.indicators)
-            let line .= " " . item.indicators
+            let line .= ' ' . item.indicators
         endif
-
-        while strwidth(line) < &columns
-            let line .= " "
-        endwhile
-
-        let content .= "  " . line . "\n"
-
-        if has_key(item, "pattern")
-            let patterns[item.pattern] = 1
-        endif
-
+        let line = '  ' . line
+        let line .= repeat(' ', max([0, &columns - strdisplaywidth(line)]))
+        call add(content, line)
         call add(indices, item.index)
     endfor
 
-    return [keys(patterns), indices, len(a:items), content]
+    return [highlights, indices, len(a:items), empty(content) ? '' : join(content, "\n") . "\n"]
 endfunction

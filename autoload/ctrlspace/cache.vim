@@ -40,8 +40,10 @@ endfunction
 
 function! s:glob_project_files() abort
     let files = empty(s:glob_cmd) ?
-          \ globpath('.', '**') : ctrlspace#util#system(s:glob_cmd)
-    return map(split(files, '\n'), { _, fname -> fnamemodify(fname, ":.")})
+          \ globpath('.', '**', 0, 1) : split(ctrlspace#util#system(s:glob_cmd), '\n')
+    " The built-in globber includes directories; File mode must list files.
+    call filter(files, { _, fname -> filereadable(fname) && !isdirectory(fname) })
+    return map(files, { _, fname -> fnamemodify(fname, ":.")})
 endfunction
 
 
@@ -154,5 +156,5 @@ function! s:null_cache.collect() dict abort
 endfunction
 
 function! s:null_cache.refresh() abort
-    unlet s:null_cache_alerted
+    unlet! s:null_cache_alerted
 endfunction

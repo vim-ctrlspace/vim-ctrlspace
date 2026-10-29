@@ -1,4 +1,19 @@
-# Current version changes can be found in the 
+# Unreleased
+
+CtrlSpace search is self-contained on Vim 9.0+ and Neovim 0.9+. Vim uses a
+bundled Vim9 extraction of fuzzbox's native matching and highlight conversion;
+Neovim uses a Lua counterpart. No Go toolchain, compiled search executable, or
+separately installed fuzzy finder is required.
+
+* Remove the Go file engine, bundled executables, architecture detection, and
+  subprocess protocol. `g:CtrlSpaceFileEngine` is obsolete and ignored.
+* Use native `matchfuzzypos()` for all five lists, with case-insensitive ordered
+  queries and the best match at the bottom. Score the full candidate list before
+  retaining the best 200 matches. Native ranking can differ from old releases.
+* Highlight exact matched characters using byte positions, including multibyte
+  text, and keep file caching independent of the search backend.
+* Preserve CtrlSpace's window, keys, tabs, workspaces, and bookmarks. Document
+  the bundled fuzzbox source and MIT license under `third_party/fuzzbox/`.
 
 # Version 5
 

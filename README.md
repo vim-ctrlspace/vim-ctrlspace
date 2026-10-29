@@ -10,7 +10,7 @@ Welcome to the **Vim-CtrlSpace** plug-in for managing
 * workspaces (sessions),
 * bookmarks for your favorite projects
 
-including fuzzy search (*powered by Go*);
+including self-contained fuzzy search in Vim9 and Neovim;
 reachable by the default mapping `Ctrl` + `Space`:
 Pressing `<C-Space>` opens a window listing
 
@@ -38,11 +38,12 @@ selectable by the `j`, `k`, and `<CR>` keys.
       * [Fuzzy Search Hints](#fuzzy-search-hints)
       * [Automatically Saving Workspace](#automatically-saving-workspace)
    * [Advanced Settings](#advanced-settings)
-      * [Go Engine](#go-engine)
+      * [Native Search](#native-search)
       * [Symbols](#symbols)
       * [Glob Command](#glob-command)
       * [Search Timing](#search-timing)
       * [Colors](#colors)
+   * [Tests](#tests)
    * [Authors and License](#authors-and-license)
 
 If you have already starred this repo, thank you!
@@ -81,6 +82,10 @@ You can save multiple workspaces per project with the **Workspace List**.
 # Getting Started
 
 ## Installation
+
+Requires Vim 9.0 or later with `+vim9script` and `matchfuzzypos()`, or
+Neovim 0.9 or later with `matchfuzzypos()`. Install this repository only:
+no Go toolchain, search executable, or separate fuzzy finder plugin is needed.
 
 If you use [vim-plug](https://github.com/junegunn/vim-plug), then add to your `vimrc` file (whose path is shown by `:help vimrc`):
 
@@ -184,60 +189,40 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 
 # Advanced Settings
 
-## Go Engine
+## Native Search
 
-The plugin provides engine compiled for popular operating systems and
-architectures. By default it will attempt to detect your OS and
-architecture. To see if auto detection was successful press `<?>`.
+All five CtrlSpace lists use the editor's built-in `matchfuzzypos()` function.
+Vim loads a bundled Vim9 extraction of the matching and highlight conversion
+code from [fuzzbox.vim](https://github.com/vim-fuzzbox/fuzzbox.vim). Neovim loads
+a native Lua counterpart using `vim.fn.matchfuzzypos()`. CtrlSpace keeps its
+existing list window, keys, tab management, and workspaces; fuzzbox's popup
+interface is not loaded. The vendored source and license are recorded in
+[third_party/fuzzbox](third_party/fuzzbox/README.md).
 
-To speed up the startup of Vim, replace it by a custom simpler one that
-restricts to those architectures most probably used by you, and does not
-involve system calls. For example, if you use
-[vim-plug](https://github.com/junegunn/vim-plug), then by adding to your
-`vimrc`:
+Queries remain case-insensitive, ordered subsequences, including literal
+spaces. All candidates are scored before the best 200 are retained; an
+unfiltered list displays up to 500 items. The best match remains at the bottom.
+Matched characters are highlighted individually, including multibyte text.
+Native scoring replaces the former noise algorithm, so ranking can differ
+from earlier CtrlSpace releases and between editor versions.
 
-```vim
-if has('win32')
-    let s:vimfiles = '~/vimfiles'
-    let s:os   = 'windows'
-else
-    let s:vimfiles = '~/.vim'
-    if has('mac') || has('gui_macvim')
-        let s:os = 'darwin'
-    else
-    " elseif has('gui_gtk2') || has('gui_gtk3')
-        let s:os = 'linux'
-    endif
-endif
+Press `<?>` to see the active engine: `Vim9 (fuzzbox)` or
+`Neovim native (Lua)`. Remove any old `g:CtrlSpaceFileEngine` setting; the
+option is obsolete and ignored. Search no longer detects a CPU architecture,
+starts a subprocess, or exchanges a file-engine protocol.
 
-let g:CtrlSpaceFileEngine = s:vimfiles . '/plugged/vim-ctrlspace' . '/bin/file_engine_' . s:os . '_amd64'
-```
-
-The file engine binaries have been compiled for various OS's and CPU
-types, but only those for Linux, MacOS and Windows on 64 bit architectures
-are available in the git repository. The other versions for their 32 bit
-architecture counterparts, as well as for FreeBSD, NetBSD and OpenBSD
-on `ARM`, `MIPS`, `amd64` and `32` bit architectures can be downloaded at:
-
-	<https://git.io/vim-ctrlspace-release-all_os_file_engines>
-
-To find more about setting up the file engines, check:
-
-```VimL
-:help g:CtrlSpaceFileEngine
-```
-
-Lastly, this file engine sources the list of files it searches through from
-a text file cache (`cs_files`, typically stored under `.git/`). For small to
-medium-sized projects (say <1k files as a cautious estimate), where loading
-from this files cache isn't likely to yield a noticeable speed boost, and you
-might instead rather not think about when to refresh the cache (for instance
-on switching to a branch with different files), you may disable the cache and
-by extension forgo using the Go file engine by setting the option below:
+File caching remains independent of search. The `cs_files` cache, typically
+stored under `.git/`, avoids repeated file collection. Press `<r>` in the File
+List to refresh it. To collect files afresh instead, set:
 
 ```VimL
 let g:CtrlSpaceEnableFilesCache = 0
 ```
+
+File collection can use `rg`, `fd`, or `ag` when installed and falls back to
+Vim's built-in `globpath()`. These optional tools list files; fuzzy matching
+always runs inside the editor. See `:help ctrlspace-native-search` and
+`:help ctrlspace-engine-specs` for details.
 
 ## Symbols
 
@@ -337,6 +322,23 @@ augroup vimrcCtrlSpace
 augroup END
 ```
 
+# Tests
+
+Run the shared regression suite from the repository root:
+
+```sh
+tests/run.sh all
+# Or select one editor:
+tests/run.sh vim
+tests/run.sh nvim
+```
+
+Set `VIM_BIN` and `NVIM_BIN` to test alternate editor executables. Each run
+uses an isolated project and tests both cache modes with no programs on
+`PATH` and an unusable shell. Coverage includes ranking across the full
+candidate list, source identities, literal queries, Unicode highlights and
+clipping, cache refresh, all five list windows, and opening the selected file.
+
 # Authors and License
 
 Copyright &copy; 2013-2020 [Szymon Wrozynski and
@@ -344,6 +346,12 @@ Contributors](https://github.com/vim-ctrlspace/vim-ctrlspace/graphs/contributors
 Licensed under [MIT
 License](https://github.com/vim-ctrlspace/vim-ctrlspace/blob/master/plugin/ctrlspace.vim#L5-L26)
 conditions.
+
+The bundled fuzzbox matching adapter and its Lua port include code adapted
+from vim-fuzzbox, copyright 2023, under the
+[MIT license](third_party/fuzzbox/LICENSE). See the
+[source provenance](third_party/fuzzbox/README.md) for the pinned revision and
+local changes.
 
 **Vim-CtrlSpace** is inspired by Robert Lillack plugin [VIM
 bufferlist](https://github.com/roblillack/vim-bufferlist) &copy; 2005

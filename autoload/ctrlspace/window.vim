@@ -77,7 +77,7 @@ function! ctrlspace#window#Toggle(internal) abort
         return
     endif
 
-    let [b:patterns, b:indices, b:size, b:text] = ctrlspace#engine#Content()
+    let [b:matchPositions, b:indices, b:size, b:text] = ctrlspace#engine#Content()
 
     " set up window height
     if b:size > s:config.Height
@@ -95,11 +95,13 @@ function! ctrlspace#window#Toggle(internal) abort
     call s:displayContent()
     call ctrlspace#util#SetStatusline()
 
-    " display search patterns
-    for pattern in b:patterns
-        " escape ~ sign because of E874: (NFA) Could not pop the stack !
-        call matchadd("CtrlSpaceSearch", "\\c" .substitute(pattern, '\~', '\\~', "g"))
-    endfor
+    " Both editors accept at most eight positions per matchaddpos() call.
+    " Positions avoid treating literal filename characters as a Vim regexp.
+    let offset = 0
+    while offset < len(b:matchPositions)
+        call matchaddpos('CtrlSpaceSearch', b:matchPositions[offset : offset + 7])
+        let offset += 8
+    endwhile
 
     call s:setActiveLine()
 
