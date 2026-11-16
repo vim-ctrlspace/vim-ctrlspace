@@ -130,13 +130,13 @@ function! ctrlspace#search#RestoreSearchLetters(direction) abort
 
     let historyIndex = ctrlspace#search#SearchHistoryIndex()
 
-    if a:direction == "previous"
+    if a:direction ==# "previous"
         let historyIndex += 1
 
         if historyIndex == len(historyEntries)
             let historyIndex = len(historyEntries) - 1
         endif
-    elseif a:direction == "next"
+    elseif a:direction ==# "next"
         let historyIndex -= 1
 
         if historyIndex < -1

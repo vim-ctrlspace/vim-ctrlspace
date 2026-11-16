@@ -193,7 +193,7 @@ function! ctrlspace#api#TabTitle(tabnr, bufnr, bufname) abort
     let title   = ctrlspace#util#Gettabvar(a:tabnr, "CtrlSpaceLabel")
 
     if empty(title)
-        if getbufvar(bufnr, "&ft") == "ctrlspace"
+        if getbufvar(bufnr, "&ft") ==# "ctrlspace"
             if s:modes.Zoom.Enabled
                 if s:modes.Zoom.Data.Buffer
                     let bufnr = s:modes.Zoom.Data.Buffer
