@@ -359,13 +359,27 @@ function! s:TestBookmarkDirectoryConflict() abort
     endtry
 endfunction
 
+" Directories are normalized without globbing their names, and a root
+" directory keeps its slash.
+function! s:TestNormalizeDirectory() abort
+    call mkdir(s:temp . '/dirs/a[1]', 'p')
+    call mkdir(s:temp . '/dirs/a1', 'p')
+    let $CS_TEST_DIRS = s:temp . '/dirs'
+    call assert_equal(s:temp . '/dirs/a[1]', ctrlspace#util#NormalizeDirectory(s:temp . '/dirs/a[1]/'))
+    call assert_equal('/', ctrlspace#util#NormalizeDirectory('/'))
+    call assert_equal(s:project, ctrlspace#util#NormalizeDirectory('.'))
+    call assert_equal(resolve($HOME), ctrlspace#util#NormalizeDirectory('~'))
+    call assert_equal(s:temp . '/dirs/a1', ctrlspace#util#NormalizeDirectory('$CS_TEST_DIRS/a1'))
+    call assert_equal('', ctrlspace#util#NormalizeDirectory(''))
+endfunction
+
 try
     call assert_equal(2, exists(':CtrlSpace'), 'plugin initialized')
     for s:name in ['Buffer Init', 'Delete Buffer', 'Copy Buffer',
                 \ 'Remove File In File List', 'Remove File Declined',
                 \ 'Load Workspace Restores Settings', 'Project Roots And Bookmarks',
                 \ 'Workspace Tabs', 'Custom Workspace File', 'Legacy Tab Variables', 'Prompted Project Root',
-                \ 'Bookmark Directory Conflict']
+                \ 'Bookmark Directory Conflict', 'Normalize Directory']
         call s:Run(s:name)
     endfor
 finally
