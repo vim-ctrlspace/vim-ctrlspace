@@ -30,15 +30,19 @@ function! ctrlspace#util#system(cmd, ...) abort
     return has('win32') ? substitute(output, "\r", '', 'g') : output
 endfunction
 
-" Return the absolute, resolved path of a:directory without trailing slashes.
+" Return the absolute, resolved path of a:directory without trailing slashes,
+" except for a root directory such as / or C:\. A leading ~ and environment
+" variables are expanded, but no wildcards: [ or * may be part of the name.
 function! ctrlspace#util#NormalizeDirectory(directory) abort
     if empty(a:directory)
         return ""
     endif
 
-    let directory = resolve(fnamemodify(expand(a:directory), ":p"))
+    let directory = substitute(a:directory, '\$\(\h\w*\)',
+                \ '\=exists("$" . submatch(1)) ? eval("$" . submatch(1)) : submatch(0)', 'g')
+    let directory = resolve(fnamemodify(directory, ":p"))
 
-    while directory[strlen(directory) - 1] ==# "/" || directory[strlen(directory) - 1] ==# "\\"
+    while directory =~# '[\\/]$' && directory !~# '^\%(\a:\)\=[\\/]$'
         let directory = directory[0:-2]
     endwhile
 

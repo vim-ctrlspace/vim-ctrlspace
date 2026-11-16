@@ -3,7 +3,7 @@ set -eu
 
 # Usage: tests/run.sh [vim|nvim|all]
 # VIM_BIN and NVIM_BIN may name alternate editor executables or wrappers.
-test_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+test_repo=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 test_work=$(mktemp -d "${CTRLSPACE_TEST_TMPDIR:-${TMPDIR:-$test_repo/tests}}/.ctrlspace-tests.XXXXXX")
 trap 'rm -rf "$test_work"' EXIT HUP INT TERM
 
