@@ -1,4 +1,3 @@
-let s:config    = ctrlspace#context#Configuration()
 let s:modes     = ctrlspace#modes#Modes()
 let s:bookmarks = []
 
@@ -44,14 +43,15 @@ function! ctrlspace#bookmarks#ChangeBookmarkDirectory(nr) abort
         return 0
     endif
 
-    for bookmark in s:bookmarks
-        if bookmark.Directory ==# directory
-            call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . name . "'.")
+    for bm in s:bookmarks
+        if bm.Directory ==# directory
+            call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . bm.Name . "'.")
             return 0
         endif
     endfor
 
     call remove(s:bookmarks, a:nr)
+    call s:forgetProjectRoot(current)
 
     call ctrlspace#bookmarks#AddToBookmarks(directory, name)
     call ctrlspace#ui#DelayedMsg("Directory '" . directory . "' has been bookmarked under name '" . name . "'.")
@@ -66,24 +66,8 @@ function! ctrlspace#bookmarks#RemoveBookmark(nr) abort
         return
     endif
 
-    call remove(s:bookmarks, a:nr)
-
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            if oldLine !~# "CS_BOOKMARK: "
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-
-    for bm in s:bookmarks
-        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
-    endfor
-
-    call writefile(lines, cacheFile)
+    call s:forgetProjectRoot(remove(s:bookmarks, a:nr).Directory)
+    call ctrlspace#roots#SaveCacheFile()
 
     call ctrlspace#ui#DelayedMsg("Bookmark '" . name . "' has been deleted.")
 endfunction
@@ -120,7 +104,7 @@ function! ctrlspace#bookmarks#AddNewBookmark(...) abort
     endif
 
     for bm in s:bookmarks
-        if bm.Directory == directory
+        if bm.Directory ==# directory
             call ctrlspace#ui#Msg("This directory has been already bookmarked under name '" . bm.Name . "'.")
             return 0
         endif
@@ -142,7 +126,7 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name) abort
     let jumpCounter = 0
 
     for i in range(len(s:bookmarks))
-        if s:bookmarks[i].Directory == directory
+        if s:bookmarks[i].Directory ==# directory
             let jumpCounter = s:bookmarks[i].JumpCounter
             call remove(s:bookmarks, i)
             break
@@ -153,31 +137,9 @@ function! ctrlspace#bookmarks#AddToBookmarks(directory, name) abort
 
     call add(s:bookmarks, bookmark)
 
-    let lines     = []
-    let bmRoots   = {}
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            if (oldLine !~# "CS_BOOKMARK: ") && (oldLine !~# "CS_PROJECT_ROOT: ")
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-
-    for bm in s:bookmarks
-        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
-        let bmRoots[bm.Directory] = 1
-    endfor
-
-    for root in keys(ctrlspace#roots#ProjectRoots())
-        if !has_key(bmRoots, root)
-            call add(lines, "CS_PROJECT_ROOT: " . root)
-        endif
-    endfor
-
-    call writefile(lines, cacheFile)
-    call extend(ctrlspace#roots#ProjectRoots(), { bookmark.Directory: 1 })
+    let roots = ctrlspace#roots#ProjectRoots()
+    let roots[bookmark.Directory] = 1
+    call ctrlspace#roots#SaveCacheFile()
 
     return bookmark
 endfunction
@@ -192,11 +154,20 @@ function! ctrlspace#bookmarks#FindActiveBookmark() abort
     let root = ctrlspace#util#NormalizeDirectory(root)
 
     for bm in s:bookmarks
-        if ctrlspace#util#NormalizeDirectory(bm.Directory) == root
+        if ctrlspace#util#NormalizeDirectory(bm.Directory) ==# root
             let bm.JumpCounter = ctrlspace#jumps#IncrementJumpCounter()
             return bm
         endif
     endfor
 
     return {}
+endfunction
+
+" A directory stops being a project root together with its bookmark.
+function! s:forgetProjectRoot(directory) abort
+    let roots = ctrlspace#roots#ProjectRoots()
+
+    if has_key(roots, a:directory)
+        call remove(roots, a:directory)
+    endif
 endfunction

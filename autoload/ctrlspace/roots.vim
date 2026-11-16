@@ -46,7 +46,7 @@ function! ctrlspace#roots#AddProjectRoot(directory) abort
         let roots[bm.Directory] = 1
     endfor
 
-    if exists("roots[directory]")
+    if has_key(roots, directory)
         call ctrlspace#ui#Msg("Directory '" . directory . "' is already a permanent project root!")
         return
     endif
@@ -58,7 +58,7 @@ endfunction
 function! ctrlspace#roots#RemoveProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(fnamemodify(empty(a:directory) ? getcwd() : a:directory, ":p"))
 
-    if !exists("s:projectRoots[directory]")
+    if !has_key(s:projectRoots, directory)
         call ctrlspace#ui#Msg("Directory '" . directory . "' is not a permanent project root!" )
         return
     endif
@@ -70,51 +70,41 @@ endfunction
 function! s:removeProjectRoot(directory) abort
     let directory = ctrlspace#util#NormalizeDirectory(a:directory)
 
-    if exists("s:projectRoots[directory]")
+    if has_key(s:projectRoots, directory)
         unlet s:projectRoots[directory]
     endif
 
-    let lines     = []
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-    if filereadable(cacheFile)
-        for oldLine in readfile(cacheFile)
-            if oldLine !~# "CS_PROJECT_ROOT: "
-                call add(lines, oldLine)
-            endif
-        endfor
-    endif
-
-    for root in keys(s:projectRoots)
-        call add(lines, "CS_PROJECT_ROOT: " . root)
-    endfor
-
-    call writefile(lines, cacheFile)
+    call ctrlspace#roots#SaveCacheFile()
 endfunction
 
 function! s:addProjectRoot(directory) abort
-    let directory = ctrlspace#util#NormalizeDirectory(a:directory)
+    let s:projectRoots[ctrlspace#util#NormalizeDirectory(a:directory)] = 1
+    call ctrlspace#roots#SaveCacheFile()
+endfunction
 
-    let s:projectRoots[directory] = 1
-
+" Rewrite the cache file with the current bookmarks and the permanent project
+" roots, keeping unrelated lines. Bookmarked directories are project roots
+" implicitly and are not saved as such.
+function! ctrlspace#roots#SaveCacheFile() abort
+    let cacheFile = ctrlspace#util#CacheFile()
     let lines     = []
     let bmRoots   = {}
-    let cacheFile = s:config.CacheDir . "/.cs_cache"
-
-    for bm in ctrlspace#bookmarks#Bookmarks()
-        let bmRoots[bm.Directory] = 1
-    endfor
 
     if filereadable(cacheFile)
         for oldLine in readfile(cacheFile)
-            if oldLine !~# "CS_PROJECT_ROOT: "
+            if (oldLine !~# "CS_BOOKMARK: ") && (oldLine !~# "CS_PROJECT_ROOT: ")
                 call add(lines, oldLine)
             endif
         endfor
     endif
 
+    for bm in ctrlspace#bookmarks#Bookmarks()
+        call add(lines, "CS_BOOKMARK: " . bm.Directory . ctrlspace#context#Separator() . bm.Name)
+        let bmRoots[bm.Directory] = 1
+    endfor
+
     for root in keys(s:projectRoots)
-        if !exists("bmRoots[root]")
+        if !has_key(bmRoots, root)
             call add(lines, "CS_PROJECT_ROOT: " . root)
         endif
     endfor
@@ -140,7 +130,7 @@ function! ctrlspace#roots#FindProjectRoot() abort
             endfor
 
             if !rootFound
-                let rootFound = exists("s:projectRoots[candidate]")
+                let rootFound = has_key(s:projectRoots, candidate)
             endif
 
             if rootFound
@@ -164,6 +154,7 @@ function! ctrlspace#roots#ProjectRootFound() abort
 
         if empty(s:currentProjectRoot)
             let projectRoot = ctrlspace#ui#GetInput("No project root found. Set the project root: ", fnamemodify(".", ":p:h"), "dir")
+            let projectRoot = ctrlspace#util#NormalizeDirectory(projectRoot)
 
             if !empty(projectRoot) && isdirectory(projectRoot)
                 call ctrlspace#files#ClearAll() " clear current files - force reload
