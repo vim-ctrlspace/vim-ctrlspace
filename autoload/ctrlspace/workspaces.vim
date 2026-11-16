@@ -187,10 +187,18 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name) abort
     let cwdSave = fnamemodify(".", ":p:h")
     silent! exe "cd " . fnameescape(ctrlspace#roots#CurrentProjectRoot())
 
+    try
+        return s:loadWorkspace(a:bang, a:name)
+    finally
+        silent! exe "cd " . fnameescape(cwdSave)
+        call ctrlspace#util#HandleVimSettings("stop")
+    endtry
+endfunction
+
+function! s:loadWorkspace(bang, name) abort
     let filename = ctrlspace#util#WorkspaceFile()
 
     if !filereadable(filename)
-        silent! exe "cd " . fnameescape(cwdSave)
         return 0
     endif
 
@@ -207,7 +215,6 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name) abort
         endfor
 
         if empty(name)
-            silent! exe "cd " . fnameescape(cwdSave)
             return 0
         endif
     else
@@ -226,17 +233,22 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name) abort
         elseif ol ==# endMarker
             let inWorkspace = 0
         elseif inWorkspace
-            let ol = substitute(ol, "let t:ctrlspace_label", "let t:CtrlSpaceLabel", "")
-            let ol = substitute(ol, "let t:ctrlspace_autotab", "let t:CtrlSpaceAutotab", "")
-            call add(lines, ol)
+            call add(lines, s:tabVariableCommand(ol))
         endif
     endfor
 
     if empty(lines)
         call ctrlspace#ui#Msg("Workspace '" . name . "' not found in file '" . filename . "'.")
         call ctrlspace#workspaces#SetWorkspaceNames()
-        silent! exe "cd " . fnameescape(cwdSave)
         return 0
+    endif
+
+    " Sessions written as Vim9 script must start with :vim9script, but a
+    " custom workspace file precedes the session by a :cd command.
+    let vim9 = index(lines, "vim9script")
+
+    if vim9 > 0
+        call insert(lines, remove(lines, vim9))
     endif
 
     call s:execWorkspaceCommands(a:bang, name, lines)
@@ -252,11 +264,36 @@ function! ctrlspace#workspaces#LoadWorkspace(bang, name) abort
     call ctrlspace#ui#Msg(msg)
     call ctrlspace#ui#DelayedMsg(msg)
 
-    silent! exe "cd " . fnameescape(cwdSave)
-
-    call ctrlspace#util#HandleVimSettings("stop")
-
     return 1
+endfunction
+
+" Turn a tab variable assignment saved by older versions, such as
+" 'let t:CtrlSpaceLabel = ...' or 'let t:ctrlspace_label = ...', into a
+" settabvar() call, which is valid in both legacy and Vim9 sessions.
+function! s:tabVariableCommand(line) abort
+    let parts = matchlist(a:line, '\C^let t:\%(CtrlSpace\(Label\|Autotab\)\|ctrlspace_\(label\|autotab\)\) = \(.*\)$')
+
+    if empty(parts)
+        return a:line
+    endif
+
+    let name = empty(parts[1]) ? toupper(parts[2][0]) . parts[2][1:] : parts[1]
+    return "call settabvar(tabpagenr(), 'CtrlSpace" . name . "', " . parts[3] . ")"
+endfunction
+
+" Commands restoring the CtrlSpace buffer list, label and kind of a tab.
+function! s:tabCommands(data) abort
+    let commands = map(copy(a:data.bufs), '"edit " . fnameescape(v:val)')
+
+    if !empty(a:data.label)
+        call add(commands, "call settabvar(tabpagenr(), 'CtrlSpaceLabel', '" . substitute(a:data.label, "'", "''", "g") . "')")
+    endif
+
+    if !empty(a:data.autotab)
+        call add(commands, "call settabvar(tabpagenr(), 'CtrlSpaceAutotab', " . a:data.autotab . ")")
+    endif
+
+    return commands
 endfunction
 
 function! s:execWorkspaceCommands(bang, name, lines) abort
@@ -284,13 +321,15 @@ function! s:execWorkspaceCommands(bang, name, lines) abort
         call add(commands, "normal! " . curTab . "gt")
     endif
 
-    for c in commands
-        silent exe c
-    endfor
+    try
+        for c in commands
+            silent exe c
+        endfor
 
-    call ctrlspace#util#ChDir(fnamemodify(".", ":p:h"))
-
-    call delete("CS_SESSION")
+        call ctrlspace#util#ChDir(fnamemodify(".", ":p:h"))
+    finally
+        call delete("CS_SESSION")
+    endtry
 endfunction
 
 function! ctrlspace#workspaces#SaveWorkspace(name) abort
@@ -300,17 +339,27 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
 
     call ctrlspace#util#HandleVimSettings("start")
 
-    let cwdSave = fnamemodify(".", ":p:h")
-    let root    = ctrlspace#roots#CurrentProjectRoot()
+    let cwdSave  = fnamemodify(".", ":p:h")
+    let ssopSave = &ssop
+    let root     = ctrlspace#roots#CurrentProjectRoot()
 
     silent! exe "cd " . fnameescape(root)
 
+    try
+        return s:saveWorkspace(a:name, root)
+    finally
+        call delete("CS_SESSION")
+        silent! exe "cd " . fnameescape(cwdSave)
+        let &ssop = ssopSave
+        call ctrlspace#util#HandleVimSettings("stop")
+    endtry
+endfunction
+
+function! s:saveWorkspace(name, root) abort
     if empty(a:name)
-        if !empty(s:modes.Workspace.Data.Active.Name) && s:modes.Workspace.Data.Active.Root ==# root
+        if !empty(s:modes.Workspace.Data.Active.Name) && s:modes.Workspace.Data.Active.Root ==# a:root
             let name = s:modes.Workspace.Data.Active.Name
         else
-            silent! exe "cd " . fnameescape(cwdSave)
-            call ctrlspace#util#HandleVimSettings("stop")
             call ctrlspace#ui#Msg("Nothing to save.")
             return 0
         endif
@@ -319,7 +368,6 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
     endif
 
     let filename = ctrlspace#util#WorkspaceFile()
-    let lastTab  = tabpagenr("$")
 
     let lines       = []
     let inWorkspace = 0
@@ -345,58 +393,49 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
 
     call add(lines, startMarker)
 
-    let ssopSave = &ssop
     set ssop=winsize,tabpages,buffers,sesdir
 
     let tabData = []
 
-    for t in range(1, lastTab)
-        let data = {
-                    \ "label": ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel"),
-                    \ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0)
-                    \ }
-
-        let ctrlspaceList = ctrlspace#api#Buffers(t)
-
+    for t in range(1, tabpagenr("$"))
         let bufs = []
 
-        for [nr, bname] in items(ctrlspaceList)
+        for bname in values(ctrlspace#api#Buffers(t))
             let bufname = fnamemodify(bname, ":.")
 
-            if !filereadable(bufname)
-                continue
+            if filereadable(bufname)
+                call add(bufs, bufname)
             endif
-
-            call add(bufs, bufname)
         endfor
 
-        let data.bufs = bufs
-        call add(tabData, data)
+        call add(tabData, {
+                    \ "label": ctrlspace#util#Gettabvar(t, "CtrlSpaceLabel"),
+                    \ "autotab": ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceAutotab", 0),
+                    \ "bufs": bufs
+                    \ })
     endfor
 
     silent! exe "mksession! CS_SESSION"
 
     if !filereadable("CS_SESSION")
-        silent! exe "cd " . fnameescape(cwdSave)
-        silent! exe "set ssop=" . ssopSave
-
-        call ctrlspace#util#HandleVimSettings("stop")
         call ctrlspace#ui#Msg("Workspace '" . name . "' cannot be saved at this moment.")
         return 0
     endif
 
-    let tabIndex = 0
+    let useWorkspaceFile = filereadable(ctrlspace#context#Configuration().WorkspaceFile)
 
-    let config = ctrlspace#context#Configuration()
-    if filereadable(config.WorkspaceFile)
-        call add(lines, "cd " . fnameescape(root))
-        let useWorkspaceFile = 1
-    else
-        let useWorkspaceFile = 0
+    if useWorkspaceFile
+        call add(lines, "cd " . fnameescape(a:root))
     endif
 
+    " Restore the buffer list of the first tab after the argument list has
+    " been cleared, and that of each following tab where the session enters
+    " it by a plain 'tabnext'. Sessions without those commands fall back to
+    " the first 'edit'.
+    let tabIndex = 0
+
     for cmd in readfile("CS_SESSION")
-        if useWorkspaceFile && cmd ==# 'exe "cd " . escape(expand("<sfile>:p:h"), '' '')'
+        if useWorkspaceFile && cmd =~# '^exe "cd " \.\.\? escape(expand("<sfile>:p:h"), '' '')$'
             continue
         elseif cmd =~# "^lcd "
             continue
@@ -405,36 +444,13 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
             if exists("baddList[1]") && filereadable(baddList[1])
                 call add(lines, cmd)
             endif
-        elseif
-        \    ((cmd =~# '^edit \f\+') && (tabIndex == 0))
-        \ || ( (has('patch-8.1.149') || has('nvim-0.5')) && cmd ==# 'tabnext')
-        \ || (!(has('patch-8.1.149') || has('nvim-0.5')) && cmd =~# '^tabedit \f\+')
-        " NB: check patch-8.1.149 for backend vim mksession change
-        " NB: check nvim-0.5 for port of patch-8.1.149 from Vim to Nvim
-            let data = tabData[tabIndex]
-
-            if cmd =~# '^tabedit \f\+'
-                call add(lines, 'tabedit')
-            elseif cmd ==# 'tabnext'
-                call add(lines, cmd)
-            endif
-
-            for b in data.bufs
-                call add(lines, 'edit ' . fnameescape(b))
-            endfor
-
-            if cmd =~# '^tabedit \f\+'
-                " turn 'tabedit ...' into 'edit ...'
-                call add(lines, cmd[3:])
-            endif
-
-            if !empty(data.label)
-                call add(lines, "let t:CtrlSpaceLabel = '" . substitute(data.label, "'", "''","g") . "'")
-            endif
-            if !empty(data.autotab)
-                call add(lines, "let t:CtrlSpaceAutotab = " . data.autotab)
-            endif
-
+        elseif tabIndex < len(tabData) && (cmd ==# 'tabnext' || (tabIndex == 0 && cmd =~# '^\%(:\?%argdel\|tabrewind\)$'))
+            call add(lines, cmd)
+            call extend(lines, s:tabCommands(tabData[tabIndex]))
+            let tabIndex += 1
+        elseif tabIndex == 0 && cmd =~# '^edit \f\+'
+            call extend(lines, s:tabCommands(tabData[tabIndex]))
+            call add(lines, cmd)
             let tabIndex += 1
         else
             call add(lines, cmd)
@@ -444,15 +460,9 @@ function! ctrlspace#workspaces#SaveWorkspace(name) abort
     call add(lines, endMarker)
 
     call writefile(lines, filename)
-    call delete("CS_SESSION")
 
     call ctrlspace#workspaces#SetActiveWorkspaceName(name, ctrlspace#workspaces#CreateDigest())
     call ctrlspace#workspaces#SetWorkspaceNames()
-
-    silent! exe "cd " . fnameescape(cwdSave)
-    silent! exe "set ssop=" . ssopSave
-
-    call ctrlspace#util#HandleVimSettings("stop")
 
     let msg = "Workspace '" . name . "' has been saved."
     call ctrlspace#ui#Msg(msg)

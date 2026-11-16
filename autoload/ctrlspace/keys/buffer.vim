@@ -93,18 +93,25 @@ function! ctrlspace#keys#buffer#ZoomMode(k) abort
     if !s:modes.Zoom.Enabled
         call ctrlspace#buffers#ZoomBuffer(0)
     else
-        call ctrlspace#window#Kill(0, 1)
-        call ctrlspace#window#Toggle(0)
-        call ctrlspace#window#Kill(0, 0)
-        if s:modes.Zoom.Data.Mode ==# "File"
-            call s:modes.File.Enable()
-        else
-            call s:modes.Buffer.SetData("SubMode", s:modes.Zoom.Data.SubMode)
-        endif
-        call s:modes.Search.SetData("Letters", copy(s:modes.Zoom.Data.Letters))
-        call ctrlspace#window#Toggle(1)
-        call ctrlspace#window#MoveSelectionBar(s:modes.Zoom.Data.Line)
+        call ctrlspace#keys#buffer#LeaveZoomMode()
     endif
+endfunction
+
+" Close the zoom and reopen the list it has been started from.
+function! ctrlspace#keys#buffer#LeaveZoomMode() abort
+    call ctrlspace#window#Kill(0, 1)
+    call ctrlspace#window#Toggle(0)
+    call ctrlspace#window#Kill(0, 0)
+
+    if s:modes.Zoom.Data.Mode ==# "File"
+        call s:modes.File.Enable()
+    else
+        call s:modes.Buffer.SetData("SubMode", s:modes.Zoom.Data.SubMode)
+    endif
+
+    call s:modes.Search.SetData("Letters", copy(s:modes.Zoom.Data.Letters))
+    call ctrlspace#window#Toggle(1)
+    call ctrlspace#window#MoveSelectionBar(s:modes.Zoom.Data.Line)
 endfunction
 
 function! ctrlspace#keys#buffer#LoadBufferVS(k) abort

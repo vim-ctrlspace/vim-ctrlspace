@@ -312,10 +312,10 @@ function! s:keyHelp(key, description) abort
     endif
 endfunction
 
-function! s:sortKeyHelp(key1, key2) dict
+function! s:sortKeyHelp(key1, key2) dict abort
     let l:desc1 = get(s:descriptions, self[a:key1], "")
     let l:desc2 = get(s:descriptions, self[a:key2], "")
-    return l:desc1 == l:desc2 ? 0 : l:desc1 > l:desc2 ? 1 : -1
+    return l:desc1 ==# l:desc2 ? 0 : l:desc1 ># l:desc2 ? 1 : -1
 endfunction
 
 function! s:collectKeysInfo(mapName) abort
@@ -325,12 +325,13 @@ function! s:collectKeysInfo(mapName) abort
     endif
     for key in l:keys
         let FnKey = s:helpMap[a:mapName][key]
+        let fn = ''
 
         " Due to the way 'ctrlspace#keys#nop#_ExecDbmdexAction' is called (as
         " a Partial, in order to capture runtime info), it is keyed as a
         " Funcref, instead of a string like other functions, in s:helpMap
         " TODO: please improve if better implementation allowing use of string key is known
-        if type(FnKey) == v:t_func && get(FnKey, 'name') == "ctrlspace#keys#nop#_ExecDbmdexAction"
+        if type(FnKey) == v:t_func && get(FnKey, 'name') ==# "ctrlspace#keys#nop#_ExecDbmdexAction"
             let [md, fn] = get(FnKey, 'args')
             let fn = s:modes[md].Enabled ? fn : ''    " only generate help if the appropriate mode is enabled
         elseif type(FnKey) == v:t_string

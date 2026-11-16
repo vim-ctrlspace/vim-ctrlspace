@@ -72,7 +72,7 @@ function! ctrlspace#init#Init() abort
 endfunction
 
 function! s:initProjectRootsAndBookmarks() abort
-    let cacheFile    = s:config.CacheDir . "/.cs_cache"
+    let cacheFile    = ctrlspace#util#CacheFile()
     let projectRoots = {}
     let bookmarks    = []
 

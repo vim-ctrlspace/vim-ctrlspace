@@ -45,7 +45,7 @@ function! ctrlspace#window#Toggle(internal) abort
 
     " create the buffer first & set it up
     try
-        if has('patch-8.1.1714') && !empty(&previewpopup)
+        if exists('+previewpopup') && !empty(&previewpopup)
             let previewpopup_save = &previewpopup
             set previewpopup=
         endif
@@ -125,7 +125,7 @@ function! ctrlspace#window#GoToBufferListPosition(direction) abort
         return
     endif
 
-    if a:direction == "down"
+    if a:direction ==# "down"
         let targetIndex = currentIndex + 1
 
         if targetIndex == bufferListLen
@@ -157,7 +157,7 @@ endfunction
 function! ctrlspace#window#Kill(pluginBuffer, final) abort
     " added workaround for strange Vim behavior when, when kill starts with some delay
     " (in a wrong buffer). This happens in some Nop modes (in a File List view).
-    if (exists("s:killingNow") && s:killingNow) || (!a:pluginBuffer && &ft != "ctrlspace")
+    if (exists("s:killingNow") && s:killingNow) || (!a:pluginBuffer && &ft !=# "ctrlspace")
         return
     endif
 
@@ -232,6 +232,7 @@ function! ctrlspace#window#MoveSelectionBar(where) abort
     endif
 
     let newpos = 0
+    let mouse  = type(a:where) == v:t_string && a:where ==# "mouse"
 
     if !exists("b:lastline")
         let b:lastline = 0
@@ -241,7 +242,7 @@ function! ctrlspace#window#MoveSelectionBar(where) abort
 
     " the mouse was pressed: remember which line
     " and go back to the original location for now
-    if a:where == "mouse"
+    if mouse
         let newpos = line(".")
         call s:goto(b:lastline)
     endif
@@ -250,39 +251,7 @@ function! ctrlspace#window#MoveSelectionBar(where) abort
     call setline(line("."), " " . strpart(getline(line(".")), 1))
 
     " go where the user want's us to go
-    if a:where == "up"
-        call s:goto(line(".") - 1)
-    elseif a:where == "down"
-        call s:goto(line(".") + 1)
-    elseif a:where == "mouse"
-        call s:goto(newpos)
-    elseif a:where == "pgup"
-        let newpos = line(".") - winheight(0)
-        if newpos < 1
-            let newpos = 1
-        endif
-        call s:goto(newpos)
-    elseif a:where == "pgdown"
-        let newpos = line(".") + winheight(0)
-        if newpos > line("$")
-            let newpos = line("$")
-        endif
-        call s:goto(newpos)
-    elseif a:where == "half_pgup"
-        let newpos = line(".") - winheight(0) / 2
-        if newpos < 1
-            let newpos = 1
-        endif
-        call s:goto(newpos)
-    elseif a:where == "half_pgdown"
-        let newpos = line(".") + winheight(0) / 2
-        if newpos > line("$")
-            let newpos = line("$")
-        endif
-        call s:goto(newpos)
-    else
-        call s:goto(a:where)
-    endif
+    call s:goto(mouse ? newpos : s:targetLine(a:where))
 
     " and mark this line with a >
     call setline(line("."), ">" . strpart(getline(line(".")), 1))
@@ -295,39 +264,31 @@ function! ctrlspace#window#MoveSelectionBar(where) abort
 endfunction
 
 function! ctrlspace#window#MoveCursor(where) abort
-    if a:where == "up"
-        call s:goto(line(".") - 1)
-    elseif a:where == "down"
-        call s:goto(line(".") + 1)
-    elseif a:where == "mouse"
-        call s:goto(line("."))
-    elseif a:where == "pgup"
-        let newpos = line(".") - winheight(0)
-        if newpos < 1
-            let newpos = 1
-        endif
-        call s:goto(newpos)
-    elseif a:where == "pgdown"
-        let newpos = line(".") + winheight(0)
-        if newpos > line("$")
-            let newpos = line("$")
-        endif
-        call s:goto(newpos)
-    elseif a:where == "half_pgup"
-        let newpos = line(".") - winheight(0) / 2
-        if newpos < 1
-            let newpos = 1
-        endif
-        call s:goto(newpos)
-    elseif a:where == "half_pgdown"
-        let newpos = line(".") + winheight(0) / 2
-        if newpos > line("$")
-            let newpos = line("$")
-        endif
-        call s:goto(newpos)
-    else
-        call s:goto(a:where)
+    call s:goto(s:targetLine(a:where))
+endfunction
+
+" Translate a movement or a line number into a line number to pass to
+" s:goto(), which wraps it around.
+function! s:targetLine(where) abort
+    if type(a:where) != v:t_string
+        return a:where
+    elseif a:where ==# "mouse"
+        return line(".")
+    elseif a:where ==# "up"
+        return line(".") - 1
+    elseif a:where ==# "down"
+        return line(".") + 1
+    elseif a:where ==# "pgup"
+        return max([1, line(".") - winheight(0)])
+    elseif a:where ==# "pgdown"
+        return min([line("$"), line(".") + winheight(0)])
+    elseif a:where ==# "half_pgup"
+        return max([1, line(".") - winheight(0) / 2])
+    elseif a:where ==# "half_pgdown"
+        return min([line("$"), line(".") + winheight(0) / 2])
     endif
+
+    return a:where
 endfunction
 
 function! ctrlspace#window#SelectedIndex() abort
@@ -402,9 +363,7 @@ function! s:setUpBuffer() abort
     setlocal nomodifiable
     setlocal nowrap
     setlocal nonumber
-    if exists('+relativenumber')
-        setlocal norelativenumber
-    endif
+    setlocal norelativenumber
     setlocal nocursorcolumn
     setlocal nocursorline
     setlocal nospell
@@ -463,7 +422,7 @@ function! s:setUpBuffer() abort
     for k in ctrlspace#keys#KeyNames()
         let key = strlen(k) > 1 ? ("<" . k . ">") : k
 
-        if k == '"'
+        if k ==# '"'
             let k = '\' . k
         endif
 
@@ -552,26 +511,9 @@ function! s:setActiveLine() abort
     endif
 endfunction
 
+" A blank line spanning the screen, to fill the window with list colors.
 function! s:filler() abort
-    " generate a variable to fill the buffer afterwards
-    " (we need this for "full window" color :)
-    if !exists("s:filler['" . &columns . "']")
-        let fill = "\n"
-        let i    = 0
-
-        while i < &columns
-            let i += 1
-            let fill = ' ' . fill
-        endwhile
-
-        if !exists("s:filler")
-            let s:filler = {}
-        endif
-
-        let s:filler[string(&columns)] = fill
-    endif
-
-    return s:filler[string(&columns)]
+    return repeat(" ", &columns) . "\n"
 endfunction
 
 function! s:fillBufferSpace() abort

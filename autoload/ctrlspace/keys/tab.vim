@@ -109,13 +109,7 @@ endfunction
 " this function is also used to move tabs in Buffer mode
 function! ctrlspace#keys#tab#MoveHelper(k) abort
     let dir = {'-': 'BWD', '+': 'FWD', '{': 'BWD', '}': 'FWD'}[a:k]
-    if v:version < 704
-        " NOTE: the tabmove cmds used here are directly copied from the existing code,
-        " and are assumed to work for <704 on faith, as they don't work for newer vers.
-        call ctrlspace#changebuftab#Execute("MoveTabLegacy", dir)
-    else
-        call ctrlspace#changebuftab#Execute("MoveTab", dir)
-    endif
+    call ctrlspace#changebuftab#Execute("MoveTab", dir)
 endfunction
 
 function! ctrlspace#keys#tab#MoveTab(k) abort

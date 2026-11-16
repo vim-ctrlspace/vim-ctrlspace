@@ -30,8 +30,13 @@ function! ctrlspace#util#system(cmd, ...) abort
     return has('win32') ? substitute(output, "\r", '', 'g') : output
 endfunction
 
+" Return the absolute, resolved path of a:directory without trailing slashes.
 function! ctrlspace#util#NormalizeDirectory(directory) abort
-    let directory = resolve(expand(a:directory))
+    if empty(a:directory)
+        return ""
+    endif
+
+    let directory = resolve(fnamemodify(expand(a:directory), ":p"))
 
     while directory[strlen(directory) - 1] ==# "/" || directory[strlen(directory) - 1] ==# "\\"
         let directory = directory[0:-2]
@@ -68,6 +73,10 @@ endfunction
 function! ctrlspace#util#WorkspaceFile() abort
     let config = ctrlspace#context#Configuration()
     return filereadable(config.WorkspaceFile) ? config.WorkspaceFile : s:internalFilePath("cs_workspaces")
+endfunction
+
+function! ctrlspace#util#CacheFile() abort
+    return ctrlspace#context#Configuration().CacheDir . "/.cs_cache"
 endfunction
 
 function! ctrlspace#util#FilesCache() abort
@@ -115,19 +124,8 @@ function! s:internalFilePath(name) abort
     return fullPart . "." . a:name
 endfunction
 
-" Workaround for a Vim bug after :only and e.g. help window:
-" for the first time after :only gettabvar cannot properly ready any tab variable
-" More info: https://github.com/vim/vim/issues/394
-" TODO Remove when decided to drop support for Vim 7.3
 function! ctrlspace#util#Gettabvar(nr, name) abort
-    let value = gettabvar(a:nr, a:name)
-
-    if type(value) == 1 && empty(value)
-        unlet value
-        let value = gettabvar(a:nr, a:name)
-    endif
-
-    return value
+    return gettabvar(a:nr, a:name)
 endfunction
 
 function! ctrlspace#util#GettabvarWithDefault(nr, name, default) abort

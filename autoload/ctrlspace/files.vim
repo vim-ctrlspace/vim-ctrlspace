@@ -115,9 +115,20 @@ function! ctrlspace#files#RemoveFile() abort
         return
     endif
 
-    call ctrlspace#buffers#DeleteBuffer()
+    let fullPath = resolve(fnamemodify(path, ":p"))
+
+    if s:modes.File.Enabled
+        " The selection is a file list index, not a buffer number.
+        let nr = s:listedBufferOf(fullPath)
+        if nr > 0 && !ctrlspace#buffers#DeleteBuffer(nr)
+            return
+        endif
+    elseif !ctrlspace#buffers#DeleteBuffer()
+        return
+    endif
+
     call s:updateFileList(path, "")
-    call delete(resolve(expand(path)))
+    call delete(fullPath)
 
     call ctrlspace#window#Kill(0, 0)
     call ctrlspace#window#Toggle(1)
@@ -167,7 +178,7 @@ function! ctrlspace#files#CopyFileOrBuffer() abort
     endif
 
     if bufOnly
-        call ctrlspace#buffers#ZoomBuffer(str2nr(nr), ['normal! G""ygg'])
+        call ctrlspace#buffers#ZoomBuffer(ctrlspace#window#SelectedIndex(), ['normal! G""ygg'])
         call ctrlspace#window#Kill(0, 1)
         silent! exe "e " . fnameescape(newFile)
         silent! exe 'normal! ""pgg"_dd'
@@ -226,7 +237,7 @@ function! ctrlspace#files#RenameFileOrBuffer() abort
     endif
 
     if isdirectory(newFile)
-        if newFile !~ "/$"
+        if newFile !~# "/$"
             let newFile .= "/"
         endif
 
@@ -245,7 +256,7 @@ function! ctrlspace#files#RenameFileOrBuffer() abort
     endif
 
     for [b, name] in items(bufNames)
-        if name == path
+        if name ==# path
             let commands = ["f " . fnameescape(newFile)]
 
             if !bufOnly
@@ -353,6 +364,17 @@ function! ctrlspace#files#EditFile() abort
     silent! exe "e " . fnameescape(newFile)
 endfunction
 
+" Return the number of the listed buffer editing a:path, or 0 if none.
+function! s:listedBufferOf(path) abort
+    for nr in range(1, bufnr("$"))
+        if buflisted(nr) && !empty(bufname(nr)) && resolve(fnamemodify(bufname(nr), ":p")) ==# a:path
+            return nr
+        endif
+    endfor
+
+    return 0
+endfunction
+
 function! s:loadFileOrBuffer(file) abort
     if buflisted(a:file)
         silent! exe ":b " . bufnr(a:file)
@@ -379,15 +401,15 @@ function! s:updateFileList(path, newPath) abort
 
         if idx >= 0
             call remove(s:Cache.files, idx)
-            call remove(s:Cache.items, idx)
         endif
     endif
 
     if !empty(newPath)
         call add(s:Cache.files, newPath)
-        call add(s:Cache.items, { "index": len(s:Cache.items), "text": newPath, "indicators": "" })
     endif
 
+    " Item indices identify files by position: renumber them all.
+    call s:Cache.map_files2items()
     call s:Cache.save()
 endfunction
 

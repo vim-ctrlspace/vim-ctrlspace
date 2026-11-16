@@ -31,8 +31,7 @@ let s:CmdmapGenerators = { "CopyBufferToTab"    : function('s:genCpOrMvBufToTabC
                          \ "MoveBufferToTab"    : function('s:genCpOrMvBufToTabCmdmap', ['ctrlspace#buffers#MoveBufferToTab']),
                          \ "SwitchTabInBufMode" : function('s:genSwitchTabCmdmap', ['normal! gT', 'normal! gt']),
                          \ "SwitchTabInTabMode" : function('s:genSwitchTabCmdmap', ['call feedkeys("k\<Space>")', 'call feedkeys("j\<Space>")']),
-                         \ "MoveTab"            : function('s:genMoveTabCmdmap', ['tabm-1', 'tabm+1']),
-                         \ "MoveTabLegacy"      : function('s:genMoveTabCmdmap', ['tabm'.(tabpagenr()-2), 'tabm'.tabpagenr()]), }
+                         \ "MoveTab"            : function('s:genMoveTabCmdmap', ['tabm-1', 'tabm+1']), }
 
 function! s:genCmdmapFuncref(cmdmap) abort
     func! s:_execute_oriented_cmd(orientation) closure abort

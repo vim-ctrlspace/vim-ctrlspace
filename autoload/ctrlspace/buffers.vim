@@ -9,7 +9,7 @@ endfunction
 function! ctrlspace#buffers#Init() abort
     for current in range(1, bufnr("$"))
         if !getbufvar(current, "&buflisted") || getbufvar(current, "&ft") ==? "ctrlspace"
-            break
+            continue
         endif
 
         if !has_key(s:allBuffers, current)
@@ -48,16 +48,7 @@ function! ctrlspace#buffers#Buffers(tabnr) abort
     if a:tabnr
         let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
 
-        " Workaround for a Vim bug after :only and e.g. help window:
-        " for the first time after :only gettabvar cannot properly ready any tab variable
-        " More info: https://github.com/vim/vim/issues/394
-        " TODO Remove when decided to drop support for Vim 7.3
-        if type(buffers) == 1
-            unlet buffers
-            let buffers = gettabvar(a:tabnr, "CtrlSpaceList")
-        endif
-
-        if type(buffers) != 4
+        if type(buffers) != v:t_dict
             return {}
         endif
     else
@@ -149,8 +140,7 @@ function! ctrlspace#buffers#CloseBuffer() abort
     let foundTabs = 0
 
     for t in range(1, tabpagenr('$'))
-        let cslist = ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {})
-        if !empty(cslist) && exists("cslist[nr]")
+        if has_key(ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}), nr)
             let foundTabs += 1
         endif
     endfor
@@ -162,70 +152,35 @@ function! ctrlspace#buffers#CloseBuffer() abort
     endif
 endfunction
 
-" deletes the selected buffer
-function! ctrlspace#buffers#DeleteBuffer() abort
-    let nr = ctrlspace#window#SelectedIndex()
-    let modified = getbufvar(str2nr(nr), "&modified")
+" Delete the selected buffer, or the buffer number a:1 from outside the
+" Buffer list. Return 0 if the buffer has been kept.
+function! ctrlspace#buffers#DeleteBuffer(...) abort
+    let fromList = a:0 == 0
+    let nr       = fromList ? ctrlspace#window#SelectedIndex() : a:1
+    let modified = getbufvar(nr, "&modified")
 
     if modified && !ctrlspace#ui#Confirmed("The buffer contains unsaved changes. Proceed anyway?")
-        return
+        return 0
     endif
 
-    let selBufWin = bufwinnr(str2nr(nr))
     let curln     = line(".")
+    let selBufWin = fromList ? bufwinnr(nr) : -1
 
     if selBufWin != -1
-        call ctrlspace#window#MoveSelectionBar("down")
-        if ctrlspace#window#SelectedIndex() == nr
-            call ctrlspace#window#MoveSelectionBar("up")
-
-            if ctrlspace#window#SelectedIndex() == nr
-                if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)) || modified)
-                    let curln = line(".")
-                    call ctrlspace#window#Kill(0, 0)
-                    silent! exe selBufWin . "wincmd w"
-                    enew
-                else
-                    return
-                endif
-            else
-                call s:loadBufferIntoWindow(selBufWin)
-            endif
-        else
-            call s:loadBufferIntoWindow(selBufWin)
+        if !s:showOtherSelectedBufferIn(selBufWin, nr, modified)
+            return 0
         endif
     else
-        let curln = line(".")
         call ctrlspace#window#Kill(0, 0)
     endif
 
     let curtab = tabpagenr()
 
     for t in range(1, tabpagenr('$'))
-        if t == curtab
-            continue
+        if (t != curtab || !fromList) && index(tabpagebuflist(t), nr) != -1
+            silent! exe "tabn " . t
+            call s:showOtherTabBufferInWindowsOf(nr)
         endif
-
-        for b in tabpagebuflist(t)
-            if b == nr
-                silent! exe "tabn " . t
-
-                let tabWin = bufwinnr(b)
-                let cslist = copy(ctrlspace#util#GettabvarWithDefault(t, "CtrlSpaceList", {}))
-
-                call remove(cslist, nr)
-
-                call settabvar(t, "CtrlSpaceList", cslist)
-
-                silent! exe tabWin . "wincmd w"
-
-                if !empty(cslist)
-                    silent! exe "b" . keys(cslist)[0]
-                else
-                    enew
-                endif
-            endif
-        endfor
     endfor
 
     silent! exe "tabn " . curtab
@@ -234,6 +189,7 @@ function! ctrlspace#buffers#DeleteBuffer() abort
     call s:forgetBuffersInAllTabs([nr])
     call ctrlspace#window#Toggle(1)
     call ctrlspace#window#MoveSelectionBar(curln)
+    return 1
 endfunction
 
 function! ctrlspace#buffers#DetachBuffer() abort
@@ -244,29 +200,13 @@ function! ctrlspace#buffers#DetachBuffer() abort
         let curln     = line(".")
 
         if selBufWin != -1
-            call ctrlspace#window#MoveSelectionBar("down")
-            if ctrlspace#window#SelectedIndex() == nr
-                call ctrlspace#window#MoveSelectionBar("up")
-
-                if ctrlspace#window#SelectedIndex() == nr
-                    if bufexists(nr) && (!empty(getbufvar(nr, "&buftype")) || filereadable(bufname(nr)))
-                        let curln = line(".")
-                        call ctrlspace#window#Kill(0, 0)
-                        silent! exe selBufWin . "wincmd w"
-                        enew
-                    else
-                        return
-                    endif
-                else
-                    call s:loadBufferIntoWindow(selBufWin)
-                endif
-            else
-                call s:loadBufferIntoWindow(selBufWin)
+            if !s:showOtherSelectedBufferIn(selBufWin, nr, 0)
+                return 0
             endif
         else
-            let curln = line(".")
             call ctrlspace#window#Kill(0, 0)
         endif
+
         call remove(t:CtrlSpaceList, nr)
         call ctrlspace#window#Toggle(1)
         call ctrlspace#window#MoveSelectionBar(curln)
@@ -286,19 +226,19 @@ function! ctrlspace#buffers#GoToBufferOrFile(direction) abort
     if lastTab == 1
         let tabsToCheck = [1]
     elseif curTab == 1
-        if a:direction == "next"
+        if a:direction ==# "next"
             let tabsToCheck = range(2, lastTab) + [1]
         else
             let tabsToCheck = range(lastTab, curTab, -1)
         endif
     elseif curTab == lastTab
-        if a:direction == "next"
+        if a:direction ==# "next"
             let tabsToCheck = range(1, lastTab)
         else
             let tabsToCheck = range(lastTab - 1, 1, -1) + [lastTab]
         endif
     else
-        if a:direction == "next"
+        if a:direction ==# "next"
             let tabsToCheck = range(curTab + 1, lastTab) + range(1, curTab - 1) + [curTab]
         else
             let tabsToCheck = range(curTab - 1, 1, -1) + range(lastTab, curTab + 1, -1) + [curTab]
@@ -448,6 +388,55 @@ function! s:keepBuffersForKeys(dict) abort
     return removed
 endfunction
 
+" Replace the selected buffer a:nr in window a:winnr by the next list entry,
+" or by an empty buffer if a:nr is the only entry and may be closed.
+" Return 0 if the buffer has to stay.
+function! s:showOtherSelectedBufferIn(winnr, nr, modified) abort
+    call ctrlspace#window#MoveSelectionBar("down")
+
+    if ctrlspace#window#SelectedIndex() != a:nr
+        call s:loadBufferIntoWindow(a:winnr)
+        return 1
+    endif
+
+    if !bufexists(a:nr) || (empty(getbufvar(a:nr, "&buftype")) && !filereadable(bufname(a:nr)) && !a:modified)
+        return 0
+    endif
+
+    call ctrlspace#window#Kill(0, 0)
+    silent! exe a:winnr . "wincmd w"
+    enew
+    return 1
+endfunction
+
+" Remove buffer a:nr from the list of the current tab and replace it in
+" every window of the tab by another buffer of the list or an empty one.
+function! s:showOtherTabBufferInWindowsOf(nr) abort
+    let cslist = copy(ctrlspace#util#GettabvarWithDefault(tabpagenr(), "CtrlSpaceList", {}))
+
+    if has_key(cslist, a:nr)
+        call remove(cslist, a:nr)
+    endif
+
+    call settabvar(tabpagenr(), "CtrlSpaceList", cslist)
+
+    let curwin = winnr()
+
+    for w in range(1, winnr("$"))
+        if winbufnr(w) == a:nr
+            silent! exe w . "wincmd w"
+
+            if !empty(cslist)
+                silent! exe "b" . keys(cslist)[0]
+            else
+                enew
+            endif
+        endif
+    endfor
+
+    silent! exe curwin . "wincmd w"
+endfunction
+
 function! s:loadBufferIntoWindow(winnr) abort
     let old = t:CtrlSpaceStartWindow
     let t:CtrlSpaceStartWindow = a:winnr
@@ -464,7 +453,7 @@ function! s:forgetBuffersInAllTabs(numbers) abort
         endif
 
         for nr in a:numbers
-            if exists("CtrlSpaceList[nr]")
+            if has_key(cslist, nr)
                 call remove(cslist, nr)
             endif
         endfor
