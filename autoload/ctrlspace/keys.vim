@@ -3,7 +3,6 @@ let s:modes          = ctrlspace#modes#Modes()
 let s:keyNames       = []
 let s:keyMap         = {}
 let s:characters     = {}
-let s:keyEscSequence = 0
 
 function! ctrlspace#keys#KeyNames() abort
     return s:keyNames
@@ -17,8 +16,83 @@ function! ctrlspace#keys#KeyMap() abort
     return s:keyMap
 endfunction
 
-function! ctrlspace#keys#MarkKeyEscSequence() abort
-    let s:keyEscSequence = 1
+" Run by the <Esc>[ mapping of the plugin buffer in a terminal. Read the rest
+" of the control sequence, so that none of its characters is taken for a key
+" of its own, and press the key it encodes, if any. Hand terminal responses,
+" such as the reply to Vim's keyboard protocol query, back to the editor.
+function! ctrlspace#keys#EscSequence() abort
+    let params = ""
+    let final  = ""
+    let waited = 0
+
+    while waited <= 100
+        let char = getcharstr(0)
+
+        if empty(char)
+            sleep 10m
+            let waited += 10
+        elseif char =~# '^[\x20-\x3f]$'
+            let params .= char
+        else
+            let final = char
+            break
+        endif
+    endwhile
+
+    " Neovim parses terminal responses before they reach mappings.
+    if params =~# '^[?>=<]'
+        if !has("nvim")
+            call feedkeys("\<Esc>[" . params . final, "nt")
+        endif
+        return
+    endif
+
+    let key = ctrlspace#keys#SequenceKey(params, final)
+
+    if !empty(key) && index(s:keyNames, key) >= 0
+        call ctrlspace#keys#Keypressed(key)
+    endif
+endfunction
+
+" Return the name of the key encoded by the control sequence "<Esc>[" .
+" a:params . a:final, or an empty string. Understands the shifted Tab and
+" the key encoding of the kitty keyboard protocol that Vim enables in kitty,
+" Ghostty, foot and WezTerm.
+function! ctrlspace#keys#SequenceKey(params, final) abort
+    if a:final ==# "Z" && empty(a:params)
+        return "S-Tab"
+    elseif a:final !=# "u" || a:params !~# '^\d\+\%(:\d*\)*\%(;\d*\%(:\d*\)\=\)\=\%(;[0-9:]*\)\=$'
+        return ""
+    endif
+
+    let fields = split(a:params, ";", 1)
+    let code   = str2nr(fields[0])
+    let modstr = get(fields, 1, "")
+    let mods   = empty(modstr) ? 0 : str2nr(modstr) - 1
+    let event  = str2nr(get(split(modstr, ":", 1), 1, "1"))
+    let shift  = and(mods, 1)
+    let ctrl   = and(mods, 4)
+
+    " Ignore key releases and other modifiers than Shift and Control.
+    if event > 2 || and(mods, invert(5))
+        return ""
+    elseif code == 27 && !mods
+        return "Esc"
+    elseif code == 13 && !mods
+        return "CR"
+    elseif (code == 127 || code == 8) && !mods
+        return "BS"
+    elseif code == 9 && !ctrl
+        return shift ? "S-Tab" : "Tab"
+    elseif code == 32 && !shift
+        return ctrl ? ((has("gui_running") || has("win32")) ? "C-Space" : "Nul") : "Space"
+    elseif ctrl && !shift && (code >= 97 && code <= 122 || code == 94 || code == 93)
+        return "C-" . nr2char(code)
+    elseif !ctrl && code >= 33 && code <= 126
+        return shift ? toupper(nr2char(code)) : nr2char(code)
+    endif
+
+    return ""
 endfunction
 
 function! ctrlspace#keys#Init() abort
@@ -139,9 +213,6 @@ function! ctrlspace#keys#AddMapping(funcName, mapName, keys) abort
 endfunction
 
 function! ctrlspace#keys#Keypressed(key) abort
-    let key = (s:keyEscSequence && (a:key ==# "Z")) ? "S-Tab" : a:key
-    let s:keyEscSequence = 0
-
     if s:modes.Help.Enabled
         let mapName = "Help"
     elseif s:modes.Search.Enabled
@@ -152,7 +223,7 @@ function! ctrlspace#keys#Keypressed(key) abort
         let mapName = ctrlspace#modes#CurrentListView().Name
     endif
 
-    call s:keyMap[mapName][key](key)
+    call s:keyMap[mapName][a:key](a:key)
 endfunction
 
 function! ctrlspace#keys#SetDefaultMapping(key, action) abort

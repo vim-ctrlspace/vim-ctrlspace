@@ -373,13 +373,66 @@ function! s:TestNormalizeDirectory() abort
     call assert_equal('', ctrlspace#util#NormalizeDirectory(''))
 endfunction
 
+" Read the typeahead left over or handed back to the editor, up to a marker,
+" since waiting for more typeahead blocks in silent Ex mode.
+function! s:Typeahead() abort
+    call feedkeys('#', 'n')
+    let keys = ''
+    let char = getcharstr()
+    while char !=# '#'
+        let keys .= char
+        let char = getcharstr()
+    endwhile
+    return keys
+endfunction
+
+" Type the rest of an escape sequence after its <Esc>[ has been mapped.
+function! s:EscSequence(rest) abort
+    call feedkeys(a:rest, 'n')
+    call ctrlspace#keys#EscSequence()
+endfunction
+
+" A whole escape sequence is one key, or none: neither a late terminal
+" response nor a key in the kitty keyboard protocol is split into keys.
+function! s:TestEscapeSequences() abort
+    execute 'edit ' . fnameescape(s:Write('keys.txt'))
+    call ctrlspace#window#Toggle(0)
+    let plugin = ctrlspace#context#PluginBuffer()
+    call assert_match('ctrlspace#keys#EscSequence()', maparg('<Esc>[', 'n'))
+
+    " Reply to Vim's keyboard protocol query, arriving after the list opened.
+    call s:EscSequence('?1u')
+    call assert_equal(has('nvim') ? '' : "\<Esc>[?1u", s:Typeahead(), 'the response is handed back')
+    call assert_equal([], g:messages)
+    call assert_false(s:modes.Help.Enabled, 'the response does not open the help')
+    call assert_equal(plugin, bufnr('%'))
+
+    " Page Up, which the list ignores in a terminal, leaves no count behind.
+    call s:EscSequence('5~j')
+    call assert_equal('j', s:Typeahead())
+    call assert_equal([], g:messages)
+    call assert_equal(plugin, bufnr('%'))
+
+    call assert_equal('S-Tab', ctrlspace#keys#SequenceKey('', 'Z'))
+    call assert_equal('C-p', ctrlspace#keys#SequenceKey('112;5', 'u'))
+    call assert_equal('J', ctrlspace#keys#SequenceKey('106;2', 'u'))
+    call assert_equal('', ctrlspace#keys#SequenceKey('27;1:3', 'u'), 'a key release is no key')
+    call assert_equal('', ctrlspace#keys#SequenceKey('106;3', 'u'), 'Alt is not supported')
+    call assert_equal('', ctrlspace#keys#SequenceKey('5', '~'))
+
+    " Escape in the kitty keyboard protocol closes the list.
+    call s:EscSequence('27u')
+    call assert_equal([], g:messages)
+    call assert_false(bufwinnr(plugin) > 0, 'Escape closes the list')
+endfunction
+
 try
     call assert_equal(2, exists(':CtrlSpace'), 'plugin initialized')
     for s:name in ['Buffer Init', 'Delete Buffer', 'Copy Buffer',
                 \ 'Remove File In File List', 'Remove File Declined',
                 \ 'Load Workspace Restores Settings', 'Project Roots And Bookmarks',
                 \ 'Workspace Tabs', 'Custom Workspace File', 'Legacy Tab Variables', 'Prompted Project Root',
-                \ 'Bookmark Directory Conflict', 'Normalize Directory']
+                \ 'Bookmark Directory Conflict', 'Normalize Directory', 'Escape Sequences']
         call s:Run(s:name)
     endfor
 finally
