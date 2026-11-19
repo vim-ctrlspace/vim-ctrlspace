@@ -14,6 +14,10 @@ separately installed fuzzy finder is required.
   text, and keep file caching independent of the search backend.
 * Preserve CtrlSpace's window, keys, tabs, workspaces, and bookmarks. Document
   the bundled fuzzbox source and MIT license under `third_party/fuzzbox/`.
+* In a terminal, read escape sequences as a whole. A late reply to Vim's
+  keyboard protocol query no longer opens the help and reports `u`, and
+  `<Esc>`, `<C-…>` and `<S-Tab>` work in the kitty keyboard protocol that Vim
+  enables in kitty, Ghostty, foot and WezTerm.
 
 # Version 5
 

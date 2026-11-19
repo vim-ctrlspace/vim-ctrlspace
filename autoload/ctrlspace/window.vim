@@ -413,8 +413,9 @@ function! s:setUpBuffer() abort
     call clearmatches()
 
     if !s:config.UseMouseAndArrowsInTerm && !has("gui_running")
-        " Block unnecessary escape sequences!
-        noremap <silent><buffer><esc>[ :call ctrlspace#keys#MarkKeyEscSequence()<CR>
+        " Consume whole escape sequences, so that their characters are not
+        " taken for separate keys.
+        noremap <silent><buffer><esc>[ :call ctrlspace#keys#EscSequence()<CR>
         let b:mouseSave = &mouse
         set mouse=
     endif
